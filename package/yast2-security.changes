@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  1 13:11:00 CET 2004 - msvec@suse.cz
+
+- proof-read messages
+- 2.9.6
+
+-------------------------------------------------------------------
 Tue Feb 24 12:48:18 CET 2004 - msvec@suse.cz
 
 - fix enabling of the remote XDM access (#34879)
