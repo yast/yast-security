@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Dec 10 22:12:47 CET 2000 - kendy@suse.cz
+
+- ``Something() -> ``(Something()) goes to abuild...
+  ver. 1.1.2
+
+-------------------------------------------------------------------
 Fri Dec  8 17:45:22 CET 2000 - msvec@suse.cz
 
 - also update the source
