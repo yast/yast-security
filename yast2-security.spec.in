@@ -6,8 +6,8 @@ Requires:	yast2 yast2-pam
 
 Provides:	y2c_sec yast2-config-security
 Obsoletes:	y2c_sec yast2-config-security
-Provides:	yast2-trans-security
-Obsoletes:	yast2-trans-security
+Provides:	yast2-trans-security y2t_sec
+Obsoletes:	yast2-trans-security y2t_sec
 
 BuildArchitectures: noarch
 

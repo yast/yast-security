@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep  5 14:19:35 CEST 2002 - msvec@suse.cz
+
+- fix the Next|Finish behavior (#18937)
+- provide more old translations (y2t_sec)
+- 2.6.10
+
+-------------------------------------------------------------------
 Tue Aug 27 20:00:00 CEST 2002 - jsuchome@suse.cz
 
 - provide/obsolete old translation packages (bug #18691)
