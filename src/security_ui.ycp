@@ -12,7 +12,7 @@
 
 /*
  * Usage:
- *   Include(`security_ui());
+ *   include "security_ui.ycp";
  *   map BUTTONS = CallFunction(`buttons());
  *   map STRINGS = CallFunction(`your_helps());
  *   map WIDGETS = CallFunction(`your_widgets());
@@ -41,7 +41,7 @@ define YaST2MenuEntry(map m) ``{
 
 define map2widget(string ID /*, map m*/) ``{
   /* string ID = lookup(m,"ID"); */
-  map m = lookup(SECURITY_OPTIONS,ID);
+  map m = lookup(WIDGETS,ID);
   string label = lookup(m,"Label");
   string value = lookup(m,"Value");
   string widget = lookup(m,"Widget");
@@ -63,8 +63,18 @@ define map2widget(string ID /*, map m*/) ``{
 
   if(widget == "TextEntry") {
     return `VBox(
-      //VSeparator(),
       `Left(`TextEntry(`id(ID),label,value)),
+      //VSeparator(),
+      VSeparator()
+    );
+  }
+
+  /* "Widget" == "IntField" */
+
+  if(widget == "IntField") {
+    return `VBox(
+      //VSeparator(),
+      `Left(`IntField(`id(ID),label,0,65000,tointeger(value))),
       VSeparator()
     );
   }
@@ -72,7 +82,7 @@ define map2widget(string ID /*, map m*/) ``{
   /* "Widget" == "???" */
 
   if(widget != "ComboBox") {
-    _debug("Unknown widget: ", widget);
+    y2error("Unknown widget: %1", widget);
     return VSeparator();
   }
 
@@ -116,6 +126,8 @@ define widget2value(string ID) ``{
       ret = "yes";
     else
       ret = "no";
+  if(is(ret,integer))
+    ret = sformat("%1",ret);
 
   return ret;
 };
@@ -125,10 +137,18 @@ define widget2value(string ID) ``{
 define processInput() ``{
   any ret = nil;
 
-  ret = UI(`UserInput());
-  if(ret == `next || ret == `ok || ret == `finish)
+  while(true) {
+    ret = UI(`UserInput());
+    if(ret != `abort)
+      break;
+    any re = Popup(UI(_("Do you really want to abort the security configuration?")));
+    if(re==`ok)
+      break;
+  }
+
+  if(ret == `ok || ret == `finish)
     return `ok;
-  if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
+  if(ret == `cancel || ret == nil)
     return nil;
 
   return ret;
@@ -155,21 +175,24 @@ define str2term(symbol B) ``{
 
   term|void Button = nil;
 
-  if(B==`ok || B==`finish)
-    Button = `PushButton(`id(B), `opt(`default), button);
+  if(B==`ok || B==`finish || B==`next)
+    Button = `ReplacePoint(`id(`rp),`PushButton(`id(B), `opt(`default), button));
   else
     Button = `PushButton(`id(B), button);
 
   return Button;
 
+  term AbortButton = `PushButton(`id(`back), _("&Abort"));
   term BackButton = `PushButton(`id(`back), _("&Back"));
-  term OKButton = `PushButton(`id(`ok), `opt(`default), _("&OK"));
-  term FinishButton = `PushButton(`id(`ok), `opt(`default), _("&Finish"));
+  term OKButton = `ReplacePoint(`id(`rp),`PushButton(`id(`ok), `opt(`default), _("&OK")));
+  term FinishButton = `ReplacePoint(`id(`rp),`PushButton(`id(`finish), `opt(`default), _("&Finish")));
+  term NextButton = `ReplacePoint(`id(`rp),`PushButton(`id(`next), `opt(`default), _("&Next")));
   term CancelButton = `PushButton(`id(`cancel), _("&Cancel"));
 
   if(B=="B") return BackButton;
   if(B=="O") return OKButton;
   if(B=="F") return FinishButton;
+  if(B=="A") return AbortButton;
   if(B=="C") return CancelButton;
   return OKButton;
 }
@@ -179,20 +202,21 @@ define str2term(symbol B) ``{
 define BottomButtons(list buttons) ``{
   symbol|void B1 = nil;
   symbol|void B2 = nil;
+  symbol|void B3 = nil;
 
-  if(size(buttons)>1) {
-    B1 = select(buttons,0);
-    B2 = select(buttons,1);
-  }
+  if(buttons == [] ) buttons = [ `back, `abort, `next];
 
-  if(B1==nil) B1=`back;
-  if(B2==nil) B2=`ok;
+  term TT = `HBox();
 
-  return `HBox( 
-    str2term(B1),
-    `HStretch(),
-    str2term(B2)
-  );
+  TT = foreach(`s,buttons,``{
+    any x = str2term(s);
+    TT = add(TT,x);
+    any x = `HStretch();
+    TT = add(TT, x);
+    return TT;
+  });
+
+  return remove(TT,size(TT));
 };
 
 /* The main dialog widget */
@@ -222,7 +246,7 @@ define SuSEDialog(string ID, list buttons, term T) ``{
 
 define updateWidget(string ID) ``{
   any val = widget2value(ID);
-  SECURITY_OPTIONS = updateValue(SECURITY_OPTIONS,ID,val);
+  WIDGETS = updateValue(WIDGETS,ID,val);
 };
 
 
@@ -235,16 +259,221 @@ define SecurityItem(any ID, string str) ``{
   return T;
 };
 
+/* Search the whole settings map for the given string id */
+
+define FindSettings(list settings, string ident) ``{
+  map|void ret = nil;
+
+  map|void mm = find(`item,settings,``{
+    string key = lookup(item,"name");
+    if(key==ident) return true;
+    return false;
+  });
+
+  if(mm==nil)
+    ret = nil;
+  else
+    ret = lookup(mm,"settings");
+
+  return ret;
+};
+
+/* Search the whole settings map for the given map */
+
+define CurrentSettings(list settings, map current) ``{
+  string|void ret = nil;
+
+  y2debug("current: %1",current);
+  map|void mm = find(`item,settings,``{
+    string key = lookup(item,"name");
+    if(key=="Default") return false;
+
+    map val = lookup(item,"settings");
+
+    y2debug("key: %1",key);
+    y2debug("val: %1",val);
+    if(current==val) {
+      y2debug("Found");
+      return true;
+    }
+    return false;
+  });
+
+  //y2debug("mm: %1",mm);
+  if(mm==nil)
+    ret = nil;
+  else
+    ret = lookup(mm,"name");
+
+  //return "Secure";
+  //return nil;
+  return ret;
+};
+
+/* Build a RadioButton group from security_settings */
+
+define SecuritySettings(list settings, map defs) ``{
+  string|void current = CurrentSettings(settings,defs);
+  //current="Server";
+
+  boolean enab = false;
+  if(current==nil) enab=true;
+
+  term T = `VBox();
+  T = add(T,`VSpacing(0.3));
+
+  T = foreach(`item,settings,``{
+    string key = lookup(item,"name");
+    if(key=="Default") return T;
+
+    map val = lookup(item,"settings");
+    y2debug("key: %1",key);
+
+    term R = `RadioButton();
+    R = add(R,`id(key));
+    R = add(R,`opt(`notify));
+    R = add(R,key);
+    if(key == current) R = add(R,true);
+    T = add(T, `Left(R));
+    return T;
+  });
+
+  T = add(T,`VSpacing(0.5));
+  T = add(T,`Left(`RadioButton(`id(`custom),`opt(`notify),"&Custom settings",enab)));
+    /* T = add(T,`Left(`HBox(`RadioButton(`id(`custom),"&Custom settings",enab),`Right(`PushButton(`id(`details),"&Change..."))))); */
+  T = add(T,`VSpacing(0.3));
+  y2debug("T: %1",T);
+  return T;
+};
+
+define updateWIDGETS(any curr) ``{
+  any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
+  if(curr2!=curr)
+  changed = true;
+  string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+  map current_sets = FindSettings(settings,current_defs);
+  WIDGETS = defs2options(WIDGETS,current_sets);
+}
+
 /* Main security settings dialog */
 
-define SecurityMainDialog() ``{
+define SecurityMainDialog(map defs) ``{
+
+  list settings = CallFunction(`security_settings());
+
+  SuSEDialog("Main",[`back,`finish], 
+    `HVCenter(
+    `VBox(
+    `HVSquash(
+    `Frame( "Current security settings:",
+      `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs))
+    )),
+    `VSpacing(0.3),
+    `HVCenter(`PushButton(`id(`details),"&Details..."))
+    )
+  ));
+
+  any curr = UI(`QueryWidget(`id(`rb),`CurrentButton));
+  if( curr == `custom) {
+    UI(`ChangeWidget(`id(`details),`Enabled,false));
+    UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),"Next")));
+  }
+
+  any ret = nil;
+  any subret = nil;
+  map old_WIDGETS = WIDGETS;
+
+  while(true) {
+    ret = processInput();
+    y2debug("rettt: %1",ret);
+
+    if(ret == `ok)			/* Save the settings */
+      break;
+    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
+      break;				/* Don't save the settings */
+    else if(ret == `details || ret ==`next)  {
+      y2debug("Running wizzard: %1",ret);
+      if(ret!=`custom) {
+        string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+        map current_sets = FindSettings(settings,current_defs);
+        WIDGETS = defs2options(WIDGETS,current_sets);
+      }
+	subret = SecurityWizzard();
+	y2debug("subret=%1",subret);
+	if(subret == `back) continue; /* FIXME: update the current RB? */
+	if(subret == `abort || subret == `cancel || subret == nil)
+	  ret = nil;
+	else
+	  ret = `ok;
+	break;
+    }
+    else if(ret == `custom) {		/* Change the [Finish] to [Next] */
+      y2debug("custom radio button");
+      UI(`ChangeWidget(`id(`details),`Enabled,false));
+      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),"Next")));
+    }
+    else {				/* Other radio button */
+      y2error("SecurityMainDialog: Huh? %1",ret);
+      UI(`ChangeWidget(`id(`details),`Enabled,true));
+      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),"Finish")));
+    }
+    y2debug("subret: %1",subret);
+  }
+
+  UI(`CloseDialog());
+
+  /* [Finish]ed */
+  if(ret == `ok && old_WIDGETS!=WIDGETS) {
+    string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+    y2debug("current_defs: %1",current_defs);
+    map current_sets = FindSettings(settings,current_defs);
+    WIDGETS = defs2options(WIDGETS,current_sets);
+    return `ok;
+  }
+
+  return nil;
+};
+
+/* Wizzard for all security settings */
+
+define SecurityWizzard() ``{
+  integer current = 0;
+
+  any ret = nil;
+
+  while(true) {
+    y2debug("current: %1",current);
+    if(current==0) ret = SecurityPasswdDialog();
+    else if(current==1) ret = SecurityBootDialog();
+    else if(current==2) ret = SecurityLoginDialog();
+    else if(current==3) ret = SecurityAdduserDialog();
+    else if(current==4) ret = SecurityMiscDialog();
+
+    y2debug("ret: %1",ret);
+    if(ret==`next) {
+      current=current+1;
+      if(current>4) break;
+    }
+    else if(ret==`back) {
+      current=current-1;
+      if(current<0) break;
+    }
+    else if(ret == `abort || ret==nil || ret==`ok) break;
+  }
+
+  y2debug("aborting: %1",ret);
+  return ret;
+};
+
+/* Main security settings dialog */
+
+define SecurityDetailsDialog() ``{
   SuSEDialog("Main", [`back,`finish], `VBox(
-    VSeparator(), SecurityItem(`login,"Login and password settings"),
+    VSeparator(), SecurityItem(`passwd,"Password settings"),
     VSeparator(), SecurityItem(`boot, "Boot settings"),
-    //VSeparator(), SecurityItem(`perms,"Files permissions"),
-    //VSeparator(), SecurityItem(`other,"Other security settings"),
-    VSeparator(), SecurityItem(`adduser,"Adduser settings"),
-    VSeparator(), SecurityItem(`other,"Files permissions and other settings"),
+    VSeparator(), SecurityItem(`login,"Login settings"),
+    VSeparator(), SecurityItem(`uid,"User and group ID settings"),
+    VSeparator(), SecurityItem(`misc,"Miscellaneous settings"),
     VSeparator(),`VSpacing(2)
   ));
 
@@ -256,14 +485,14 @@ define SecurityMainDialog() ``{
     ret = processInput();
     if(ret == `ok)
       break;
-    if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
+    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
       break;
     else if(ret == `boot)  subret = SecurityBootDialog();
     else if(ret == `login) subret = SecurityLoginDialog();
-    //else if(ret == `perms) subret = SecurityPermsDialog();
-    else if(ret == `other) subret = SecurityOtherDialog();
-    else if(ret == `adduser) subret = SecurityAdduserDialog();
-    else _debug(["SecurityMainDialog","Huh?",ret]);
+    else if(ret == `passwd) subret = SecurityPasswdDialog();
+    else if(ret == `misc) subret = SecurityMiscDialog();
+    else if(ret == `uid) subret = SecurityAdduserDialog();
+    else y2error("SecurityDetailsDialog: Huh? %1",ret);
     if(subret == `ok) changed = true;
   }
 
@@ -304,32 +533,19 @@ define SecurityLoginDialog() ``{
 //`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
 `Frame("Login",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
     VSeparator(),
-    map2widget("ROOT_LOGIN_REMOTE"),
+    map2widget("FAIL_DELAY"),
     VSeparator(),
     map2widget("FAILLOG_ENAB"),
     VSeparator(),
-    map2widget("FAIL_DELAY"),
+    map2widget("LASTLOG_ENAB"),
     VSeparator(),
-`VSpacing(0.3)),`HSpacing(1))),
-`VSpacing(1),
-`Frame("Password",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
-    /* Next Frame */
-    map2widget("PASSWD_USE_CRACKLIB"),
-    VSeparator(),
-    map2widget("OBSCURE_CHECKS_ENAB"),
-    VSeparator(),
-    map2widget("PASS_WARN_AGE"),
-    VSeparator()
-),`HSpacing(1)))
-  ));
+`VSpacing(0.3)),`HSpacing(1)))
+));
   any ret = processInput();
   if(ret == `ok) {
-    updateWidget("ROOT_LOGIN_REMOTE");
     updateWidget("FAILLOG_ENAB");
+    updateWidget("LASTLOG_ENAB");
     updateWidget("FAIL_DELAY");
-    updateWidget("PASSWD_USE_CRACKLIB");
-    updateWidget("OBSCURE_CHECKS_ENAB");
-    updateWidget("PASS_WARN_AGE");
   }
   UI(`CloseDialog());
   return ret;
@@ -353,26 +569,71 @@ define SecurityPermsDialog() ``{
 
 /* Other security settings dialog */
 
-define SecurityOtherDialog() ``{
-  SuSEDialog("Other", [], `VBox(
+define SecurityMiscDialog() ``{
+  SuSEDialog("Misc", [`back,`abort,`finish], `VBox(
     VSeparator(),
-`Frame("Permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
+//`Frame("Permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
     map2widget("PERMISSION_SECURITY"), /* See the SecurityPermsDialog */
-`VSpacing(0.3)),`HSpacing(1))),
-`VSpacing(1.5),
-`Frame("Other settings",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
+//`VSpacing(0.3)),`HSpacing(1))),
+//`VSpacing(1.5),
+//`Frame("Other settings",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
+    VSeparator(),
+    map2widget("RUN_UPDATEDB_AS"),
     VSeparator(),
     map2widget("CWD_IN_ROOT_PATH"),
     VSeparator(),
-    map2widget("RUN_UPDATEDB_AS"),
+    map2widget("ROOT_LOGIN_REMOTE"),
     VSeparator()
-),`HSpacing(1)))
+//),`HSpacing(1)))
   ));
   any ret = processInput();
   if(ret == `ok) {
+    updateWidget("ROOT_LOGIN_REMOTE");
     updateWidget("PERMISSION_SECURITY");
     updateWidget("CWD_IN_ROOT_PATH");
     updateWidget("RUN_UPDATEDB_AS");
+  }
+  UI(`CloseDialog());
+  return ret;
+};
+
+/* Password security settings dialog */
+
+define SecurityPasswdDialog() ``{
+  SuSEDialog("Password", [], `VBox(
+    VSeparator(),
+    `Frame("Checks",`VBox(
+    map2widget("PASSWD_USE_CRACKLIB"),
+    VSeparator(),
+    map2widget("OBSCURE_CHECKS_ENAB"),
+    VSeparator()
+    )),
+    `Frame("Password length",`HBox(
+    map2widget("PASS_MIN_LEN"),
+    VSeparator(),
+    map2widget("PASS_MAX_LEN"),
+    VSeparator()
+    )),
+    `Frame("Days of password change warning",`HBox(
+    map2widget("PASS_MIN_DAYS"),
+    VSeparator(),
+    map2widget("PASS_MAX_DAYS"),
+    VSeparator()
+    )),
+    VSeparator(),
+    map2widget("PASS_WARN_AGE"),
+    VSeparator()
+    //,`HSpacing(1)
+  ));
+  any ret = processInput();
+  if(ret == `ok) {
+    updateWidget("PASS_MIN_DAYS");
+    updateWidget("PASS_MAX_DAYS");
+    updateWidget("PASS_MIN_LEN");
+    updateWidget("PASS_MAX_LEN");
+    updateWidget("PASSWD_USE_CRACKLIB");
+    updateWidget("OBSCURE_CHECKS_ENAB");
+    updateWidget("PASS_WARN_AGE");
   }
   UI(`CloseDialog());
   return ret;
@@ -383,21 +644,17 @@ define SecurityOtherDialog() ``{
 define SecurityAdduserDialog() ``{
   SuSEDialog("Adduser", [], `VBox(
     VSeparator(),
-    map2widget("GID_MIN"),
-    VSeparator(),
-    map2widget("GID_MAX"),
-    VSeparator(),
+    `Frame("User ID limitations",`HBox(
     map2widget("UID_MIN"),
     VSeparator(),
-    map2widget("UID_MAX"),
+    map2widget("UID_MAX")
+    )),
     VSeparator(),
-    map2widget("PASS_MIN_DAYS"),
+    `Frame("Group ID limitations",`HBox(
+    map2widget("GID_MIN"),
     VSeparator(),
-    map2widget("PASS_MAX_DAYS"),
-    VSeparator(),
-    map2widget("PASS_MIN_LEN"),
-    VSeparator(),
-    map2widget("PASS_MAX_LEN"),
+    map2widget("GID_MAX")
+    )),
     VSeparator()
     //,`HSpacing(1)
   ));
@@ -407,33 +664,10 @@ define SecurityAdduserDialog() ``{
     updateWidget("GID_MAX");
     updateWidget("UID_MIN");
     updateWidget("UID_MAX");
-    updateWidget("PASS_MIN_DAYS");
-    updateWidget("PASS_MAX_DAYS");
-    updateWidget("PASS_MIN_LEN");
-    updateWidget("PASS_MAX_LEN");
   }
   UI(`CloseDialog());
   return ret;
 };
 
 } /* YaST2: Local security configuration EOF */
-("PASS_MAX_LEN"))),
-    `VSpacing(0.3)
-    //,`HSpacing(1)
-  ));
-  any ret = processInput();
-  if(ret == `ok) {
-    updateWidget("GID_MIN");
-    updateWidget("GID_MAX");
-    updateWidget("UID_MIN");
-    updateWidget("UID_MAX");
-    updateWidget("PASS_MIN_DAYS");
-    updateWidget("PASS_MAX_DAYS");
-    updateWidget("PASS_MIN_LEN");
-    updateWidget("PASS_MAX_LEN");
-  }
-  UI(`CloseDialog());
-  return ret;
-};
 
-} /* YaST2: Local security configuration EOF */

@@ -22,19 +22,19 @@ define STRINGS() ``{ return $[
     "help" : UI(_("Boot help ..."))
   ],
   "Login" : $[
-    "caption" : UI(_("Login and password settings")),
+    "caption" : UI(_("Login settings")),
     "help" : UI(_("Login help ..."))
   ],
-  "Perms" : $[
-    "caption" : UI(_("Files permissions")),
+  "Password" : $[
+    "caption" : UI(_("Password settings")),
     "help" : UI(_("Perms help ..."))
   ],
   "Adduser" : $[
     "caption" : UI(_("Adduser settings")),
     "help" : UI(_("Adduser help ..."))
   ],
-  "Other" : $[
-    "caption" : UI(_("Files permissions and other settings")),
+  "Misc" : $[
+    "caption" : UI(_("Miscellaneous settings")),
     "help" : UI(_("Other help ..."))
   ]
 ];

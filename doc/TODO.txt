@@ -3,8 +3,6 @@ Security Module TODO file
 $Id$
 
 Urgent:
-- Adduser: widgets (Value), settings
-- call SuSEconfig
 - helps: Roland Haidl <rhaidl@suse.de>
 - permissions: local (replace or add?) -- maybe "Add local perms" [X]
 

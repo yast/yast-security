@@ -12,20 +12,22 @@
 
 {
 
-_debug("-----------------------------------------------");
+y2debug("-----------------------------------------------");
 
-Include "security_io.ycp";
-Include "security_ui.ycp";
+include "security_io.ycp";
+include "security_ui.ycp";
 
 map BUTTONS = CallFunction(`buttons());
 map STRINGS = CallFunction(`security_helps());
 map WIDGETS = CallFunction(`security_widgets());
-map SECURITY_default = lookup(CallFunction(`security_settings()),"secure");
 
-/* Automatic write testing -> use security_io.ycp *//*
-map mm = $[ "FAIL_DELAY" : "77" ];
-  include "security_io(mm)";
-return;
+/*
+   Automatic write testing -> use security_io.ycp
+
+   map mm = $[ "FAIL_DELAY" : "77" ];
+   any ret = CallModule("security_io",[mm]);
+   y2debug(ret);
+   return;
 */
 
 /* Menuentry for the YaST2 menu */
@@ -46,26 +48,27 @@ if (Args() == [ "get_menuentry" ])
 
 /* The main() */
 
-_debug("Security Module started");
+y2debug("Security Module started");
 
 map security_defs = SecurityRead();
-_debug(security_defs);
+y2debug("security_defs: %1",security_defs);
 
-map SECURITY_OPTIONS = defs2options(WIDGETS,security_defs);
+map WIDGETS = defs2options(WIDGETS,security_defs);
+y2debug("WIDGETS: %1",WIDGETS);
 
-any ret = SecurityMainDialog();
-_debug(SECURITY_OPTIONS);
-_debug("SD1:",security_defs);
-security_defs = options2defs(SECURITY_default, SECURITY_OPTIONS);
-_debug("SD2:",security_defs);
-_debug(ret);
+any ret = SecurityMainDialog(security_defs);
+y2debug("WIDGETS: %1",WIDGETS);
+y2debug("security_defs: %1",security_defs);
+security_defs = options2defs(LookupDefault(nil), WIDGETS);
+y2debug("security_defs: %1:",security_defs);
+y2debug("ret: %1",ret);
 
 if(ret == `ok) {
-  _debug(SecurityWrite(security_defs));
-  _debug(SecurityFinish());
+  y2debug("Write: %1",SecurityWrite(security_defs));
+  y2debug("Finish: %1",SecurityFinish());
 }
 
-_debug("Security Module finished");
+y2debug("Security Module finished");
 
 /* return; */
 }

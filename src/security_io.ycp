@@ -13,7 +13,19 @@
 {
 
 include "general.ycp";
-map SECURITY_default = CallFunction(`security_settings());
+
+/* Lookup default settings */
+
+define LookupDefault(string|void item) ``{
+  list settings = CallFunction(`security_settings());
+  map default = find(`s,settings,``(lookup(s,"name")=="Default"));
+  string def = lookup(default,"settings");
+  map ret = find(`s,settings,``(lookup(s,"name")==def));
+  map ret = lookup(ret,"settings");
+  if(item != nil && item!="")
+    return lookup(ret,item);
+  return ret;
+};
 
 /* Write /etc/login.defs and rc.config */
 
@@ -30,8 +42,8 @@ define SecurityFinish() ``{
 define ReadLoginDefs(string item) ``{
   string pth = ".etc.login_defs." + item;
   string|void ret = SCR(`Read(topath(pth)));
-  if(ret == nil)
-    ret = lookup(SECURITY_default,item);
+  if(ret == nil||ret == "")
+    ret = LookupDefault(item);
   return ret;
 };
 
@@ -39,7 +51,7 @@ define ReadRcConfig(string item) ``{
   string pth = ".rc.system." + item;
   string|void ret = SCR(`Read(topath(pth)));
   if(ret == nil)
-    ret = lookup(SECURITY_default,item);
+    ret = LookupDefault(item);
   return ret;
 };
 
@@ -133,7 +145,7 @@ define SecurityWrite(map m) ``{
 
 list args = Args();
 if(size(args) > 0) {
-  _debug("Security: only writing ...", Args(0));
+  y2debug("Security: only writing ... (%1)", Args(0));
   /* Not needed? map security_defs = SecurityRead(); */
   list ret = SecurityWrite(Args(0));
   SecurityFinish(); /* rcagent */

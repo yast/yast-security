@@ -12,6 +12,31 @@
 
 {
 
+/* Popup box */
+
+define Popup(string message) ``{
+  UI(`OpenDialog(
+        `opt(`decorated),
+        `HBox(
+          `HSpacing(1),
+          `VBox(
+            `VSpacing(0.2),
+            `Left(`Label(message)),
+	    `HBox(
+              `PushButton(`id(`ok),`opt(`default), _("&OK")),
+	      `PushButton(`id(`cancel),_("&Cancel"))
+	    ),
+            `VSpacing(0.2)
+          ),
+          `HSpacing(1)
+        )
+    )
+  );
+  any ret = UI(`UserInput());
+  UI(`CloseDialog());
+  return ret;
+};
+
 /* Message box */
 
 define Message(any message) ``{

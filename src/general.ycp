@@ -16,8 +16,10 @@
 
 define updateValue(map opts, string ID, string val) ``{
   map item = lookup(opts,ID);
-  item = add(item,"Value",val);
-  opts = add(opts,ID,item);
+  //if(val!="") {
+    item = add(item,"Value",val);
+    opts = add(opts,ID,item);
+  //}
   return opts;
 };
 
@@ -32,22 +34,20 @@ define defs2options(map opts, map defs) ``{
   return o;
 };
 
-/* Convert security definitions (io) to the UI options map */
+/* Convert the UI options map to the security definitions (io) */
 
 define options2defs(map default, map opts) ``{
   map defs = default;
+  y2debug("defs: %1",defs);
   map de = mapmap(`key,`value, opts,``{
     return [ key, lookup(value,"Value") ];
   });
-  //_debug("OE1: ",defs);
-  //_debug("OE2: ",de);
 
   defs = foreach(`key,`value, de, ``{
     defs = add(defs,key,value);
     return defs;
   });
-  //_debug("OE3: ",opts);
-  //_debug("OE4: ",defs);
+
   return defs;
 };
 

@@ -46,7 +46,7 @@ widget2value("ID")
 
 updatewidget("ID")
 - look up the "ID" and change its "Value" to the "val"
-- updates the SECURITY_OPTIONS map
+- updates the WIDGETS map
 - called after start and after each subdialog [OK]
 - must check if the value is in "Options"! (TODO)
 
@@ -57,7 +57,7 @@ processinput()
 
 {
 
-define SECURITY_OPTIONS() ``{ return $[
+return $[
 
   /* Boot options */
 
@@ -84,7 +84,7 @@ define SECURITY_OPTIONS() ``{ return $[
   ],
 
   "FAIL_DELAY" : $[
-    "Widget" : "TextEntry",
+    "Widget" : "IntField",
     "Label" : UI(_("Seconds to wait after an incorrect login attempt:")),
     "Value" : "3"
   ],
@@ -114,7 +114,7 @@ define SECURITY_OPTIONS() ``{ return $[
   ],
 
   "PASS_WARN_AGE" : $[
-    "Widget" : "TextEntry",
+    "Widget" : "IntField",
     "Label" : UI(_("Days before password expiry warning:")),
     "Value" : "7"
   ],
@@ -146,51 +146,51 @@ define SECURITY_OPTIONS() ``{ return $[
   /* Adduser settings */
 
   "GID_MIN" : $[
-    "Widget" : "TextEntry",
-    "Label" : UI(_("Minimum group ID")),
-    "Value" : ""
+    "Widget" : "IntField",
+    "Label" : UI(_("Minimum")),
+    "Value" : "101"
   ],
 
   "GID_MAX" : $[
-    "Widget" : "TextEntry",
-    "Label" : UI(_("Maximum group ID")),
-    "Value" : ""
+    "Widget" : "IntField",
+    "Label" : UI(_("Maximum")),
+    "Value" : "60000"
   ],
 
   "UID_MIN" : $[
-    "Widget" : "TextEntry",
-    "Label" : UI(_("Minimum user ID")),
-    "Value" : ""
+    "Widget" : "IntField",
+    "Label" : UI(_("Minimum")),
+    "Value" : "100"
   ],
 
   "UID_MAX" : $[
-    "Widget" : "TextEntry",
-    "Label" : UI(_("Maximum user ID")),
-    "Value" : ""
+    "Widget" : "IntField",
+    "Label" : UI(_("Maximum")),
+    "Value" : "60000"
   ],
 
   "PASS_MIN_DAYS" : $[
-    "Widget" : "TextEntry",
-    "Label" : UI(_("Minimum number of days between two password changes")),
-    "Value" : ""
+    "Widget" : "IntField",
+    "Label" : UI(_("Minimum")),// number of days between two password changes")),
+    "Value" : "0"
   ],
 
   "PASS_MAX_DAYS" : $[
-    "Widget" : "TextEntry",
-    "Label" : UI(_("Maximum number of days between two password changes")),
-    "Value" : ""
+    "Widget" : "IntField",
+    "Label" : UI(_("Maximum")),// number of days between two password changes")),
+    "Value" : "99999"
   ],
 
   "PASS_MIN_LEN" : $[
-    "Widget" : "TextEntry",
-    "Label" : UI(_("Minimum length of password")),
-    "Value" : ""
+    "Widget" : "IntField",
+    "Label" : UI(_("Minimum")),// length of password")),
+    "Value" : "5"
   ],
 
   "PASS_MAX_LEN" : $[
-    "Widget" : "TextEntry",
-    "Label" : UI(_("Maximum length of password")),
-    "Value" : ""
+    "Widget" : "IntField",
+    "Label" : UI(_("Maximum")),// length of password")),
+    "Value" : "7"
   ] /* No \, ! */
 
 /*
@@ -212,18 +212,5 @@ map SecurityOptions = $[
 */
 
 ];
-};
-
-return SECURITY_OPTIONS();
-
-} /* YaST2: Local security configuration EOF */
-: Other_options
-];
-*/
-
-];
-};
-
-return SECURITY_OPTIONS();
 
 } /* YaST2: Local security configuration EOF */

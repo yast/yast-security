@@ -12,48 +12,74 @@
 
 {
 
-return $[
+return [
 
-  /* Secure settings */
-  "secure" : $[
-
-    /* "Boot" */
-    "CONSOLE_SHUTDOWN"    :	"ignore",
-    "KDM_SHUTDOWN"        :	"root",
-    /* "Login" */
-    "FAILLOG_ENAB"        :	"yes",
-    "LASTLOG_ENAB"        :	"yes",
-    "FAIL_DELAY"          :	"3",
-    "ROOT_LOGIN_REMOTE"   :	"yes",
-    "PASSWD_USE_CRACKLIB" :	"yes",
-    "OBSCURE_CHECKS_ENAB" :	"yes",
-    "PASS_WARN_AGE"       :	"7",
-    /* "Perms" */
-    "PERMISSION_SECURITY" :	"secure",
-    /* "Other" */
-    "CWD_IN_ROOT_PATH"    :	"no",
-    "RUN_UPDATEDB_AS"     :	"nobody"
+  /* Default settings */
+  $[
+    "name" : "Default",
+    "settings" : "Secure"
   ],
 
-  "easy" : $[
+  /* Secure settings */
+  $[
+    "name" : "Secure",
+    "settings" : $[
+  
+      /* "Boot" */
+      "CONSOLE_SHUTDOWN"    :	"ignore",
+      "KDM_SHUTDOWN"        :	"root",
+      /* "Login" */
+      "FAILLOG_ENAB"        :	"yes",
+      "LASTLOG_ENAB"        :	"yes",
+      "FAIL_DELAY"          :	"3",
+      "ROOT_LOGIN_REMOTE"   :	"yes",
+      "PASSWD_USE_CRACKLIB" :	"yes",
+      "OBSCURE_CHECKS_ENAB" :	"yes",
+      "PASS_WARN_AGE"       :	"7",
+      /* "Perms" */
+      "PERMISSION_SECURITY" :	"secure",
+      /* "Other" */
+      "CWD_IN_ROOT_PATH"    :	"no",
+      "RUN_UPDATEDB_AS"     :	"nobody"
+    ]
+  ],
 
-    /* "Boot" */
-    "CONSOLE_SHUTDOWN"    :	"reboot",
-    "KDM_SHUTDOWN"        :	"all",
-    /* "Login" */
-    "FAILLOG_ENAB"        :	"yes",
-    "LASTLOG_ENAB"        :	"yes",
-    "FAIL_DELAY"          :	"3",
-    "ROOT_LOGIN_REMOTE"   :	"yes",
-    "PASSWD_USE_CRACKLIB" :	"yes",
-    "OBSCURE_CHECKS_ENAB" :	"no",
-    "PASS_WARN_AGE"       :	"7",
-    /* "Perms" */
-    "PERMISSION_SECURITY" :	"easy",
-    /* "Other" */
-    "CWD_IN_ROOT_PATH"    :       "yes",
-    "RUN_UPDATEDB_AS"     :       "root"
-  ]
+  /* Easy settings */
+  $[
+    "name" : "Easy",
+    "settings" : $[
+
+      /* "Boot" */
+      "CONSOLE_SHUTDOWN"    :	"reboot",
+      "KDM_SHUTDOWN"        :	"all",
+      /* "Login" */
+      "FAILLOG_ENAB"        :	"yes",
+      "LASTLOG_ENAB"        :	"yes",
+      "FAIL_DELAY"          :	"3",
+      "ROOT_LOGIN_REMOTE"   :	"yes",
+      "PASSWD_USE_CRACKLIB" :	"yes",
+      "OBSCURE_CHECKS_ENAB" :	"no",
+      "PASS_WARN_AGE"       :	"7",
+      /* "Perms" */
+      "PERMISSION_SECURITY"	: "easy",
+      /* "Other" */
+      "CWD_IN_ROOT_PATH"	: "yes",
+      "RUN_UPDATEDB_AS"		: "root",
+      /* Adduser */
+      "GID_MIN"			: "101",
+      "GID_MAX"			: "60000",
+      "UID_MIN"			: "100",
+      "UID_MAX"			: "60000",
+      "PASS_MIN_DAYS"		: "0",
+      "PASS_MAX_DAYS"		: "99999",
+      "PASS_MIN_LEN"		: "5",
+      "PASS_MAX_LEN"		: "8"
+    ]
+  ],
+
+  $[ "name" : "Server", "settings" : $[]],
+  $[ "name" : "Home workstation", "settings" : $[]],
+  $[ "name" : "Networked workstation", "settings" : $[]]
 
 ];
 
