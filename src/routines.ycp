@@ -216,7 +216,7 @@ global define any mapvalue(map m, any k) ``{
  * @param m input map
  * @return map with keys converted to lower case
  */
-define map switch2lower(map m) ``{
+global define map switch2lower(map m) ``{
     return mapmap(string k, string v, m, ``([tolower(k), v]));
 }
 
@@ -225,7 +225,7 @@ define map switch2lower(map m) ``{
  * @param m input map
  * @return map with keys converted to lower case
  */
-define map switch2upper(map m) ``{
+global define map switch2upper(map m) ``{
     return mapmap(string k, string v, m, ``([toupper(k), v]));
 }
 
