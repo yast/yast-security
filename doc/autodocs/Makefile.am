@@ -3,18 +3,13 @@
 #
 
 docdir = @DOCDIR@
-htmldir = $(docdir)/security/autodocs
+htmldir = $(docdir)/config/security/autodocs
 
-html_DATA =                                                             \
-	*.html
-
-EXTRA_DIST = $(html_DATA)
-
+html_DATA = index.html $(wildcard *.html)
 MAINTAINERCLEANFILES = $(html_DATA)
 
-$(filter-out index.html, $(html_DATA)): index.html
 index.html: $(srcdir)/../../src/*.ycp
 	@YAST2DIR@/bin/ycpdoc -d. $(srcdir)/../../src/*.ycp
 
-clean:
-	rm -f *.html
+clean-local:
+	rm -f $(html_DATA)
