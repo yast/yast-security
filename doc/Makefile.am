@@ -2,8 +2,7 @@
 
 SUBDIRS = autodocs
 
-docdir = @DOCDIR@
-htmldir = $(docdir)
+htmldir = @docdir@
 
-html_DATA = security.txt TODO.txt
+html_DATA = # security.txt TODO.txt
 EXTRA_DIST = $(html_DATA)

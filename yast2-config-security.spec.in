@@ -25,11 +25,11 @@ Summary:	Configuration of security
 
 %files
 %defattr(-,root,root)
-%dir @YAST2DIR@/include/security
-@YAST2DIR@/menuentries/menuentry_security.y2cc
-@YAST2DIR@/clients/security*.ycp
-@YAST2DIR@/clients/ui_helps.ycp
-@YAST2DIR@/clients/ui_widgets.ycp
-@YAST2DIR@/scrconf/*.scr
-@YAST2DIR@/include/security/*
-%doc @DOCDIR@
+%dir @yncludedir@/security
+@yncludedir@/security/*
+@menudir@/menuentry_security.y2cc
+@clientdir@/security*.ycp
+@clientdir@/ui_helps.ycp
+@clientdir@/ui_widgets.ycp
+@scrconfdir@/*.scr
+%doc @docdir@

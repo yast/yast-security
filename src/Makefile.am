@@ -2,20 +2,17 @@
 # Makefile.am for y2c_sec/src
 #
 
-menudir = $(YAST2DIR)/menuentries
-modulesdir = $(YAST2DIR)/clients
-clientsdir = $(YAST2DIR)/clients
-yincludedir = $(YAST2DIR)/include/security
+yncludedir = @yncludedir@/security
 
-modules_DATA =			\
+module_DATA =			\
 	security.ycp		\
 	security_write.ycp
 
-clients_DATA =			\
+client_DATA =			\
 	ui_helps.ycp		\
 	ui_widgets.ycp
 
-yinclude_DATA =			\
+ynclude_DATA =			\
 	routines.ycp		\
 	settings.ycp		\
 	functions_ui.ycp	\
@@ -24,4 +21,4 @@ yinclude_DATA =			\
 
 menu_DATA = menuentry_security.y2cc
 
-EXTRA_DIST = $(modules_DATA) $(clients_DATA) $(menu_DATA) $(yinclude_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(menu_DATA) $(ynclude_DATA)
