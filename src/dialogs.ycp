@@ -18,9 +18,17 @@ import "Wizard";
  * @return `next if success, else `abort
  */
 global define symbol ReadDialog() ``{
-    Wizard::RestoreHelp(ReadDialogHelp());
-    // Abort handling
-    boolean ret = Security::Read( callback );
+
+    /* Read dialog help 1/2 */
+    string help = _("<p><b><big>Initializing security configuration</big></b>
+<br>Please wait...<br></p>") +
+
+    /* Read dialog help 2/2 */
+_("<p><b><big>Aborting the initialization:</big></b><br>
+Safely abort the configuration utility by pressing <b>Abort</b> now.</p>");
+
+    Security::AbortFunction = ``{return PollAbort();};
+    boolean ret = Security::Read();
     return ret ? `next : `abort;
 }
 
@@ -29,173 +37,69 @@ global define symbol ReadDialog() ``{
  * @return `next if success, else `abort
  */
 global define symbol WriteDialog() ``{
-    Wizard::RestoreHelp(WriteDialogHelp());
-    // Abort handling
-    boolean ret = Security::Write( callback );
+
+    /* Write dialog help 1/2 */
+    string help = _("<p><b><big>Saving security configuration</big></b>
+<br>Please wait...<br></p>") +
+
+    /* Write dialog help 2/2 */
+_("<p><b><big>Aborting saving:</big></b><br>
+Abort saving by pressing <b>Abort</b>.</p>");
+
+    Security::AbortFunction = ``{return PollAbort();};
+    boolean ret = Security::Write();
     return ret ? `next : `abort;
 }
 
 /**
- * Main dialog
- * @return Returned value from UserInput() call
  */
-global define any DetectedDialog() ``{
-    string caption = _("Security setup");
-    // TODO FIXME modify the following according to your needs
-    term contents =
-	Wizard_hw::DetectedContent(_("Security to configure"),
-				   [],
-				   false,
-				   Security::Summary());
+global define BootDialog() ``{
 
-    Wizard::SetContentsButtons( caption,
-				contents,
-				DetectedDialogHelp(),
-				BackButtonLabel(),
-				FinishButtonLabel() );
+    /* Boot dialog caption */
+    string caption = "";
+
+    /* Boot dialog help 1/3 */
+    string help = "";
+
+    /* Boot dialog contents */
+    term contents = nil;
+
+    Wizard::SetContentsButtons(caption,contents,help,
+	    BackButtonLabel(),NextBut
 
     any ret = nil;
-    while(true)
-    {
+    while(true) {
 	ret = UI::UserInput();
-	if(ret == `abort)
-	{
-	    // TODO FIXME: check for change of the configuration
-	    if( UI::ReallyAbortPopup( true ) )
-		break;
-	    else
-		continue;
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel) {
+	    if(ReallyAbort()) break;
+	    else continue;
 	}
-	else
-	{
-	    /* TODO FIXME: your code ... */
+	else if(ret == `back) {
 	    break;
+	}
+	else if(ret == `next) {
+	    /* FIXME: check_* */
+	    break;
+	}
+	else {
+	    y2error("Unexpected return code: %1", ret);
+	    continue;
 	}
     };
 
-    return ret;
-}
-
-/**
- * Overview dialog
- * @return any Returned value from UserInput() call
- */
-global define any OverviewDialog() ``{
-    string caption = _("Security overview");
-    // TODO FIXME: real data for the table
-    term contents =
-						 // For translators: Header of the table with installed cards
-	Wizard_hw::ConfiguredContent( `header( _("Number"),
-						 // For translators: Header of the table with installed cards
-						 _("Security")),
-						 [],
-						 nil, nil, nil, nil );
-    contents = Wizard_hw::SpacingAround( contents, 1.5, 1.5, 1.0, 1.0 );
-
-
-    Wizard::SetContentsButtons( caption,
-				contents,
-				OverviewDialogHelp(),
-				BackButtonLabel(),
-				FinishButtonLabel() );
-
-    any ret = nil;
-    while(true)
-    {
-	ret = UI::UserInput();
-	if(ret == `abort)
-	{
-	    // TODO FIXME: check for change of the configuration
-	    if( UI::ReallyAbortPopup( true ) )
-		break;
-	    else
-		continue;
-	}
-	else
-	{
-	    /* TODO FIXME: your code ... */
-	    break;
-	}
-    };
+    if(ret == `next) {
+	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
+	// ...
+    }
 
     return ret;
-}
+};
 
-/**
- * Configure1 dialog
- * @return any Returned value from UserInput() call
- * TODO FIXME: A more descriptive name for the dialog
- */
-global define any Configure1Dialog() ``{
-    // TODO FIXME: real configuration workflow
-    string caption = _("Security configure1");
-    term contents = `Label(_("First part of configuration of security"));
-
-    Wizard::SetContentsButtons( caption,
-				contents,
-				Configure1DialogHelp(),
-				BackButtonLabel(),
-				NextButtonLabel() );
-
-    any ret = nil;
-    while(true)
-    {
-	ret = UI::UserInput();
-	if(ret == `abort)
-	{
-	    // TODO FIXME: check for change of the configuration
-	    if( UI::ReallyAbortPopup( true ) )
-		break;
-	    else
-		continue;
-	}
-	else
-	{
-	    /* TODO FIXME: your code ... */
-	    break;
-	}
-    };
-
-    return ret;
-}
-
-/**
- * Configure2 dialog
- * @return any Returned value from UserInput() call
- * TODO FIXME: A more descriptive name for the dialog
- */
-global define any Configure2Dialog() ``{
-    // TODO FIXME: real configuration workflow
-    string caption = _("Security configure2");
-    term contents = `Label(_("Second part of configuration of security"));
-
-    Wizard::SetContentsButtons( caption,
-				contents,
-				Configure2DialogHelp(),
-				BackButtonLabel(),
-				NextButtonLabel() );
-
-    any ret = nil;
-    while(true)
-    {
-	ret = UI::UserInput();
-	if(ret == `abort)
-	{
-	    // TODO FIXME: check for change of the configuration
-	    if( UI::ReallyAbortPopup( true ) )
-		break;
-	    else
-		continue;
-	}
-	else
-	{
-	    /* TODO FIXME: your code ... */
-	    break;
-	}
-    };
-
-    return ret;
-}
+Wizard::CreateDialog();
+any ret = WizardSequencer(aliases, sequence);
+y2debug("ret=%1",ret);
 
 /* EOF */
 }

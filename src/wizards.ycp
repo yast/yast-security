@@ -70,7 +70,7 @@ global define any SecurityAutoSequence() ``{
     Wizard::SetContentsButtons(caption, contents, "",
 	    BackButtonLabel(), NextButtonLabel());
 
-    // Run the main configuration workflow
+    /* Run the main configuration workflow */
     any ret = MainSequence();
 
     UI::CloseDialog();
@@ -82,75 +82,52 @@ global define any SecurityAutoSequence() ``{
  * @return any Returned value from WizardSequencer() call
  */
 global define any MainSequence() ``{
-    // TODO FIXME: adapt the following to your needs!
-    map aliases =
-	$[
-	    "detected"	:   ``( DetectedDialog() ),
-	    "overview"	:   ``( OverviewDialog() ),
-	    "configure"	: [ ``( AddSequence() ), true ],
-	    "add"	: [ ``( AddSequence() ), true ],
-	    "edit"	: [ ``( AddSequence() ), true ]
-	];
 
-    // TODO FIXME: adapt the following to your needs!
+    map aliases = $[
+	"main"     : ``(MainDialog()),
+	"password" : ``(PassDialog()),
+	"boot"     : ``(BootDialog()),
+	"login"    : ``(LoginDialog()),
+	"adduser"  : ``(UserDialog()),
+	"misc"     : ``(MiscDialog()),
+	"finish"   : [ ``(Finish()), true ]
+    ];
+
     map sequence = $[
-	"ws_start" : "detected",
-	"detected" : $[
-	    `abort	: `abort,
-	    `next	: `next,
-	    `configure_button: "configure",
-	    `edit_button: "overview"
+	"ws_start" : "main",
+	"main" : $[
+	    `abort : `abort,
+	    `next : "password",
+	    `finish : "finish"
 	],
-	"overview" : $[
-	    `abort	: `abort,
-	    `next	: `next,
-	    `add_button	: "add",
-	    `edit_button: "edit"
+	"password" : $[
+	    `abort : `abort,
+	    `next : "boot"
 	],
-	"configure" : $[
-	    `abort	: `abort,
-	    `next	: "detected",
+	"boot" : $[
+	    `abort : `abort,
+	    `next : "login"
 	],
-	"add" : $[
-	    `abort	: `abort,
-	    `next	: "overview",
+	"login" : $[
+	    `abort : `abort,
+	    `next : "adduser"
 	],
-	"edit" : $[
-	    `abort	: `abort,
-	    `next	: "overview",
+	"adduser" : $[
+	    `abort : `abort,
+	    `next : "misc"
+	],
+	"misc" : $[
+	    `abort : `abort,
+	    `finish : "finish"
+	],
+	"finish" : $[
+	    `finish : `next
 	]
     ];
 
     any ret = WizardSequencer(aliases, sequence);
 
     return ret;
-}
-
-/**
- * Add a configuration of security
- * @return any Returned value from WizardSequencer() call
- */
-global define any AddSequence() ``{
-    // TODO FIXME: adapt the following to your needs!
-    map aliases = $[
-	    "config1"	: ``( Configure1Dialog() ),
-	    "config2"	: ``( Configure2Dialog() )
-	];
-
-    // TODO FIXME: adapt the following to your needs!
-    map sequence = $[
-	"ws_start" : "config1",
-	"config1" : $[
-	    `abort	: `abort,
-	    `next	: "config2"
-	],
-	"config2" : $[
-	    `abort	: `abort,
-	    `next	: `next
-	]
-    ];
-
-    return WizardSequencer( aliases, sequence );
 }
 
 /* EOF */
