@@ -7,7 +7,7 @@ Wed Jan 16 20:24:11 CET 2002 - msvec@suse.cz
 - added /etc/login.defs agent (using ini agent right now)
 - added /etc/sysconfig/security agent
 - updated testsuite
-- 2.5.4
+- 2.5.5
 
 -------------------------------------------------------------------
 Thu Dec 20 11:16:04 CET 2001 - msvec@suse.cz
