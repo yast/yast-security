@@ -1,19 +1,36 @@
+Read	.etc.login_defs.FAILLOG_ENAB nil
 Write	.etc.login_defs.FAILLOG_ENAB "yes" true
+Read	.etc.login_defs.FAIL_DELAY nil
 Write	.etc.login_defs.FAIL_DELAY "1" true
+Read	.etc.login_defs.GID_MAX nil
 Write	.etc.login_defs.GID_MAX "60000" true
+Read	.etc.login_defs.GID_MIN nil
 Write	.etc.login_defs.GID_MIN "101" true
+Read	.etc.login_defs.LASTLOG_ENAB nil
 Write	.etc.login_defs.LASTLOG_ENAB "yes" true
+Read	.etc.login_defs.PASS_MAX_DAYS nil
 Write	.etc.login_defs.PASS_MAX_DAYS "99999" true
+Read	.etc.login_defs.PASS_MIN_DAYS nil
 Write	.etc.login_defs.PASS_MIN_DAYS "0" true
+Read	.etc.login_defs.PASS_WARN_AGE nil
 Write	.etc.login_defs.PASS_WARN_AGE "7" true
+Read	.etc.login_defs.UID_MAX nil
 Write	.etc.login_defs.UID_MAX "60000" true
+Read	.etc.login_defs.UID_MIN nil
 Write	.etc.login_defs.UID_MIN "500" true
+Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS nil
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "no" true
+Read	.sysconfig.displaymanager.KDM_SHUTDOWN nil
 Write	.sysconfig.displaymanager.KDM_SHUTDOWN "all" true
+Read	.sysconfig.locate.RUN_UPDATEDB_AS nil
 Write	.sysconfig.locate.RUN_UPDATEDB_AS "root" true
+Read	.sysconfig.security.PERMISSION_SECURITY nil
 Write	.sysconfig.security.PERMISSION_SECURITY "easy local" true
+Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH nil
 Write	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "yes" true
+Read	.sysconfig.suseconfig.CWD_IN_USER_PATH nil
 Write	.sysconfig.suseconfig.CWD_IN_USER_PATH "yes" true
+Read	.sysconfig.sysctl.ENABLE_SYSRQ nil
 Write	.sysconfig.sysctl.ENABLE_SYSRQ "no" true
 Write	.etc.login_defs nil true
 Write	.sysconfig.displaymanager nil true

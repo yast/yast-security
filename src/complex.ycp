@@ -144,7 +144,7 @@ global define symbol MainDialog() ``{
 	    y2error("Unexpected return code: %1", ret);
 	    continue;
 	}
-    };
+    }
 
     if(ret == `next || ret == `details) {
 	any cur = UI::QueryWidget(`id(`rb), `CurrentButton);

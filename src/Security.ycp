@@ -146,7 +146,7 @@ global boolean write_only = false;
 global define boolean Modified() ``{
     y2debug("modified=%1",modified);
     return modified;
-};
+}
 
 /**
  * Read all security settings
@@ -343,16 +343,20 @@ global define boolean Write() ``{
     y2debug("Settings=%1", Settings);
     Settings["PERMISSION_SECURITY"] = Settings["PERMISSION_SECURITY"]:"" + " local";
 
+    list commitlist = [];
     mapmap(string file, list vars, Locations, ``{
 	maplist(string var, vars, ``{
 	    string val = Settings[var]:"";
 	    if(val == nil) val = "";
-	    SCR::Write(topath(file + "." + var), val);
+	    if(val != SCR::Read(topath(file + "." + var))) {
+		SCR::Write(topath(file + "." + var), val);
+		commitlist = union(commitlist, [ file ]);
+	    }
 	});
 	return [0,0];
     });
 
-    maplist(string file, mapkeys(Locations), ``{
+    maplist(string file, commitlist, ``{
 	SCR::Write(topath(file), nil);
     });
 

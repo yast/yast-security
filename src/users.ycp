@@ -82,7 +82,7 @@ global define symbol AdduserDialog() ``{
 	    y2error("Unexpected return code: %1", ret);
 	    continue;
 	}
-    };
+    }
 
     if(ret == `next) {
 	widget2settings("GID_MIN");

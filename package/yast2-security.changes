@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug 21 14:20:06 CEST 2003 - msvec@suse.cz
+
+- don't modify files when nothing changed (#28999)
+- 2.8.3
+
+-------------------------------------------------------------------
 Wed Aug 20 15:30:32 CEST 2003 - jsuchome@suse.de
 
 - removed redundant "initialization dialog" (#28779)

@@ -82,7 +82,7 @@ global define symbol BootDialog() ``{
 	    y2error("Unexpected return code: %1", ret);
 	    continue;
 	}
-    };
+    }
 
     if(ret == `next) {
 	widget2settings("CONSOLE_SHUTDOWN");
@@ -141,7 +141,7 @@ global define symbol MiscDialog() ``{
 	    y2error("Unexpected return code: %1", ret);
 	    continue;
 	}
-    };
+    }
 
     if(ret == `next) {
 	widget2settings("PERMISSION_SECURITY");
@@ -236,7 +236,7 @@ global define symbol PassDialog() ``{
 	    y2error("Unexpected return code: %1", ret);
 	    continue;
 	}
-    };
+    }
 
     if(ret == `next) {
 	widget2settings("PASS_MIN_DAYS");
@@ -304,7 +304,7 @@ global define symbol LoginDialog() ``{
 	    y2error("Unexpected return code: %1", ret);
 	    continue;
 	}
-    };
+   }
 
     if(ret == `next) {
 	widget2settings("FAILLOG_ENAB");
