@@ -38,7 +38,7 @@ map param = $[];
 
 /* Check arguments */
 if(size(WFM::Args()) > 0 && is(WFM::Args(0), string)) {
-    func = WFM::Args(0);
+    func = (string) WFM::Args(0);
     if(size(WFM::Args()) > 1 && is(WFM::Args(1), map))
 	param = (map) WFM::Args(1);
 }
