@@ -363,8 +363,8 @@ define SecuritySettings(list settings, map defs) ``{
   });
 
   T = add(T,`VSpacing(0.6));
-  T = add(T,`Left(`RadioButton(`id(`custom),`opt(`notify),"&Custom settings",enab)));
-    /* T = add(T,`Left(`HBox(`RadioButton(`id(`custom),"&Custom settings",enab),`Right(`PushButton(`id(`details),"&Change..."))))); */
+  T = add(T,`Left(`RadioButton(`id(`custom),`opt(`notify),_("&Custom settings"),enab)));
+    /* T = add(T,`Left(`HBox(`RadioButton(`id(`custom),"&Custom settings",enab),`Right(`PushButton(`id(`details),_("&Change...")))))); */
   T = add(T,`VSpacing(0.5));
   y2debug("T: %1",T);
   return T;
