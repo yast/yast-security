@@ -12,7 +12,7 @@
 
 {
 
-Include(`general());
+include "general.ycp";
 map SECURITY_default = CallFunction(`security_settings());
 
 /* Write /etc/login.defs and rc.config */

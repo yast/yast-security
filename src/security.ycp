@@ -14,8 +14,8 @@
 
 _debug("-----------------------------------------------");
 
-Include(`security_io());
-Include(`security_ui());
+Include "security_io.ycp";
+Include "security_ui.ycp";
 
 map BUTTONS = CallFunction(`buttons());
 map STRINGS = CallFunction(`security_helps());
@@ -24,7 +24,7 @@ map SECURITY_default = lookup(CallFunction(`security_settings()),"secure");
 
 /* Automatic write testing -> use security_io.ycp *//*
 map mm = $[ "FAIL_DELAY" : "77" ];
-_debug(Include(`security_io(mm)));
+  include "security_io(mm)";
 return;
 */
 

@@ -20,8 +20,8 @@
 
 {
 
-Include(`general());
-Include(`general_ui());
+include "general.ycp";
+include "general_ui.ycp";
 
 /* Menuentry for the YaST2 menu */
 
