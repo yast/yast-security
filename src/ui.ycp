@@ -647,10 +647,10 @@ global define SecurityPasswdDialog() ``{
 	    map2widget("PASSWD_USE_CRACKLIB"),
 	    VSeparator(),
 	    map2widget("OBSCURE_CHECKS_ENAB"),
-	    VSeparator(),
-	    map2widget("MD5_SUPPORT"),
 	    VSeparator()
 	)),
+	`VSpacing(0.15),
+	map2widget("ENCRYPTION"),
 	`VSpacing(0.15),
 	`Frame(_("Password length"),`HBox(
 	    `HSpacing(0.4),
@@ -701,7 +701,7 @@ global define SecurityPasswdDialog() ``{
     updateWidget("PASSWD_USE_CRACKLIB");
     updateWidget("OBSCURE_CHECKS_ENAB");
     updateWidget("PASS_WARN_AGE");
-    updateWidget("MD5_SUPPORT");
+    updateWidget("ENCRYPTION");
   }
   //UI(`CloseDialog());
   return ret;

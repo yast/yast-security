@@ -59,7 +59,7 @@ $[
     "PASSWD_USE_CRACKLIB"	: "no",
     "OBSCURE_CHECKS_ENAB"	: "no",
     "PASS_WARN_AGE"		: "7",
-    "MD5_SUPPORT"		: "no",
+    "ENCRYPTION"		: "des",
     "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
     /* "Perms" */
     "PERMISSION_SECURITY"	: "easy",
@@ -93,7 +93,7 @@ $[
     "PASSWD_USE_CRACKLIB"	: "yes",
     "OBSCURE_CHECKS_ENAB"	: "no",
     "PASS_WARN_AGE"		: "14",
-    "MD5_SUPPORT"		: "no",
+    "ENCRYPTION"		: "des",
     "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
      /* "Perms" */
     "PERMISSION_SECURITY"	: "easy",
@@ -128,7 +128,7 @@ $[
     "PASSWD_USE_CRACKLIB"	: "yes",
     "OBSCURE_CHECKS_ENAB"	: "no",
     "PASS_WARN_AGE"		: "14",
-    "MD5_SUPPORT"		: "no",
+    "ENCRYPTION"		: "des",
     "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
     /* "Perms" */
     "PERMISSION_SECURITY"	: "secure",

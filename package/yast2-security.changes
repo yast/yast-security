@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul 26 14:03:36 CEST 2002 - jsrain@suse.cz
+
+- now able to configure blowfish password encryption (#17039)
+
+-------------------------------------------------------------------
 Wed Jul 24 19:22:16 CEST 2002 - msvec@suse.cz
 
 - fixed some error messages

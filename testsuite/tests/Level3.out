@@ -33,9 +33,19 @@ Write	.pam.sshd.password.pam_pwcheck "-md5" true
 Write	.pam.sshd.password.pam_unix "-md5" true
 Write	.pam.rlogin.password.pam_pwcheck "-md5" true
 Write	.pam.rlogin.password.pam_unix "-md5" true
+Write	.pam.all.password.pam_unix2 "-blowfish" true
+Write	.pam.all.password.pam_pwcheck "-blowfish" true
+Write	.pam.login.password.pam_pwcheck "-blowfish" true
+Write	.pam.login.password.pam_unix "-blowfish" true
+Write	.pam.passwd.password.pam_pwcheck "-blowfish" true
+Write	.pam.passwd.password.pam_unix "-blowfish" true
+Write	.pam.sshd.password.pam_pwcheck "-blowfish" true
+Write	.pam.sshd.password.pam_unix "-blowfish" true
+Write	.pam.rlogin.password.pam_pwcheck "-blowfish" true
+Write	.pam.rlogin.password.pam_unix "-blowfish" true
 Write	.pam.all.password.pam_pwcheck "+use_cracklib" true
 Execute	.target.bash "/sbin/SuSEconfig --module xdm" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
 Execute	.target.bash "/sbin/SuSEconfig --module permissions" 0
 Execute	.target.bash "/sbin/SuSEconfig --module profiles" 0
-Return	[true, true, true, true, true, true, true, true, true, true, true, 0, 0, 0, 0]
+Return	[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, 0, 0, 0, 0]

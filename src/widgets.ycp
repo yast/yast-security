@@ -228,11 +228,12 @@ global map WIDGETS = $[
     "Value" : "no"
   ],
 
-  "MD5_SUPPORT" : $[
-    "Widget" : "CheckBox",
+  "ENCRYPTION" : $[
+    "Widget" : "ComboBox",
     // checkbox label (please, stick to 50 characters per line)
-    "Label" : _("&Activate MD5 encryption for passwords"),
-    "Value" : "no"
+    "Label" : _("P&assword encryption method"),
+    "Options" : [["des","DES"],["md5","MD5"],["blowfish","Blowfish"]],
+    "Value" : "des"
   ] /* No \, ! */
 
 /*

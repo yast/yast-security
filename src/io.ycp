@@ -208,12 +208,20 @@ global define SecurityRead() ``{
     if(pam_list != [] && pam_list != nil)
 	pam_check_map = select(pam_list,0,$[]);
 
-    /* md5 support */
-    boolean pam_support = contains(splitstring(lookup(pam_unix_map , "arguments", ""), " "), "md5");
-    m = add(m,"MD5_SUPPORT", pam_support?"yes":"no");
+    /* md5 & blowfish support */
+    boolean md5_support = contains(splitstring(lookup(pam_unix_map , "arguments", ""), " "), "md5");
+    boolean blowfish_support = contains(splitstring(lookup(pam_unix_map , "arguments", ""), " "), "blowfish");
+    string method = "";
+    if (md5_support)
+	method = "md5";
+    else if (blowfish_support)
+	method = "blowfish";
+    else
+	method = "des";
+    m = add(m,"ENCRYPTION", method);
 
     /* use cracklib? */
-    pam_support = contains(splitstring(lookup(pam_check_map , "arguments", ""), " "), "use_cracklib");
+    boolean pam_support = contains(splitstring(lookup(pam_check_map , "arguments", ""), " "), "use_cracklib");
     m = add(m,"PASSWD_USE_CRACKLIB", pam_support?"yes":"no");
 
     /* local permissions hack */
@@ -272,23 +280,46 @@ global define SecurityWrite(map m) ``{
     SCR::Write(.sysconfig.displaymanager,nil);
     SCR::Write(.sysconfig.locate,nil);
 
+    string encr = lookup (m, "ENCRYPTION", "des");
+
+    if (encr != "md5")
+    {
+
+	ret = add(ret,SCR::Write(.pam.all.password.pam_unix2, "-md5"));
+	ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, "-md5"));
+	/* Remove old config options */
+	ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, "-md5"));
+	ret = add(ret,SCR::Write(.pam.login.password.pam_unix, "-md5"));
+	ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, "-md5"));
+	ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix, "-md5"));
+	ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, "-md5"));
+	ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix, "-md5"));
+	ret = add(ret,SCR::Write(.pam.rlogin.password.pam_pwcheck, "-md5"));
+	ret = add(ret,SCR::Write(.pam.rlogin.password.pam_unix, "-md5"));
+    }
+    if (encr != "blowfish")
+    {
+	ret = add(ret,SCR::Write(.pam.all.password.pam_unix2, "-blowfish"));
+	ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, "-blowfish"));
+	/* Remove old config options */
+	ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, "-blowfish"));
+	ret = add(ret,SCR::Write(.pam.login.password.pam_unix, "-blowfish"));
+	ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, "-blowfish"));
+	ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix, "-blowfish"));
+	ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, "-blowfish"));
+	ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix, "-blowfish"));
+	ret = add(ret,SCR::Write(.pam.rlogin.password.pam_pwcheck, "-blowfish"));
+	ret = add(ret,SCR::Write(.pam.rlogin.password.pam_unix, "-blowfish"));
+    }
     /* md5 support */
-    if (lookup(m, "MD5_SUPPORT", "no") == "yes") {
+    if (lookup(m, "ENCRYPTION", "des") == "md5") {
        ret = add(ret,SCR::Write(.pam.all.password.pam_unix2, "+md5"));
        ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, "+md5"));
     }
-    else {
-       ret = add(ret,SCR::Write(.pam.all.password.pam_unix2, "-md5"));
-       ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, "-md5"));
-       /* Remove old config options */
-       ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, "-md5"));
-       ret = add(ret,SCR::Write(.pam.login.password.pam_unix, "-md5"));
-       ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, "-md5"));
-       ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix, "-md5"));
-       ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, "-md5"));
-       ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix, "-md5"));
-       ret = add(ret,SCR::Write(.pam.rlogin.password.pam_pwcheck, "-md5"));
-       ret = add(ret,SCR::Write(.pam.rlogin.password.pam_unix, "-md5"));
+    /* blowfish support */
+    else if (lookup(m, "ENCRYPTION", "des") == "blowfish") {
+       ret = add(ret,SCR::Write(.pam.all.password.pam_unix2, "+blowfish"));
+       ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, "+blowfish"));
     }
 
     /* use cracklib? */
