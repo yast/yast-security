@@ -122,7 +122,7 @@ global define map2widget(string ID) ``{
  * @return any the item's value
  */
 global define widget2value(string ID) ``{
-    any ret = UI(`QueryWidget(`id(ID),`Value));
+    any ret = UI::QueryWidget(`id(ID),`Value);
     if(is(ret,boolean)) {
         if(ret==true)
             ret = "yes";
@@ -147,8 +147,8 @@ global define widget2value(string ID) ``{
  * @return boolean true or false
  */
 global define checkMinMax(string minID, string maxID) ``{
-  any min = UI(`QueryWidget(`id(minID),`Value));
-  any max = UI(`QueryWidget(`id(maxID),`Value));
+  any min = UI::QueryWidget(`id(minID),`Value);
+  any max = UI::QueryWidget(`id(maxID),`Value);
   if(is(min,integer) || is(min,float))
     if(is(max,integer) || is(max,float))
       if(min<=max)
@@ -165,12 +165,12 @@ global define processInput() ``{
     any ret = nil;
 
     while(true) {
-        ret = UI(`UserInput());
+        ret = UI::UserInput();
         if(ret != `abort)
             break;
         // popup message
-        any re = Popup(UI(_("Do you really want to abort the security configuration?
-All changes you made will be lost.")));
+        any re = Popup(_("Do you really want to abort the security configuration?
+All changes you made will be lost."));
         if(re==`ok)
             break;
     }
@@ -278,7 +278,7 @@ global define SuSEDialog(string ID, list buttons, term contents) ``{
   string help_text = lookup(dmap,"help");
   string caption = lookup(dmap,"caption");
 
-  any ret = UI(`OpenDialog( `opt(`defaultsize),
+  any ret = UI::OpenDialog( `opt(`defaultsize),
     `VBox(`Image(`suseheader, "SuSE"), `HBox(
       `HWeight(30, `ReplacePoint(`id(`rp_help),`RichText(`id(`help), help_text))),
       `HWeight(70,
@@ -290,7 +290,7 @@ global define SuSEDialog(string ID, list buttons, term contents) ``{
           VSeparator(),
           `ReplacePoint(`id(`rp_buttons),BottomButtons(buttons))
         )))
-  ))));
+  )));
 
   return ret;
 };
@@ -306,10 +306,10 @@ global define SuSEDialogUP(string ID, list buttons, term T) ``{
   string help_text = lookup(dmap,"help");
   string caption = lookup(dmap,"caption");
 
-  UI(`ReplaceWidget(`id(`rp_help), `RichText(`id(`help), help_text)));
-  UI(`ReplaceWidget(`id(`rp_caption), `Heading(`id(`title), caption)));
-  UI(`ReplaceWidget(`id(`rp_main), T));
-  UI(`ReplaceWidget(`id(`rp_buttons), BottomButtons(buttons)));
+  UI::ReplaceWidget(`id(`rp_help), `RichText(`id(`help), help_text));
+  UI::ReplaceWidget(`id(`rp_caption), `Heading(`id(`title), caption));
+  UI::ReplaceWidget(`id(`rp_main), T);
+  UI::ReplaceWidget(`id(`rp_buttons), BottomButtons(buttons));
 };
 
 /**
@@ -443,10 +443,10 @@ global define SecuritySettings(list settings, map defs) ``{
  */
 /* unused
 global define updateWIDGETS(any curr) ``{
-  any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
+  any curr2 = UI::QueryWidget(`id(`rb),`CurrentButton);
   if(curr2!=curr)
   changed = true;
-  string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+  string current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
   map current_sets = FindSettings(settings,current_defs);
   WIDGETS = settings2widgets(WIDGETS,current_sets);
 }
@@ -479,11 +479,11 @@ global define SecurityMainDialog(map defs) ``{
     )
   ));
 
-  any curr = UI(`QueryWidget(`id(`rb),`CurrentButton));
+  any curr = UI::QueryWidget(`id(`rb),`CurrentButton);
   if( curr == `custom) {
-    UI(`ChangeWidget(`id(`details),`Enabled,false));
-    // push button
-    UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel())));
+      UI::ChangeWidget(`id(`details),`Enabled,false);
+      // push button
+      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
   }
 
   any ret = nil;
@@ -495,7 +495,7 @@ global define SecurityMainDialog(map defs) ``{
     y2debug("rettt: %1",ret);
 
     if(ret == `ok) {                        /* Save the settings */
-      string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+      string current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
       map current_sets = FindSettings(settings,current_defs);
       WIDGETS = settings2widgets(WIDGETS,current_sets);
       break;
@@ -505,9 +505,9 @@ global define SecurityMainDialog(map defs) ``{
     else if(ret == `details || ret ==`next)  {
       RBgroup=false;
       y2debug("Running wizzard: %1",ret); /* Run the wizzard */
-      any current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+      any current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
       if(current_defs!=`custom) {
-        //string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+        //string current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
         map current_sets = FindSettings(settings,current_defs);
         WIDGETS = settings2widgets(WIDGETS,current_sets);
       }
@@ -534,10 +534,10 @@ global define SecurityMainDialog(map defs) ``{
           ));
 
           /* Update the Finish|Next button */
-          any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
+          any curr2 = UI::QueryWidget(`id(`rb),`CurrentButton);
           if( curr2 == `custom) {
-            UI(`ChangeWidget(`id(`details),`Enabled,false));
-            UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel())));
+	      UI::ChangeWidget(`id(`details),`Enabled,false);
+	      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
           }
           /* FIXME: update the current RB? Probably not*/
 
@@ -551,23 +551,23 @@ global define SecurityMainDialog(map defs) ``{
     }
     else if(ret == `custom) {                /* Change the [Finish] to [Next] */
       y2debug("custom radio button");
-      UI(`ChangeWidget(`id(`details),`Enabled,false));
+      UI::ChangeWidget(`id(`details),`Enabled,false);
       // push button
-      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel())));
+      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
     }
     else {                                /* Other radio button */
       y2debug("SecurityMainDialog: Huh? %1",ret);
-      UI(`ChangeWidget(`id(`details),`Enabled,true));
+      UI::ChangeWidget(`id(`details),`Enabled,true);
       // push button
-      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),FinishButtonLabel())));
-      if(ret == UI(_("Level &3 (Network/Server)")))
+      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),FinishButtonLabel()));
+      if(ret == _("Level &3 (Network/Server)"))
         // popup if level 3 is choosen
-        PopupOK(UI(_("You have chosen 'Level 3'. This setup
+        PopupOK(_("You have chosen 'Level 3'. This setup
 provides a basic configuration for network servers
 but not a completed 'full security' setting.
 
 You need expert knowledge to make a
-network server secure.")));
+network server secure."));
 
     }
     y2debug("subret: %1",subret);
@@ -579,7 +579,7 @@ network server secure.")));
     y2debug("old_WIDGETS=%1",old_WIDGETS);
     y2debug("new_WIDGETS=%1",WIDGETS);
     if(RBgroup==true) {
-      string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+      string current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
       //if(!is nil(current_defs)) {
       if(current_defs != nil && current_defs != "") {
         y2debug("current_defs: %1",current_defs);
@@ -587,11 +587,11 @@ network server secure.")));
         WIDGETS = settings2widgets(WIDGETS,current_sets);
       }
     }
-    UI(`CloseDialog());
+    UI::CloseDialog();
     return `ok;
   }
 
-  UI(`CloseDialog());
+  UI::CloseDialog();
   return nil;
 };
 
@@ -660,7 +660,7 @@ global define SecurityDetailsDialog() ``{
     if(subret == `ok) changed = true;
   }
 
-  UI(`CloseDialog());
+  UI::CloseDialog();
 
   /* return `ok only if something changed */
   if(ret == `ok && changed == true)
@@ -821,12 +821,12 @@ global define SecurityPasswdDialog() ``{
     if(ret == `ok || ret ==`next) {
       if(checkMinMax("PASS_MIN_LEN","PASS_MAX_LEN")!=true) {
         // bad password data
-        PopupOK(UI(_("The minimum password length cannot be larger than maximum")));
+        PopupOK(_("The minimum password length cannot be larger than maximum"));
         continue;
       }
       if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS")!=true) {
         // bad password data
-        PopupOK(UI(_("The minimum number of days cannot be larger than maximum")));
+        PopupOK(_("The minimum number of days cannot be larger than maximum"));
         continue;
       }
     }
@@ -874,12 +874,12 @@ global define SecurityAdduserDialog() ``{
     if(ret == `ok || ret ==`next) {
       if(checkMinMax("UID_MIN","UID_MAX")!=true) {
         // SecurityAdduserDialog error
-        PopupOK(UI(_("The minimum user ID cannot be larger than maximum")));
+        PopupOK(_("The minimum user ID cannot be larger than maximum"));
         continue;
       }
       if(checkMinMax("GID_MIN","GID_MAX")!=true) {
         // SecurityAdduserDialog error
-        PopupOK(UI(_("The minimum group IDs cannot be larger than maximum")));
+        PopupOK(_("The minimum group IDs cannot be larger than maximum"));
         continue;
       }
     }

@@ -49,7 +49,7 @@ global define LookupDefault(string item) ``{
  */
 global define ReadLoginDefs(string item) ``{
     string pth = ".etc.login_defs." + item;
-    string ret = SCR(`Read(topath(pth)));
+    string ret = SCR::Read(topath(pth));
     if(ret == "")
         ret = LookupDefault(item);
     return ret;
@@ -62,7 +62,7 @@ global define ReadLoginDefs(string item) ``{
  */
 global define ReadRcConfig(string item) ``{
     string pth = ".rc.system." + item;
-    string ret = SCR(`Read(topath(pth)));
+    string ret = SCR::Read(topath(pth));
     ret = tolower(ret);
     if(ret=="")
         ret = LookupDefault(item);
@@ -80,7 +80,7 @@ global define WriteLoginDefs(map m, string item) ``{
     string ret = lookup(m,item);
     if(ret=="")
         return nil;
-    return SCR(`Write(topath(pth),ret));
+    return SCR::Write(topath(pth),ret);
 };
 
 /**
@@ -94,7 +94,7 @@ global define WriteRcConfig(map m, string item) ``{
     string ret = lookup(m,item);
     if(ret=="")
         return nil;
-    return SCR(`Write(topath(pth),ret));
+    return SCR::Write(topath(pth),ret);
 };
 
 /**
@@ -196,9 +196,9 @@ global define SecurityWrite(map m) ``{
  */
 global define SecurityFinish() ``{
     list ret = [];
-    ret = add(ret,SCR(`Write(.etc.login_defs,nil)));
-    ret = add(ret,SCR(`Write(.rc.system,nil)));
-    ret = add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig --nonewpackage")));
+    ret = add(ret,SCR::Write(.etc.login_defs,nil));
+    ret = add(ret,SCR::Write(.rc.system,nil));
+    ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --nonewpackage"));
     return ret;
 };
 

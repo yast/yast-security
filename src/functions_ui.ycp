@@ -29,7 +29,7 @@ include "ui/common_messages.ycp";
  * @see InfoClose
  */
 global define Info(string message) ``{
-  any ret = UI(`OpenDialog(
+  any ret = UI::OpenDialog(
         `opt(`decorated),
         `HBox(
           `HSpacing(1),
@@ -40,8 +40,7 @@ global define Info(string message) ``{
           ),
           `HSpacing(1)
         )
-    )
-  );
+    );
   return ret;
 };
 
@@ -51,7 +50,7 @@ global define Info(string message) ``{
  * @see Info
  */
 global define InfoClose() ``{
-  any ret = UI(`CloseDialog());
+  any ret = UI::CloseDialog();
   return ret;
 };
 
@@ -61,7 +60,7 @@ global define InfoClose() ``{
  * @return any the user input
  */
 global define Popup(string message) ``{
-  UI(`OpenDialog(
+    UI::OpenDialog(
         `opt(`decorated),
         `HBox(
           `HSpacing(1),
@@ -76,10 +75,9 @@ global define Popup(string message) ``{
           ),
           `HSpacing(1)
         )
-    )
-  );
-  any ret = UI(`UserInput());
-  UI(`CloseDialog());
+    );
+  any ret = UI::UserInput();
+  UI::CloseDialog();
   return ret;
 };
 
@@ -90,7 +88,7 @@ global define Popup(string message) ``{
  * @see Popup
  */
 global define PopupOK(string message) ``{
-  UI(`OpenDialog(
+    UI::OpenDialog(
         `opt(`decorated),
         `HBox(
           `HSpacing(1),
@@ -104,10 +102,9 @@ global define PopupOK(string message) ``{
           ),
           `HSpacing(1)
         )
-    )
-  );
-  any ret = UI(`UserInput());
-  UI(`CloseDialog());
+    );
+  any ret = UI::UserInput();
+  UI::CloseDialog();
   return ret;
 };
 
@@ -119,7 +116,7 @@ global define PopupOK(string message) ``{
  * @see PopupOK
  */
 global define Message(any message) ``{
-  UI(`OpenDialog(
+    UI::OpenDialog(
         `opt(`decorated),
         `HBox(
           `HSpacing(1),
@@ -131,10 +128,9 @@ global define Message(any message) ``{
           ),
           `HSpacing(1)
         )
-    )
-  );
-  UI(`UserInput());
-  UI(`CloseDialog());
+    );
+    UI::UserInput();
+    UI::CloseDialog();
 };
 
 /**
@@ -142,7 +138,7 @@ global define Message(any message) ``{
  * @see Message
  */
 global define Debug(any message) ``{
-  Message(message);
+    Message(message);
 };
 
 /**
@@ -168,21 +164,21 @@ global define BrowseMap(map m) ``{
 global define Choose(list sel) ``{
   string item = nil;
 
-  UI(`OpenDialog(
+  UI::OpenDialog(
     `VBox(`SelectionBox(`id(`sel), _("&Please choose"), sel),
       `HBox(`PushButton(`id(`ok), OKButtonLabel()),
         `PushButton(`id(`cancel), CancelButtonLabel()))
-    )));
+    ));
 
   any ret = nil;
   do {
-    ret = UI(`UserInput());
+    ret = UI::UserInput();
   } while (ret != `cancel && ret != `ok && ret != nil);
 
   if ((ret == `ok) && (sel != []))
-    item = UI(`QueryWidget(`id(`sel), `CurrentItem));
+    item = UI::QueryWidget(`id(`sel), `CurrentItem);
 
-  UI(`CloseDialog());
+  UI::CloseDialog();
 
   return item;
 };

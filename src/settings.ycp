@@ -42,12 +42,12 @@ global define AllSecuritySettings() ``{
 $[
     "name" : "Default",
     // radio button label
-    "settings" : UI(_("Level &3 (Network/Server)"))
+    "settings" : _("Level &3 (Network/Server)")
 ],
 
 $[
 // radio button label
-"name" : UI(_("Level &1 (Home workstation)")),
+"name" : _("Level &1 (Home workstation)"),
 "settings" : $[
     /* "Boot" */
     "CONSOLE_SHUTDOWN"		:   "reboot",
@@ -80,7 +80,7 @@ $[
 
 $[
 // radio button label
-"name" : UI(_("Level &2 (Networked workstation)")),
+"name" : _("Level &2 (Networked workstation)"),
 "settings" : $[
     /* "Boot" */
     "CONSOLE_SHUTDOWN"		: "ignore",
@@ -113,7 +113,7 @@ $[
 
 $[
 // radio button label
-"name" : UI(_("Level &3 (Network/Server)")),
+"name" : _("Level &3 (Network/Server)"),
 "settings" : $[
 
     /* "Boot" */
