@@ -231,17 +231,31 @@ define SuSEDialog(string ID, list buttons, term T) ``{
 
   UI(`OpenDialog( `opt(`defaultsize),
     `VBox(`Image(`suseheader, "SuSE"), `HBox(
-      `HWeight(30, `RichText(`id(`help), help_text)),
+      `HWeight(30, `ReplacePoint(`id(`rp_help),`RichText(`id(`help), help_text))),
       `HWeight(70,
 	`HVCenter( `VBox(
-	  `Top(`Left(`Heading(`id(`title), caption))),
+	  `Top(`Left(`ReplacePoint(`id(`rp_caption),`Heading(`id(`title), caption)))),
           VSeparator(),
-          `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
+          `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),T),`VSpacing(2)),`HSpacing(5)))),
           //`HVCenter(`Frame(caption,T)),
           VSeparator(),
-          BottomButtons(buttons)
+          `ReplacePoint(`id(`rp_buttons),BottomButtons(buttons))
         )))
   ))));
+};
+
+/* Update the main dialog widget */
+
+define SuSEDialogUP(string ID, list buttons, term T) ``{
+  //map dmap = lookup(STRINGS(),ID);
+  map dmap = lookup(STRINGS,ID);
+  string help_text = lookup(dmap,"help");
+  string caption = lookup(dmap,"caption");
+
+  UI(`ReplaceWidget(`id(`rp_help), `RichText(`id(`help), help_text)));
+  UI(`ReplaceWidget(`id(`rp_caption), `Heading(`id(`title), caption)));
+  UI(`ReplaceWidget(`id(`rp_main), T));
+  UI(`ReplaceWidget(`id(`rp_buttons), BottomButtons(buttons)));
 };
 
 /* Update one value in the WIDGETS map from the widget value */
@@ -409,11 +423,11 @@ define SecurityMainDialog(map defs) ``{
         map current_sets = FindSettings(settings,current_defs);
         WIDGETS = defs2options(WIDGETS,current_sets);
       }
-        UI(`CloseDialog());
+        //UI(`CloseDialog());
 	subret = SecurityWizzard();
 	//y2debug("subret=%1",subret);
 	if(subret == `back) {
-          SuSEDialog("Main",[`back,`finish], 
+          SuSEDialogUP("Main",[`back,`finish], 
             `HVCenter(
             `VBox(
             `HVSquash(
@@ -552,7 +566,7 @@ define XFrame(float f1, float f2, string S, term T) ``{
 /* Boot settings dialog */
 
 define SecurityBootDialog() ``{
-  SuSEDialog("Boot", [], `VBox(
+  SuSEDialogUP("Boot", [], `VBox(
 XFrame(0.8,0.5,"Boot permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(-0.1),
     VSeparator(),
     map2widget("CONSOLE_SHUTDOWN"),
@@ -567,14 +581,14 @@ XFrame(0.8,0.5,"Boot permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(-0.1),
     updateWidget("CONSOLE_SHUTDOWN");
     updateWidget("KDM_SHUTDOWN");
   }
-  UI(`CloseDialog());
+  //UI(`CloseDialog());
   return ret;
 };
 
 /* Login and password settings dialog */
 
 define SecurityLoginDialog() ``{
-  SuSEDialog("Login", [], `VBox(
+  SuSEDialogUP("Login", [], `VBox(
 //`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
 XFrame(2.0,0.9,"Login",`VBox(
     //VSeparator(),
@@ -594,14 +608,14 @@ XFrame(2.0,0.9,"Login",`VBox(
     updateWidget("LASTLOG_ENAB");
     updateWidget("FAIL_DELAY");
   }
-  UI(`CloseDialog());
+  //UI(`CloseDialog());
   return ret;
 };
 
 /* Files permissions dialog */
 
 define SecurityPermsDialog() ``{
-  SuSEDialog("Perms", [], `VBox(
+  SuSEDialogUP("Perms", [], `VBox(
     VSeparator(),
     map2widget("PERMISSION_SECURITY"),
     VSeparator()
@@ -610,14 +624,14 @@ define SecurityPermsDialog() ``{
   if(ret == `ok || ret ==`next) {
     updateWidget("PERMISSION_SECURITY");
   }
-  UI(`CloseDialog());
+  //UI(`CloseDialog());
   return ret;
 };
 
 /* Other security settings dialog */
 
 define SecurityMiscDialog() ``{
-  SuSEDialog("Misc", [`back,`abort,`finish], `VBox(
+  SuSEDialogUP("Misc", [`back,`abort,`finish], `VBox(
     VSeparator(),
 //`Frame("Permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
     map2widget("PERMISSION_SECURITY"), /* See the SecurityPermsDialog */
@@ -641,14 +655,14 @@ define SecurityMiscDialog() ``{
     updateWidget("CWD_IN_ROOT_PATH");
     updateWidget("RUN_UPDATEDB_AS");
   }
-  UI(`CloseDialog());
+  //UI(`CloseDialog());
   return ret;
 };
 
 /* Password security settings dialog */
 
 define SecurityPasswdDialog() ``{
-  SuSEDialog("Password", [], `VBox(
+  SuSEDialogUP("Password", [], `VBox(
     //VSeparator(),
     `VSpacing(-0.2),
     XFrame(0.3,0.2,"Checks",`VBox(
@@ -657,25 +671,25 @@ define SecurityPasswdDialog() ``{
     map2widget("OBSCURE_CHECKS_ENAB"),
     VSeparator()
     )),
-    `VSpacing(0.4),
+    `VSpacing(0.2),
     `Frame("Password length",`HBox(
-    `HSpacing(0.5),
+    `HSpacing(0.4),
     map2widget("PASS_MIN_LEN"),
-    `HSpacing(0.5),
+    `HSpacing(0.4),
     map2widget("PASS_MAX_LEN"),
-    `HSpacing(0.5)
+    `HSpacing(0.4)
     )),
-    `VSpacing(0.4),
+    `VSpacing(0.2),
     `Frame("Days of password change warning",`HBox(
-    `HSpacing(0.5),
+    `HSpacing(0.4),
     map2widget("PASS_MIN_DAYS"),
-    `HSpacing(0.5),
+    `HSpacing(0.4),
     map2widget("PASS_MAX_DAYS"),
-    `HSpacing(0.5)
+    `HSpacing(0.4)
     )),
-    `VSpacing(0.4),
+    `VSpacing(0.2),
     map2widget("PASS_WARN_AGE"),
-    `VSpacing(0.8)
+    `VSpacing(0.5)
   ));
   any ret = processInput();
   if(ret == `ok || ret ==`next) {
@@ -687,14 +701,14 @@ define SecurityPasswdDialog() ``{
     updateWidget("OBSCURE_CHECKS_ENAB");
     updateWidget("PASS_WARN_AGE");
   }
-  UI(`CloseDialog());
+  //UI(`CloseDialog());
   return ret;
 };
 
 /* Adduser security settings dialog */
 
 define SecurityAdduserDialog() ``{
-  SuSEDialog("Adduser", [], `VBox(
+  SuSEDialogUP("Adduser", [], `VBox(
     VSeparator(),
     XFrame(1.8,0.5,"User ID limitations",`HBox(
     map2widget("UID_MIN"),
@@ -718,7 +732,7 @@ define SecurityAdduserDialog() ``{
     updateWidget("UID_MIN");
     updateWidget("UID_MAX");
   }
-  UI(`CloseDialog());
+  //UI(`CloseDialog());
   return ret;
 };
 
