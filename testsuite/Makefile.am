@@ -3,6 +3,7 @@
 #
 
 AUTOMAKE_OPTIONS = dejagnu
+#SUBDIRS = tests
 
 testsuite_prepare=/usr/lib/YaST2/testsuite/Makefile.testsuite
 
@@ -14,5 +15,3 @@ clean-local: $(testsuite_prepare)
 
 #%:
 	#make -f $(testsuite_prepare) RPMNAME=$(RPMNAME) srcdir=$(srcdir) $@
-
-#EXTRA_DIST = README
