@@ -38,4 +38,7 @@ Textdomain = security
 ; Autoinstall features
 Autoinst = all
 
+; Resource in control file
+AutoinstResource = security
+
 ; vim:syntax=dosini

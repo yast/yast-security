@@ -1,18 +1,15 @@
 /**
  * File:	clients/security_summary.ycp
- * Package:	Configuration of network
+ * Package:	Security configuration
  * Summary:	Securitys summary
  * Authors:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
- *
- * Main file for network card configuration.
- * Uses all other files.
  */
 
 {
 
-textdomain "network";
+textdomain "security";
 
 import "Security";
 import "Summary";

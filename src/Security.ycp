@@ -282,11 +282,11 @@ global define boolean Write() ``{
 
     Progress::New( caption, " ", steps, [
 	    /* Progress stage 1/4 */
-	    _("Writ security settings"),
+	    _("Write security settings"),
 	    /* Progress stage 2/4 */
-	    _("Writ inittab settings"),
+	    _("Write inittab settings"),
 	    /* Progress stage 3/4 */
-	    _("Writ PAM settings"),
+	    _("Write PAM settings"),
 	    /* Progress stage 4/4 */
 	    _("Run SuSEconfig"),
 	], [
@@ -441,7 +441,7 @@ global define list Summary() ``{
 	if(level == Settings)
 	    current = key;
     });
-    y2debug("%1=%2", "curren", Settings);
+    y2debug("%1=%2", current, Settings);
 
     /* Summary text */
     string summary = _("Current Security Level: Custom settings");

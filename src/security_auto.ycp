@@ -27,37 +27,12 @@ y2milestone("----------------------------------------");
 y2milestone("Security auto started");
 
 import "Security";
+include "security/routines.ycp";
 include "security/wizards.ycp";
 
 any ret = nil;
 string func = "";
 map param = $[];
-
-
-/**
- * Switch map keys to lower case
- * @param map with upper case
- * @return map with lower case
- */
-define  switch2Lower(map s) ``{
-	map new_s = mapmap(`k,`v, s, ``{
-			return([tolower(k),v]);
-			});
-	return new_s;
-}
-
-/**
- * Switch map keys to upper case
- * @param map with low case
- * @return map with upper case
- */
-define  switch2Upper(map s) ``{
-	map new_s = mapmap(`k,`v, s, ``{
-			return([toupper(k),v]);
-			});
-	return new_s;
-}
-
 
 /* Check arguments */
 if(size(Args()) > 0 && is(Args(0), string)) {
@@ -70,7 +45,7 @@ y2debug("param=%1", param);
 
 /* Import Data*/
 if(func == "Import") {
-    ret = Security::Import(switch2Upper(param));
+    ret = Security::Import(switch2upper(param));
 }
 /* Create a  summary*/
 else if(func == "Summary") {
@@ -87,7 +62,14 @@ else if (func == "Change") {
 }
 /* Return actual state */
 else if (func == "Result") {
-    ret = switch2Lower(Security::Export());
+    ret = switch2lower(Security::Export());
+}
+/* Read current state */
+else if (func == "Read") {
+    import "Progress";
+    Progress::off();
+    ret = Security::Read();
+    Progress::on();
 }
 /* Write givven settings */
 else if (func == "Write") {
