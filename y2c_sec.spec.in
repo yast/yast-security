@@ -40,16 +40,14 @@ make install
 %files
 
 %dir @YAST2DIR@/clients
-%dir @YAST2DIR@/include
 %dir @YAST2DIR@/menuentries
+%dir @YAST2DIR@/include
+%dir @YAST2DIR@/include/security
 @YAST2DIR@/menuentries/menuentry_security.ycp
-@YAST2DIR@/clients/buttons.ycp
 @YAST2DIR@/clients/security.ycp
-@YAST2DIR@/clients/security_helps.ycp
-@YAST2DIR@/clients/security_settings.ycp
-@YAST2DIR@/clients/security_widgets.ycp
 @YAST2DIR@/clients/security_write.ycp
-@YAST2DIR@/include/general.ycp
-@YAST2DIR@/include/general_ui.ycp
-@YAST2DIR@/include/security_io.ycp
-@YAST2DIR@/include/security_ui.ycp
+@YAST2DIR@/clients/settings.ycp
+@YAST2DIR@/clients/ui_buttons.ycp
+@YAST2DIR@/clients/ui_helps.ycp
+@YAST2DIR@/clients/ui_widgets.ycp
+@YAST2DIR@/include/security/*

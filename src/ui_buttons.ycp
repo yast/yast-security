@@ -38,7 +38,11 @@ return $[
   // push button
   `finish : UI(_("&Finish")),
   // push button
-  `cancel : UI(_("&Cancel"))
+  `cancel : UI(_("&Cancel")),
+  // push button
+  `details : UI(_("&Details")),
+  // push button
+  `expert : UI(_("&Expert"))
 ];
 
 } /* YaST2: Local security configuration EOF */
