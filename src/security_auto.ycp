@@ -47,7 +47,8 @@ y2debug("param=%1", param);
 
 /* Create a  summary*/
 if(func == "Summary") {
-    ret = select(Security::Summary(), 0, "");
+    list summary	= Security::Summary();
+    ret = summary[0]:"";
 }
 /* Reset configuration */
 else if (func == "Reset") {
