@@ -1,0 +1,57 @@
+[Desktop Entry]
+Type=Application
+Categories=Qt;X-SuSE-YaST-Security;
+
+X-KDE-ModuleType=Library
+X-KDE-RootOnly=true
+X-KDE-HasReadOnlyMode=true
+X-KDE-Library=yast2
+X-KDE-FactoryName=security
+
+X-SuSE-YaST-Group=Security
+X-SuSE-YaST-Argument=
+X-SuSE-YaST-RootOnly=true
+X-SuSE-YaST-AutoInst=all
+X-SuSE-YaST-Geometry=
+X-SuSE-YaST-SortKey=
+X-SuSE-YaST-AutoinstResource=security
+
+Icon=security
+Exec=/sbin/yast2 security 
+
+Name=Security settings
+GenericName=Configure local security settings
+Name[cs]=Nastavení bezpečnosti
+GenericName[cs]=Konfigurovat lokální nastavení bezpečnosti
+Name[de]=Einstellungen zur Sicherheit
+GenericName[de]=Konfiguration aller lokalen Sicherheitseinstellungen
+Name[es]=Configuracion de Seguridad
+GenericName[es]=Configurar las opciones de seguridad local
+Name[hu]=Biztonsági beállítások
+GenericName[hu]=A helyi biztonsági opciók beállítása
+Name[it]=Impostazioni sicurezza
+GenericName[it]=Configurare le impostazioni di sicurezza locale
+Name[ko]=보안 설정
+GenericName[ko]=로컬 보안 설정을 만듭니다
+Name[nl]=Beveiligingsinstellingen
+GenericName[nl]=Configureer lokale beveiligingsinstellingen
+Name[pt]=Configurações de Segurança
+GenericName[pt]=Configure informações locais de segurança
+Name[sk]=Nastavenie zabezpečenia
+GenericName[sk]=Nastavenie možností lokálneho zabezpečenia
+Name[sv]=Säkerhetsinställningar
+GenericName[sv]=Anpassa lokala säkerhetsinställningar
+Name[da]=Sikkerhedsindstillinger
+Name[el]=Ρυθμίσεις Ασφαλείας
+GenericName[el]=Ρυθμίστε όλες τις τοπικές ρυθμίσεις ασφαλείας
+Name[fr]=Paramètres de sécurité
+GenericName[fr]=Configurer les paramètres de sécurité locaux
+Name[ja]=セキュリティーの設定
+GenericName[ja]=ローカルセキュリティーに関する設定
+Name[lt]=Apsaugos nuostatos
+GenericName[lt]=Konfigūruoti vietinės apsaugos nuostatas
+Name[ru]=Настройки безопасности
+Name[sl]=Varnostne nastavitve
+GenericName[sl]=Nastavi lokalne varnostne nastavitve
+Name[tr]=Güvenlik ayarları
+GenericName[tr]=Yerel güvenlik ayarlarını yapılandır
