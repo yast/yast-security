@@ -47,15 +47,7 @@ global define any SecuritySequence() ``{
 	]
     ];
 
-    /* Dialog caption */
-    string caption = _("Security configuration");
-    /* Label */
-    term contents = `Label(_("Initializing ..."));
-
     Wizard::CreateDialog();
-    Wizard::SetContentsButtons(caption, contents, "",
-	    Label::BackButton(), Label::NextButton());
-
     any ret = WizardSequencer(aliases, sequence);
 
     UI::CloseDialog();
