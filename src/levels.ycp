@@ -1,0 +1,121 @@
+/**
+ * File:	include/security/levels.ycp
+ * Module:	Security configuration
+ * Summary:	Security settings definitions
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * This file contains definitions of all security settings.
+ * They are in one huge list.
+ *
+ * <pre>
+ * $[
+ *   "name" : &lt;string Level>
+ *   "settings" : $[
+ *     &lt;string ID> : &lt;string Value>,
+ *     ...
+ *   ]
+ * ]
+ * </pre>
+ */
+
+/**
+ * @return list all security settings
+ */
+
+{
+
+textdomain "security";
+
+global map LevelsNames = $[
+    /* RadioButton label */
+    "Level1" : _("Level &1 (Home workstation)"),
+    /* RadioButton label */
+    "Level2" : _("Level &2 (Networked workstation)"),
+    /* RadioButton label */
+    "Level3" : _("Level &3 (Network server)"),
+];
+
+global map Levels = $[
+
+    "Level1" : $[
+	"CONSOLE_SHUTDOWN"		: "reboot",
+	"CWD_IN_ROOT_PATH"		: "yes",
+	"CWD_IN_USER_PATH"		: "yes",
+	"DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
+	"FAILLOG_ENAB"			: "yes",
+	"FAIL_DELAY"			: "1",
+	"GID_MAX"			: "60000",
+	"GID_MIN"			: "101",
+	"KDM_SHUTDOWN"			: "all",
+	"LASTLOG_ENAB"			: "yes",
+	"OBSCURE_CHECKS_ENAB"		: "no",
+	"PASSWD_ENCRYPTION"		: "des",
+	"PASSWD_USE_CRACKLIB"		: "no",
+	"PASS_MAX_DAYS"			: "99999",
+	"PASS_MAX_LEN"			: "8",
+	"PASS_MIN_DAYS"			: "0",
+	"PASS_MIN_LEN"			: "5",
+	"PASS_WARN_AGE"			: "7",
+	"PERMISSION_SECURITY"		: "easy",
+	"RUN_UPDATEDB_AS"		: "root",
+	"UID_MAX"			: "60000",
+	"UID_MIN"			: "500",
+    ],
+
+    "Level2" : $[
+	"CONSOLE_SHUTDOWN"		: "ignore",
+	"CWD_IN_ROOT_PATH"		: "no",
+	"CWD_IN_USER_PATH"		: "no",
+	"DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
+	"FAILLOG_ENAB"			: "yes",
+	"FAIL_DELAY"			: "6",
+	"GID_MAX"			: "60000",
+	"GID_MIN"			: "101",
+	"KDM_SHUTDOWN"			: "root",
+	"LASTLOG_ENAB"			: "yes",
+	"OBSCURE_CHECKS_ENAB"		: "no",
+	"PASSWD_ENCRYPTION"		: "des",
+	"PASSWD_USE_CRACKLIB"		: "yes",
+	"PASS_MAX_DAYS"			: "99999",
+	"PASS_MAX_LEN"			: "8",
+	"PASS_MIN_DAYS"			: "1",
+	"PASS_MIN_LEN"			: "5",
+	"PASS_WARN_AGE"			: "14",
+	"PERMISSION_SECURITY"		: "easy",
+	"RUN_UPDATEDB_AS"		: "nobody",
+	"UID_MAX"			: "60000",
+	"UID_MIN"			: "500",
+    ],
+
+    "Level3" : $[
+	"CONSOLE_SHUTDOWN"		: "ignore",
+	"CWD_IN_ROOT_PATH"		: "no",
+	"CWD_IN_USER_PATH"		: "no",
+	"DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
+	"FAILLOG_ENAB"			: "yes",
+	"FAIL_DELAY"			: "3",
+	"GID_MAX"			: "60000",
+	"GID_MIN"			: "101",
+	"KDM_SHUTDOWN"			: "root",
+	"LASTLOG_ENAB"			: "yes",
+	"OBSCURE_CHECKS_ENAB"		: "no",
+	"PASSWD_ENCRYPTION"		: "des",
+	"PASSWD_USE_CRACKLIB"		: "yes",
+	"PASS_MAX_DAYS"			: "99999",
+	"PASS_MAX_LEN"			: "8",
+	"PASS_MIN_DAYS"			: "1",
+	"PASS_MIN_LEN"			: "6",
+	"PASS_WARN_AGE"			: "14",
+	"PERMISSION_SECURITY"		: "secure",
+	"RUN_UPDATEDB_AS"		: "nobody",
+	"UID_MAX"			: "60000",
+	"UID_MIN"			: "500",
+    ],
+
+/* end of Levels */
+];
+
+/* EOF */
+}

@@ -16,12 +16,12 @@ The WIDGETS format:
 -------------------
 
 map WIDGETS = $[
-  "Item unique ID" : $[
-    "Widget" : "ComboBox",
-    "Label" : "Item label",
-    "Options" : [ "option1", "option2", ... ],
-    "Value" : "option2"
-  ],
+    "Item unique ID" : $[
+	"Widget" : "ComboBox",
+	"Label" : "Item label",
+	"Options" : [ "option1", "option2", ... ],
+	"Value" : "option2"
+    ],
   ...
 ];
 
@@ -71,187 +71,201 @@ textdomain "security";
  */
 global map WIDGETS = $[
 
-  /* Boot options */
+    "CONSOLE_SHUTDOWN" : $[
+	"Widget" : "ComboBox",
+	/* ComboBox label */
+	"Label" : _("&How to interpret Ctrl + Alt + Del:"),
+	"Options" : [
+	    /* ComboBox value */
+	    ["ignore", _("Ignore")],
+	    /* ComboBox value */
+	    ["reboot", _("Reboot")],
+	    /* ComboBox value */
+	    ["halt", _("Halt")],
+	],
+	"Value" : "reboot"
+    ],
 
-  "CONSOLE_SHUTDOWN" : $[
-    "Widget" : "ComboBox",
-    //  Boot options combo box caption
-    "Label" : _("&How to interpret Ctrl + Alt + Del:"),
-    //  Boot options combo box options
-    "Options" : [["ignore",_("Ignore")],["reboot",_("Reboot")],["halt",_("Halt")]],
-    "Value" : "reboot"
-  ],
+    "CWD_IN_ROOT_PATH" : $[
+	"Widget" : "CheckBox",
+	/* CheckBox label */
+	"Label" : _("&Current directory in root's path"),
+	"Value" : "yes"
+    ],
 
-  "KDM_SHUTDOWN" : $[
-    "Widget" : "ComboBox",
-    //  Boot options combo box caption
-    "Label" : _("&Shutdown behavior of KDM:"),
-    //  Boot options combo box options
-    "Options" : [["root",_("Only root")],["all",_("All users")],["none",_("Nobody")],["local",_("Local users")],["auto",_("Automatic")]],
-    "Value" : "all"
-  ],
+    "CWD_IN_USER_PATH" : $[
+	"Widget" : "CheckBox",
+	/* CheckBox label */
+	"Label" : _("Curr&ent directory in path of regular users"),
+	"Value" : "yes"
+    ],
 
-  /* Login options */
+    "DISPLAYMANAGER_REMOTE_ACCESS" : $[
+	"Widget" : "CheckBox",
+	/* CheckBox label */
+	"Label" : _("Allow remote &graphical login"),
+	"Value" : "no"
+    ],
 
-  "FAILLOG_ENAB" : $[
-    "Widget" : "CheckBox",
-     // login options (please, stick to 50 characters per line)
-    "Label" : _("Record &failed login attempts"),
-    "Value" : "yes"
-  ],
+    "FAILLOG_ENAB" : $[
+	"Widget" : "CheckBox",
+	/* CheckBox label */
+	"Label" : _("Record &failed login attempts"),
+	"Value" : "yes"
+    ],
 
-  "FAIL_DELAY" : $[
-    "Widget" : "IntField",
-     // login options (please, stick to 50 characters per line)
-    "Label" : _("&Seconds to wait after an incorrect login attempt:"),
-    "Value" : "3"
-  ],
+    "FAIL_DELAY" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("&Delay after an incorrect login attempt:"),
+	"Value" : "3"
+    ],
 
-  "LASTLOG_ENAB" : $[
-    "Widget" : "CheckBox",
-     // login options (please, stick to 50 characters per line)
-    "Label" : _("R&ecord successful login attempts"),
-    "Value" : "yes"
-  ],
+    "GID_MAX" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("Maxim&um"),
+	"Value" : "60000"
+    ],
 
-  "PASSWD_USE_CRACKLIB" : $[
-    "Widget" : "CheckBox",
-     // login options (please, stick to 50 characters per line)
-    "Label" : _("&Checking new passwords"),
-    "Value" : "yes"
-  ],
+    "GID_MIN" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("M&inimum"),
+	"Value" : "101"
+    ],
 
-  "OBSCURE_CHECKS_ENAB" : $[
-    "Widget" : "CheckBox",
-     // login options (please, stick to 50 characters per line)
-    "Label" : _("&Plausibility test for password"),
-    "Value" : "yes"
-  ],
+    "KDM_SHUTDOWN" : $[
+	"Widget" : "ComboBox",
+	/* ComboBox label */
+	"Label" : _("&Shutdown behavior of KDM:"),
+	"Options" : [
+	    /* ComboBox value */
+	    ["root",_("Only root")],
+	    /* ComboBox value */
+	    ["all",_("All users")],
+	    /* ComboBox value */
+	    ["none",_("Nobody")],
+	    /* ComboBox value */
+	    ["local",_("Local users")],
+	    /* ComboBox value */
+	    ["auto",_("Automatic")],
+	],
+	"Value" : "all"
+    ],
 
-  "PASS_WARN_AGE" : $[
-    "Widget" : "IntField",
-     // login options (please, stick to 50 characters per line)
-    "Label" : _("&Days before password expires warning:"),
-    "Value" : "7"
-  ],
+    "LASTLOG_ENAB" : $[
+	"Widget" : "CheckBox",
+	/* CheckBox label */
+	"Label" : _("R&ecord successful login attempts"),
+	"Value" : "yes"
+    ],
 
-  /* Perms options */
+    "OBSCURE_CHECKS_ENAB" : $[
+	"Widget" : "CheckBox",
+	/* CheckBox label */
+	"Label" : _("&Plausibility test for password"),
+	"Value" : "yes"
+    ],
 
-  "PERMISSION_SECURITY" : $[
-    "Widget" : "ComboBox",
-    // perms options combo box caption
-    "Label" : _("&Setting of file permissions:"),
-    // perms options combo box options
-    "Options" : [["easy",_("Easy")],["secure",_("Secure")],["paranoid",_("Paranoid")]],
-    "Value" : "secure"
-  ],
+    "PASSWD_ENCRYPTION" : $[
+	"Widget" : "ComboBox",
+	/* ComboBox label */
+	"Label" : _("P&assword encryption method"),
+	/* ComboBox values */
+	"Options" : [["des","DES"],["md5","MD5"],["blowfish","Blowfish"]],
+	"Value" : "des"
+    ],
 
-  /* Other options */
+    "PASSWD_USE_CRACKLIB" : $[
+	"Widget" : "CheckBox",
+	/* CheckBox label */
+	"Label" : _("&Checking new passwords"),
+	"Value" : "yes"
+    ],
 
-  "CWD_IN_ROOT_PATH" : $[
-    "Widget" : "CheckBox",
-    // Other options (please, stick to 50 characters per line)
-    "Label" : _("&Current directory in root's path"),
-    "Value" : "yes"
-  ],
+    "PASS_MAX_DAYS" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("Maxim&um"),
+	"Value" : "99999"
+    ],
 
-  "RUN_UPDATEDB_AS" : $[
-    "Widget" : "ComboBox",
-    // label for updatedb (please, stick to 50 characters per line)
-    "Label" : _("&User launching updatedb:"),
-    "Options" : [ "nobody", "root" ],
-    "Value" : "nobody"
-  ],
+    "PASS_MAX_LEN" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("Ma&ximum"),
+	"Value" : "7"
+    ],
 
-  /* Adduser settings */
+    "PASS_MIN_DAYS" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("M&inimum"),
+	"Value" : "0"
+    ],
 
-  "GID_MIN" : $[
-    "Widget" : "IntField",
-    // minimum field label (please, stick to 50 characters per line)
-    "Label" : _("M&inimum"),
-    "Value" : "101"
-  ],
+    "PASS_MIN_LEN" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("&Minimum"),
+	"Value" : "5"
+    ],
 
-  "GID_MAX" : $[
-    "Widget" : "IntField",
-    // maximum field label (please, stick to 50 characters per line)
-    "Label" : _("Maxim&um"),
-    "Value" : "60000"
-  ],
+    "PASS_WARN_AGE" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("&Days before password expires warning:"),
+	"Value" : "7"
+    ],
 
-  "UID_MIN" : $[
-    "Widget" : "IntField",
-    // minimum field label (please, stick to 50 characters per line)
-    "Label" : _("&Minimum"),
-    "Value" : "100"
-  ],
+    "PERMISSION_SECURITY" : $[
+	"Widget" : "ComboBox",
+	/* ComboBox label */
+	"Label" : _("&Setting of file permissions:"),
+	"Options" : [
+	    /* ComboBox value */
+	    ["easy",_("Easy")],
+	    /* ComboBox value */
+	    ["secure",_("Secure")],
+	    /* ComboBox value */
+	    ["paranoid",_("Paranoid")],
+	],
+	"Value" : "secure"
+    ],
 
-  "UID_MAX" : $[
-    "Widget" : "IntField",
-    // maximum field label (please, stick to 50 characters per line)
-    "Label" : _("Ma&ximum"),
-    "Value" : "60000"
-  ],
+    "RUN_UPDATEDB_AS" : $[
+	"Widget" : "ComboBox",
+	/* ComboBox label */
+	"Label" : _("&User launching updatedb:"),
+	"Options" : [ "nobody", "root" ],
+	"Value" : "nobody"
+    ],
 
-  "PASS_MIN_DAYS" : $[
-    "Widget" : "IntField",
-    // minimum field label
-    "Label" : _("M&inimum"),// number of days between two password changes")),
-    "Value" : "0"
-  ],
+    "UID_MAX" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("Ma&ximum"),
+	"Value" : "60000"
+    ],
 
-  "PASS_MAX_DAYS" : $[
-    "Widget" : "IntField",
-    // maximum field label
-    "Label" : _("Maxim&um"),// number of days between two password changes")),
-    "Value" : "99999"
-  ],
-
-  "PASS_MIN_LEN" : $[
-    "Widget" : "IntField",
-    // minimum field label
-    "Label" : _("&Minimum"),// length of password")),
-    "Value" : "5"
-  ],
-
-  "PASS_MAX_LEN" : $[
-    "Widget" : "IntField",
-    // maximum field label
-    "Label" : _("Ma&ximum"),// length of password")),
-    "Value" : "7"
-  ],
-
-  "DISPLAYMANAGER_REMOTE_ACCESS" : $[
-    "Widget" : "CheckBox",
-    // checkbox label (please, stick to 50 characters per line)
-    "Label" : _("Allow remote &graphical login"),
-    "Value" : "no"
-  ],
-
-  "ENCRYPTION" : $[
-    "Widget" : "ComboBox",
-    // checkbox label (please, stick to 50 characters per line)
-    "Label" : _("P&assword encryption method"),
-    "Options" : [["des","DES"],["md5","MD5"],["blowfish","Blowfish"]],
-    "Value" : "des"
-  ] /* No \, ! */
+    "UID_MIN" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("&Minimum"),
+	"Value" : "100"
+    ],
 
 /*
-  "" : $[
-    "Widget" : "",
-    "Label" : _(""),
-    "Options" : [["",_("")]],
-    "Value" : ""
-  ],
-*/
+    "" : $[
+	"Widget" : "",
+	/* Widget label * /
+	"Label" : _(""),
+	/* Widget values * /
+	"Options" : [["",_("")]],
+	"Value" : ""
+    ],
 
-/*
-map SecurityOptions = $[
-  "Boot" : Boot_options,
-  "Login" : Login_options,
-  "Perms" : Perms_options,
-  "Other" : Other_options
-];
 */
 
 ];

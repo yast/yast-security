@@ -1,119 +1,191 @@
 /**
- * File:
- *   routines.ycp
- *
- * Module:
- *   Security configuration
- *
- * Summary:
- *   Generally usable functions
- *
- * Authors:
- *   Michal Svec <msvec@suse.cz>
+ * File:	include/security/routines.ycp
+ * Module:	Security configuration
+ * Summary:	Routines
+ * Authors:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
  *
- * This file contains generally usable functions.
+ * These functions are used for the user interface creation
+ * and interaction.
+ * <pre>
+ * Usage:
+ *   include "security/ui.ycp";
+ *   map WIDGETS = CallFunction(`your_widgets());
+ * </pre>
  */
 
 {
 
 textdomain "security";
 
+import "Security";
+include "security/widgets.ycp";
+
 /**
- * Update one value ("Value") in the widget map and return the updated map
- * @param widgets the map of all widgets to be updated
- * @param ID the item identifier
- * @param val the item value
- * @return map the updated map
+ * Return a widget from the WIDGETS map created acording to the ID.
+ * @param ID security setting identifier
+ * @return created widget
  * @see <a href="widgets.html">widgets.ycp</a>
  */
-global define updateValue(map widgets, string ID, string val) ``{
-    map item = lookup(widgets,ID,$[]);
-    //if(val!="")
-    item = add(item,"Value",val);
-    widgets = add(widgets,ID,item);
-    return widgets;
-};
+global define term settings2widget(string ID) ``{
 
-/**
- * Convert security settings (from io) to the widgets map.
- * @param widgets default map of widgets
- * @param settings settings to be converted
- * @return map new widgets map
- */
-global define settings2widgets(map widgets, map settings) ``{
-    /*
-    widgets = foreach(`key, `value, settings, ``{
-        widgets = updateValue(widgets,key,value);
-        return widgets;
-    });
-    */
-    foreach(`key, `value, settings, ``{
-        widgets = updateValue(widgets,key,value);
-    });
+    map m = WIDGETS[ID]:$[];
+    string label = lookup(m,"Label","");
+    string widget = lookup(m,"Widget","");
+    string value = Security::Settings[ID]:"";
 
-    return widgets;
-};
+    /* "Widget" == "CheckBox" */
+    if(widget == "CheckBox") {
+        boolean enabled = false;
+        if(value == "yes")
+            enabled = true;
+        return `VBox(
+            `Left(`CheckBox(`id(ID), label, enabled)),
+            VSeparator()
+        );
+    }
 
-/**
- * Convert the widgets map to the security settings (for io)
- * @param widgets widgets to be converted
- * @param settings default map of settings
- * @return map new settings map
- */
-global define widgets2settings(map settings, map widgets) ``{
-    map values = mapmap(`key,`value, widgets,``{
-        return [ key, lookup(value,"Value","") ];
-    });
+    /* "Widget" == "TextEntry" */
+    if(widget == "TextEntry") {
+        return `VBox(
+            `Left(`TextEntry(`id(ID), label, value)),
+            VSeparator()
+        );
+    }
 
-    settings = foreach(`key,`value, values, ``{
-        settings = add(settings,key,value);
-        return settings;
-    });
+    /* "Widget" == "IntField" */
+    if(widget == "IntField") {
+        return `VBox(
+            `Left(`IntField(`id(ID), label, 0, 2147483647, tointeger(value))),
+            VSeparator()
+        );
+    }
 
-    return settings;
-};
+    /* "Widget" == "???" */
+    if(widget != "ComboBox") {
+        y2error("Unknown widget: %1", widget);
+        return VSeparator();
+    }
 
-/**
- * Convert list of the form: [$["value":"3", "variable":"FAIL_DELAY"], ... ]
- * to the map: $["FAIL_DELAY":"3"]
- * @param l the list to convert
- * @return map a converted map
- * @see <a href="widgets.html">widgets.ycp</a>
- */
-global define list2map(list l) ``{
-    if(l==[]) return $[];
-    map m = foreach(`item, l, ``{
-        m = add(m, lookup(item, "variable", "unknown"), lookup(item, "value", ""));
-        return m;
-    });
-    return m;
+    /* "Widget" == "ComboBox" */
+    list li = m["Options"]:[];
+    list combo = [];
+    integer i = 0;
+
+    while(i < size(li)) {
+        // string|list it
+        any it = li[i]:"";
+        string id_t = "";
+        string id_s = "";
+        if(is(it, string)) {
+            id_t = it;
+            id_s = it;
+        }
+        else {
+            id_t = it[0]:"";
+            id_s = it[1]:"";
+        }
+        if(value == id_t)
+            combo = add(combo,`item(`id(id_t), id_s, true));
+        else
+            combo = add(combo,`item(`id(id_t), id_s));
+        i=i+1;
+    }
+
+    return `VBox(
+        `Left(`ComboBox(`id(ID), label, combo)),
+        VSeparator()
+    );
 }
 
 /**
- * Complement to the list2map function
- * @param m the map to convert
- * @return list a converted list
- * @see list2map
+ * Query the widget with `id(ID) for its `Value
+ * @param ID security setting identifier
  */
-global define map2list(map m) ``{
-    if(m==$[]) return [];
-    list l = foreach(`key, `value, m, ``{
-        map mm = add($[], "value", value);
-        mm = add(mm, "variable", key);
-        l = add(l, mm);
-        return l;
-    });
-    return l;
+global define void widget2settings(string ID) ``{
+    any ret = UI::QueryWidget(`id(ID), `Value);
+    string new = "";
+    if(is(ret, boolean)) {
+        if(ret == true)
+            new = "yes";
+        else
+            new = "no";
+    }
+    else if(is(ret, integer))
+	new = sformat("%1", ret);
+    else if(is(ret, string))
+	new = ret;
+    else {
+	y2error("Unknown widget type: %1", ret);
+	new = nil;
+    }
+
+    if(new != nil && Security::Settings[ID]:"" != new) {
+	y2debug("Setting modified (%1): %2 -> %3)", ID, Security::Settings[ID]:"", new);
+	Security::Settings[ID] = new;
+	Security::modified = true;
+    }
+}
+
+/**
+ * Vertical separator
+ * @return vertical separator
+ */
+global define term VSeparator() ``{
+    return `VSpacing(`opt(`vstretch), 0.1);
+}
+
+/**
+ * Horizontal separator
+ * @return horizontal separator
+ */
+global define term HSeparator() ``{
+    return `HSpacing(`opt(`hstretch), 0.1);
+}
+
+/**
+ * Frame with spacings
+ * @param f1 horizontal spacing
+ * @param f2 vertical spacing
+ * @param S frame label
+ * @param T frame contents
+ * @return frame with contents
+ */
+global define term XFrame(float f1, float f2, string S, term T) ``{
+  return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
+}
+
+/**
+ * Check if minimum is less than maximum in the widget
+ * @param minID ID os the minimum widget
+ * @param maxID ID os the maximum widget
+ * @return true or false
+ */
+global define boolean checkMinMax(string minID, string maxID) ``{
+    any min = UI::QueryWidget(`id(minID), `Value);
+    any max = UI::QueryWidget(`id(maxID), `Value);
+    if(is(min, integer) || is(min, float))
+	if(is(max, integer) || is(max, float))
+	    if(min <= max)
+		return true;
+    return false;
+}
+
+/**
+ * If modified, ask for confirmation
+ * @return true if abort is confirmed
+ */
+global define boolean ReallyAbort() ``{
+    return !Security::Modified() || UI::ReallyAbortPopup(true);
 }
 
 /**
  * Return all keys from the map
  * @param m the map
- * @return list a list of all keys from the map
+ * @return a list of all keys from the map
  */
-global define mapkeys(map m) ``{
+global define list mapkeys(map m) ``{
     if(m==$[]) return [];
     return maplist(`var, `val, m, ``(var));
 }
@@ -121,9 +193,9 @@ global define mapkeys(map m) ``{
 /**
  * Return all values from the map
  * @param m the map
- * @return list a list of all values from the map
+ * @return a list of all values from the map
  */
-global define mapvalues(map m) ``{
+global define list mapvalues(map m) ``{
     if(m==$[]) return [];
     return maplist(`var, `val, m, ``(val));
 }
@@ -132,11 +204,12 @@ global define mapvalues(map m) ``{
  * Return value from a map for the given key, nil if not found
  * @param m the map
  * @param k the key
- * @return any the found value
+ * @return the found value
  */
-global define mapvalue(map m, any k) ``{
+global define any mapvalue(map m, any k) ``{
     if(m==$[]) return nil;
     return lookup(m, k, nil);
 }
 
-} /* YaST2: Local security configuration EOF */
+/* EOF */
+}

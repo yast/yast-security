@@ -13,8 +13,448 @@ module "Security";
 textdomain "security";
 
 import "Progress";
+include "security/levels.ycp";
+include "security/routines.ycp";
 
-global boolean nothing = false;
+/**
+ * All security settings
+ */
+global map Settings = $[
+    "CONSOLE_SHUTDOWN"			: "reboot",
+    "CWD_IN_ROOT_PATH"			: "yes",
+    "CWD_IN_USER_PATH"			: "yes",
+    "DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
+    "FAILLOG_ENAB"			: "yes",
+    "FAIL_DELAY"			: "3",
+    "GID_MAX"				: "60000",
+    "GID_MIN"				: "101",
+    "KDM_SHUTDOWN"			: "all",
+    "LASTLOG_ENAB"			: "yes",
+    "OBSCURE_CHECKS_ENAB"		: "yes",
+    "PASSWD_ENCRYPTION"			: "des",
+    "PASSWD_USE_CRACKLIB"		: "yes",
+    "PASS_MAX_DAYS"			: "99999",
+    "PASS_MAX_LEN"			: "7",
+    "PASS_MIN_DAYS"			: "0",
+    "PASS_MIN_LEN"			: "5",
+    "PASS_WARN_AGE"			: "7",
+    "PERMISSION_SECURITY"		: "secure",
+    "RUN_UPDATEDB_AS"			: "nobody",
+    "UID_MAX"				: "60000",
+    "UID_MIN"				: "100",
+];
+
+/**
+ * Security settings locations
+ */
+map Locations = $[
+    ".etc.login_defs" : [
+	"FAILLOG_ENAB",
+	"FAIL_DELAY",
+	"GID_MAX",
+	"GID_MIN",
+	"LASTLOG_ENAB",
+	"OBSCURE_CHECKS_ENAB",
+	"PASS_MAX_DAYS",
+	"PASS_MAX_LEN",
+	"PASS_MIN_DAYS",
+	"PASS_MIN_LEN",
+	"PASS_WARN_AGE",
+	"UID_MAX",
+	"UID_MIN",
+    ],
+    ".sysconfig.suseconfig" : [
+	"CWD_IN_ROOT_PATH",
+	"CWD_IN_USER_PATH",
+    ],
+    ".sysconfig.displaymanager" : [
+	"DISPLAYMANAGER_REMOTE_ACCESS",
+	"KDM_SHUTDOWN",
+    ],
+    ".sysconfig.security" : [
+	"PERMISSION_SECURITY",
+    ],
+    ".sysconfig.locate" : [
+	"RUN_UPDATEDB_AS",
+    ],
+];
+
+/**
+ * Remaining settings:
+ * - CONSOLE_SHUTDOWN (/etc/inittab)
+ * - PASSWD_ENCRYPTION (/etc/pam?)
+ * - PASSWD_USE_CRACKLIB (/etc/pam?)
+ */
+
+/**
+ * Abort function
+ * return boolean return true if abort
+ */
+global block AbortFunction = nil;
+
+/**
+ * Check for pending Abort press
+ * @return true if pending abort
+ */
+global define boolean PollAbort() ``{
+    return UI::PollInput() == `abort;
+}
+
+/**
+ * Abort function
+ * @return blah blah lahjk
+ */
+global define boolean Abort() ``{
+    if(AbortFunction != nil)
+	return eval(AbortFunction) == true;
+    return false;
+}
+
+/**
+ * Data was modified?
+ */
+global boolean modified = false;
+
+global boolean proposal_valid = false;
+global boolean write_only = false;
+
+/**
+ * Data was modified?
+ * @return true if modified
+ */
+global define boolean Modified() ``{
+    y2debug("modified=%1",modified);
+    return modified;
+};
+
+/**
+ * Read all security settings
+ * @return true on success
+ */
+global define boolean Read() ``{
+
+    /* Security read dialog caption */
+    string caption = _("Initializing security configuration");
+    integer steps = 3;
+
+    /* FIXME */
+    integer sl = 0*1000;
+    sleep(sl);
+
+    Progress::New( caption, " ", steps, [
+	    /* Progress step 1/3 */
+	    _("Read security settings"),
+	    /* Progress step 2/3 */
+	    _("Read inittab settings"),
+	    /* Progress step 3/3 */
+	    _("Read PAM settings"),
+	], [
+	    /* Progress stage 1/4 */
+	    _("Reading security settings"),
+	    /* Progress stage 2/4 */
+	    _("Reading inittab settings"),
+	    /* Progress stage 3/4 */
+	    _("Reading PAM settings"),
+	    /* Progress stage 4/4 */
+	    _("Finished")
+	],
+	""
+    );
+
+    Settings = $[];
+
+    /* Read security settings */
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+
+    mapmap(string file, list vars, Locations, ``{
+	maplist(string var, vars, ``{
+	    string val = "";
+	    // if(SCR::Read(.target.size, file) > 0)
+		val = SCR::Read(topath(file + "." + var));
+	    if(val == nil) val = "";
+	    Settings[var] = val;
+	});
+	return [0,0];
+    });
+    y2debug("Settings=%1", Settings);
+
+    /* Read inittab settings */
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+
+    list inittab = SCR::Dir(.etc.inittab);
+    if(contains(inittab, "ca")) {
+	string ca = SCR::Read(.etc.inittab.ca);
+	if(issubstring(ca, "/bin/true") || issubstring(ca, "/bin/false"))
+	    change(Settings, "CONSOLE_SHUTDOWN", "ignore");
+	else if(issubstring(ca, "reboot") || issubstring(ca, " -r"))
+	    change(Settings, "CONSOLE_SHUTDOWN", "reboot");
+	else if(issubstring(ca, "halt") || issubstring(ca, " -h"))
+	    change(Settings, "CONSOLE_SHUTDOWN", "halt");
+	else {
+	    y2error("Unknown ca status: %1", ca);
+	    change(Settings, "CONSOLE_SHUTDOWN", "ignore");
+	}
+    }
+    else
+	change(Settings, "CONSOLE_SHUTDOWN", "ignore");
+
+    y2debug("Settings=%1", Settings);
+
+    /* Read pam settings */
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+
+    /* pam stuff */
+    map pam_unix_map = $[];
+    list pam_list = SCR::Read(.pam.all.password.pam_unix2);
+    if(pam_list != [] && pam_list != nil)
+	pam_unix_map = select(pam_list,0,$[]);
+
+    map pam_check_map = $[];
+    pam_list = SCR::Read(.pam.all.password.pam_pwcheck);
+    if(pam_list != [] && pam_list != nil)
+	pam_check_map = select(pam_list,0,$[]);
+
+    /* md5 & blowfish support */
+    boolean md5_support = contains(splitstring(lookup(pam_unix_map , "arguments", ""), " "), "md5");
+    boolean blowfish_support = contains(splitstring(lookup(pam_unix_map , "arguments", ""), " "), "blowfish");
+    string method = "";
+    if (md5_support)
+	method = "md5";
+    else if (blowfish_support)
+	method = "blowfish";
+    else
+	method = "des";
+    change(Settings,"PASSWD_ENCRYPTION", method);
+
+    /* use cracklib? */
+    boolean pam_support = contains(splitstring(lookup(pam_check_map , "arguments", ""), " "), "use_cracklib");
+    change(Settings,"PASSWD_USE_CRACKLIB", pam_support?"yes":"no");
+    y2debug("Settings=%1", Settings);
+
+    /* Local permissions hack */
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+
+    string perm = Settings["PERMISSION_SECURITY"]:"";
+    if(issubstring(perm, "easy")) perm = "easy";
+    else if(issubstring(perm, "paranoid")) perm = "paranoid";
+    else if(issubstring(perm, "secure")) perm = "secure";
+    else perm = "secure";
+    change(Settings, "PERMISSION_SECURITY", perm);
+    y2debug("Settings=%1", Settings);
+
+    sleep(sl);
+    if(Abort()) return false;
+    modified = false;
+    return true;
+}
+
+/**
+ * Write all security settings
+ * @return true on success
+ */
+global define boolean Write() ``{
+
+    if(!modified) return true;
+    y2milestone("Writing configuration");
+
+    /* Security read dialog caption */
+    string caption = _("Saving security configuration");
+    integer steps = 4;
+
+    /* FIXME */
+    integer sl = 0*1000;
+    sleep(sl);
+
+    Progress::New( caption, " ", steps, [
+	    /* Progress step 1/4 */
+	    _("Write security settings"),
+	    /* Progress step 2/4 */
+	    _("Write inittab settings"),
+	    /* Progress step 3/4 */
+	    _("Write PAM settings"),
+	    /* Progress step 4/4 */
+	    _("Run SuSEconfig"),
+	], [
+	    /* Progress stage 1/5 */
+	    _("Writing security settings"),
+	    /* Progress stage 2/5 */
+	    _("Writing inittab settings"),
+	    /* Progress stage 3/5 */
+	    _("Writing PAM settings"),
+	    /* Progress stage 4/5 */
+	    _("Running SuSEconfig"),
+	    /* Progress stage 5/5 */
+	    _("Finished")
+	],
+	""
+    );
+
+    /* Write security settings */
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+
+    y2debug("Settings=%1", Settings);
+    Settings["PERMISSION_SECURITY"] = Settings["PERMISSION_SECURITY"]:"" + " local";
+
+    mapmap(string file, list vars, Locations, ``{
+	maplist(string var, vars, ``{
+	    string val = Settings[var]:"";
+	    if(val == nil) val = "";
+	    SCR::Write(topath(file + "." + var), val);
+	});
+	return [0,0];
+    });
+
+    maplist(string file, mapkeys(Locations), ``{
+	SCR::Write(topath(file), nil);
+    });
+
+    /* Write inittab settings */
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+
+    string ca = Settings["CONSOLE_SHUTDOWN"]:"ignore";
+    if(ca == "reboot")
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/sbin/shutdown -r -t 4 now");
+    else if(ca == "halt")
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/sbin/shutdown -h -t 4 now");
+    else
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/bin/true");
+    SCR::Write(.etc.inittab, nil);
+
+    /* Write pam settings */
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+
+    /* pam stuff */
+    string encr = Settings["PASSWD_ENCRYPTION"]:"des";
+
+    if(encr != "md5") {
+	SCR::Write(.pam.all.password.pam_unix2, "-md5");
+	SCR::Write(.pam.all.password.pam_pwcheck, "-md5");
+	/* Remove old config options */
+	SCR::Write(.pam.login.password.pam_pwcheck, "-md5");
+	SCR::Write(.pam.login.password.pam_unix, "-md5");
+	SCR::Write(.pam.passwd.password.pam_pwcheck, "-md5");
+	SCR::Write(.pam.passwd.password.pam_unix, "-md5");
+	SCR::Write(.pam.sshd.password.pam_pwcheck, "-md5");
+	SCR::Write(.pam.sshd.password.pam_unix, "-md5");
+	SCR::Write(.pam.rlogin.password.pam_pwcheck, "-md5");
+	SCR::Write(.pam.rlogin.password.pam_unix, "-md5");
+    }
+    if(encr != "blowfish") {
+	SCR::Write(.pam.all.password.pam_unix2, "-blowfish");
+	SCR::Write(.pam.all.password.pam_pwcheck, "-blowfish");
+	/* Remove old config options */
+	SCR::Write(.pam.login.password.pam_pwcheck, "-blowfish");
+	SCR::Write(.pam.login.password.pam_unix, "-blowfish");
+	SCR::Write(.pam.passwd.password.pam_pwcheck, "-blowfish");
+	SCR::Write(.pam.passwd.password.pam_unix, "-blowfish");
+	SCR::Write(.pam.sshd.password.pam_pwcheck, "-blowfish");
+	SCR::Write(.pam.sshd.password.pam_unix, "-blowfish");
+	SCR::Write(.pam.rlogin.password.pam_pwcheck, "-blowfish");
+	SCR::Write(.pam.rlogin.password.pam_unix, "-blowfish");
+    }
+
+    /* md5 support */
+    if(encr == "md5") {
+       SCR::Write(.pam.all.password.pam_unix2, "+md5");
+       SCR::Write(.pam.all.password.pam_pwcheck, "+md5");
+    }
+    /* blowfish support */
+    else if(encr == "blowfish") {
+       SCR::Write(.pam.all.password.pam_unix2, "+blowfish");
+       SCR::Write(.pam.all.password.pam_pwcheck, "+blowfish");
+    }
+
+    /* use cracklib? */
+    string pam_string = (Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes") ? "+use_cracklib" : "-use_cracklib";
+    SCR::Write(.pam.all.password.pam_pwcheck, pam_string);
+
+    /* Finish him: SuSEconfig */
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+
+    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module xdm");
+    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module kde3");
+    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module permissions");
+    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module profiles");
+
+    sleep(sl);
+    if(Abort()) return false;
+    Progress::NextStage();
+    y2milestone("1");
+
+    sleep(sl);
+    y2milestone("2");
+    if(Abort()) return false;
+    modified = false;
+    return true;
+}
+
+/**
+ * Get all security settings from the first parameter
+ * (For use by autoinstallation.)
+ * @param settings The YCP structure to be imported.
+ * @return boolean True on success
+ */
+global define boolean Import(map settings) ``{
+    Settings = eval(settings);
+}
+
+/**
+ * Dump the security settings to a single map
+ * (For use by autoinstallation.)
+ * @return map Dumped settings (later acceptable by Import ())
+ */
+global define map Export() ``{
+    return eval(Settings);
+}
+
+/**
+ * Create a textual summary and a list of unconfigured cards
+ * @param split split configured and unconfigured?
+ * @return summary of the current configuration
+ */
+global define list Summary() ``{
+
+    /* Determine current settings */
+    any current = `custom;
+    maplist(string key, map level, Levels, ``{
+	y2debug("%1=%2", key, level);
+	if(level == Settings)
+	    current = key;
+    });
+    y2debug("%1=%2", "curren", Settings);
+
+    /* Summary text */
+    string summary = _("Current security level: Custom settings");
+    if(current != `custom)
+	/* Summary text */
+	summary = sformat(_("Current security level: %1"), LevelsNames[current]:"");
+
+    return [ summary, [] ];
+}
+
+/**
+ * Create an overview table with all configured cards
+ * @return table items
+ */
+global define list Overview() ``{
+    return [];
+}
 
 /* EOF */
 }

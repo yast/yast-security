@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Tue Oct 22 16:51:54 CEST 2002 - msvec@suse.cz
+
+- completely rewritten internals
+- major cleanup, simplification and speedup
+- don't ask for save if nothing was changed
+- support for CWD in user's path (#18274)
+- complete support for blowfish (#12758)
+- 2.7.0
+
+-------------------------------------------------------------------
 Thu Sep  5 14:19:35 CEST 2002 - msvec@suse.cz
 
 - fix the Next|Finish behavior (#18937)

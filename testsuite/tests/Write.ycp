@@ -13,11 +13,13 @@
 {
 
 include "testsuite.ycp";
-include "security/io.ycp";
+
+import "Security";
 
 map m = $[
 	"CONSOLE_SHUTDOWN"	:	"reboot",
 	"CWD_IN_ROOT_PATH"	:	"r2",
+	"CWD_IN_USER_PATH"	:	"r2s",
 	"KDM_SHUTDOWN"		:	"r3",
 	"DISPLAYMANAGER_REMOTE_ACCESS" :"r4",
 	"PERMISSION_SECURITY"	:	"r5",
@@ -39,6 +41,9 @@ map m = $[
 	"UID_MIN"		:	"l14"
 ];
 
-TEST(``(SecurityWrite(m)),[],nil);
+
+Security::Settings = m;
+Security::modified = true;
+TEST(``(Security::Write()),[],false);
 
 }

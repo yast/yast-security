@@ -14,6 +14,7 @@ textdomain "security";
 import "Wizard";
 
 include "wizard/sequencer.ycp";
+include "security/complex.ycp";
 include "security/dialogs.ycp";
 include "security/users.ycp";
 
@@ -45,7 +46,9 @@ global define any SecuritySequence() ``{
 	]
     ];
 
+    /* Dialog caption */
     string caption = _("Security configuration");
+    /* Label */
     term contents = `Label(_("Initializing ..."));
 
     Wizard::CreateDialog();
@@ -64,7 +67,10 @@ global define any SecuritySequence() ``{
  * @return any Returned value from WizardSequencer() call
  */
 global define any SecurityAutoSequence() ``{
+
+    /* Dialog caption */
     string caption = _("Security configuration");
+    /* Label */
     term contents = `Label(_("Initializing ..."));
 
     Wizard::CreateDialog();
@@ -91,7 +97,6 @@ global define any MainSequence() ``{
 	"login"    : ``(LoginDialog()),
 	"adduser"  : ``(AdduserDialog()),
 	"misc"     : ``(MiscDialog()),
-	"finish"   : [ ``(Finish()), true ]
     ];
 
     map sequence = $[
@@ -99,7 +104,7 @@ global define any MainSequence() ``{
 	"main" : $[
 	    `abort : `abort,
 	    `next : "password",
-	    `finish : "finish"
+	    `finish : `next,
 	],
 	"password" : $[
 	    `abort : `abort,
@@ -119,11 +124,8 @@ global define any MainSequence() ``{
 	],
 	"misc" : $[
 	    `abort : `abort,
-	    `finish : "finish"
+	    `next : `next,
 	],
-	"finish" : $[
-	    `finish : `next
-	]
     ];
 
     any ret = WizardSequencer(aliases, sequence);

@@ -11,14 +11,14 @@ Read	.etc.login_defs.PASS_MIN_LEN "l10"
 Read	.etc.login_defs.PASS_WARN_AGE "l11"
 Read	.etc.login_defs.UID_MAX "l12"
 Read	.etc.login_defs.UID_MIN "l13"
+Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r9"
+Read	.sysconfig.displaymanager.KDM_SHUTDOWN "r3"
+Read	.sysconfig.locate.RUN_UPDATEDB_AS "r7"
 Read	.sysconfig.security.PERMISSION_SECURITY "paranoid"
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
-Read	.sysconfig.displaymanager.KDM_SHUTDOWN "r3"
-Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r9"
-Read	.target.size "/etc/sysconfig/locate" 1
-Read	.sysconfig.locate.RUN_UPDATEDB_AS "r7"
+Read	.sysconfig.suseconfig.CWD_IN_USER_PATH "r3"
 Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
 Read	.pam.all.password.pam_unix2 nil
 Read	.pam.all.password.pam_pwcheck nil
-Return	$["CONSOLE_SHUTDOWN":"reboot", "CWD_IN_ROOT_PATH":"r2", "DISPLAYMANAGER_REMOTE_ACCESS":"r9", "ENCRYPTION":"des", "FAILLOG_ENAB":"l1", "FAIL_DELAY":"l2", "GID_MAX":"l3", "GID_MIN":"l4", "KDM_SHUTDOWN":"r3", "LASTLOG_ENAB":"l5", "OBSCURE_CHECKS_ENAB":"l6", "PASSWD_USE_CRACKLIB":"no", "PASS_MAX_DAYS":"l7", "PASS_MAX_LEN":"l8", "PASS_MIN_DAYS":"l9", "PASS_MIN_LEN":"l10", "PASS_WARN_AGE":"l11", "PERMISSION_SECURITY":"paranoid", "RUN_UPDATEDB_AS":"r7", "UID_MAX":"l12", "UID_MIN":"l13"]
+Return	true

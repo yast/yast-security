@@ -7,20 +7,18 @@ yncludedir = @yncludedir@/security
 client_DATA =			\
 	security.ycp		\
 	security_auto.ycp	\
+	security_summary.ycp	\
 	security_write.ycp
 
 ynclude_DATA =			\
 	users.ycp		\
+	complex.ycp		\
 	dialogs.ycp		\
 	wizards.ycp		\
 	widgets.ycp		\
-	helps.ycp		\
-				\
 	routines.ycp		\
-	settings.ycp		\
-	functions_ui.ycp	\
-	io.ycp			\
-	ui.ycp
+	levels.ycp		\
+	helps.ycp
 
 module_DATA = Security.ycp
 

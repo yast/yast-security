@@ -14,37 +14,11 @@
 
 include "testsuite.ycp";
 
-map DATA = $[
+import "Security";
+include "security/levels.ycp";
 
-      /* "Boot" */
-      "CONSOLE_SHUTDOWN"	: "ignore",
-      "KDM_SHUTDOWN"		: "root",
-      /* "Login" */
-      "FAILLOG_ENAB"		: "yes",
-      "LASTLOG_ENAB"		: "yes",
-      "FAIL_DELAY"		: "6",
-      "ROOT_LOGIN_REMOTE"	: "no",
-      "PASSWD_USE_CRACKLIB"	: "yes",
-      "OBSCURE_CHECKS_ENAB"	: "no",
-      "PASS_WARN_AGE"		: "14",
-      "MD5_SUPPORT"		: "no",
-      "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
-       /* "Perms" */
-      "PERMISSION_SECURITY"	: "easy",
-      /* "Other" */
-      "CWD_IN_ROOT_PATH"	: "no",
-      "RUN_UPDATEDB_AS"		: "nobody",
-       /* Adduser */
-      "GID_MIN"			: "101",
-      "GID_MAX"			: "60000",
-      "UID_MIN"			: "100",
-      "UID_MAX"			: "60000",
-      "PASS_MIN_DAYS"		: "1",
-      "PASS_MAX_DAYS"		: "99999",
-      "PASS_MIN_LEN"		: "5",
-      "PASS_MAX_LEN"		: "8"
-];
-
-TEST(`security_write(DATA),[],false);
+Security::Settings = Levels["Level2"]:$[];
+Security::modified = true;
+TEST(``(Security::Write()),[],false);
 
 }

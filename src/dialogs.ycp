@@ -13,78 +13,10 @@ textdomain "security";
 
 import "Wizard";
 
-include "security/ui.ycp";
+include "ui/common_messages.ycp";
+
 include "security/helps.ycp";
-
-/**
- * Read settings dialog
- * @return `next if success, else `abort
- */
-global define symbol ReadDialog() ``{
-
-    Wizard::RestoreHelp(HELPS["read"]:"");
-    Security::AbortFunction = ``{return PollAbort();};
-    boolean ret = Security::Read();
-    return ret ? `next : `abort;
-}
-
-/**
- * Write settings dialog
- * @return `next if success, else `abort
- */
-global define symbol WriteDialog() ``{
-
-    Wizard::RestoreHelp(HELPS["write"]:"");
-    Security::AbortFunction = ``{return PollAbort();};
-    boolean ret = Security::Write();
-    return ret ? `next : `abort;
-}
-
-/**
- * Main dialog
- * @return dialog result
- */
-global define symbol MainDialog() ``{
-
-    /* Main dialog caption */
-    string caption = _("Local security configuration");
-    string help = HELPS["main"]:"";
-
-    /* Main dialog contents */
-    term contents = nil;
-
-    Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
-
-    any ret = nil;
-    while(true) {
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort || ret == `cancel) {
-	    if(ReallyAbort()) break;
-	    else continue;
-	}
-	else if(ret == `back) {
-	    break;
-	}
-	else if(ret == `next) {
-	    /* FIXME: check_* */
-	    break;
-	}
-	else {
-	    y2error("Unexpected return code: %1", ret);
-	    continue;
-	}
-    };
-
-    if(ret == `next) {
-	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
-	// ...
-    }
-
-    return ret;
-}
+include "security/routines.ycp";
 
 /**
  * Boot dialog
@@ -96,18 +28,32 @@ global define symbol BootDialog() ``{
     string caption = _("Boot settings");
     string help = HELPS["boot"]:"";
 
+    /* Boot dialog contents * /
+    term contents = `VBox(
+	XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(
+	    VSeparator(),
+	    settings2widget("CONSOLE_SHUTDOWN"),
+	    `VSpacing(0.4),
+	    settings2widget("KDM_SHUTDOWN")
+	),`HSpacing(1.5)))
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    */
+
     /* Boot dialog contents */
     term contents = `HVCenter(`HVSquash(`HBox(
 	`HSpacing(5),
 	`VBox(
 	    `VSpacing(2),
+	    /* Frame label */
 	    `Frame(_("Boot permissions"),`HBox(
 		`HSpacing(3),
 		`VBox(
 		    `VSpacing(1),
-		    map2widget("CONSOLE_SHUTDOWN"),
-		    `VSpacing(0.4),
-		    map2widget("KDM_SHUTDOWN"),
+		    settings2widget("CONSOLE_SHUTDOWN"),
+		    `VSpacing(1.0),
+		    settings2widget("KDM_SHUTDOWN"),
 		    `VSpacing(1)
 		),
 		`HSpacing(3)
@@ -139,8 +85,8 @@ global define symbol BootDialog() ``{
     };
 
     if(ret == `next) {
-	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
-	// ...
+	widget2settings("CONSOLE_SHUTDOWN");
+	widget2settings("KDM_SHUTDOWN");
     }
 
     return ret;
@@ -157,10 +103,21 @@ global define symbol MiscDialog() ``{
     string help = HELPS["misc"]:"";
 
     /* Misc dialog contents */
-    term contents = nil;
+    term contents = `VBox(
+	VSeparator(),
+	settings2widget("PERMISSION_SECURITY"),
+	`VSpacing(1.0),
+	settings2widget("RUN_UPDATEDB_AS"),
+	`VSpacing(1.0),
+	settings2widget("CWD_IN_ROOT_PATH"),
+	VSeparator(),
+	settings2widget("CWD_IN_USER_PATH"),
+	`VSpacing(1.8)
+    );
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
+	    BackButtonLabel(), FinishButtonLabel());
 
     any ret = nil;
     while(true) {
@@ -185,8 +142,10 @@ global define symbol MiscDialog() ``{
     };
 
     if(ret == `next) {
-	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
-	// ...
+	widget2settings("PERMISSION_SECURITY");
+	widget2settings("CWD_IN_ROOT_PATH");
+	widget2settings("CWD_IN_USER_PATH");
+	widget2settings("RUN_UPDATEDB_AS");
     }
 
     return ret;
@@ -196,14 +155,46 @@ global define symbol MiscDialog() ``{
  * Password dialog
  * @return dialog result
  */
-global define symbol PasswordDialog() ``{
+global define symbol PassDialog() ``{
 
     /* Password dialog caption */
     string caption = _("Password settings");
     string help = HELPS["password"]:"";
 
     /* Password dialog contents */
-    term contents = nil;
+    term contents = `VBox(
+	/* Frame label */
+	XFrame(0.3,0.15,_("Checks"),`VBox(
+	    settings2widget("PASSWD_USE_CRACKLIB"),
+	    VSeparator(),
+	    settings2widget("OBSCURE_CHECKS_ENAB"),
+	    VSeparator()
+	)),
+	`VSpacing(1.0),
+	settings2widget("PASSWD_ENCRYPTION"),
+	`VSpacing(1.0),
+	/* Frame label */
+	`Frame(_("Password length"),`HBox(
+	    `HSpacing(0.4),
+	    settings2widget("PASS_MIN_LEN"),
+	    `HSpacing(0.4),
+	    settings2widget("PASS_MAX_LEN"),
+	    `HSpacing(0.4)
+	)),
+	`VSpacing(0.1),
+	/* Frame label */
+	`Frame(_("Days of password change warning"),`HBox(
+	    `HSpacing(0.4),
+	    settings2widget("PASS_MIN_DAYS"),
+	    `HSpacing(0.4),
+	    settings2widget("PASS_MAX_DAYS"),
+	    `HSpacing(0.4)
+	)),
+	`VSpacing(0.15),
+	settings2widget("PASS_WARN_AGE"),
+	`VSpacing(0.0)
+    );
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
 	    BackButtonLabel(), NextButtonLabel());
@@ -231,8 +222,14 @@ global define symbol PasswordDialog() ``{
     };
 
     if(ret == `next) {
-	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
-	// ...
+	widget2settings("PASS_MIN_DAYS");
+	widget2settings("PASS_MAX_DAYS");
+	widget2settings("PASS_MIN_LEN");
+	widget2settings("PASS_MAX_LEN");
+	widget2settings("PASSWD_USE_CRACKLIB");
+	widget2settings("OBSCURE_CHECKS_ENAB");
+	widget2settings("PASS_WARN_AGE");
+	widget2settings("PASSWD_ENCRYPTION");
     }
 
     return ret;
@@ -249,7 +246,23 @@ global define symbol LoginDialog() ``{
     string help = HELPS["login"]:"";
 
     /* Login dialog contents */
-    term contents = nil;
+    term contents = `VBox(
+	/* Frame label */
+	XFrame(3.0,1.0,_("Login"),`VBox(
+	    //VSeparator(),
+	    settings2widget("FAIL_DELAY"),
+	    //VSeparator(),
+	    `VSpacing(0.5),
+	    settings2widget("FAILLOG_ENAB"),
+	    VSeparator(),
+	    settings2widget("LASTLOG_ENAB"),
+	    VSeparator(),
+	    settings2widget("DISPLAYMANAGER_REMOTE_ACCESS")
+	    //VSeparator()
+	))
+	//,`VSpacing(1.7)
+    );
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
 	    BackButtonLabel(), NextButtonLabel());
@@ -277,20 +290,13 @@ global define symbol LoginDialog() ``{
     };
 
     if(ret == `next) {
-	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
-	// ...
+	widget2settings("FAILLOG_ENAB");
+	widget2settings("LASTLOG_ENAB");
+	widget2settings("FAIL_DELAY");
+	widget2settings("DISPLAYMANAGER_REMOTE_ACCESS");
     }
 
     return ret;
-}
-
-if(false) {
-Wizard::CreateDialog();
-include "security/widgets.ycp";
-
-//MainDialog();
-BootDialog();
-//MiscDialog();
 }
 
 /* EOF */

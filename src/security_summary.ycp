@@ -1,0 +1,37 @@
+/**
+ * File:	clients/security_summary.ycp
+ * Package:	Configuration of network
+ * Summary:	Securitys summary
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ * Main file for network card configuration.
+ * Uses all other files.
+ */
+
+{
+
+textdomain "network";
+
+import "Security";
+import "Summary";
+
+/* The main () */
+y2milestone("----------------------------------------");
+y2milestone("Security summary started");
+
+Progress::off();
+Security::Read();
+list sum = Security::Summary();
+y2debug("summary=%1", sum);
+string ret = select(sum, 0, "");
+Progress::on();
+
+/* Finish */
+y2milestone("Security summary finished");
+y2milestone("----------------------------------------");
+return ret;
+
+/* EOF */
+}
