@@ -126,9 +126,23 @@ Passwords should be constructed using a mixture of characters. This makes the
 guessing of passwords very difficult. Check this box to enable additional
 checks.</p>") +
 
-    /* Password dialog help 4/8 */
-    _("<p><b>Password Encryption Method</b><br>
-FIXME.</p>") +
+    /* Password dialog help 4a/8 */
+    _("<p><b>Password Encryption Method:</b><br>")_ +
+
+    /* Password dialog help 4b/8 */
+_("<p><b>des</b>, the Linux default method, works in all network environments,
+but it restricts you to passwords no longer than eight characters. If you need
+compatibility with other systems, use this method.</p>") +
+
+    /* Password dialog help 4c/8 */
+_("<p><b>md5</b> allows longer passwords and is supported by all current Linux 
+distributions, but not by other systems or old software.</p>") +
+
+    /* Password dialog help 4d/8 */
+_("<p><b>blowfish</b> is similar to md5, but uses a different algorithm
+to encrypt passwords. It is not yet supported by many systems. A lot of
+CPU power is needed to calculate the hash, which makes it difficult to crack
+passwords with the help of a dictionary.</p>") +
 
     /* Password dialog help 5/8 */
     _("<p><b>Number of Significant Characters in the Password</b><br>
