@@ -180,7 +180,7 @@ global define Choose(list sel) ``{
   any ret = nil;
   do {
     ret = UI(`UserInput());
-  } while (ret != `cancel && ret != `ok && !isnil(ret));
+  } while (ret != `cancel && ret != `ok && ret != nil);
 
   if ((ret == `ok) && (sel != []))
     item = UI(`QueryWidget(`id(`sel), `CurrentItem));

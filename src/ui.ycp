@@ -176,7 +176,7 @@ All changes you made will be lost.")));
 
     if(ret == `ok || ret == `finish)
         return `ok;
-    if(ret == `cancel || isnil(ret))
+    if(ret == `cancel || ret == nil)
         return nil;
 
     return ret;
@@ -334,7 +334,7 @@ global define FindSettings(list settings, string ident) ``{
     return false;
   });
 
-  if(mm == $[]) //isnil(mm))
+  if(mm == nil || mm == $[])
     ret = nil;
   else
     ret = lookup(mm,"settings");
@@ -368,7 +368,7 @@ global define CurrentSettings(list settings, map current) ``{
   });
 
   y2debug("mm: %1",mm);
-  y2debug("mm: %1",isnil(mm));
+  //y2debug("mm: %1",is nil(mm));
   if(mm == $[])
     ret = nil;
   else
@@ -377,7 +377,7 @@ global define CurrentSettings(list settings, map current) ``{
   //return "Secure";
   //return nil;
   y2debug("ret=%1",ret);
-  y2debug("ret=%1",isnil(ret));
+  //y2debug("ret=%1",is nil(ret));
   return ret;
 };
 
@@ -389,11 +389,9 @@ global define CurrentSettings(list settings, map current) ``{
 global define SecuritySettings(list settings, map defs) ``{
   string current = CurrentSettings(settings,defs);
   y2debug("current=%1",current);
-  y2debug("current=%1",isnil(current));
 
   boolean enab = false;
-  //if(isnil(current)) enab=true;
-  if(current == "") enab=true;
+  if(current == nil || current == "") enab=true;
 
   term T = `VBox();
   T = add(T,`VSpacing(0.5));
@@ -486,7 +484,7 @@ global define SecurityMainDialog(map defs) ``{
       WIDGETS = settings2widgets(WIDGETS,current_sets);
       break;
     }
-    else if(ret == `abort || ret == `back || ret == `cancel || isnil(ret))
+    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
       break;                                /* Don't save the settings */
     else if(ret == `details || ret ==`next)  {
       RBgroup=false;
@@ -529,7 +527,7 @@ global define SecurityMainDialog(map defs) ``{
 
           continue;
         }
-        else if(subret == `abort || subret == `cancel || isnil(subret))
+        else if(subret == `abort || subret == `cancel || subret == nil)
           ret = nil;
         else
           ret = `ok;
@@ -566,8 +564,8 @@ network server secure.")));
     y2debug("new_WIDGETS=%1",WIDGETS);
     if(RBgroup==true) {
       string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
-      //if(!isnil(current_defs)) {
-      if(current_defs != "") {
+      //if(!is nil(current_defs)) {
+      if(current_defs != nil && current_defs != "") {
         y2debug("current_defs: %1",current_defs);
         map current_sets = FindSettings(settings,current_defs);
         WIDGETS = settings2widgets(WIDGETS,current_sets);
@@ -606,7 +604,7 @@ global define SecurityWizzard() ``{
       current=current-1;
       if(current<0) break;
     }
-    else if(ret == `abort || isnil(ret) || ret==`ok) break;
+    else if(ret == `abort || ret==nil || ret==`ok) break;
   }
 
   y2debug("aborting: %1",ret);
@@ -635,7 +633,7 @@ global define SecurityDetailsDialog() ``{
     ret = processInput();
     if(ret == `ok)
       break;
-    else if(ret == `abort || ret == `back || ret == `cancel || isnil(ret))
+    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
       break;
     else if(ret == `boot)  subret = SecurityBootDialog();
     else if(ret == `login) subret = SecurityLoginDialog();
