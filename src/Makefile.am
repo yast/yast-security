@@ -11,13 +11,13 @@ modules_DATA =			\
 	security.ycp		\
 	security_helps.ycp	\
 	security_settings.ycp	\
-	security_widgets.ycp	\
+	security_widgets.ycp
 
 include_DATA =			\
 	general.ycp		\
 	general_ui.ycp		\
 	security_io.ycp		\
-	security_ui.ycp		\
+	security_ui.ycp
 
 menu_DATA = menuentry_security.ycp
 
