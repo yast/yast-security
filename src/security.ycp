@@ -38,7 +38,7 @@ y2debug("Security Module started");
 map settings = SecurityRead();
 y2debug("settings: %1",settings);
 
-map WIDGETS = settings2widgets(WIDGETS,settings);
+WIDGETS = settings2widgets(WIDGETS,settings);
 y2debug("WIDGETS: %1",WIDGETS);
 
 any ret = SecurityMainDialog(settings);

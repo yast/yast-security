@@ -34,7 +34,7 @@ textdomain "security";
  * @return map a map of texts
  */
  
-global define STRINGS() ``{ return $[
+global define UI_STRINGS() ``{ return $[
 
   "Main" : $[
     // main screen caption
@@ -210,6 +210,6 @@ enable telnet for root.
 ];
 };
 
-return STRINGS();
+return UI_STRINGS();
 
 } /* EOF */

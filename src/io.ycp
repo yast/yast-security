@@ -37,8 +37,8 @@ global define LookupDefault(string item) ``{
     map default = find(`s,settings,``(lookup(s,"name")=="Default"));
     string def = lookup(default,"settings");
     map ret = find(`s,settings,``(lookup(s,"name")==def));
-    map ret = lookup(ret,"settings");
-    if(item!="") return lookup(ret,item);
+    ret = lookup(ret,"settings");
+    if(item!=nil && item!="") return lookup(ret,item);
     return ret;
 };
 

@@ -1,3 +1,8 @@
+-------------------------------------------------------------------
+Mon Jul 30 11:34:24 CEST 2001 - msvec@suse.cz
+
+- new libycp fixes
+- minor variable fixes
 - updated testsuite
 - adapt to the new translator (locale useless)
 - version 2.4.1

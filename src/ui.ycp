@@ -238,7 +238,7 @@ global define BottomButtons(list buttons) ``{
     TT = foreach (`s,buttons,``{
         any x = Button(s);
         TT = add(TT,x);
-        any x = `HStretch();
+        x = `HStretch();
         TT = add(TT, x);
         return TT;
     });
