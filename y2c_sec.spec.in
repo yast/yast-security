@@ -48,6 +48,7 @@ make install
 @YAST2DIR@/clients/security_helps.ycp
 @YAST2DIR@/clients/security_settings.ycp
 @YAST2DIR@/clients/security_widgets.ycp
+@YAST2DIR@/clients/security_write.ycp
 @YAST2DIR@/include/general.ycp
 @YAST2DIR@/include/general_ui.ycp
 @YAST2DIR@/include/security_io.ycp

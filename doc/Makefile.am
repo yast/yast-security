@@ -2,7 +2,7 @@
 # Makefile.am for y2c_sec/doc
 #
 
-docdir = @YAST2DOC@
+docdir = @DOCDIR@
 htmldir = $(docdir)/y2c_sec
 
 html_DATA =		\

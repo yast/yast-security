@@ -3,6 +3,7 @@ Security Module TODO file
 $Id$
 
 Urgent:
+- ROOT_LOGIN_REMOTE "yes"|"No" hack!
 - helps: useradd -- adduser
 - permissions: local (replace or add?) -- maybe "Add local perms" [X]
 
