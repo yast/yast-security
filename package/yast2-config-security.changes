@@ -1,4 +1,28 @@
 -------------------------------------------------------------------
+Wed Feb 27 10:51:05 CET 2002 - msvec@suse.cz
+
+- use buildroot (via y2spec)
+- include the locate agent in the package
+- 2.5.11
+
+-------------------------------------------------------------------
+Mon Feb 25 15:03:33 CET 2002 - msvec@suse.cz
+
+- use proper sysconfig files (#13619)
+- minor fix of permissions writing
+- added agent for sysconfig/locate
+- updated testsuite
+- 2.5.10
+
+-------------------------------------------------------------------
+Mon Feb 18 19:28:01 CET 2002 - msvec@suse.cz
+
+- fixed shortcuts
+- fixed permissions reading and writing (#13106)
+- updated testsuite
+- 2.5.9
+
+-------------------------------------------------------------------
 Mon Feb 11 16:58:42 CET 2002 - mvidner@suse.cz
 
 - Fixed login.defs agent to handle quoted values.

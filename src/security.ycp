@@ -21,9 +21,15 @@
 
 {
 
-y2debug("-----------------------------------------------");
+/***
+ * <h3> Security configuration
+ */
 
 textdomain "security";
+
+y2milestone("Security module started");
+y2milestone("----------------------------------------");
+
 include "security/io.ycp";
 include "security/ui.ycp";
 
@@ -54,8 +60,8 @@ if(ret == `ok) {
     InfoClose();
 }
 
-y2debug("Security Module finished");
+y2milestone("Security module finished");
+return ret;
 
-/* return; */
-
-} /* YaST2: Local security configuration EOF */
+/* EOF */
+}

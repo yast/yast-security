@@ -114,7 +114,7 @@ return $[
   "LASTLOG_ENAB" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)
-    "Label" : _("&Record successful login attempts"),
+    "Label" : _("R&ecord successful login attempts"),
     "Value" : "yes"
   ],
 
@@ -235,7 +235,7 @@ return $[
   "MD5_SUPPORT" : $[
     "Widget" : "CheckBox",
     // checkbox label (please, stick to 50 characters per line)
-    "Label" : _("Activate MD5 encryption for passwords"),
+    "Label" : _("&Activate MD5 encryption for passwords"),
     "Value" : "no"
   ] /* No \, ! */
 

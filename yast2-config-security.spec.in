@@ -1,44 +1,27 @@
-#
-# spec file for package @RPMNAME@
-#
-# Copyright  (c)  2000  SuSE GmbH  Nuernberg, Germany.
-#
-# please send bugfixes or comments to @MAINTAINER@
-#
-
+@HEADER-COMMENT@
 # neededforbuild  autoconf automake ycpdoc yast2-testsuite dejagnu expect tcl yast2-base libycp libycp-devel liby2 libyui libscr yast2-core-wfm yast2-core-scr yast2-agent-system yast2-devtools
 
-Vendor:		SuSE GmbH, Nuernberg, Germany
-Distribution:	SuSE Linux 6.4 (i386)
-Name:		@RPMNAME@
-Release:	1
-Copyright:	(c) 2000 SuSE GmbH
-Group:		System Environment/YaST
-Requires:	yast2 yast2-trans-security yast2-lib-wizard yast2-agent-ini yast2-agent-pam
+@HEADER@
+Requires:	yast2 yast2-trans-security yast2-lib-wizard
+Requires:	yast2-agent-ini yast2-agent-pam
+
 Provides:	y2c_sec
 Obsoletes:	y2c_sec
+
 BuildArchitectures: noarch
 
-Packager:	@MAINTAINER@
-
-Summary:	YaST2 security configuration module
-Version:	@VERSION@
-Source0:	@RPMNAME@-@VERSION@.tar.bz2
+Summary:	Configuration of security
 
 %description
 -
 
-%prep
-%setup -n @RPMNAME@-@VERSION@
+@PREP@
 
-%build
-./configure
-make
+@BUILD-YCP@
 
-%install
-make install
-make check
-%{?suse_check}
+@INSTALL-YCP@
+
+@CLEAN@
 
 %files
 %defattr(-,root,root)
@@ -47,7 +30,6 @@ make check
 @YAST2DIR@/clients/security*.ycp
 @YAST2DIR@/clients/ui_helps.ycp
 @YAST2DIR@/clients/ui_widgets.ycp
-@YAST2DIR@/scrconf/login_defs.scr
-@YAST2DIR@/scrconf/cfg_security.scr
+@YAST2DIR@/scrconf/*.scr
 @YAST2DIR@/include/security/*
 %doc @DOCDIR@

@@ -159,7 +159,7 @@ Set the minimum and maximum possible group ID.</p>
     // help for "Miscellaneous settings"
     "help" :
 _("<p>In this dialog, change miscellaneous settings.</p>") +
-_("<p><b>Setting of file premissions</b><br>
+_("<p><b>Setting of file permissions</b><br>
 Settings for the permissions of certain system files are set
 according to the data in /etc/permissions.secure or
 /etc/permissions.easy. Which file is used depends on this
@@ -167,8 +167,7 @@ selection. Launching SuSEconfig sets these permissions
 according to /etc/permissions.*. This fixes files with
 incorrect permissions, whether this occurred accidentally or
 by intruders.
-</p>
-") +
+</p>\n") +
 _("<p>\"easy\": Most of the system files that are only readable
   by root (via secure) are modified so other users can
   also read these files.

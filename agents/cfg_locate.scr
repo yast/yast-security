@@ -1,0 +1,26 @@
+/**
+ * File:	cfg_locate.scr
+ * Summary:	Agent for reading/writing /etc/sysconfig/locate
+ * Author:	Michal Svec <msvec@suse.cz>
+ * Access:	read / write
+ *
+ * Example:
+ *   Dir(.sysconfig.locate)
+ *   (["PERMISSION_RUN_UPDATEDB_AS", ...])
+ **
+ *   Read(.sysconfig.locate.RUN_UPDATEDB_AS)
+ *   ("root")
+ **
+ *   Write(.sysconfig.locate.RUN_UPDATEDB_AS, "root")
+ *   (true)
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/sysconfig/locate</tt>
+ * in an easy manner.
+ */
+.sysconfig.locate
+
+`ag_ini(
+    SysConfigFile("/etc/sysconfig/locate")
+)

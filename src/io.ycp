@@ -45,9 +45,9 @@ global define LookupDefault(string item) ``{
 /**
  * Read one setting from the SCR -- login.defs
  * @param item value to be written
- * @return string the item value
+ * @return the item value
  */
-global define ReadLoginDefs(string item) ``{
+global define string ReadLoginDefs(string item) ``{
     string pth = ".etc.login_defs." + item;
     string ret = SCR::Read(topath(pth));
     if(ret == nil || ret == "")
@@ -58,10 +58,10 @@ global define ReadLoginDefs(string item) ``{
 /**
  * Read one setting from the SCR -- /etc/sysconfig/security
  * @param item value to be written
- * @return string the item value
+ * @return the item value
  */
-global define ReadSysConfig(string item) ``{
-    string pth = ".sysconfig.security." + item;
+global define string ReadSysConfig(string p, string item) ``{
+    string pth = ".sysconfig." + p + "." + item;
     string ret = SCR::Read(topath(pth));
     if(ret == nil || ret == "")
 	ret = LookupDefault(item);
@@ -90,8 +90,8 @@ global define WriteLoginDefs(map m, string item) ``{
  * @param item value to be written
  * @return boolean success
  */
-global define WriteSysConfig(map m, string item) ``{
-    string pth = ".sysconfig.security." + item;
+global define WriteSysConfig(map m, string p, string item) ``{
+    string pth = ".sysconfig." + p + "." + item;
     string ret = lookup(m,item,"");
     if(ret=="")
         return nil;
@@ -175,16 +175,26 @@ global define ApplyWrite(term t, list l, map m) ``{
 global define SecurityRead() ``{
     map m = $[];
 
-    /* rc.config and login.defs */
+    /* login.defs */
     m = ApplyRead(``(ReadLoginDefs()),SettingsLoginDefs(),m);
-    m = ApplyRead(``(ReadSysConfig()),SettingsSysConfig(),m);
+    /* sysconfig */
+    // m = ApplyRead(``(ReadSysConfig()),SettingsSysConfig(),m);
+    m = add(m, "CONSOLE_SHUTDOWN", ReadSysConfig("security", "CONSOLE_SHUTDOWN"));
+    m = add(m, "PERMISSION_SECURITY", ReadSysConfig("security", "PERMISSION_SECURITY"));
+    m = add(m, "CWD_IN_ROOT_PATH", ReadSysConfig("suseconfig", "CWD_IN_ROOT_PATH"));
+    m = add(m, "KDM_SHUTDOWN", ReadSysConfig("displaymanager", "KDM_SHUTDOWN"));
+    m = add(m, "DISPLAYMANAGER_REMOTE_ACCESS", ReadSysConfig("displaymanager", "DISPLAYMANAGER_REMOTE_ACCESS"));
+    m = add(m, "RUN_UPDATEDB_AS", ReadSysConfig("locate", "RUN_UPDATEDB_AS"));
 
+    map pam_unix_map = $[];
     list pam_list = SCR::Read(.pam.all.password.pam_unix2);
-    if(pam_list == [] || pam_list == nil) return m;
-    map pam_unix_map = select(pam_list,0,$[]);
+    if(pam_list != [] && pam_list != nil)
+	pam_unix_map = select(pam_list,0,$[]);
+
+    map pam_check_map = $[];
     pam_list = SCR::Read(.pam.all.password.pam_pwcheck);
-    if(pam_list == [] || pam_list == nil) return m;
-    map pam_check_map = select(pam_list,0,$[]);
+    if(pam_list != [] && pam_list != nil)
+	pam_check_map = select(pam_list,0,$[]);
 
     /* md5 support */
     boolean pam_support = contains(splitstring(lookup(pam_unix_map , "arguments", ""), " "), "md5");
@@ -193,6 +203,14 @@ global define SecurityRead() ``{
     /* use cracklib? */
     pam_support = contains(splitstring(lookup(pam_check_map , "arguments", ""), " "), "use_cracklib");
     m = add(m,"PASSWD_USE_CRACKLIB", pam_support?"yes":"no");
+
+    /* local permissions hack */
+    string perm = lookup(m, "PERMISSION_SECURITY", "");
+    if(issubstring(perm, "easy")) perm = "easy";
+    else if(issubstring(perm, "paranoid")) perm = "paranoid";
+    else if(issubstring(perm, "secure")) perm = "secure";
+    else perm = "secure";
+    m = add(m, "PERMISSION_SECURITY", perm);
 
     return m;
 };
@@ -205,12 +223,31 @@ global define SecurityRead() ``{
  */
 global define SecurityWrite(map m) ``{
 
-    /* rc.config and login.defs */
+    /* local permissions hack */
+    string perm = lookup(m, "PERMISSION_SECURITY", "");
+    m = add(m, "PERMISSION_SECURITY", perm + " local");
+
+    /* login.defs */
     list l1 = ApplyWrite(``(WriteLoginDefs()),SettingsLoginDefs(),m);
-    list l2 = ApplyWrite(``(WriteSysConfig()),SettingsSysConfig(),m);
-    list ret = flatten([l1,l2]);
-    ret = add(ret,SCR::Write(.etc.login_defs,nil));
-    ret = add(ret,SCR::Write(.sysconfig.security,nil));
+    //list l2 = ApplyWrite(``(WriteSysConfig()),SettingsSysConfig(),m);
+    //list ret = flatten([l1,l2]);
+    //ret = add(ret,SCR::Write(.etc.login_defs,nil));
+    //ret = add(ret,SCR::Write(.sysconfig.security,nil));
+
+    /* sysconfig */
+    WriteSysConfig(m, "security", "CONSOLE_SHUTDOWN");
+    WriteSysConfig(m, "security", "PERMISSION_SECURITY");
+    WriteSysConfig(m, "suseconfig", "CWD_IN_ROOT_PATH");
+    WriteSysConfig(m, "displaymanager", "KDM_SHUTDOWN");
+    WriteSysConfig(m, "displaymanager", "DISPLAYMANAGER_REMOTE_ACCESS");
+    WriteSysConfig(m, "locate", "RUN_UPDATEDB_AS");
+
+    /* flush */
+    SCR::Write(.etc.login_defs,nil);
+    SCR::Write(.sysconfig.security,nil);
+    SCR::Write(.sysconfig.suseconfig,nil);
+    SCR::Write(.sysconfig.displaymanager,nil);
+    SCR::Write(.sysconfig.locate,nil);
 
     /* md5 support */
     if (lookup(m, "MD5_SUPPORT", "no") == "yes") {

@@ -132,11 +132,6 @@ global define widget2value(string ID) ``{
     if(is(ret,integer))
         ret = sformat("%1",ret);
 
-    /* FIXME */
-    if(ID == "PERMISSION_SECURITY")
-        if(!issubstring(ret,"local"))
-            ret = ret + " local";
-
     return ret;
 };
 

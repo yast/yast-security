@@ -16,16 +16,22 @@ include "testsuite.ycp";
 include "security/io.ycp";
 
 map scr_info = $[
-    "rc" : $[ "system" : $[
-	"CONSOLE_SHUTDOWN"	:	"r1",
-	"CWD_IN_ROOT_PATH"	:	"r2",
-	"KDM_SHUTDOWN"		:	"r3",
-	"PASSWD_USE_CRACKLIB"	:	"r4",
-	"PERMISSION_SECURITY"	:	"r5",
-	"ROOT_LOGIN_REMOTE"	:	"r6",
-	"RUN_UPDATEDB_AS"	:	"r7",
-	"DISPLAYMANAGER_REMOTE_ACCESS" : "yes"
-    ]],
+    "sysconfig" : $[
+	"security" : $[
+	    "CONSOLE_SHUTDOWN"		:	"r1",
+	    "PERMISSION_SECURITY"	:	"paranoid",
+	],
+	"suseconfig" : $[
+	    "CWD_IN_ROOT_PATH"		:	"r2",
+	],
+	"displaymanager" : $[
+	    "KDM_SHUTDOWN"		:	"r3",
+	    "DISPLAYMANAGER_REMOTE_ACCESS" :	"r9",
+	],
+	"locate" : $[
+	    "RUN_UPDATEDB_AS"		:	"r7",
+	],
+    ],
     "etc" : $[ "login_defs" : $[
 	"FAILLOG_ENAB"		:	"l1",
 	"FAIL_DELAY"		:	"l2",

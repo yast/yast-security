@@ -62,7 +62,7 @@ $[
     "MD5_SUPPORT"		: "no",
     "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
     /* "Perms" */
-    "PERMISSION_SECURITY"	: "easy local",
+    "PERMISSION_SECURITY"	: "easy",
     /* "Other" */
     "CWD_IN_ROOT_PATH"		: "yes",
     "RUN_UPDATEDB_AS"		: "root",
@@ -96,7 +96,7 @@ $[
     "MD5_SUPPORT"		: "no",
     "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
      /* "Perms" */
-    "PERMISSION_SECURITY"	: "easy local",
+    "PERMISSION_SECURITY"	: "easy",
     /* "Other" */
     "CWD_IN_ROOT_PATH"		: "no",
     "RUN_UPDATEDB_AS"		: "nobody",
@@ -131,7 +131,7 @@ $[
     "MD5_SUPPORT"		: "no",
     "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
     /* "Perms" */
-    "PERMISSION_SECURITY"	: "secure local",
+    "PERMISSION_SECURITY"	: "secure",
     /* "Other" */
     "CWD_IN_ROOT_PATH"		: "no",
     "RUN_UPDATEDB_AS"		: "nobody",
