@@ -12,4 +12,4 @@ index.html: $(srcdir)/../../src/*.ycp
 	@YAST2DIR@/bin/ycpdoc -d. $(srcdir)/../../src/*.ycp
 
 clean-local:
-	rm -f $(html_DATA)
+	$(RM) $(html_DATA)

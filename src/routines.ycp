@@ -47,6 +47,7 @@ global define settings2widgets(map widgets, map settings) ``{
         widgets = updateValue(widgets,key,value);
         return widgets;
     });
+
     return widgets;
 };
 

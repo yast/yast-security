@@ -30,16 +30,22 @@ textdomain "security";
 include "security/io.ycp";
 
 list args = Args();
-if(size(args)>0) {
-    y2debug("Only writing... (%1)",Args(0));
-    /* FIXME: check the Args(0), is map? is ok? */
-    list ret = SecurityWrite(Args(0));
-    SecurityFinish();
-    return ret;
-}
-else
-    y2error("NOT writing, probably some mistake...");
 
-return false;
+if(size(args)<=0) {
+    y2error("NOT writing, probably some mistake...");
+    return false;
+}
+
+if(!is(Args(0),map)) {
+    y2error("Bad argument for security write: %1", Args(0));
+    return false;
+}
+
+map settings = select(args,0);
+y2debug("Only writing... (%1)",settings);
+
+list ret1 = SecurityWrite(settings);
+list ret2 = SecurityFinish();
+return flatten([ret1,ret2]);
 
 } /* EOF */

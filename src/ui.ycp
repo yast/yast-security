@@ -130,8 +130,30 @@ global define widget2value(string ID) ``{
     }
     if(is(ret,integer))
         ret = sformat("%1",ret);
+
+    /* FIXME */
+    if(ID == "PERMISSION_SECURITY")
+        if(!issubstring(ret,"local"))
+            ret = ret + " local";
+
     return ret;
 };
+
+/**
+ * Check if minimum is less than maximum in the widget
+ * @param minID ID os the minimum widget
+ * @param maxID ID os the maximum widget
+ * @return boolean true or false
+ */
+global define checkMinMax(string minID, string maxID) ``{
+  any min = UI(`QueryWidget(`id(minID),`Value));
+  any max = UI(`QueryWidget(`id(maxID),`Value));
+  if(is(min,integer) || is(min,float))
+    if(is(max,integer) || is(max,float))
+      if(min<=max)
+        return true;
+  return false;
+}
 
 /**
  * Process the UI input and return `ok (OK or Finish), nil (Close, Cancel)
@@ -324,7 +346,7 @@ global define FindSettings(list settings, string ident) ``{
  * Search the whole settings list for the current settings
  * @param settings the list of settings
  * @param current the current settings
- * @return map the name of current settings or nil, if not found
+ * @return string the name of current settings or nil, if not found
  */
 global define CurrentSettings(list settings, map current) ``{
   string ret = nil;
@@ -405,6 +427,7 @@ global define SecuritySettings(list settings, map defs) ``{
  * Update the WIDGETS map according to the given settings
  * @param curr the given settings
  */
+/* unused
 global define updateWIDGETS(any curr) ``{
   any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
   if(curr2!=curr)
@@ -413,6 +436,7 @@ global define updateWIDGETS(any curr) ``{
   map current_sets = FindSettings(settings,current_defs);
   WIDGETS = settings2widgets(WIDGETS,current_sets);
 }
+*/
 
 /**
  * Display a main security settings dialog. It also calls the
@@ -664,7 +688,7 @@ XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
 };
 
 /**
- * Login and password settings dialog
+ * Login settings dialog
  */
 global define SecurityLoginDialog() ``{
   SuSEDialogUP("Login", [], `VBox(
@@ -740,19 +764,6 @@ global define SecurityMiscDialog() ``{
   //UI(`CloseDialog());
   return ret;
 };
-
-/**
- * Password security settings dialog
- */
-global define checkMinMax(string minID, string maxID) ``{
-  any min = UI(`QueryWidget(`id(minID),`Value));
-  any max = UI(`QueryWidget(`id(maxID),`Value));
-  if(is(min,integer) || is(min,float))
-    if(is(max,integer) || is(max,float))
-      if(min<=max)
-        return true;
-  return false;
-}
 
 /**
  * Password security settings dialog

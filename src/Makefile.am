@@ -26,4 +26,4 @@ include_DATA =			\
 
 menu_DATA = menuentry_security.ycp
 
-EXTRA_DIST = $(modules_DATA) $(menu_DATA) $(include_DATA)
+EXTRA_DIST = $(modules_DATA) $(clients_DATA) $(menu_DATA) $(include_DATA)

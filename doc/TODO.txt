@@ -2,19 +2,20 @@ Security Module TODO file
 -------------------------
 $Id$
 
-DOC:
-../src/ui.ycp
+7.2:
+- Test ROOT_LOGIN_REMOTE hack!
 
+7.3:
+- wizard sequencer and library
+- files permissions
+- grep FIXME *.ycp
+- all files -> include/
+- STRINGS -> HELPS();
+
+Documentation:
 index.html (from security.txt)
 user.html
 impl.html
-
-Urgent:
-- grep FIXME *.ycp
-- Test ROOT_LOGIN_REMOTE hack!
-- STRINGS -> HELPS();
-- permissions: local (replace or add?) -- maybe "Add local perms" [X]
-- all files -> include/
 
 Rewrite:
 - finished: io, routines, security, security_write, settings

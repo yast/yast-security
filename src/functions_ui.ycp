@@ -27,7 +27,6 @@ textdomain "security";
  * @return any success
  * @see InfoClose
  */
-
 global define Info(string message) ``{
   any ret = UI(`OpenDialog(
         `opt(`decorated),
@@ -50,7 +49,6 @@ global define Info(string message) ``{
  * @return any success
  * @see Info
  */
-
 global define InfoClose() ``{
   any ret = UI(`CloseDialog());
   return ret;
@@ -61,7 +59,6 @@ global define InfoClose() ``{
  * @param message the message to be displayed
  * @return any the user input
  */
-
 global define Popup(string message) ``{
   map BUTTONS = CallFunction(`ui_buttons());
   UI(`OpenDialog(
@@ -92,7 +89,6 @@ global define Popup(string message) ``{
  * @return any the user input
  * @see Popup
  */
-
 global define PopupOK(string message) ``{
   map BUTTONS = CallFunction(`ui_buttons());
   UI(`OpenDialog(
@@ -123,7 +119,6 @@ global define PopupOK(string message) ``{
  * @return any the user input
  * @see PopupOK
  */
-
 global define Message(any message) ``{
   map BUTTONS = CallFunction(`ui_buttons());
   UI(`OpenDialog(
@@ -148,7 +143,6 @@ global define Message(any message) ``{
  * Display a debug box. This is an alias for the Message.
  * @see Message
  */
-
 global define Debug(any message) ``{
   Message(message);
 };
@@ -158,7 +152,6 @@ global define Debug(any message) ``{
  * @param m a map to browse
  * @see Choose
  */
-
 global define BrowseMap(map m) ``{
   list choose = mapkeys(m);
   string var = Choose(choose);
@@ -174,7 +167,6 @@ global define BrowseMap(map m) ``{
  * @param sel a list of strings
  * @return string the selected string
  */
-
 global define Choose(list sel) ``{
   string item = nil;
   map BUTTONS = CallFunction(`ui_buttons());

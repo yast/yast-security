@@ -1,5 +1,12 @@
 -------------------------------------------------------------------
-- msvec@suse.cz
+Wed Apr  4 10:32:29 CEST 2001 - msvec@suse.cz
+
+- updated comments and docs
+- enabled abuild checking
+- version 2.3.2
+
+-------------------------------------------------------------------
+Fri Mar 30 13:49:41 CEST 2001 - msvec@suse.cz
 
 - support for "auto" KDM setting
 - new libycp adaptation
