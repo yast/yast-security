@@ -1,0 +1,30 @@
+# $Id$
+
+Bugs:
+- proper "local" permissions support
+- grep FIXME *.ycp
+
+Rewrite:
+- use Security
+- wizard sequencer and library
+- all files -> include/security/
+- security_auto, ...
+
+Enhancements:
+- other settings from login.defs
+- settings from useradd/defaults (#14129)
+- /proc settings (sysrq, ...)
+- better documentation [index.html (security.txt), user.html, impl.html, ...]
+
+Future:
+- limits [limits.conf, ulimit]
+- services [cron, at, lpd]
+- devices [floppy, cdrom, sound, scanner, printer?, ppp?, ...]
+- software [dosemu, sudo, emulators, ppp?, ...]
+
+Files:
+- securetty, pam.d/*, security/access.conf, ssh/sshd_config
+- cron.allow, cron.deny, ... 
+- security/limits.conf
+- lilo.conf
+- unsure?: inittab, kdmrc

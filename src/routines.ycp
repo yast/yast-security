@@ -43,9 +43,14 @@ global define updateValue(map widgets, string ID, string val) ``{
  * @return map new widgets map
  */
 global define settings2widgets(map widgets, map settings) ``{
+    /*
     widgets = foreach(`key, `value, settings, ``{
         widgets = updateValue(widgets,key,value);
         return widgets;
+    });
+    */
+    foreach(`key, `value, settings, ``{
+        widgets = updateValue(widgets,key,value);
     });
 
     return widgets;

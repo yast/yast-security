@@ -25,15 +25,23 @@ textdomain "security";
 y2milestone("Security auto started");
 y2milestone("----------------------------------------");
 
+include "security/io.ycp";
+include "security/ui.ycp";
+
+map STRINGS = CallFunction(`ui_helps());
+map WIDGETS = CallFunction(`ui_widgets());
+
+/* Security
 import "Security";
 include "network/security/wizards.ycp";
+*/
 
 list args = Args();
-if( size(args) <= 0 ) {
+if(size(args) <= 0) {
     y2error("Did not get the settings, probably some mistake...");
     return false;
 }
-if( !is( Args(0), map ) ) {
+if(!is(Args(0), map)) {
     y2error("Bad argument for security_auto: %1", Args(0));
     return false;
 }
@@ -42,6 +50,7 @@ if( !is( Args(0), map ) ) {
 map settings = select(args, 0, $[]);
 y2debug("Imported: %1", settings);
 
+/* Security
 Security::Import(settings);
 symbol ret = SecurityAutoSequence();
 y2debug("ret=%1", ret);
@@ -49,6 +58,19 @@ y2debug("ret=%1", ret);
 y2milestone("Security auto finished");
 if(ret == `next)
     return Security::Export();
+
+return $[];
+*/
+
+y2debug("WIDGETS: %1",WIDGETS);
+WIDGETS = settings2widgets(WIDGETS,settings);
+y2debug("WIDGETS: %1",WIDGETS);
+any ret = SecurityMainDialog(settings);
+y2debug("WIDGETS: %1",WIDGETS);
+if(ret == `ok) {
+    settings = widgets2settings(LookupDefault(nil), WIDGETS);
+    return settings;
+}
 
 return $[];
 

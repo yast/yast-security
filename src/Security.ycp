@@ -1,0 +1,20 @@
+/**
+ * File:	modules/Security.ycp
+ * Package:	Security configuration
+ * Summary:	Data for the security configuration
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+module "Security";
+textdomain "security";
+
+import "Progress";
+
+global boolean nothing = false;
+
+/* EOF */
+}

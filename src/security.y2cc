@@ -18,7 +18,7 @@ Group = Security
 Icon = security.png
 
 ; *one* *short* descriptive line for y2cc
-Helptext = _("Configure all local security settings.")
+Helptext = _("Configure local security settings.")
 
 ; arguments, seperated by space
 Arguments = 
@@ -34,5 +34,11 @@ SortKey =
 
 ; which textdomain to use for translations (important!)
 Textdomain = security
+
+; Autoinstall features
+Autoinst =
+
+; Resource in control file
+AutoinstResource = security
 
 ; vim:syntax=dosini

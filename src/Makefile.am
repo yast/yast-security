@@ -22,6 +22,8 @@ ynclude_DATA =			\
 	io.ycp			\
 	ui.ycp
 
+module_DATA = Security.ycp
+
 config_DATA = security.y2cc
 
-EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA)
+EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA) $(module_DATA)

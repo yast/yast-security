@@ -88,7 +88,7 @@ global define any MainSequence() ``{
 	"password" : ``(PassDialog()),
 	"boot"     : ``(BootDialog()),
 	"login"    : ``(LoginDialog()),
-	"adduser"  : ``(UserDialog()),
+	"adduser"  : ``(AdduserDialog()),
 	"misc"     : ``(MiscDialog()),
 	"finish"   : [ ``(Finish()), true ]
     ];

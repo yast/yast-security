@@ -201,7 +201,6 @@ global define HSeparator() ``{
  * @return term the button
  */
 global define Button(symbol button) ``{
-    //map BUTTONS = CallFunction(`ui_buttons());
     map BUTTONS = $[
 	`ok : OKButtonLabel(),
 	`back : BackButtonLabel(),
