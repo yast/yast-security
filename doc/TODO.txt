@@ -11,8 +11,7 @@ implementation.html
 
 Urgent:
 - grep FIXME *.ycp
-- ROOT_LOGIN_REMOTE "yes"|"No" hack!
-- helps: useradd -- adduser
+- Test ROOT_LOGIN_REMOTE hack!
 - STRINGS -> HELPS();
 - settings.ycp -> items.ycp?
 - RcConfig_settings -> Settings_RcConfig

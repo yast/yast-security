@@ -34,6 +34,7 @@ Source0:	@RPMNAME@-@VERSION@.tar.bz2
 %build
 ./configure
 make
+#make check
 
 %install
 make install

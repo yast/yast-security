@@ -121,7 +121,7 @@ return $[
   "ROOT_LOGIN_REMOTE" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)
-    "Label" : UI(_("Disable telnet login for user root")),
+    "Label" : UI(_("Enable telnet login for user root")),
     "Value" : "no"
   ],
 

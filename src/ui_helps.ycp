@@ -127,7 +127,7 @@ This entry sets the number of days the user is warned before their password
     "caption" : UI(_("Adduser settings")),
     // help for "Adduser settings"
     "help" :
-UI(_("<p>In this dialog you can change various adduser settings.</p>")) +
+UI(_("<p>In this dialog you can change various useradd settings.</p>")) +
 UI(_("<p><b>User ID limitations</b><br>
 Set the minimum and maximum possible user ID.</p>")) +
 UI(_("<p><b>Group ID limitations</b><br>
