@@ -89,7 +89,7 @@ global define symbol BootDialog() ``{
 	widget2settings("KDM_SHUTDOWN");
     }
 
-    return ret;
+    return (symbol) ret;
 }
 
 /**
@@ -151,7 +151,7 @@ global define symbol MiscDialog() ``{
 	widget2settings("ENABLE_SYSRQ");
     }
 
-    return ret;
+    return (symbol) ret;
 }
 
 /**
@@ -197,7 +197,7 @@ global define symbol PassDialog() ``{
     Wizard::SetContentsButtons(caption, contents, help,
 	    Label::BackButton(), Label::NextButton());
 
-    string enc = UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
+    string enc = (string) UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
     UI::ChangeWidget(`id("PASS_MAX_LEN"), `Enabled, enc == "des");
 
     any ret = nil;
@@ -210,7 +210,7 @@ global define symbol PassDialog() ``{
 	    else continue;
 	}
 	else if(ret == "PASSWD_ENCRYPTION") {
-	    string enc = UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
+	    string enc = (string) UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
 	    UI::ChangeWidget(`id("PASS_MAX_LEN"), `Enabled, enc == "des");
 	    y2debug("enc=%1", enc);
 	    continue;
@@ -249,7 +249,7 @@ global define symbol PassDialog() ``{
 	widget2settings("PASSWD_ENCRYPTION");
     }
 
-    return ret;
+    return (symbol) ret;
 }
 
 /**
@@ -313,7 +313,7 @@ global define symbol LoginDialog() ``{
 	widget2settings("DISPLAYMANAGER_REMOTE_ACCESS");
     }
 
-    return ret;
+    return (symbol) ret;
 }
 
 /* EOF */

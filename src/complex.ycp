@@ -26,7 +26,8 @@ include "security/routines.ycp";
 global define symbol ReadDialog() ``{
 
     Wizard::RestoreHelp(HELPS["read"]:"");
-    Security::AbortFunction = ``{return PollAbort();};
+//    Security::AbortFunction = ``{return true;};
+    Security::AbortFunction = ``{return Security::PollAbort();};
     boolean ret = Security::Read();
     return ret ? `next : `abort;
 }
@@ -38,7 +39,7 @@ global define symbol ReadDialog() ``{
 global define symbol WriteDialog() ``{
 
     Wizard::RestoreHelp(HELPS["write"]:"");
-    Security::AbortFunction = ``{return PollAbort();};
+    Security::AbortFunction = ``{return Security::PollAbort();};
     boolean ret = Security::Write();
     return ret ? `next : `abort;
 }
@@ -68,7 +69,7 @@ global define symbol MainDialog() ``{
     mapmap(string key, string name, LevelsNames, ``{
 	RB = add(RB, `Left(`RadioButton(`id(key), `opt(`notify), name, key == current)));
 	RB = add(RB, `VSpacing(0.03));
-	return [0,0];
+	return $[0:0];
     });
     RB = add(RB, `VSpacing(0.6));
     /* RadioButton label */
@@ -163,7 +164,7 @@ global define symbol MainDialog() ``{
 	}
     }
 
-    return ret;
+    return (symbol) ret;
 }
 
 /* EOF */

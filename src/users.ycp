@@ -91,7 +91,7 @@ global define symbol AdduserDialog() ``{
 	widget2settings("UID_MAX");
     }
 
-    return ret;
+    return (symbol) ret;
 }
 
 /* EOF */

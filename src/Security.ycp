@@ -125,7 +125,7 @@ list Ciphers = [
  * Abort function
  * return boolean return true if abort
  */
-global block AbortFunction = nil;
+global block<boolean> AbortFunction = nil;
 
 /**
  * Check for pending Abort press
@@ -213,13 +213,13 @@ global define boolean Read() ``{
 	    }
 
 	    if(filename == nil || SCR::Read(.target.size, filename) > 0) {
-		val = SCR::Read(topath(file + "." + var));
+		val = (string) SCR::Read(topath(file + "." + var));
 		y2debug("Reading: %1 (%2)", topath(file + "." + var), val);
 	    }
 	    if(val == nil) val = "";
 	    Settings[var] = val;
 	});
-	return [0, 0];
+	return $[0: 0];
     });
     y2debug("Settings=%1", Settings);
 
@@ -230,20 +230,20 @@ global define boolean Read() ``{
 
     list inittab = SCR::Dir(.etc.inittab);
     if(contains(inittab, "ca")) {
-	string ca = SCR::Read(.etc.inittab.ca);
+	string ca = (string) SCR::Read(.etc.inittab.ca);
 	if(issubstring(ca, "/bin/true") || issubstring(ca, "/bin/false"))
-	    change(Settings, "CONSOLE_SHUTDOWN", "ignore");
+	    Settings["CONSOLE_SHUTDOWN"] = "ignore";
 	else if(issubstring(ca, "reboot") || issubstring(ca, " -r"))
-	    change(Settings, "CONSOLE_SHUTDOWN", "reboot");
+	    Settings["CONSOLE_SHUTDOWN"] = "reboot";
 	else if(issubstring(ca, "halt") || issubstring(ca, " -h"))
-	    change(Settings, "CONSOLE_SHUTDOWN", "halt");
+	    Settings["CONSOLE_SHUTDOWN"] = "halt";
 	else {
 	    y2error("Unknown ca status: %1", ca);
-	    change(Settings, "CONSOLE_SHUTDOWN", "ignore");
+	    Settings["CONSOLE_SHUTDOWN"] = "ignore";
 	}
     }
     else
-	change(Settings, "CONSOLE_SHUTDOWN", "ignore");
+	Settings["CONSOLE_SHUTDOWN"] = "ignore";
 
     y2debug("Settings=%1", Settings);
 
@@ -263,11 +263,11 @@ global define boolean Read() ``{
 	if(method == "" && ci_support) method = ci;
     });
     if(method == "") method = "des";
-    change(Settings, "PASSWD_ENCRYPTION", method);
+    Settings["PASSWD_ENCRYPTION"] = method;
 
     /* obscure checks */
     boolean obscure = !contains (pam_check_settings, "no_obscure_checks");
-    change(Settings, "OBSCURE_CHECKS_ENAB", obscure? "yes":"no");
+    Settings["OBSCURE_CHECKS_ENAB"] = obscure? "yes":"no";
 
     /* other pam_pwcheck settings */
     Settings ["PASS_MIN_LEN"] = "5";
@@ -298,7 +298,7 @@ global define boolean Read() ``{
     else if(issubstring(perm, "paranoid")) perm = "paranoid";
     else if(issubstring(perm, "secure")) perm = "secure";
     else perm = "secure";
-    change(Settings, "PERMISSION_SECURITY", perm);
+    Settings["PERMISSION_SECURITY"] = perm;
     y2debug("Settings=%1", Settings);
 
     sleep(sl);
@@ -365,7 +365,7 @@ global define boolean Write() ``{
 		commitlist = union(commitlist, [ file ]);
 	    }
 	});
-	return [0, 0];
+	return $[0: 0];
     });
 
     maplist(string file, commitlist, ``{

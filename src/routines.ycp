@@ -25,6 +25,22 @@ import "Security";
 include "security/widgets.ycp";
 
 /**
+ * Vertical separator
+ * @return vertical separator
+ */
+global define term VSeparator() ``{
+    return `VSpacing(`opt(`vstretch), 0.1);
+}
+
+/**
+ * Horizontal separator
+ * @return horizontal separator
+ */
+global define term HSeparator() ``{
+    return `HSpacing(`opt(`hstretch), 0.1);
+}
+
+/**
  * Return a widget from the WIDGETS map created acording to the ID.
  * @param ID security setting identifier
  * @return created widget
@@ -33,8 +49,8 @@ include "security/widgets.ycp";
 global define term settings2widget(string ID) ``{
 
     map m = WIDGETS[ID]:$[];
-    string label = lookup(m,"Label","");
-    string widget = lookup(m,"Widget","");
+    string label = m["Label"]:"";
+    string widget = m["Widget"]:"";
     string value = Security::Settings[ID]:"";
 
     /* "Widget" == "CheckBox" */
@@ -81,12 +97,14 @@ global define term settings2widget(string ID) ``{
         string id_t = "";
         string id_s = "";
         if(is(it, string)) {
-            id_t = it;
-            id_s = it;
+            id_t = (string) it;
+            id_s = (string) it;
         }
         else {
-            id_t = it[0]:"";
-            id_s = it[1]:"";
+            list<string> it_list = (list<string>) it;
+
+            id_t = it_list[0]:"";
+            id_s = it_list[1]:"";
         }
         if(value == id_t)
             combo = add(combo,`item(`id(id_t), id_s, true));
@@ -123,7 +141,7 @@ global define void widget2settings(string ID) ``{
     else if(is(ret, integer))
 	new = sformat("%1", ret);
     else if(is(ret, string))
-	new = ret;
+	new = (string) ret;
     else {
 	y2error("Unknown widget type: %1", ret);
 	new = nil;
@@ -134,22 +152,6 @@ global define void widget2settings(string ID) ``{
 	Security::Settings[ID] = new;
 	Security::modified = true;
     }
-}
-
-/**
- * Vertical separator
- * @return vertical separator
- */
-global define term VSeparator() ``{
-    return `VSpacing(`opt(`vstretch), 0.1);
-}
-
-/**
- * Horizontal separator
- * @return horizontal separator
- */
-global define term HSeparator() ``{
-    return `HSpacing(`opt(`hstretch), 0.1);
 }
 
 /**

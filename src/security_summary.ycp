@@ -23,7 +23,7 @@ Progress::off();
 Security::Read();
 list sum = Security::Summary();
 y2debug("summary=%1", sum);
-string ret = select(sum, 0, "");
+string ret = (string) (sum[0]:"");
 Progress::on();
 
 /* Finish */
