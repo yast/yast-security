@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 22 15:23:23 CET 2003 - msvec@suse.cz
+
+- added missing module to the package
+- 2.7.2
+
+-------------------------------------------------------------------
 Tue Jan 21 23:05:24 EST 2003 - nashif@suse.de
 
 - Added import function to _auto client
