@@ -14,7 +14,7 @@
  * $Id$
  *
  * This file contains the generally usable user interface functions.
- * 
+ *
  */
 
 {
@@ -142,7 +142,7 @@ global define Debug(any message) ``{
 };
 
 /**
- * Browse the map 
+ * Browse the map
  * @param m a map to browse
  * @see Choose
  */
@@ -150,14 +150,14 @@ global define BrowseMap(map m) ``{
   list choose = mapkeys(m);
   string var = Choose(choose);
   while(var!="") {
-    Message(lookup(m,var));
+    Message(lookup(m,var,""));
     choose = maplist(`var,`val,m,``(var));
     var = Choose(choose);
   }
 }
 
 /**
- * Choose from the list of strings 
+ * Choose from the list of strings
  * @param sel a list of strings
  * @return string the selected string
  */

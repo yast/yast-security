@@ -39,10 +39,10 @@ include "ui/common_messages.ycp";
  * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
  */
 global define map2widget(string ID) ``{
-    map m = lookup(WIDGETS,ID);
-    string label = lookup(m,"Label");
-    string value = lookup(m,"Value");
-    string widget = lookup(m,"Widget");
+    map m = lookup(WIDGETS,ID,$[]);
+    string label = lookup(m,"Label","");
+    string value = lookup(m,"Value","");
+    string widget = lookup(m,"Widget","");
 
     /* "Widget" == "CheckBox" */
 
@@ -86,7 +86,7 @@ global define map2widget(string ID) ``{
 
     /* "Widget" == "ComboBox" */
 
-    list li = lookup(m,"Options");
+    list li = lookup(m,"Options",[]);
     list combo = [];
     integer i = 0;
 
@@ -222,7 +222,7 @@ global define Button(symbol button) ``{
 	`yes : YesButtonLabel(),
 	`no : NoButtonLabel()
     ];
-    string text = lookup(BUTTONS,button);
+    string text = lookup(BUTTONS,button,"");
     if (text == "")
         return nil;
 
@@ -240,7 +240,7 @@ global define Button(symbol button) ``{
  * Create the bottom buttons. By default [Back], [Abort] and [Next].
  * @param buttons a list of buttons to be created
  * @return term the bottom buttons term (HBox)
- * @see 
+ * @see
  */
 global define BottomButtons(list buttons) ``{
     symbol B1 = nil;
@@ -273,10 +273,10 @@ global define BottomButtons(list buttons) ``{
  * @see SuSEDialogUP
  */
 global define SuSEDialog(string ID, list buttons, term contents) ``{
-  //map dmap = lookup(STRINGS(),ID);
-  map dmap = lookup(STRINGS,ID);
-  string help_text = lookup(dmap,"help");
-  string caption = lookup(dmap,"caption");
+  //map dmap = lookup(STRINGS(),ID,$[]);
+  map dmap = lookup(STRINGS,ID,$[]);
+  string help_text = lookup(dmap,"help","");
+  string caption = lookup(dmap,"caption","");
 
   any ret = UI::OpenDialog( `opt(`defaultsize),
     `VBox(`Image(`suseheader, "SuSE"), `HBox(
@@ -301,10 +301,10 @@ global define SuSEDialog(string ID, list buttons, term contents) ``{
  * @see SuSEDialog
  */
 global define SuSEDialogUP(string ID, list buttons, term T) ``{
-  //map dmap = lookup(STRINGS(),ID);
-  map dmap = lookup(STRINGS,ID);
-  string help_text = lookup(dmap,"help");
-  string caption = lookup(dmap,"caption");
+  //map dmap = lookup(STRINGS(),ID,$[]);
+  map dmap = lookup(STRINGS,ID,$[]);
+  string help_text = lookup(dmap,"help","");
+  string caption = lookup(dmap,"caption","");
 
   UI::ReplaceWidget(`id(`rp_help), `RichText(`id(`help), help_text));
   UI::ReplaceWidget(`id(`rp_caption), `Heading(`id(`title), caption));
@@ -345,7 +345,7 @@ global define FindSettings(list settings, string ident) ``{
   map ret = nil;
 
   map mm = find(`item,settings,``{
-    string key = lookup(item,"name");
+    string key = lookup(item,"name","");
     if (key == ident) return true;
     return false;
   });
@@ -353,7 +353,7 @@ global define FindSettings(list settings, string ident) ``{
   if(mm == nil || mm == $[])
     ret = nil;
   else
-    ret = lookup(mm,"settings");
+    ret = lookup(mm,"settings",nil);
 
   return ret;
 };
@@ -369,10 +369,10 @@ global define CurrentSettings(list settings, map current) ``{
 
   y2debug("current: %1",current);
   map mm = find(`item,settings,``{
-    string key = lookup(item,"name");
+    string key = lookup(item,"name","");
     if(key=="Default") return false;
 
-    map val = lookup(item,"settings");
+    map val = lookup(item,"settings",$[]);
 
     y2debug("key: %1",key);
     y2debug("val: %1",val);
@@ -388,7 +388,7 @@ global define CurrentSettings(list settings, map current) ``{
   if(mm == $[])
     ret = nil;
   else
-    ret = lookup(mm,"name");
+    ret = lookup(mm,"name",nil);
 
   //return "Secure";
   //return nil;
@@ -413,10 +413,10 @@ global define SecuritySettings(list settings, map defs) ``{
   T = add(T,`VSpacing(0.5));
 
   T = foreach(`item,settings,``{
-    string key = lookup(item,"name");
+    string key = lookup(item,"name","");
     if(key=="Default") return T;
 
-    map val = lookup(item,"settings");
+    map val = lookup(item,"settings",$[]);
     y2debug("key: %1",key);
 
     term R = `RadioButton();

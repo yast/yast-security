@@ -1,4 +1,10 @@
+-------------------------------------------------------------------
+Mon Nov 19 14:18:52 CET 2001 - msvec@suse.cz
+
+- fixed lookup 3rd parameters
+- migration to yast2-devtools
 - minor makefiles fixes
+- 2.5.0
 
 -------------------------------------------------------------------
 Tue Aug 28 16:55:36 CEST 2001 - msvec@suse.cz

@@ -29,7 +29,7 @@ textdomain "security";
  * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
  */
 global define updateValue(map widgets, string ID, string val) ``{
-    map item = lookup(widgets,ID);
+    map item = lookup(widgets,ID,$[]);
     //if(val!="")
     item = add(item,"Value",val);
     widgets = add(widgets,ID,item);
@@ -59,7 +59,7 @@ global define settings2widgets(map widgets, map settings) ``{
  */
 global define widgets2settings(map settings, map widgets) ``{
     map values = mapmap(`key,`value, widgets,``{
-        return [ key, lookup(value,"Value") ];
+        return [ key, lookup(value,"Value","") ];
     });
 
     settings = foreach(`key,`value, values, ``{
@@ -80,7 +80,7 @@ global define widgets2settings(map settings, map widgets) ``{
 global define list2map(list l) ``{
     if(l==[]) return $[];
     map m = foreach(`item, l, ``{
-        m = add(m, lookup(item, "variable"), lookup(item, "value"));
+        m = add(m, lookup(item, "variable", "unknown"), lookup(item, "value", ""));
         return m;
     });
     return m;
@@ -124,14 +124,14 @@ global define mapvalues(map m) ``{
 }
 
 /**
- * Return value from a map for the given key
+ * Return value from a map for the given key, nil if not found
  * @param m the map
  * @param k the key
  * @return any the found value
  */
 global define mapvalue(map m, any k) ``{
     if(m==$[]) return nil;
-    return lookup(m, k);
+    return lookup(m, k, nil);
 }
 
 } /* YaST2: Local security configuration EOF */

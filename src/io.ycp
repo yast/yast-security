@@ -34,11 +34,11 @@ include "security/settings.ycp";
  */
 global define LookupDefault(string item) ``{
     list settings = AllSecuritySettings();
-    map default = find(`s,settings,``(lookup(s,"name")=="Default"));
-    string def = lookup(default,"settings");
-    map ret = find(`s,settings,``(lookup(s,"name")==def));
-    ret = lookup(ret,"settings");
-    if(item!=nil && item!="") return lookup(ret,item);
+    map default = find(`s,settings,``(lookup(s,"name","")=="Default"));
+    string def = lookup(default,"settings","unknown");
+    map ret = find(`s,settings,``(lookup(s,"name","")==def));
+    ret = lookup(ret,"settings",$[]);
+    if(item!=nil && item!="") return lookup(ret,item,$[]);
     return ret;
 };
 
@@ -77,7 +77,7 @@ global define ReadRcConfig(string item) ``{
  */
 global define WriteLoginDefs(map m, string item) ``{
     string pth = ".etc.login_defs." + item;
-    string ret = lookup(m,item);
+    string ret = lookup(m,item,"");
     if(ret=="")
         return nil;
     return SCR::Write(topath(pth),ret);
@@ -91,7 +91,7 @@ global define WriteLoginDefs(map m, string item) ``{
  */
 global define WriteRcConfig(map m, string item) ``{
     string pth = ".rc.system." + item;
-    string ret = lookup(m,item);
+    string ret = lookup(m,item,"");
     if(ret=="")
         return nil;
     return SCR::Write(topath(pth),ret);
