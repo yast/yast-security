@@ -212,7 +212,17 @@ global define symbol PassDialog() ``{
 	    break;
 	}
 	else if(ret == `next) {
-	    /* FIXME: check_* */
+	    /* check_* */
+	    if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS") != true) {
+		/* Popup text */
+		UI::ErrorPopup(_("The minimum number of days cannot be larger than maximum"));
+		continue;
+	    }
+	    if(checkMinMax("PASS_MIN_LEN","PASS_MAX_LEN") != true) {
+		/* Popup text */
+		UI::ErrorPopup(_("The minimum password length cannot be larger than maximum"));
+		continue;
+	    }
 	    break;
 	}
 	else {

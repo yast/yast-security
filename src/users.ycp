@@ -66,12 +66,12 @@ global define symbol AdduserDialog() ``{
 	else if(ret == `next) {
 	    if(checkMinMax("UID_MIN","UID_MAX") != true) {
 		/* Popup text */
-		PopupOK(_("The minimum user ID cannot be larger than maximum"));
+		UI::ErrorPopup(_("The minimum user ID cannot be larger than maximum"));
 		continue;
 	    }
 	    if(checkMinMax("GID_MIN","GID_MAX") != true) {
 		/* Popup text */
-		PopupOK(_("The minimum group IDs cannot be larger than maximum"));
+		UI::ErrorPopup(_("The minimum group IDs cannot be larger than maximum"));
 		continue;
 	    }
 	    break;

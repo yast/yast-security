@@ -122,7 +122,7 @@ global define void widget2settings(string ID) ``{
     }
 
     if(new != nil && Security::Settings[ID]:"" != new) {
-	y2debug("Setting modified (%1): %2 -> %3)", ID, Security::Settings[ID]:"", new);
+	y2milestone("Setting modified (%1): %2 -> %3)", ID, Security::Settings[ID]:"", new);
 	Security::Settings[ID] = new;
 	Security::modified = true;
     }

@@ -170,8 +170,17 @@ global define boolean Read() ``{
     mapmap(string file, list vars, Locations, ``{
 	maplist(string var, vars, ``{
 	    string val = "";
-	    // if(SCR::Read(.target.size, file) > 0)
+
+	    string filename = nil;
+	    if(issubstring(file, "sysconfig")) {
+		filename = "/etc" + mergestring(splitstring(file, "."), "/");
+		y2debug("filename=%1", filename);
+	    }
+
+	    if(filename == nil || SCR::Read(.target.size, filename) > 0) {
 		val = SCR::Read(topath(file + "." + var));
+		y2debug("Reading: %1 (%2)", topath(file + "." + var), val);
+	    }
 	    if(val == nil) val = "";
 	    Settings[var] = val;
 	});
@@ -393,10 +402,8 @@ global define boolean Write() ``{
     sleep(sl);
     if(Abort()) return false;
     Progress::NextStage();
-    y2milestone("1");
 
     sleep(sl);
-    y2milestone("2");
     if(Abort()) return false;
     modified = false;
     return true;
@@ -423,7 +430,6 @@ global define map Export() ``{
 
 /**
  * Create a textual summary and a list of unconfigured cards
- * @param split split configured and unconfigured?
  * @return summary of the current configuration
  */
 global define list Summary() ``{

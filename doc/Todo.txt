@@ -1,13 +1,22 @@
 # $Id$
 
 Bugs:
+- autoinstallation support (lower chars, proper client)
 - length check (#13291)
-- grep FIXME *.ycp
 
 Documentation:
-- from notebook:Todo
+- comment in widgets.ycp [remove Value from widgets.ycp] -> doc.html
+- adding of a new security setting (test on CWD_IN_USER_PATH):
+  - add widget definition to "widgets.ycp"
+  - add correct values to all security levels to "levels.ycp"
+  - add default value to "Settings.ycp":"global map Settings"
+  - add ID to the SettingsXXX file map or handle the Read|Write
+  - add ID to corresponding dialog [settings2widget(ID) and widget2settings(ID)]
+- adding of a new security level:
+  - add level definition to settings.ycp [name to Levels, values to LevelsWidgets]
 
 Enhancements:
+- SECURITY_LEVEL in Settings during Write: first load the level, the continue
 - better testsuite
 - other settings from login.defs
 - settings from useradd/defaults (#14129)
