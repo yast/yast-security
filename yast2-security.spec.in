@@ -29,6 +29,7 @@ Summary:	Security configuration
 %dir @yncludedir@/security
 @yncludedir@/security/*
 @configdir@/security.y2cc
+@desktopdir@/security.desktop
 @clientdir@/security*.ycp
 @moduledir@/Security.ycp
 @scrconfdir@/*.scr
