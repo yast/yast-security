@@ -1,21 +1,13 @@
 /**
- * File:
- *   io.ycp
- *
- * Module:
- *   Security configuration
- *
- * Summary:
- *   Input and output functions
- *
- * Authors:
- *   Michal Svec <msvec@suse.cz>
+ * File:	include/security/io.ycp
+ * Module:	Security configuration
+ * Summary:	Input and output functions
+ * Authors:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
  *
  * These functions are used for input and output of security
  * settings.
- *
  */
 
 {
@@ -183,7 +175,9 @@ global define SecurityRead() ``{
     m = add(m, "CWD_IN_ROOT_PATH", ReadSysConfig("suseconfig", "CWD_IN_ROOT_PATH"));
     m = add(m, "KDM_SHUTDOWN", ReadSysConfig("displaymanager", "KDM_SHUTDOWN"));
     m = add(m, "DISPLAYMANAGER_REMOTE_ACCESS", ReadSysConfig("displaymanager", "DISPLAYMANAGER_REMOTE_ACCESS"));
-    m = add(m, "RUN_UPDATEDB_AS", ReadSysConfig("locate", "RUN_UPDATEDB_AS"));
+
+    if(SCR::Read(.target.size, "/etc/sysconfig/locate") > 0)
+	m = add(m, "RUN_UPDATEDB_AS", ReadSysConfig("locate", "RUN_UPDATEDB_AS"));
 
     /* inittab */
     list inittab = SCR::Dir(.etc.inittab);

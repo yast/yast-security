@@ -15,6 +15,7 @@ Read	.sysconfig.security.PERMISSION_SECURITY "paranoid"
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
 Read	.sysconfig.displaymanager.KDM_SHUTDOWN "r3"
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r9"
+Read	.target.size "/etc/sysconfig/locate" 1
 Read	.sysconfig.locate.RUN_UPDATEDB_AS "r7"
 Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
