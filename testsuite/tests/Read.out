@@ -33,7 +33,7 @@ Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
 Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
-Read	.etc.default.passwd.crypt "md5"
+Read	.etc.default.passwd."CRYPT_FILES" "blowfish"
 Read	.etc.default.passwd.group_crypt nil
 Read	.etc.default.passwd.crypt "md5"
 Return	true

@@ -4,8 +4,8 @@ SUBDIRS = autodocs
 
 htmldir = @docdir@
 
-%.png: %.dia
-	dia -n -e $@ $<
+#%.png: %.dia
+#	dia -n -e $@ $<
 
 todo.html: Todo.txt
 	@(							\
@@ -22,7 +22,7 @@ todo.html: Todo.txt
 		| sed 's|#\([0-9]\{4,5\}\)|<a href="http://bugzilla.suse.de/show_bug.cgi?id=\1">#\1</a>|g' \
 		> todo.html
 
-html_DATA = index.html $(wildcard *.html) workflow.png todo.html
+html_DATA = index.html $(wildcard *.html) todo.html #workflow.png 
 
 CLEANFILES = todo.html
 EXTRA_DIST = Todo.txt $(html_DATA)

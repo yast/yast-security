@@ -140,9 +140,9 @@ distributions, but not by other systems or old software.</p>") +
 
     /* Password dialog help 4d/8 */
 _("<p><b>blowfish</b> is similar to md5, but uses a different algorithm
-to encrypt passwords. It is not yet supported by many systems. A lot of
-CPU power is needed to calculate the hash, which makes it difficult to crack
-passwords with the help of a dictionary.</p>") +
+to encrypt passwords. A lot of CPU power is needed to calculate the hash,
+which makes it difficult to crack passwords with the help of a dictionary.</p>")
+    +
 
     /* Password dialog help 5/8 */
     _("<p><b>Number of Significant Characters in the Password</b><br>

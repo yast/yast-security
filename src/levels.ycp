@@ -32,6 +32,15 @@ textdomain "security";
  * Level names definitions
  */
 map<string,string> LevelsNames = $[
+    // level name
+    "Level1" : _("Level 1 (Home Workstation)"),
+    // level name
+    "Level2" : _("Level 2 (Networked Workstation)"),
+    // level name
+    "Level3" : _("Level 3 (Network Server)"),
+];
+
+map<string,string> LevelsLabels = $[
     /* RadioButton label */
     "Level1" : _("Level &1 (Home Workstation)"),
     /* RadioButton label */
@@ -47,7 +56,6 @@ map<string,map<string,string> > Levels = $[
 
     "Level1" : $[
 	"CONSOLE_SHUTDOWN"		: "reboot",
-	"CRACKLIB_DICT_PATH"		: "/usr/lib/cracklib_dict",
 	"CWD_IN_ROOT_PATH"		: "yes",
 	"CWD_IN_USER_PATH"		: "yes",
 	"DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
@@ -56,10 +64,11 @@ map<string,map<string,string> > Levels = $[
 	"FAIL_DELAY"			: "1",
 	"GID_MAX"			: "60000",
 	"GID_MIN"			: "1000",
+	"GROUP_ENCRYPTION"		: "des",
 	"KDM_SHUTDOWN"			: "all",
 	"LASTLOG_ENAB"			: "yes",
 	"OBSCURE_CHECKS_ENAB"		: "no",
-	"PASSWD_ENCRYPTION"		: "des",
+	"PASSWD_ENCRYPTION"		: "blowfish",
 	"PASSWD_USE_CRACKLIB"		: "no",
 	"PASS_MAX_DAYS"			: "99999",
 	"PASS_MAX_LEN"			: "8",
@@ -90,10 +99,11 @@ map<string,map<string,string> > Levels = $[
 	"FAIL_DELAY"			: "6",
 	"GID_MAX"			: "60000",
 	"GID_MIN"			: "1000",
+	"GROUP_ENCRYPTION"		: "des",
 	"KDM_SHUTDOWN"			: "root",
 	"LASTLOG_ENAB"			: "yes",
 	"OBSCURE_CHECKS_ENAB"		: "no",
-	"PASSWD_ENCRYPTION"		: "des",
+	"PASSWD_ENCRYPTION"		: "blowfish",
 	"PASSWD_USE_CRACKLIB"		: "yes",
 	"PASS_MAX_DAYS"			: "99999",
 	"PASS_MAX_LEN"			: "8",
@@ -124,10 +134,11 @@ map<string,map<string,string> > Levels = $[
 	"FAIL_DELAY"			: "3",
 	"GID_MAX"			: "60000",
 	"GID_MIN"			: "1000",
+	"GROUP_ENCRYPTION"		: "des",
 	"KDM_SHUTDOWN"			: "root",
 	"LASTLOG_ENAB"			: "yes",
 	"OBSCURE_CHECKS_ENAB"		: "no",
-	"PASSWD_ENCRYPTION"		: "des",
+	"PASSWD_ENCRYPTION"		: "blowfish",
 	"PASSWD_USE_CRACKLIB"		: "yes",
 	"PASS_MAX_DAYS"			: "99999",
 	"PASS_MAX_LEN"			: "8",

@@ -65,7 +65,8 @@ map scr_info = $[
 	],
 	"default" : $[
 	    "passwd" : $[
-		"crypt"			:	"md5"
+		"crypt"			:	"md5",
+		"CRYPT_FILES"		:	"blowfish",
 	    ],
 	],
     ],

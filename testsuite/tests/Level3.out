@@ -54,7 +54,8 @@ Write	.sysconfig.suseconfig nil true
 Write	.sysconfig.sysctl nil true
 Write	.etc.inittab.ca ":ctrlaltdel:/bin/true" true
 Write	.etc.inittab nil true
-Write	.etc.default.passwd.crypt "des" true
+Read	.etc.default.passwd."CRYPT_FILES" nil
+Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
 Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
 Dir	.etc.security.section: []

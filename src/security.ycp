@@ -24,13 +24,117 @@ textdomain "security";
 y2milestone("----------------------------------------");
 y2milestone("Security module started");
 
+import "CommandLine";
+import "Security";
+
 include "security/wizards.ycp";
 
-boolean propose = false;
+// --------------------------------------------------------------------------
+// --------------------------------- cmd-line handlers
 
-any ret = nil;
-if(propose) ret = SecurityAutoSequence();
-ret = SecuritySequence();
+/**
+ * Print security summary
+ * @return boolean false
+ */
+define boolean SecuritySummaryHandler (map options) {
+
+    list sum = Security::Summary ();
+    CommandLine::Print (sum[0]:"");
+    return false; // do not call Write...
+}
+
+/**
+ * Set security level
+ * @return boolean successfully modified?
+ */
+define boolean SecurityLevelHandler (map options) {
+
+    any current = `custom;
+    maplist (string key, map level, Levels, {
+	if(level == Security::Settings)
+	    current = key;
+    });
+    string lvl	= "";
+    if (haskey (options, "home"))
+	lvl	= "Level1";
+    else if (haskey (options, "network"))
+	lvl	= "Level2";
+    else if (haskey (options, "server"))
+	lvl	= "Level3";
+
+    if (current != lvl)
+    {
+	Security::Settings = Levels[lvl]:$[];
+	Security::modified = true;
+	return true;
+    }
+    return false;
+}
+
+/**
+ * Set value of specific security option
+ * @return boolean false
+ */
+define boolean SecuritySetHandler (map options) {
+
+    y2internal ("op: %1", options);//FIXME
+    return false;
+}
+
+
+
+/* the command line description map */
+map cmdline = $[
+    "id"		: "security",
+    // translators: command line help text for Securoty module
+    "help"		: _("Security configuration module."),
+    "guihandler"	: SecuritySequence,
+    "initialize"	: Security::Read,
+    "finish"		: Security::Write,
+    "actions"		: $[
+	"summary" :$[
+	    "handler"	: SecuritySummaryHandler,
+	    // command line help text for 'summary' action
+	    "help"	: _("Security configuration summary"),
+	],
+	"level" :$[
+	    "handler"	: SecurityLevelHandler,
+	    // command line help text for 'level' action
+	    "help"	: _("Set the security level"),
+	],
+	"set" :$[
+	    "handler"	: SecuritySetHandler,
+	    // command line help text for 'set' action
+	    "help"	: _("Set the value of specific option"),
+	],
+    ],
+    "options"		: $[
+	"home"		: $[
+	    // command line help text for 'level home' option
+	    "help"	: _("Home Workstation security level (without network)")
+	],
+	"network"	: $[
+	    // command line help text for 'level network' option
+	    "help"	: _("Networked Workstation security level")
+	],
+	"server"	: $[
+	    // command line help text for 'level server' option
+	    "help"	: _("Networked Server security level")
+	],
+	"passwd"	: $[
+	    // command line help text for 'set passwd' option
+	    "help"	: _("Password encryption method"),
+	    "type"	: "string", //FIXME enum? list values
+	],
+    ],
+    "mappings"		: $[
+	"summary"	: [],
+	"level"		: [ "home", "network", "server" ],//FIXME use 1,2,3 aliases
+	"set"		: [ "passwd" ],
+    ]
+];
+
+any ret = CommandLine::Run (cmdline);
 y2debug("ret == %1", ret);
 
 /* Finish */
