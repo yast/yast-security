@@ -37,7 +37,7 @@ global define updateValue(map widgets, string ID, string val) ``{
 };
 
 /**
- * Convert security settings (from io) to the UI widgets map.
+ * Convert security settings (from io) to the widgets map.
  * @param widgets default map of widgets
  * @param settings settings to be converted
  * @return map new widgets map
@@ -51,7 +51,7 @@ global define settings2widgets(map widgets, map settings) ``{
 };
 
 /**
- * Convert the UI widgets map to the security settings (for io)
+ * Convert the widgets map to the security settings (for io)
  * @param widgets widgets to be converted
  * @param settings default map of settings
  * @return map new settings map
@@ -110,6 +110,16 @@ global define map2list(map m) ``{
 global define mapkeys(map m) ``{
     if(m==$[]) return [];
     return maplist(`var, `val, m, ``(var));
+}
+
+/**
+ * Return all values from the map
+ * @param m the map
+ * @return list a list of all values from the map
+ */
+global define mapvalues(map m) ``{
+    if(m==$[]) return [];
+    return maplist(`var, `val, m, ``(val));
 }
 
 /**

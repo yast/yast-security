@@ -120,18 +120,17 @@ global define map2widget(string ID) ``{
  * @param ID the ID of the item
  * @return any the item's value
  */
-
 global define widget2value(string ID) ``{
-  any ret = UI(`QueryWidget(`id(ID),`Value));
-  if(is(ret,boolean))
-    if(ret==true)
-      ret = "yes";
-    else
-      ret = "no";
-  if(is(ret,integer))
-    ret = sformat("%1",ret);
-
-  return ret;
+    any ret = UI(`QueryWidget(`id(ID),`Value));
+    if(is(ret,boolean)) {
+        if(ret==true)
+            ret = "yes";
+        else
+            ret = "no";
+    }
+    if(is(ret,integer))
+        ret = sformat("%1",ret);
+    return ret;
 };
 
 /**
@@ -139,45 +138,42 @@ global define widget2value(string ID) ``{
  * or the returned value (otherwise).
  * @return any the returned value
  */
-
 global define processInput() ``{
-  any ret = nil;
+    any ret = nil;
 
-  while(true) {
-    ret = UI(`UserInput());
-    if(ret != `abort)
-      break;
-    // popup message
-    any re = Popup(UI(_("Do you really want to abort the security configuration?
+    while(true) {
+        ret = UI(`UserInput());
+        if(ret != `abort)
+            break;
+        // popup message
+        any re = Popup(UI(_("Do you really want to abort the security configuration?
 All changes you made will be lost.")));
-    if(re==`ok)
-      break;
-  }
+        if(re==`ok)
+            break;
+    }
 
-  if(ret == `ok || ret == `finish)
-    return `ok;
-  if(ret == `cancel || isnil(ret))
-    return nil;
+    if(ret == `ok || ret == `finish)
+        return `ok;
+    if(ret == `cancel || isnil(ret))
+        return nil;
 
-  return ret;
+    return ret;
 };
 
 /**
  * Vertical separator
  * @return term the vertical separator
  */
-
 global define VSeparator() ``{
-  return `VSpacing(`opt(`vstretch),0.1);
+    return `VSpacing(`opt(`vstretch),0.1);
 };
 
 /**
  * Horizontal separator
  * @return term the horizontal separator
  */
-
 global define HSeparator() ``{
-  return `HSpacing(`opt(`hstretch),0.1);
+    return `HSpacing(`opt(`hstretch),0.1);
 };
 
 /**
@@ -187,21 +183,19 @@ global define HSeparator() ``{
  * @return term the button
  * @see <a href="ui_buttons.html">ui_buttons.ycp</a>
  */
-
 global define Button(symbol button) ``{
-  string text = lookup(BUTTONS,button);
-  //if (isnil(text))
-  if (text == "")
-    return nil;
+    string text = lookup(BUTTONS,button);
+    if (text == "")
+        return nil;
 
-  term ret = nil;
+    term ret = nil;
 
-  if (button == `ok || button == `finish || button == `next)
-    ret = `ReplacePoint(`id(`rp),`PushButton(`id(button), `opt(`default), text));
-  else
-    ret = `PushButton(`id(button), text);
+    if (button == `ok || button == `finish || button == `next)
+        ret = `ReplacePoint(`id(`rp),`PushButton(`id(button), `opt(`default), text));
+    else
+        ret = `PushButton(`id(button), text);
 
-  return ret;
+    return ret;
 }
 
 /**
@@ -210,25 +204,24 @@ global define Button(symbol button) ``{
  * @return term the bottom buttons term (HBox)
  * @see 
  */
-
 global define BottomButtons(list buttons) ``{
-  symbol B1 = nil;
-  symbol B2 = nil;
-  symbol B3 = nil;
+    symbol B1 = nil;
+    symbol B2 = nil;
+    symbol B3 = nil;
 
-  if (buttons == [] ) buttons = [ `back, `abort, `next];
+    if (buttons == [] ) buttons = [ `back, `abort, `next];
 
-  term TT = `HBox();
+    term TT = `HBox();
 
-  TT = foreach (`s,buttons,``{
-    any x = Button(s);
-    TT = add(TT,x);
-    any x = `HStretch();
-    TT = add(TT, x);
-    return TT;
-  });
+    TT = foreach (`s,buttons,``{
+        any x = Button(s);
+        TT = add(TT,x);
+        any x = `HStretch();
+        TT = add(TT, x);
+        return TT;
+    });
 
-  return remove(TT,size(TT));
+    return remove(TT,size(TT));
 };
 
 /**
@@ -241,7 +234,6 @@ global define BottomButtons(list buttons) ``{
  * @see STRINGS
  * @see SuSEDialogUP
  */
-
 global define SuSEDialog(string ID, list buttons, term contents) ``{
   //map dmap = lookup(STRINGS(),ID);
   map dmap = lookup(STRINGS,ID);
@@ -270,7 +262,6 @@ global define SuSEDialog(string ID, list buttons, term contents) ``{
  * Same as SuSEDialog, just update only variant.
  * @see SuSEDialog
  */
-
 global define SuSEDialogUP(string ID, list buttons, term T) ``{
   //map dmap = lookup(STRINGS(),ID);
   map dmap = lookup(STRINGS,ID);
@@ -287,10 +278,9 @@ global define SuSEDialogUP(string ID, list buttons, term T) ``{
  * Update one value in the WIDGETS map from the widget value
  * @param ID the item ID (same in the widget and in WIDGETS)
  */
-
 global define updateWidget(string ID) ``{
-  any val = widget2value(ID);
-  WIDGETS = updateValue(WIDGETS,ID,val);
+    any val = widget2value(ID);
+    WIDGETS = updateValue(WIDGETS,ID,val);
 };
 
 
@@ -300,12 +290,11 @@ global define updateWidget(string ID) ``{
  * @param text the item text
  * @return term the created widget
  */
-
 global define SecurityItem(any ID, string text) ``{
-  term T = `VWeight( 15,
-    `PushButton ( `id( ID ), `opt( `hstretch ), text )
-  );
-  return T;
+    term T = `VWeight( 15,
+        `PushButton ( `id( ID ), `opt( `hstretch ), text )
+    );
+    return T;
 };
 
 /**
@@ -314,7 +303,6 @@ global define SecurityItem(any ID, string text) ``{
  * @param ident the item identifier
  * @return map the found settings or nil, if not found
  */
-
 global define FindSettings(list settings, string ident) ``{
   map ret = nil;
 
@@ -338,7 +326,6 @@ global define FindSettings(list settings, string ident) ``{
  * @param current the current settings
  * @return map the name of current settings or nil, if not found
  */
-
 global define CurrentSettings(list settings, map current) ``{
   string ret = nil;
 
@@ -377,7 +364,6 @@ global define CurrentSettings(list settings, map current) ``{
  * @param settings the list of settings
  * @param defs the default values
  */
-
 global define SecuritySettings(list settings, map defs) ``{
   string current = CurrentSettings(settings,defs);
   y2debug("current=%1",current);
@@ -419,7 +405,6 @@ global define SecuritySettings(list settings, map defs) ``{
  * Update the WIDGETS map according to the given settings
  * @param curr the given settings
  */
-
 global define updateWIDGETS(any curr) ``{
   any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
   if(curr2!=curr)
@@ -434,7 +419,6 @@ global define updateWIDGETS(any curr) ``{
  * SecurityWizzard to display the wizzard sequention.
  * @param defs the security definitions
  */
-
 global define SecurityMainDialog(map defs) ``{
 
   list settings = AllSecuritySettings();
@@ -576,7 +560,6 @@ network server secure.")));
 /**
  * Wizzard for all security settings
  */
-
 global define SecurityWizzard() ``{
   integer current = 0;
 
@@ -609,7 +592,6 @@ global define SecurityWizzard() ``{
 /**
  * Main security settings dialog
  */
-
 global define SecurityDetailsDialog() ``{
   SuSEDialog("Main", [`back,`finish], `VBox(
     // security item captions
@@ -652,7 +634,6 @@ global define SecurityDetailsDialog() ``{
 /**
  * Frame with spacings
  */
-
 global define XFrame(float f1, float f2, locale S, term T) ``{
   return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
 };
@@ -660,7 +641,6 @@ global define XFrame(float f1, float f2, locale S, term T) ``{
 /**
  * Boot settings dialog
  */
-
 global define SecurityBootDialog() ``{
   SuSEDialogUP("Boot", [], `VBox(
   // SecurityBootDialog caption
@@ -686,7 +666,6 @@ XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
 /**
  * Login and password settings dialog
  */
-
 global define SecurityLoginDialog() ``{
   SuSEDialogUP("Login", [], `VBox(
 //`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
@@ -716,7 +695,6 @@ XFrame(2.0,0.9,_("Login"),`VBox(
 /**
  * Files permissions dialog
  */
-
 global define SecurityPermsDialog() ``{
   SuSEDialogUP("Perms", [], `VBox(
     VSeparator(),
@@ -734,7 +712,6 @@ global define SecurityPermsDialog() ``{
 /**
  * Other security settings dialog
  */
-
 global define SecurityMiscDialog() ``{
   SuSEDialogUP("Misc", [`back,`abort,`finish], `VBox(
     VSeparator(),
@@ -767,7 +744,6 @@ global define SecurityMiscDialog() ``{
 /**
  * Password security settings dialog
  */
-
 global define checkMinMax(string minID, string maxID) ``{
   any min = UI(`QueryWidget(`id(minID),`Value));
   any max = UI(`QueryWidget(`id(maxID),`Value));
@@ -781,7 +757,6 @@ global define checkMinMax(string minID, string maxID) ``{
 /**
  * Password security settings dialog
  */
-
 global define SecurityPasswdDialog() ``{
   SuSEDialogUP("Password", [], `VBox(
     //VSeparator(),
@@ -848,7 +823,6 @@ global define SecurityPasswdDialog() ``{
 /**
  * Adduser security settings dialog
  */
-
 global define SecurityAdduserDialog() ``{
   SuSEDialogUP("Adduser", [], `VBox(
     VSeparator(),
