@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul 15 18:08:02 EDT 2002 - nashif@suse.de
+
+- adapted for use with the autoinstallation configuration system
+- security_auto now exports lower case values
+ 
+
+-------------------------------------------------------------------
 Fri Jul 12 15:03:59 CEST 2002 - arvin@suse.de
 
 - use proper namespace for Args and CallFunction (#16776)
