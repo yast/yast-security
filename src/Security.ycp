@@ -417,7 +417,14 @@ global define boolean Write() ``{
  */
 global define boolean Import(map settings) ``{
 	modified = true;
-    Settings = eval(settings);
+	map tmpSettings = $[];
+	foreach(string k, string v, Settings, ``{
+		if (!haskey(settings, k))
+			tmpSettings[k] = v;
+		else
+			tmpSettings[k] = settings[k]:"";
+	});
+    Settings = eval(tmpSettings);
 }
 
 /**
