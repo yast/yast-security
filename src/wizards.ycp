@@ -20,6 +20,55 @@ include "security/dialogs.ycp";
 include "security/users.ycp";
 
 /**
+ * Main workflow of the security configuration
+ * @return any Returned value from WizardSequencer() call
+ */
+global define any MainSequence() ``{
+
+    map aliases = $[
+	"main"     : ``(MainDialog()),
+	"password" : ``(PassDialog()),
+	"boot"     : ``(BootDialog()),
+	"login"    : ``(LoginDialog()),
+	"adduser"  : ``(AdduserDialog()),
+	"misc"     : ``(MiscDialog()),
+    ];
+
+    map sequence = $[
+	"ws_start" : "main",
+	"main" : $[
+	    `abort : `abort,
+	    `next : "password",
+	    `finish : `next,
+	],
+	"password" : $[
+	    `abort : `abort,
+	    `next : "boot"
+	],
+	"boot" : $[
+	    `abort : `abort,
+	    `next : "login"
+	],
+	"login" : $[
+	    `abort : `abort,
+	    `next : "adduser"
+	],
+	"adduser" : $[
+	    `abort : `abort,
+	    `next : "misc"
+	],
+	"misc" : $[
+	    `abort : `abort,
+	    `next : `next,
+	],
+    ];
+
+    any ret = WizardSequencer(aliases, sequence);
+
+    return ret;
+}
+
+/**
  * Whole configuration of security
  * @return any Returned value from WizardSequencer() call
  */
@@ -74,55 +123,6 @@ global define any SecurityAutoSequence() ``{
     any ret = MainSequence();
 
     UI::CloseDialog();
-    return ret;
-}
-
-/**
- * Main workflow of the security configuration
- * @return any Returned value from WizardSequencer() call
- */
-global define any MainSequence() ``{
-
-    map aliases = $[
-	"main"     : ``(MainDialog()),
-	"password" : ``(PassDialog()),
-	"boot"     : ``(BootDialog()),
-	"login"    : ``(LoginDialog()),
-	"adduser"  : ``(AdduserDialog()),
-	"misc"     : ``(MiscDialog()),
-    ];
-
-    map sequence = $[
-	"ws_start" : "main",
-	"main" : $[
-	    `abort : `abort,
-	    `next : "password",
-	    `finish : `next,
-	],
-	"password" : $[
-	    `abort : `abort,
-	    `next : "boot"
-	],
-	"boot" : $[
-	    `abort : `abort,
-	    `next : "login"
-	],
-	"login" : $[
-	    `abort : `abort,
-	    `next : "adduser"
-	],
-	"adduser" : $[
-	    `abort : `abort,
-	    `next : "misc"
-	],
-	"misc" : $[
-	    `abort : `abort,
-	    `next : `next,
-	],
-    ];
-
-    any ret = WizardSequencer(aliases, sequence);
-
     return ret;
 }
 
