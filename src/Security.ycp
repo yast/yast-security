@@ -84,6 +84,15 @@ map Locations = $[
 ];
 
 /**
+ * Number of sigificant characters in the password
+ */
+global map PasswordMaxLengths = $[
+    "des" : 8,
+    "md5" : 127,
+    "blowfish" : 72,
+];
+
+/**
  * Remaining settings:
  * - CONSOLE_SHUTDOWN (/etc/inittab)
  * - PASSWD_ENCRYPTION (/etc/pam?)

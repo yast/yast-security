@@ -131,8 +131,18 @@ checks.</p>") +
 FIXME.</p>") +
 
     /* Password dialog help 4/6 */
-    _("<p><b>Password Length</b><br>
-Set the minimum and maximum password length.</p>") +
+    _("<p><b>Number of Significant Characters in the Password</b><br>
+Maximal number of significant characters in the password. Default is 8 for
+the <i>DES</i> encryption method, don't change it unless your encryption
+function (crypt) is better. This option is ignored for the other encryption
+methods, for the <i>MD5</i> it is 127 and for the <i>Blowfish</i> it is 72.
+</p>") +
+
+    /* Password dialog help 4/6 */
+    _("<p><b>Minimum Password Acceptable Length</b><br>
+The minimum number of characters in an acceptable password. An attempt to
+assign a password with fewer characters will be rejected. A zero value
+suppresses this check.</p>") +
 
     /* Password dialog help 5/6 */
     _("<p><b>Days of Password Change Warning</b><br>Set the minimum and
@@ -168,16 +178,16 @@ This fixes files with incorrect permissions, whether this occurred accidentally
 or by intruders.</p>") +
 
     /* Misc dialog help 3/14 */
-    _("<p>\"easy\": Most of the system files that are only readable by root
+    _("<p>\"Easy\": Most of the system files that are only readable by root
 (via secure) are modified so other users can also read these files.</p>") +
 
     /* Misc dialog help 4/14 */
-    _("<p>\"secure\": Certain system files (e.g., /var/log/messages) can only
+    _("<p>\"Secure\": Certain system files (e.g., /var/log/messages) can only
 be viewed by the user root. Some programs can only be launched by root or by
 daemons, not by an ordinary user.</p>") +
 
     /* Misc dialog help 5/14 */
-    _("<p>\"paranoid\":  If you are really paranoid, use this setting. You must
+    _("<p>\"Paranoid\":  If you are really paranoid, use this setting. You must
 decide which users will be able to run X applications and setuid programs.</p>") +
 
     /* Misc dialog help 6/14 */

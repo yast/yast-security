@@ -181,7 +181,8 @@ global map WIDGETS = $[
 	"Label" : _("P&assword Encryption Method"),
 	/* ComboBox values */
 	"Options" : [["des","DES"],["md5","MD5"],["blowfish","Blowfish"]],
-	"Value" : "des"
+	"Value" : "des",
+	"Notify" : "yes",
     ],
 
     "PASSWD_USE_CRACKLIB" : $[
@@ -201,8 +202,8 @@ global map WIDGETS = $[
     "PASS_MAX_LEN" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("Ma&ximum"),
-	"Value" : "7"
+	"Label" : _("Numb&er of Significant Characters in the Password"),
+	"Value" : "8"
     ],
 
     "PASS_MIN_DAYS" : $[
@@ -215,7 +216,7 @@ global map WIDGETS = $[
     "PASS_MIN_LEN" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Minimum"),
+	"Label" : _("&Minimum Password Acceptable Length"),
 	"Value" : "5"
     ],
 

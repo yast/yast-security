@@ -176,15 +176,10 @@ global define symbol PassDialog() ``{
 	`VSpacing(1.0),
 	settings2widget("PASSWD_ENCRYPTION"),
 	`VSpacing(1.0),
-	/* Frame label */
-	`Frame(_("Password Length"),`HBox(
-	    `HSpacing(0.4),
-	    settings2widget("PASS_MIN_LEN"),
-	    `HSpacing(0.4),
-	    settings2widget("PASS_MAX_LEN"),
-	    `HSpacing(0.4)
-	)),
-	`VSpacing(0.1),
+	settings2widget("PASS_MAX_LEN"),
+	`VSpacing(1.0),
+	settings2widget("PASS_MIN_LEN"),
+	`VSpacing(1.0),
 	/* Frame label */
 	`Frame(_("Days of Password Change Warning"),`HBox(
 	    `HSpacing(0.4),
@@ -202,6 +197,9 @@ global define symbol PassDialog() ``{
     Wizard::SetContentsButtons(caption, contents, help,
 	    BackButtonLabel(), NextButtonLabel());
 
+    string enc = UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
+    UI::ChangeWidget(`id("PASS_MAX_LEN"), `Enabled, enc == "des");
+
     any ret = nil;
     while(true) {
 	ret = UI::UserInput();
@@ -210,6 +208,12 @@ global define symbol PassDialog() ``{
 	if(ret == `abort || ret == `cancel) {
 	    if(ReallyAbort()) break;
 	    else continue;
+	}
+	else if(ret == "PASSWD_ENCRYPTION") {
+	    string enc = UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
+	    UI::ChangeWidget(`id("PASS_MAX_LEN"), `Enabled, enc == "des");
+	    y2debug("enc=%1", enc);
+	    continue;
 	}
 	else if(ret == `back) {
 	    break;

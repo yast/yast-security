@@ -93,8 +93,14 @@ global define term settings2widget(string ID) ``{
         i=i+1;
     }
 
+    term combobox = nil;
+    if(m["Notify"]:"no" == "yes")
+	combobox = `ComboBox(`id(ID), `opt(`notify), label, combo);
+    else
+	combobox = `ComboBox(`id(ID), label, combo);
+
     return `VBox(
-        `Left(`ComboBox(`id(ID), label, combo)),
+        `Left(combobox),
         VSeparator()
     );
 }
