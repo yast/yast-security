@@ -6,10 +6,6 @@ Urgent:
 - helps: useradd -- adduser
 - permissions: local (replace or add?) -- maybe "Add local perms" [X]
 
-Documentation:
-- enhance user documentation (security.txt + draft.txt)
-- implementation documentation
-
 IO:
 - updateValue checking val and bounds
 - map2widget checking the Value
@@ -22,7 +18,20 @@ UI:
 - use Notebook widget (not ready yet)
 
 Future:
-- add other settings (draft.txt, login_defs.txt)
+- add other settings (login_defs.txt, and see bottom...)
 - easy/advanced (Server|Workstation|NetStation|...)
+
+New features:
+- limits [limits.conf, ulimit]
+- services [cron, at, lpd]
+- devices [floppy, cdrom, sound, scanner, printer?, ppp?, ...]
+- software [dosemu, sudo, emulators, ppp?, ...]
+
+Files for these:
+- securetty, pam.d/*, security/access.conf, ssh/sshd_config
+- cron.allow, cron.deny, ... 
+- security/limits.conf
+- lilo.conf
+- unsure?: inittab, kdmrc
 
 EOF

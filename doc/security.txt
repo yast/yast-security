@@ -1,8 +1,11 @@
 YaST2: Local security configuration
 ===================================
 
+This is a rough security module description. The interface is outlined
+and than the individual settings are described.
+
 [X] CheckBox
-[NUM] NumericEntry(TextEntry)
+[NUM] IntField
 [...|...] ComboBox
 
 INTERFACE:

@@ -2,9 +2,11 @@
 # Makefile.am for y2c_sec/doc
 #
 
-docdir = @DOCDIR@
+docdir = @YAST2DOC@
 htmldir = $(docdir)/y2c_sec
 
-html_DATA =
+html_DATA =		\
+	security.txt	\
+	TODO.txt
 
 EXTRA_DIST = $(html_DATA)
