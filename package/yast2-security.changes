@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 21 23:05:24 EST 2003 - nashif@suse.de
+
+- Added import function to _auto client
+- switch case to lower when exporting/upper when importing
+
+-------------------------------------------------------------------
 Tue Jan 21 11:13:46 CET 2003 - msvec@suse.de
 
 - fixed some error popups (and added some more)
