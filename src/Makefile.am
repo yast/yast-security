@@ -1,6 +1,4 @@
-#
-# Makefile.am for y2c_sec/src
-#
+# Makefile.am for security/src
 
 yncludedir = @yncludedir@/security
 
@@ -26,3 +24,5 @@ config_DATA = security.y2cc
 desktop_DATA = security.desktop
 
 EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
+
+include $(top_srcdir)/Makefile.am.common
