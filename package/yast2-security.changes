@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sun Feb 16 04:08:54 CET 2003 - nashif@suse.de
+
+- Set modified true when importing
+- 2.7.7
+
+-------------------------------------------------------------------
 Sat Feb 15 16:54:06 CET 2003 - nashif@suse.de
 
 - convert case when importing/exporting in autoinst mode
