@@ -1,7 +1,9 @@
 -------------------------------------------------------------------
-Fri Jul 26 14:03:36 CEST 2002 - jsrain@suse.cz
+Mon Jul 29 11:08:47 CEST 2002 - msvec@suse.cz
 
-- now able to configure blowfish password encryption (#17039)
+- some general purpose agents moved to yast2
+- blowfish password encryption (#17039) <jsrain@suse.cz>
+- 2.6.7
 
 -------------------------------------------------------------------
 Wed Jul 24 19:22:16 CEST 2002 - msvec@suse.cz
