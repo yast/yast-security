@@ -69,7 +69,7 @@ combination, the system usually reboots. Sometimes it is
 desirable to ignore this event, for example when the system
 serves as both workstation and server.</p>")) + 
 UI(_("<p><b>Shutdown behaviour of KDM</b><br>
-With KDM you can control who is allowed to shutdown the machine from KDM.
+With KDM you can control who is allowed to shutdown the machine from KDM.</p>
 "))
   ],
 
@@ -103,7 +103,7 @@ example, a user logging in from a different location than usual).</p>"))
     "help" :
 UI(_("<p>In this dialog you can change various password settings. These
 settings are mainly stored in the \"/etc/login.defs\" file.</p>")) +
-UI(_("<b>Checks for new passwords</b><br>
+UI(_("<p><b>Checks for new passwords</b><br>
 It is wise to choose a password that cannot be found in a dictionary,
 names or other simple, common words. By checking the box you enforce password checking
 with regards to the above rules.</p>")) +
@@ -148,16 +148,16 @@ selection. Launching SuSEconfig sets these permissions
 according to /etc/permissions.*. This fixes files with
 incorrect permissions, whether this occured accidentally or
 by intruders.
-</p><p>
-\"easy\": Most of the system files that are only readable
+</p>")) +
+UI(_("<p>\"easy\": Most of the system files that are only readable
   by root (via secure) are modified so that other users can
   also read these files.
-</p><p>
-\"secure\": Certain system files (e.g. /var/log/messages) can
+</p>")) +
+UI(_("<p>\"secure\": Certain system files (e.g. /var/log/messages) can
   only be viewed by the user root. Some programs can only be
   launched by root or by daemons, not by an ordinary user.
-</p><p>
-\"paranoid\":  If you are really paranoid, use this setting.
+</p>")) +
+UI(_("<p>\"paranoid\":  If you are really paranoid, use this setting.
   You must decide which users will be able to
   run X applications and set-uid programs.
 </p>")) +
@@ -166,15 +166,15 @@ The program updatedb runs regularly, once a day. It scans
 your whole filesystem and creates a database (locatedb)
 where the location of EVERY file is stored. The database can
 be searched by the program \"locate\".
-</p><p>
-By setting this entry, you can select the user to run this
+</p>")) +
+UI(_("<p>By setting this entry, you can select the user to run this
 command:
-</p><p>
-\"nobody\": only files which the user \"nobody\" can access
+</p>")) +
+UI(_("<p>\"nobody\": only files which the user \"nobody\" can access
   are added into the database. All users can choose if the
   file will be in the database or not.
-</p><p>
-\"root\": all files in the system are added into the
+</p>")) +
+UI(_("<p>\"root\": all files in the system are added into the
   database
 </p>")) +
 UI(_("<p><b>Omit current directory from the path of user root</b><br>
@@ -183,8 +183,8 @@ searched for in the current directory, and in the current
 path variable afterwards. In contrast, on a UNIX system they
 are exclusively searched for via the search path (variable
 PATH).
-</p><p>
-Some systems set up a 'workaround' by adding the dot (\".\")
+</p>")) +
+UI(_("<p>Some systems set up a 'workaround' by adding the dot (\".\")
 to the search path, thus enabling files in the current path
 to be found and executed. This is highly dangerous since you
 may accidentally launch unknown programs in the current
@@ -192,11 +192,11 @@ directory instead of the usual system-wide files. As a
 result, creating 'Trojan Horses' which exploit this weakness
 and intrude your system is rather easy if you set this
 option.
-</p><p>
-\"yes\": the user root always has to launch programs in the
+</p>")) +
+UI(_("<p>\"yes\": the user root always has to launch programs in the
   current directory prefixed with a \"./\". Example: \"./configure\".
-</p><p>
-\"no\": the dot (\".\") is attached to the end of the search
+</p>")) +
+UI(_("<p>\"no\": the dot (\".\") is attached to the end of the search
   path of root, making it the last to be searched.
 </p>")) +
 UI(_("<p><b>Disable telnet for user root</b><br>
@@ -204,7 +204,7 @@ It is not very wise to allow telnet for the user root. During
 the telnet session the passwords are sent in the plain form,
 so they can be stolen by the third-party. Check this box to
 disable telnet for root.
-<\p>"))
+</p>"))
 
   ]
 ];

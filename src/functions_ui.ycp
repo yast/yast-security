@@ -180,7 +180,7 @@ define Choose(list sel) ``{
   map BUTTONS = CallFunction(`buttons());
 
   UI(`OpenDialog(
-    `VBox(`SelectionBox(`id(`sel), "&Please choose", sel),
+    `VBox(`SelectionBox(`id(`sel), _("&Please choose"), sel),
       `HBox(`PushButton(`id(`ok), lookup(BUTTONS,`ok)),
         `PushButton(`id(`cancel), lookup(BUTTONS,`cancel)))
     )));
