@@ -39,7 +39,12 @@ map scr_info = $[
 	"PASS_WARN_AGE"		:	"l11",
 	"UID_MAX"		:	"l12",
 	"UID_MIN"		:	"l13"
-    ]]
+    ]],
+    "pam" : $[ "passwd" : $[ "password" : $[
+	"pam_unix" : [
+	    $[ "arguments" : "nullok use_first_pass md5 use_authtok" ]
+	]
+    ]]]
 ];
 
 TEST(``(SecurityRead()),[scr_info],nil);

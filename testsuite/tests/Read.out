@@ -18,4 +18,5 @@ Read	.rc.system.PASSWD_USE_CRACKLIB "r4"
 Read	.rc.system.PERMISSION_SECURITY "r5"
 Read	.rc.system.ROOT_LOGIN_REMOTE "r6"
 Read	.rc.system.RUN_UPDATEDB_AS "r7"
-Return	$["CONSOLE_SHUTDOWN":"r1", "CWD_IN_ROOT_PATH":"r2", "FAILLOG_ENAB":"l1", "FAIL_DELAY":"l2", "GID_MAX":"l3", "GID_MIN":"l4", "KDM_SHUTDOWN":"r3", "LASTLOG_ENAB":"l5", "OBSCURE_CHECKS_ENAB":"l6", "PASSWD_USE_CRACKLIB":"r4", "PASS_MAX_DAYS":"l7", "PASS_MAX_LEN":"l8", "PASS_MIN_DAYS":"l9", "PASS_MIN_LEN":"l10", "PASS_WARN_AGE":"l11", "PERMISSION_SECURITY":"r5", "ROOT_LOGIN_REMOTE":"r6", "RUN_UPDATEDB_AS":"r7", "UID_MAX":"l12", "UID_MIN":"l13"]
+Read	.pam.passwd.password.pam_unix [$["arguments":"nullok use_first_pass md5 use_authtok"]]
+Return	$["CONSOLE_SHUTDOWN":"r1", "CWD_IN_ROOT_PATH":"r2", "FAILLOG_ENAB":"l1", "FAIL_DELAY":"l2", "GID_MAX":"l3", "GID_MIN":"l4", "KDM_SHUTDOWN":"r3", "LASTLOG_ENAB":"l5", "MD5_SUPPORT":"yes", "OBSCURE_CHECKS_ENAB":"l6", "PASSWD_USE_CRACKLIB":"r4", "PASS_MAX_DAYS":"l7", "PASS_MAX_LEN":"l8", "PASS_MIN_DAYS":"l9", "PASS_MIN_LEN":"l10", "PASS_WARN_AGE":"l11", "PERMISSION_SECURITY":"r5", "ROOT_LOGIN_REMOTE":"r6", "RUN_UPDATEDB_AS":"r7", "UID_MAX":"l12", "UID_MIN":"l13"]

@@ -43,9 +43,6 @@ if(!is(Args(0),map)) {
 
 map settings = select(args,0);
 y2debug("Only writing... (%1)",settings);
-
-list ret1 = SecurityWrite(settings);
-list ret2 = SecurityFinish();
-return flatten([ret1,ret2]);
+return SecurityWrite(settings);
 
 } /* EOF */

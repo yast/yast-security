@@ -1,3 +1,9 @@
+-------------------------------------------------------------------
+Wed Aug 15 17:10:55 CEST 2001 - msvec@suse.cz
+
+- added MD5 password encryption suuport
+- testsuite for the above
+- removed Finish function
 - removed UI(_(...))
 - use of UI:: and SCR::
 - version 2.4.3

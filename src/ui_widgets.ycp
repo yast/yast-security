@@ -230,6 +230,13 @@ return $[
     // maximum field label
     "Label" : _("Ma&ximum"),// length of password")),
     "Value" : "7"
+  ],
+
+  "MD5_SUPPORT" : $[
+    "Widget" : "CheckBox",
+    // checkbox label (please, stick to 50 characters per line)
+    "Label" : _("Activate MD5 encryption for passwords"),
+    "Value" : "no"
   ] /* No \, ! */
 
 /*

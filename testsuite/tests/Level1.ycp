@@ -26,6 +26,7 @@ map DATA = $[
       "PASSWD_USE_CRACKLIB"	:   "no",
       "OBSCURE_CHECKS_ENAB"	:   "no",
       "PASS_WARN_AGE"		:   "7",
+      "MD5_SUPPORT"		: "no",
       /* "Perms" */
       "PERMISSION_SECURITY"	: "easy",
       /* "Other" */

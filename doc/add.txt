@@ -1,0 +1,5 @@
+1. implement Read and Write	[io.ycp]
+2. update testsuite		[testsuite/tests/*.ycp; make check]
+3. create a new widget		[ui_widgets.ycp]
+4. add helptext for it		[ui_helps.ycp]
+5. place the widget		[ui.ycp]

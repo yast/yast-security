@@ -51,7 +51,6 @@ if(ret == `ok) {
     // info text shown at the end of module
     Info(_("Please wait while updating configuration files."));
     y2debug("Write: %1",SecurityWrite(settings));
-    y2debug("Finish: %1",SecurityFinish());
     InfoClose();
 }
 

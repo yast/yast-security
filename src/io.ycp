@@ -174,30 +174,43 @@ global define ApplyWrite(term t, list l, map m) ``{
  */
 global define SecurityRead() ``{
     map m = $[];
+    /* rc.config and login.defs */
     m = ApplyRead(``(ReadLoginDefs()),SettingsLoginDefs(),m);
     m = ApplyRead(``(ReadRcConfig()),SettingsRcConfig(),m);
+    /* md5 support */
+    list pam_list = SCR::Read(.pam.passwd.password.pam_unix);
+    if(pam_list == [] || pam_list == nil) return m;
+    map pam_map = select(pam_list,0);
+    boolean pam_support = contains(splitstring(lookup(pam_map , "arguments", ""), " "), "md5");
+    m = add(m,"MD5_SUPPORT", pam_support?"yes":"no");
     return m;
 };
 
 /**
- * Update the SCR from the map of all security settings
+ * Update the SCR from the map of all security settings and write
+ * settings to the disk
  * @param m a map of all security settings
  * @return list successes of operations
  */
 global define SecurityWrite(map m) ``{
+
+    /* rc.config and login.defs */
     list l1 = ApplyWrite(``(WriteLoginDefs()),SettingsLoginDefs(),m);
     list l2 = ApplyWrite(``(WriteRcConfig()),SettingsRcConfig(),m);
-    return flatten([l1,l2]);
-};
-
-/**
- * Write the security data from SCR to the disk
- * @return list success of operation
- */
-global define SecurityFinish() ``{
-    list ret = [];
+    list ret = flatten([l1,l2]);
     ret = add(ret,SCR::Write(.etc.login_defs,nil));
     ret = add(ret,SCR::Write(.rc.system,nil));
+
+    /* md5 support */
+    string pam_string = (lookup(m,"MD5_SUPPORT","no")=="yes")?"+md5":"-md5";
+    ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.login.password.pam_unix, pam_string));
+    ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix, pam_string));
+    ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix, pam_string));
+
+    /* finish him */
     ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --nonewpackage"));
     return ret;
 };
