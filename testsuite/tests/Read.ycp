@@ -49,7 +49,14 @@ map scr_info = $[
 	    "PASS_MIN_LEN"		:	"l10",
 	    "PASS_WARN_AGE"		:	"l11",
 	    "UID_MAX"			:	"l12",
-	    "UID_MIN"			:	"l13"
+	    "UID_MIN"			:	"l13",
+	    "SYSTEM_UID_MAX"		:	"l14",
+	    "SYSTEM_UID_MIN"		:	"l15",
+	    "SYSTEM_GID_MAX"		:	"l16",
+	    "SYSTEM_GID_MIN"		:	"l17",
+	    "USERADD_CMD"		:	"l18",
+	    "USERDEL_PRECMD"		:	"l19",
+	    "USERDEL_POSTCMD"		:	"l20",
 	],
 	"inittab" : $[
 	    "ca"			:	":ctrlaltdel:/sbin/shutdown -r -t 4 now"

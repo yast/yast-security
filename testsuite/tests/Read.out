@@ -8,6 +8,13 @@ Read	.etc.login_defs.PASS_MIN_DAYS "l9"
 Read	.etc.login_defs.PASS_WARN_AGE "l11"
 Read	.etc.login_defs.UID_MAX "l12"
 Read	.etc.login_defs.UID_MIN "l13"
+Read	.etc.login_defs.SYSTEM_UID_MAX "l14"
+Read	.etc.login_defs.SYSTEM_UID_MIN "l15"
+Read	.etc.login_defs.SYSTEM_GID_MAX "l16"
+Read	.etc.login_defs.SYSTEM_GID_MIN "l17"
+Read	.etc.login_defs.USERADD_CMD "l18"
+Read	.etc.login_defs.USERDEL_PRECMD "l19"
+Read	.etc.login_defs.USERDEL_POSTCMD "l20"
 Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r9"
 Read	.target.size "/etc/sysconfig/displaymanager" 1

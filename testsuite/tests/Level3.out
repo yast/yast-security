@@ -5,7 +5,7 @@ Write	.etc.login_defs.FAIL_DELAY "3" true
 Read	.etc.login_defs.GID_MAX nil
 Write	.etc.login_defs.GID_MAX "60000" true
 Read	.etc.login_defs.GID_MIN nil
-Write	.etc.login_defs.GID_MIN "101" true
+Write	.etc.login_defs.GID_MIN "1000" true
 Read	.etc.login_defs.LASTLOG_ENAB nil
 Write	.etc.login_defs.LASTLOG_ENAB "yes" true
 Read	.etc.login_defs.PASS_MAX_DAYS nil
@@ -18,6 +18,20 @@ Read	.etc.login_defs.UID_MAX nil
 Write	.etc.login_defs.UID_MAX "60000" true
 Read	.etc.login_defs.UID_MIN nil
 Write	.etc.login_defs.UID_MIN "500" true
+Read	.etc.login_defs.SYSTEM_UID_MAX nil
+Write	.etc.login_defs.SYSTEM_UID_MAX "499" true
+Read	.etc.login_defs.SYSTEM_UID_MIN nil
+Write	.etc.login_defs.SYSTEM_UID_MIN "100" true
+Read	.etc.login_defs.SYSTEM_GID_MAX nil
+Write	.etc.login_defs.SYSTEM_GID_MAX "499" true
+Read	.etc.login_defs.SYSTEM_GID_MIN nil
+Write	.etc.login_defs.SYSTEM_GID_MIN "100" true
+Read	.etc.login_defs.USERADD_CMD nil
+Write	.etc.login_defs.USERADD_CMD "/usr/sbin/useradd.local" true
+Read	.etc.login_defs.USERDEL_PRECMD nil
+Write	.etc.login_defs.USERDEL_PRECMD "/usr/sbin/userdel-pre.local" true
+Read	.etc.login_defs.USERDEL_POSTCMD nil
+Write	.etc.login_defs.USERDEL_POSTCMD "/usr/sbin/userdel-post.local" true
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS nil
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "no" true
 Read	.sysconfig.displaymanager.KDM_SHUTDOWN nil

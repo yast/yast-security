@@ -31,7 +31,7 @@ global map Settings = $[
     "FAILLOG_ENAB"			: "yes",
     "FAIL_DELAY"			: "3",
     "GID_MAX"				: "60000",
-    "GID_MIN"				: "101",
+    "GID_MIN"				: "1000",
     "KDM_SHUTDOWN"			: "all",
     "LASTLOG_ENAB"			: "yes",
     "OBSCURE_CHECKS_ENAB"		: "yes",
@@ -45,7 +45,14 @@ global map Settings = $[
     "PERMISSION_SECURITY"		: "secure",
     "RUN_UPDATEDB_AS"			: "nobody",
     "UID_MAX"				: "60000",
-    "UID_MIN"				: "100",
+    "UID_MIN"				: "500",
+    "SYSTEM_UID_MAX"			: "499",
+    "SYSTEM_UID_MIN"			: "100",
+    "SYSTEM_GID_MAX"			: "499",
+    "SYSTEM_GID_MIN"			: "100",
+    "USERADD_CMD"			: "/usr/sbin/useradd.local",
+    "USERDEL_PRECMD"			: "/usr/sbin/userdel-pre.local",
+    "USERDEL_POSTCMD"			: "/usr/sbin/userdel-post.local",
 ];
 
 /**
@@ -63,6 +70,13 @@ map Locations = $[
 	"PASS_WARN_AGE",
 	"UID_MAX",
 	"UID_MIN",
+	"SYSTEM_UID_MAX",
+	"SYSTEM_UID_MIN",
+	"SYSTEM_GID_MAX",
+	"SYSTEM_GID_MIN",
+	"USERADD_CMD",
+	"USERDEL_PRECMD",
+	"USERDEL_POSTCMD",
     ],
     ".sysconfig.suseconfig" : [
 	"CWD_IN_ROOT_PATH",

@@ -9,15 +9,29 @@ Write	.etc.login_defs.GID_MIN "l4" true
 Read	.etc.login_defs.LASTLOG_ENAB nil
 Write	.etc.login_defs.LASTLOG_ENAB "l5" true
 Read	.etc.login_defs.PASS_MAX_DAYS nil
-Write	.etc.login_defs.PASS_MAX_DAYS "l8" true
+Write	.etc.login_defs.PASS_MAX_DAYS "l7" true
 Read	.etc.login_defs.PASS_MIN_DAYS nil
-Write	.etc.login_defs.PASS_MIN_DAYS "l10" true
+Write	.etc.login_defs.PASS_MIN_DAYS "l9" true
 Read	.etc.login_defs.PASS_WARN_AGE nil
-Write	.etc.login_defs.PASS_WARN_AGE "l12" true
+Write	.etc.login_defs.PASS_WARN_AGE "l11" true
 Read	.etc.login_defs.UID_MAX nil
-Write	.etc.login_defs.UID_MAX "l13" true
+Write	.etc.login_defs.UID_MAX "l12" true
 Read	.etc.login_defs.UID_MIN nil
-Write	.etc.login_defs.UID_MIN "l14" true
+Write	.etc.login_defs.UID_MIN "l13" true
+Read	.etc.login_defs.SYSTEM_UID_MAX nil
+Write	.etc.login_defs.SYSTEM_UID_MAX "l14" true
+Read	.etc.login_defs.SYSTEM_UID_MIN nil
+Write	.etc.login_defs.SYSTEM_UID_MIN "l15" true
+Read	.etc.login_defs.SYSTEM_GID_MAX nil
+Write	.etc.login_defs.SYSTEM_GID_MAX "l16" true
+Read	.etc.login_defs.SYSTEM_GID_MIN nil
+Write	.etc.login_defs.SYSTEM_GID_MIN "l17" true
+Read	.etc.login_defs.USERADD_CMD nil
+Write	.etc.login_defs.USERADD_CMD "l18" true
+Read	.etc.login_defs.USERDEL_PRECMD nil
+Write	.etc.login_defs.USERDEL_PRECMD "l19" true
+Read	.etc.login_defs.USERDEL_POSTCMD nil
+Write	.etc.login_defs.USERDEL_POSTCMD "l20" true
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS nil
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r4" true
 Read	.sysconfig.displaymanager.KDM_SHUTDOWN nil
@@ -91,7 +105,7 @@ Write	.etc.security.v."pam_pwcheck"."password" "" true
 Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
 Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "maxlen=l9" true
+Write	.etc.security.v."pam_pwcheck"."password" "maxlen=l8" true
 Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
 Dir	.etc.security.section: []
@@ -99,7 +113,7 @@ Write	.etc.security.v."pam_pwcheck"."password" "" true
 Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
 Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "minlen=l11" true
+Write	.etc.security.v."pam_pwcheck"."password" "minlen=l10" true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
 Execute	.target.bash "/sbin/SuSEconfig --module xdm" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
