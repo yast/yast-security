@@ -8,6 +8,8 @@
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * testedfiles: Security.ycp PamSettings.ycp Pam.ycp
  */
 
 {
