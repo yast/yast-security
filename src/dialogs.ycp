@@ -13,6 +13,7 @@ textdomain "security";
 
 import "Label";
 import "Popup";
+import "Security";
 import "Wizard";
 
 include "security/helps.ycp";
@@ -27,19 +28,6 @@ define symbol BootDialog() ``{
     /* Boot dialog caption */
     string caption = _("Boot Settings");
     string help = HELPS["boot"]:"";
-
-    /* Boot dialog contents * /
-    term contents = `VBox(
-	XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(
-	    VSeparator(),
-	    settings2widget("CONSOLE_SHUTDOWN"),
-	    `VSpacing(0.4),
-	    settings2widget("KDM_SHUTDOWN")
-	),`HSpacing(1.5)))
-    );
-
-    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
-    */
 
     /* Boot dialog contents */
     term contents = `HVCenter(`HVSquash(`HBox(
