@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Jul 04 20:51:37 CEST 2002 - arvin@suse.de
+
+- moved non binary files to /usr/share/YaST2
+
+-------------------------------------------------------------------
 Mon Jul  1 15:20:42 CEST 2002 - msvec@suse.cz
 
 - package renamed to yast2-security
@@ -138,7 +143,7 @@ Mon Jul 30 11:34:24 CEST 2001 - msvec@suse.cz
 -------------------------------------------------------------------
 Tue Jul 10 01:35:53 CEST 2001 - ro@suse.de
 
-- removed yast2-core-translator from neededforbuild 
+- removed yast2-core-translator from neededforbuild
 
 -------------------------------------------------------------------
 Tue Jul  3 13:08:02 CEST 2001 - msvec@suse.cz
