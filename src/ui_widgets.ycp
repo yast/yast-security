@@ -155,7 +155,7 @@ return $[
   "CWD_IN_ROOT_PATH" : $[
     "Widget" : "CheckBox",
     // Other options (please, stick to 50 characters per line)
-    "Label" : _("&Include current directory in the path of user root"),
+    "Label" : _("&Current directory in the root's path"),
     "Value" : "yes"
   ],
 

@@ -200,7 +200,7 @@ _("<p>\"nobody\": only files which the user \"nobody\" can access
 _("<p>\"root\": all files in the system are added into the
   database
 </p>") +
-_("<p><b>Include current directory in the path of user root</b><br>
+_("<p><b>Current directory in the root's path</b><br>
 On a DOS system, executable files (programs) are first
 searched for in the current directory and in the current
 path variable afterwards. In contrast, on a UNIX system they

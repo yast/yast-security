@@ -1,3 +1,4 @@
+- shortened label (#15089)
 - removed outdated docs #15875
 - implement CONSOLE SHUTDOWN fully in yast2
 - don't run full SuSEconfig
