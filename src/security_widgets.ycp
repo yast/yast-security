@@ -85,49 +85,49 @@ return $[
 
   "FAILLOG_ENAB" : $[
     "Widget" : "CheckBox",
-    //  login options
+     // login options (please, stick to 50 characters per line)
     "Label" : UI(_("Record failed login attempts")),
     "Value" : "yes"
   ],
 
   "FAIL_DELAY" : $[
     "Widget" : "IntField",
-    // login options
+     // login options (please, stick to 50 characters per line)
     "Label" : UI(_("Seconds to wait after an incorrect login attempt:")),
     "Value" : "3"
   ],
 
   "LASTLOG_ENAB" : $[
     "Widget" : "CheckBox",
-    // login options
+     // login options (please, stick to 50 characters per line)
     "Label" : UI(_("Record successful login attempts")),
     "Value" : "yes"
   ],
 
   "ROOT_LOGIN_REMOTE" : $[
     "Widget" : "CheckBox",
-    // login options
+     // login options (please, stick to 50 characters per line)
     "Label" : UI(_("Disable telnet login for user root")),
     "Value" : "no"
   ],
 
   "PASSWD_USE_CRACKLIB" : $[
     "Widget" : "CheckBox",
-    // login options
+     // login options (please, stick to 50 characters per line)
     "Label" : UI(_("Checks for new passwords")),
     "Value" : "yes"
   ],
 
   "OBSCURE_CHECKS_ENAB" : $[
     "Widget" : "CheckBox",
-    // login options
+     // login options (please, stick to 50 characters per line)
     "Label" : UI(_("Plausibility test for password")),
     "Value" : "yes"
   ],
 
   "PASS_WARN_AGE" : $[
     "Widget" : "IntField",
-    // login options
+     // login options (please, stick to 50 characters per line)
     "Label" : UI(_("Days before password expires warning:")),
     "Value" : "7"
   ],
@@ -147,14 +147,14 @@ return $[
 
   "CWD_IN_ROOT_PATH" : $[
     "Widget" : "CheckBox",
-    // Other options
+    // Other options (please, stick to 50 characters per line)
     "Label" : UI(_("Omit current directory from the path of user root")),
     "Value" : "yes"
   ],
 
   "RUN_UPDATEDB_AS" : $[
     "Widget" : "ComboBox",
-    // label for updatedb
+    // label for updatedb (please, stick to 50 characters per line)
     "Label" : UI(_("User launching updatedb:")),
     "Options" : [ "nobody", "root" ],
     "Value" : "nobody"
@@ -164,28 +164,28 @@ return $[
 
   "GID_MIN" : $[
     "Widget" : "IntField",
-    // minimum field label
+    // minimum field label (please, stick to 50 characters per line)
     "Label" : UI(_("Minimum")),
     "Value" : "101"
   ],
 
   "GID_MAX" : $[
     "Widget" : "IntField",
-    // maximum field label
+    // maximum field label (please, stick to 50 characters per line)
     "Label" : UI(_("Maximum")),
     "Value" : "60000"
   ],
 
   "UID_MIN" : $[
     "Widget" : "IntField",
-    // minimum field label
+    // minimum field label (please, stick to 50 characters per line)
     "Label" : UI(_("Minimum")),
     "Value" : "100"
   ],
 
   "UID_MAX" : $[
     "Widget" : "IntField",
-    // maximum field label
+    // maximum field label (please, stick to 50 characters per line)
     "Label" : UI(_("Maximum")),
     "Value" : "60000"
   ],
