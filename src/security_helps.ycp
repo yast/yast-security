@@ -28,7 +28,7 @@ define STRINGS() ``{ return $[
     "help" : UI(_("Perms help ..."))
   ],
   "Other" : $[
-    "caption" : UI(_("Other security settings")),
+    "caption" : UI(_("Files permissions and other settings")),
     "help" : UI(_("Other help ..."))
   ]
 ];

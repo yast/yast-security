@@ -124,7 +124,7 @@ define processInput() ``{
   any ret = nil;
 
   ret = UI(`UserInput());
-  if(ret == `next || ret == `ok)
+  if(ret == `next || ret == `ok || ret == `finish)
     return `ok;
   if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
     return nil;
@@ -240,8 +240,9 @@ define SecurityMainDialog() ``{
     VSeparator(), SecurityItem(`login,"Login and password settings"),
     VSeparator(), SecurityItem(`boot, "Boot settings"),
     //VSeparator(), SecurityItem(`perms,"Files permissions"),
-    VSeparator(), SecurityItem(`other,"Other security settings"),
-    VSeparator()
+    //VSeparator(), SecurityItem(`other,"Other security settings"),
+    VSeparator(), SecurityItem(`other,"Files permissions and other settings"),
+    VSeparator(),`VSpacing(2)
   ));
 
   any ret = nil;
@@ -275,7 +276,7 @@ define SecurityMainDialog() ``{
 
 define SecurityBootDialog() ``{
   SuSEDialog("Boot", [], `VBox(
-`Frame("",`HBox(`HSpacing(1),`VBox(`VSpacing(-0.1),
+`Frame("Boot permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(-0.1),
     VSeparator(),
     map2widget("CONSOLE_SHUTDOWN"),
     VSeparator(),
@@ -354,8 +355,8 @@ define SecurityOtherDialog() ``{
 `Frame("Permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
     map2widget("PERMISSION_SECURITY"), /* See the SecurityPermsDialog */
 `VSpacing(0.3)),`HSpacing(1))),
-`VSpacing(1),
-`Frame("Password",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
+`VSpacing(1.5),
+`Frame("Other settings",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
     VSeparator(),
     map2widget("CWD_IN_ROOT_PATH"),
     VSeparator(),

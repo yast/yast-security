@@ -119,7 +119,7 @@ define SECURITY_OPTIONS() ``{ return $[
 
   "PASSWD_USE_CRACKLIB" : $[
     "Widget" : "CheckBox",
-    "Label" : UI(_("Do some checks for new passwords")),
+    "Label" : UI(_("Checks for new passwords")),
     "Value" : "yes"
   ],
 
@@ -139,7 +139,7 @@ define SECURITY_OPTIONS() ``{ return $[
 
   "PERMISSION_SECURITY" : $[
     "Widget" : "ComboBox",
-    "Label" : UI(_("Files permissions:")),
+    "Label" : UI(_("Setting of files permissions:")),
     "Options" : [["easy",UI(_("Easy"))],["secure",UI(_("Secure"))],["paranoid",UI(_("Paranoid"))]],
     "Value" : "secure"
   ],

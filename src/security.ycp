@@ -45,7 +45,6 @@ if (Args() == [ "get_menuentry" ])
 /* The main() */
 
 _debug("Security Module started");
-map login_defs = SecurityInit(); /* rcagent */
 
 map security_defs = SecurityRead();
 _debug(security_defs);
@@ -61,7 +60,7 @@ _debug(ret);
 
 if(ret == `ok) {
   _debug(SecurityWrite(security_defs));
-  _debug(SecurityFinish(login_defs));
+  _debug(SecurityFinish());
 }
 
 _debug("Security Module finished");
