@@ -95,6 +95,7 @@ define term settings2widget(string ID) ``{
 	// string|list it
 	y2debug("li=%1 (%2)", li, i);
 	any it = li[i]:nil;
+	if(it == nil) it = "";
 	y2debug("it=%1", it);
 	string id_t = "";
 	string id_s = "";
@@ -112,7 +113,7 @@ define term settings2widget(string ID) ``{
 	    combo = add(combo,`item(`id(id_t), id_s, true));
 	else
 	    combo = add(combo,`item(`id(id_t), id_s));
-	i=i+1;
+	i = i + 1;
     }
 
     term combobox = nil;
