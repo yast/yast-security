@@ -22,5 +22,5 @@
 .sysconfig.locate
 
 `ag_ini(
-    SysConfigFile("/etc/sysconfig/locate")
+    SCR::SysConfigFile("/etc/sysconfig/locate")
 )
