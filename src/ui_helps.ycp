@@ -223,14 +223,7 @@ _("<p>\"yes\": the dot (\".\") is attached to the end of the search
 </p>") +
 _("<p>\"no\": the user root always has to launch programs in the
   current directory prefixed with a \"./\". Example: \"./configure\".
-</p>") +
-_("<p><b>Enable telnet for user root</b><br>
-It is not very wise to allow telnet for the user root. During
-the telnet session, passwords are sent in the plain form,
-so they can be stolen by a third party. Check this box to
-enable telnet for root.
-</p>
-")
+</p>")
 
   ]
 ];
