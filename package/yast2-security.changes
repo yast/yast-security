@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  2 16:17:28 CEST 2004 - msvec@suse.cz
+
+- changed license to GPL
+- 2.9.13
+
+-------------------------------------------------------------------
 Wed Mar 17 16:35:19 CET 2004 - jsuchome@suse.cz
 
 - fixed testsuite (forced by change of PamSettings::Write)
