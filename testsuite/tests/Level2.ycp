@@ -19,6 +19,6 @@ include "security/levels.ycp";
 
 Security::Settings = Levels["Level2"]:$[];
 Security::modified = true;
-TEST(``(Security::Write()),[],false);
+TEST(``(Security::Write()),[],nil);
 
 }
