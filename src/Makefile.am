@@ -7,18 +7,18 @@ modulesdir = $(YAST2DIR)/clients
 includedir = $(YAST2DIR)/include/security
 
 modules_DATA =			\
-	buttons.ycp		\
 	security.ycp		\
-	security_helps.ycp	\
-	security_settings.ycp	\
-	security_widgets.ycp    \
-	security_write.ycp
+	security_write.ycp	\
+	settings.ycp		\
+	ui_buttons.ycp		\
+	ui_helps.ycp		\
+	ui_widgets.ycp
 
 include_DATA =			\
-	general.ycp		\
-	general_ui.ycp		\
-	security_io.ycp		\
-	security_ui.ycp
+	functions.ycp		\
+	functions_ui.ycp	\
+	io.ycp			\
+	ui.ycp
 
 menu_DATA = menuentry_security.ycp
 
