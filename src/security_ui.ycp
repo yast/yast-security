@@ -382,13 +382,13 @@ define SecurityMainDialog(map defs) ``{
     `HVCenter(
     `VBox(
     `HVSquash(
-    `Frame( "Current security settings:",
+    `Frame( _("Current security settings:"),
       `HBox(`HSpacing(0.8),
       `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
       `HSpacing(0.8))
     )),
     `VSpacing(0.6),
-    `HVCenter(`PushButton(`id(`details),"&Details...")),
+    `HVCenter(`PushButton(`id(`details),_("&Details..."))),
     `VSpacing(0.6)
     )
   ));
@@ -396,7 +396,7 @@ define SecurityMainDialog(map defs) ``{
   any curr = UI(`QueryWidget(`id(`rb),`CurrentButton));
   if( curr == `custom) {
     UI(`ChangeWidget(`id(`details),`Enabled,false));
-    UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),"Next")));
+    UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
   }
 
   any ret = nil;
@@ -431,7 +431,7 @@ define SecurityMainDialog(map defs) ``{
             `HVCenter(
             `VBox(
             `HVSquash(
-            `Frame( "Current security settings:",
+            `Frame( _("Current security settings:"),
               `HBox(`HSpacing(0.8),
               `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
               `HSpacing(0.8))
@@ -461,12 +461,12 @@ define SecurityMainDialog(map defs) ``{
     else if(ret == `custom) {		/* Change the [Finish] to [Next] */
       y2debug("custom radio button");
       UI(`ChangeWidget(`id(`details),`Enabled,false));
-      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),"Next")));
+      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
     }
     else {				/* Other radio button */
       y2error("SecurityMainDialog: Huh? %1",ret);
       UI(`ChangeWidget(`id(`details),`Enabled,true));
-      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),"Finish")));
+      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),_("&Finish"))));
       if(ret == UI(_("Level 3 (Network server)")))
 	PopupOK(UI(_("You have chosen 'Level 3'. This setup
 provides a basic configuration for network servers
@@ -530,11 +530,11 @@ define SecurityWizzard() ``{
 
 define SecurityDetailsDialog() ``{
   SuSEDialog("Main", [`back,`finish], `VBox(
-    VSeparator(), SecurityItem(`passwd,"Password settings"),
-    VSeparator(), SecurityItem(`boot, "Boot settings"),
-    VSeparator(), SecurityItem(`login,"Login settings"),
-    VSeparator(), SecurityItem(`uid,"User and group ID settings"),
-    VSeparator(), SecurityItem(`misc,"Miscellaneous settings"),
+    VSeparator(), SecurityItem(`passwd,_("Password settings")),
+    VSeparator(), SecurityItem(`boot,  _("Boot settings")),
+    VSeparator(), SecurityItem(`login, _("Login settings")),
+    VSeparator(), SecurityItem(`uid,   _("User and group ID settings")),
+    VSeparator(), SecurityItem(`misc,  _("Miscellaneous settings")),
     VSeparator(),`VSpacing(2)
   ));
 
@@ -568,7 +568,7 @@ define SecurityDetailsDialog() ``{
 
 /* Frame with spacings */
 
-define XFrame(float f1, float f2, string S, term T) ``{
+define XFrame(float f1, float f2, locale S, term T) ``{
   return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
 };
 
@@ -576,7 +576,7 @@ define XFrame(float f1, float f2, string S, term T) ``{
 
 define SecurityBootDialog() ``{
   SuSEDialogUP("Boot", [], `VBox(
-XFrame(0.8,0.5,"Boot permissions",`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
+XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
     VSeparator(),
     map2widget("CONSOLE_SHUTDOWN"),
     `VSpacing(0.4),
@@ -600,7 +600,7 @@ XFrame(0.8,0.5,"Boot permissions",`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
 define SecurityLoginDialog() ``{
   SuSEDialogUP("Login", [], `VBox(
 //`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
-XFrame(2.0,0.9,"Login",`VBox(
+XFrame(2.0,0.9,_("Login"),`VBox(
     //VSeparator(),
     map2widget("FAIL_DELAY"),
     //VSeparator(),
@@ -683,14 +683,14 @@ define SecurityPasswdDialog() ``{
   SuSEDialogUP("Password", [], `VBox(
     //VSeparator(),
     //`VSpacing(-0.2),
-    XFrame(0.3,0.15,"Checks",`VBox(
+    XFrame(0.3,0.15,_("Checks"),`VBox(
     map2widget("PASSWD_USE_CRACKLIB"),
     VSeparator(),
     map2widget("OBSCURE_CHECKS_ENAB"),
     VSeparator()
     )),
     `VSpacing(0.15),
-    `Frame("Password length",`HBox(
+    `Frame(_("Password length"),`HBox(
     `HSpacing(0.4),
     map2widget("PASS_MIN_LEN"),
     `HSpacing(0.4),
@@ -698,7 +698,7 @@ define SecurityPasswdDialog() ``{
     `HSpacing(0.4)
     )),
     `VSpacing(0.1),
-    `Frame("Days of password change warning",`HBox(
+    `Frame(_("Days of password change warning"),`HBox(
     `HSpacing(0.4),
     map2widget("PASS_MIN_DAYS"),
     `HSpacing(0.4),
@@ -742,13 +742,13 @@ define SecurityPasswdDialog() ``{
 define SecurityAdduserDialog() ``{
   SuSEDialogUP("Adduser", [], `VBox(
     VSeparator(),
-    XFrame(1.8,0.5,"User ID limitations",`HBox(
+    XFrame(1.8,0.5,_("User ID limitations"),`HBox(
     map2widget("UID_MIN"),
     `HSpacing(1.5),
     map2widget("UID_MAX")
     )),
     `VSpacing(0.7),
-    XFrame(1.8,0.5,"Group ID limitations",`HBox(
+    XFrame(1.8,0.5,_("Group ID limitations"),`HBox(
     map2widget("GID_MIN"),
     `HSpacing(1.5),
     map2widget("GID_MAX")

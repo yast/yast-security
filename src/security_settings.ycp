@@ -87,7 +87,7 @@ return [
 
 
   $[
-    "name" : "Level 1 (Home workstation)",
+    "name" : UI(_("Level 1 (Home workstation)")),
     "settings" : $[
 
       /* "Boot" */
@@ -120,7 +120,7 @@ return [
 
 
   $[
-    "name" : "Level 2 (Networked workstation)",
+    "name" : UI(_("Level 2 (Networked workstation)")),
     "settings" : $[
 
       /* "Boot" */
@@ -153,7 +153,7 @@ return [
       
 
   $[
-    "name" : "Level 3 (Network server)",
+    "name" : UI(_("Level 3 (Network/Server)")),
     "settings" : $[
 
       /* "Boot" */
