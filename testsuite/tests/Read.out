@@ -11,11 +11,17 @@ Read	.etc.login_defs.PASS_MIN_LEN "l10"
 Read	.etc.login_defs.PASS_WARN_AGE "l11"
 Read	.etc.login_defs.UID_MAX "l12"
 Read	.etc.login_defs.UID_MIN "l13"
+Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r9"
+Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.KDM_SHUTDOWN "r3"
+Read	.target.size "/etc/sysconfig/locate" 1
 Read	.sysconfig.locate.RUN_UPDATEDB_AS "r7"
+Read	.target.size "/etc/sysconfig/security" 1
 Read	.sysconfig.security.PERMISSION_SECURITY "paranoid"
+Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
+Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_USER_PATH "r3"
 Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
