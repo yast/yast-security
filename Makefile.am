@@ -1,8 +1,4 @@
-#
-# Makefile.am for modules/y2c_sec
-#
-# $Id$
-#
+# Main module Makefile.am
 
 SUBDIRS = src doc testsuite
 
@@ -22,4 +18,5 @@ MAINTAINERCLEANFILES = package/$(RPMNAME)-$(VERSION).tar.bz2 package/$(RPMNAME).
 
 package: $(RPMNAME)-$(VERSION).tar.bz2
 	rm -f package/$(RPMNAME)-*.tar.bz2
+	parseycp -q -R
 	mv $< package
