@@ -124,7 +124,7 @@ define symbol MainDialog() ``{
 	else if(ret == `custom) {
 	    if(cur != `custom) {
 		UI::ChangeWidget(`id(`details), `Enabled, false);
-		Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default), Label::NextButton()));
+		Wizard::RestoreNextButton();
 		UI::SetFocus(`id(`next));
 	    }
 	    continue;
@@ -136,7 +136,7 @@ define symbol MainDialog() ``{
 	    }
 	    if(cur == `custom) {
 		UI::ChangeWidget(`id(`details), `Enabled, true);
-		Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default), Label::FinishButton()));
+		Wizard::SetNextButton(`next, Label::FinishButton() );
 		UI::SetFocus(`id(`next));
 	    }
 	    continue;
