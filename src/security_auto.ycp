@@ -45,6 +45,9 @@ y2debug("param=%1", param);
 
 /* Import Data*/
 if(func == "Import") {
+	// Compat
+	if (haskey(param, "encryption"))
+		param["passwd_encryption"] =  param["encryption"]:"des";
     ret = Security::Import(switch2upper(param));
 }
 /* Create a  summary*/

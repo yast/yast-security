@@ -416,6 +416,8 @@ global define boolean Write() ``{
  * @return boolean True on success
  */
 global define boolean Import(map settings) ``{
+	if (settings == $[])
+		return true;
 	modified = true;
 	map tmpSettings = $[];
 	foreach(string k, string v, Settings, ``{
@@ -425,6 +427,7 @@ global define boolean Import(map settings) ``{
 			tmpSettings[k] = settings[k]:"";
 	});
     Settings = eval(tmpSettings);
+	return true;
 }
 
 /**
