@@ -21,4 +21,4 @@ Write	.rc.system.PASSWD_USE_CRACKLIB "no" true
 Write	.etc.login_defs nil true
 Write	.rc.system nil true
 Execute	.target.bash "/sbin/SuSEconfig -quick --nonewpackage" 0
-Return	[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
+Return	[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, 0]
