@@ -18,7 +18,7 @@
  * <pre>
  * Usage:
  *   include "security/ui.ycp";
- *   map BUTTONS = CallFunction(`buttons());
+ *   map BUTTONS = CallFunction(`ui_buttons());
  *   map STRINGS = CallFunction(`your_helps());
  *   map WIDGETS = CallFunction(`your_widgets());
  * </pre>
@@ -117,6 +117,8 @@ define map2widget(string ID) ``{
 
 /**
  * Query the widget with `id(ID) for its `Value
+ * @param ID the ID of the item
+ * @return any the item's value
  */
 
 define widget2value(string ID) ``{
@@ -133,7 +135,9 @@ define widget2value(string ID) ``{
 };
 
 /**
- * Process the UI input and return `ok or nil
+ * Process the UI input and return `ok (OK or Finish), nil (Close, Cancel)
+ * or the returned value (otherwise).
+ * @return any the returned value
  */
 
 define processInput() ``{
@@ -160,6 +164,7 @@ All changes you made will be lost.")));
 
 /**
  * Vertical separator
+ * @return term the vertical separator
  */
 
 define VSeparator() ``{
@@ -168,6 +173,7 @@ define VSeparator() ``{
 
 /**
  * Horizontal separator
+ * @return term the horizontal separator
  */
 
 define HSeparator() ``{
@@ -175,46 +181,33 @@ define HSeparator() ``{
 };
 
 /**
- * str2term
+ * Construct a button according to the symbol.
+ * If the button is OK, Finish or Next, it is defined as Replace Point `rp.
+ * @param button the button symbol
+ * @return term|void the button
+ * @see <a href="ui_buttons.html">ui_buttons.ycp</a>
  */
 
-define str2term(symbol B) ``{
-  string|void button = lookup(BUTTONS,B);
-  if(button==nil)
+define Button(symbol button) ``{
+  string|void text = lookup(BUTTONS,B);
+  if (text == nil)
     return nil;
 
-  term|void Button = nil;
+  term|void ret = nil;
 
-  if(B==`ok || B==`finish || B==`next)
-    Button = `ReplacePoint(`id(`rp),`PushButton(`id(B), `opt(`default), button));
+  if (button == `ok || button == `finish || button == `next)
+    ret = `ReplacePoint(`id(`rp),`PushButton(`id(button), `opt(`default), text));
   else
-    Button = `PushButton(`id(B), button);
+    ret = `PushButton(`id(button), text);
 
-  return Button;
-
-  // pushbutton label
-  term AbortButton = `PushButton(`id(`back), _("&Abort"));
-  // pushbutton label
-  term BackButton = `PushButton(`id(`back), _("&Back"));
-  // pushbutton label
-  term OKButton = `ReplacePoint(`id(`rp),`PushButton(`id(`ok), `opt(`default), _("&OK")));
-  // pushbutton label
-  term FinishButton = `ReplacePoint(`id(`rp),`PushButton(`id(`finish), `opt(`default), _("&Finish")));
-  // pushbutton label
-  term NextButton = `ReplacePoint(`id(`rp),`PushButton(`id(`next), `opt(`default), _("&Next")));
-  // pushbutton label
-  term CancelButton = `PushButton(`id(`cancel), _("&Cancel"));
-
-  if(B=="B") return BackButton;
-  if(B=="O") return OKButton;
-  if(B=="F") return FinishButton;
-  if(B=="A") return AbortButton;
-  if(B=="C") return CancelButton;
-  return OKButton;
+  return ret;
 }
 
 /**
- * Bottom buttons -- [Back] and [OK]
+ * Create the bottom buttons. By default [Back], [Abort] and [Next].
+ * @param buttons a list of buttons to be created
+ * @return term the bottom buttons term (HBox)
+ * @see 
  */
 
 define BottomButtons(list buttons) ``{
@@ -222,12 +215,12 @@ define BottomButtons(list buttons) ``{
   symbol|void B2 = nil;
   symbol|void B3 = nil;
 
-  if(buttons == [] ) buttons = [ `back, `abort, `next];
+  if (buttons == [] ) buttons = [ `back, `abort, `next];
 
   term TT = `HBox();
 
-  TT = foreach(`s,buttons,``{
-    any x = str2term(s);
+  TT = foreach (`s,buttons,``{
+    any x = Button(s);
     TT = add(TT,x);
     any x = `HStretch();
     TT = add(TT, x);
@@ -238,32 +231,43 @@ define BottomButtons(list buttons) ``{
 };
 
 /**
- * The main dialog widget
+ * Create the main dialog widget
+ * @param ID identifier of the caption and helptext
+ * @param buttons a list of bottom buttons
+ * @param contents the contents of the dialog
+ * @return any the UI return value
+ * @see BottomButtons
+ * @see STRINGS
+ * @see SuSEDialogUP
  */
 
-define SuSEDialog(string ID, list buttons, term T) ``{
+define SuSEDialog(string ID, list buttons, term contents) ``{
   //map dmap = lookup(STRINGS(),ID);
   map dmap = lookup(STRINGS,ID);
   string help_text = lookup(dmap,"help");
   string caption = lookup(dmap,"caption");
 
-  UI(`OpenDialog( `opt(`defaultsize),
+  any ret = UI(`OpenDialog( `opt(`defaultsize),
     `VBox(`Image(`suseheader, "SuSE"), `HBox(
       `HWeight(30, `ReplacePoint(`id(`rp_help),`RichText(`id(`help), help_text))),
       `HWeight(70,
 	`HVCenter( `VBox(
 	  `Top(`Left(`ReplacePoint(`id(`rp_caption),`Heading(`id(`title), caption)))),
           VSeparator(),
-          `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),T),`VSpacing(2)),`HSpacing(5)))),
+          `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5)))),
           //`HVCenter(`Frame(caption,T)),
           VSeparator(),
           `ReplacePoint(`id(`rp_buttons),BottomButtons(buttons))
         )))
   ))));
+
+  return ret;
 };
 
 /**
  * Update the main dialog widget
+ * Same as SuSEDialog, just update only variant.
+ * @see SuSEDialog
  */
 
 define SuSEDialogUP(string ID, list buttons, term T) ``{
@@ -280,6 +284,7 @@ define SuSEDialogUP(string ID, list buttons, term T) ``{
 
 /**
  * Update one value in the WIDGETS map from the widget value
+ * @param ID the item ID (same in the widget and in WIDGETS)
  */
 
 define updateWidget(string ID) ``{
@@ -289,18 +294,24 @@ define updateWidget(string ID) ``{
 
 
 /**
- * One security item
+ * Create one security item in the (unused) main dialog
+ * @param ID the item id
+ * @param text the item text
+ * @return term the created widget
  */
 
-define SecurityItem(any ID, string str) ``{
-  term T=`VWeight( 15,
-    `PushButton ( `id( ID ), `opt( `hstretch ), str )//)//)
+define SecurityItem(any ID, string text) ``{
+  term T = `VWeight( 15,
+    `PushButton ( `id( ID ), `opt( `hstretch ), text )
   );
   return T;
 };
 
 /**
- * Search the whole settings map for the given string id
+ * Search the whole settings list for the given string id
+ * @param settings the list of settings
+ * @param ident the item identifier
+ * @return map|void the found settings or nil, if not found
  */
 
 define FindSettings(list settings, string ident) ``{
@@ -308,11 +319,11 @@ define FindSettings(list settings, string ident) ``{
 
   map|void mm = find(`item,settings,``{
     string key = lookup(item,"name");
-    if(key==ident) return true;
+    if (key == ident) return true;
     return false;
   });
 
-  if(mm==nil)
+  if (mm == nil)
     ret = nil;
   else
     ret = lookup(mm,"settings");
@@ -321,7 +332,10 @@ define FindSettings(list settings, string ident) ``{
 };
 
 /**
- * Search the whole settings map for the given map
+ * Search the whole settings list for the current settings
+ * @param settings the list of settings
+ * @param current the current settings
+ * @return map|void the name of current settings or nil, if not found
  */
 
 define CurrentSettings(list settings, map current) ``{
@@ -344,7 +358,7 @@ define CurrentSettings(list settings, map current) ``{
   });
 
   //y2debug("mm: %1",mm);
-  if(mm==nil)
+  if (mm == nil)
     ret = nil;
   else
     ret = lookup(mm,"name");
@@ -355,7 +369,9 @@ define CurrentSettings(list settings, map current) ``{
 };
 
 /**
- * Build a RadioButton group from security_settings
+ * Build a RadioButton group from the list of settings
+ * @param settings the list of settings
+ * @param defs the default values
  */
 
 define SecuritySettings(list settings, map defs) ``{
@@ -394,7 +410,8 @@ define SecuritySettings(list settings, map defs) ``{
 };
 
 /**
- * update the WIDGETS map ... ?
+ * Update the WIDGETS map according to the given settings
+ * @param curr the given settings
  */
 
 define updateWIDGETS(any curr) ``{
@@ -407,7 +424,9 @@ define updateWIDGETS(any curr) ``{
 }
 
 /**
- * Main security settings dialog
+ * Display a main security settings dialog. It also calls the
+ * SecurityWizzard to display the wizzard sequention.
+ * @param defs the security definitions
  */
 
 define SecurityMainDialog(map defs) ``{

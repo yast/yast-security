@@ -5,6 +5,10 @@ $Id$
 DOC:
 ../src/ui.ycp
 
+index.html (from security.txt)
+user.html
+implementation.html
+
 Urgent:
 - grep FIXME *.ycp
 - ROOT_LOGIN_REMOTE "yes"|"No" hack!
