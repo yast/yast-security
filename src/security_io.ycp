@@ -1,5 +1,9 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   io.ycp
+ *
+ * Module:
+ *   Security configuration
  *
  * Description:
  *   Input and output functions.
@@ -15,7 +19,11 @@
 textdomain "security";
 include "general.ycp";
 
-/* Lookup default settings */
+/**
+ * Lookup default settings (or setting if item is not nil)
+ * @param item the item to be looked up
+ * @return map the default settings
+ */
 
 define LookupDefault(string|void item) ``{
   list settings = CallFunction(`security_settings());
@@ -28,17 +36,11 @@ define LookupDefault(string|void item) ``{
   return ret;
 };
 
-/* Write /etc/login.defs and rc.config */
-
-define SecurityFinish() ``{
-  list ret = [];
-  add(ret,SCR(`Write(.etc.login_defs,nil)));
-  add(ret,SCR(`Write(.rc.system,nil)));
-  add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig -quick --nonewpackage")));
-  return ret;
-};
-
-/* Read one SCR item and return default if the item is not present */
+/**
+ * Read one setting from the SCR -- login.defs
+ * @param item value to be written
+ * @return string|void the item value
+ */
 
 define ReadLoginDefs(string item) ``{
   string pth = ".etc.login_defs." + item;
@@ -47,6 +49,12 @@ define ReadLoginDefs(string item) ``{
     ret = LookupDefault(item);
   return ret;
 };
+
+/**
+ * Read one setting from the SCR -- rc.config
+ * @param item value to be written
+ * @return string|void the item value
+ */
 
 define ReadRcConfig(string item) ``{
   string pth = ".rc.system." + item;
@@ -60,7 +68,12 @@ define ReadRcConfig(string item) ``{
   return ret;
 };
 
-/* Write one SCR item */
+/**
+ * Write one setting into the SCR -- login.defs
+ * @param m map with all security settings
+ * @param item value to be written
+ * @return ? success
+ */
 
 define WriteLoginDefs(map m, string item) ``{
   string pth = ".etc.login_defs." + item;
@@ -69,6 +82,13 @@ define WriteLoginDefs(map m, string item) ``{
     return nil;
   return SCR(`Write(topath(pth),ret));
 };
+
+/**
+ * Write one setting into the SCR -- rc.config
+ * @param m map with all security settings
+ * @param item value to be written
+ * @return ? success
+ */
 
 define WriteRcConfig(map m, string item) ``{
   string pth = ".rc.system." + item;
@@ -82,7 +102,11 @@ define WriteRcConfig(map m, string item) ``{
   return SCR(`Write(topath(pth),ret));
 };
 
-//list RcConfig_settings = [
+/**
+ * Return all settings which are in rc.config
+ * @return list rc.config settings
+ */
+
 define RcConfig_settings() ``{
 return [
   "CONSOLE_SHUTDOWN",
@@ -95,7 +119,11 @@ return [
 ];
 };
 
-//list LoginDefs_settings = [
+/**
+ * Return all settings which are in login.defs
+ * @return list login.defs settings
+ */
+
 define LoginDefs_settings() ``{
 return [
   "FAILLOG_ENAB",
@@ -114,6 +142,14 @@ return [
 ];
 };
 
+/**
+ * Apply the read function to the list of variables
+ * @param t the read function
+ * @param l the list of variables
+ * @param m the map to be updated and returned
+ * @return map updated map of the read variables
+ */
+
 define ApplyRead(term t, list l, map m) ``{
   m = foreach(`i, l, ``{
     term tt = add(t,i);
@@ -122,6 +158,14 @@ define ApplyRead(term t, list l, map m) ``{
   });
   return m;
 };
+
+/**
+ * Apply the write function to the list of variables
+ * @param t the write function
+ * @param l the list of variables
+ * @param m the map with variables and values
+ * @return list sucess
+ */
 
 define ApplyWrite(term t, list l, map m) ``{
   list ret = [];
@@ -133,6 +177,11 @@ define ApplyWrite(term t, list l, map m) ``{
   return ret;
 };
 
+/**
+ * Fill the map of all security settings from the SCR
+ * @return map all security settings
+ */
+
 define SecurityRead() ``{
   map m = $[];
   m = ApplyRead(``(ReadLoginDefs()),LoginDefs_settings(),m);
@@ -140,29 +189,29 @@ define SecurityRead() ``{
   return m;
 };
 
+/**
+ * Update the SCR from the map of all security settings
+ * @param m a map of all security settings
+ * @return list success
+ */
+
 define SecurityWrite(map m) ``{
   list l1 = ApplyWrite(``(WriteLoginDefs()),LoginDefs_settings(),m);
   list l2 = ApplyWrite(``(WriteRcConfig()),RcConfig_settings(),m);
   return flatten([l1,l2]);
 };
 
-/*
- * main()
- * Only for automatic instalation
- * Args(0) = map $[ "FAILLOG_ENAB" : "7", ... ];
- *
- * Moved to security_write.ycp
-
-list args = Args();
-if(size(args) > 0) {
-  y2debug("Security: only writing ... (%1)", Args(0));
-  list ret = SecurityWrite(Args(0));
-  SecurityFinish();
-  return ret;
-}
-
+/**
+ * Write the security data from SCR to the disk
+ * @return list success
  */
 
-return true;
+define SecurityFinish() ``{
+  list ret = [];
+  add(ret,SCR(`Write(.etc.login_defs,nil)));
+  add(ret,SCR(`Write(.rc.system,nil)));
+  add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig -quick --nonewpackage")));
+  return ret;
+};
 
 } /* YaST2: Local security configuration EOF */
