@@ -241,6 +241,8 @@ global define SecurityRead() ``{
  */
 global define SecurityWrite(map m) ``{
 
+    list ret = [];
+
     /* local permissions hack */
     string perm = lookup(m, "PERMISSION_SECURITY", "");
     m = add(m, "PERMISSION_SECURITY", perm + " local");
