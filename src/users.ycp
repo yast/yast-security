@@ -22,7 +22,7 @@ include "security/routines.ycp";
  * Adduser dialog
  * @return dialog result
  */
-global define symbol AdduserDialog() ``{
+define symbol AdduserDialog() ``{
 
     /* Adduser dialog caption */
     string caption = _("Adding User");

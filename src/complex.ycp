@@ -23,7 +23,7 @@ include "security/routines.ycp";
  * Read settings dialog
  * @return `next if success, else `abort
  */
-global define symbol ReadDialog() ``{
+define symbol ReadDialog() ``{
 
     Wizard::RestoreHelp(HELPS["read"]:"");
 //    Security::AbortFunction = ``{return true;};
@@ -36,7 +36,7 @@ global define symbol ReadDialog() ``{
  * Write settings dialog
  * @return `next if success, else `abort
  */
-global define symbol WriteDialog() ``{
+define symbol WriteDialog() ``{
 
     Wizard::RestoreHelp(HELPS["write"]:"");
     Security::AbortFunction = ``{return Security::PollAbort();};
@@ -48,7 +48,7 @@ global define symbol WriteDialog() ``{
  * Main dialog
  * @return dialog result
  */
-global define symbol MainDialog() ``{
+define symbol MainDialog() ``{
 
     /* Main dialog caption */
     string caption = _("Local Security Configuration");

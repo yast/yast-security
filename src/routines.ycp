@@ -28,7 +28,7 @@ include "security/widgets.ycp";
  * Vertical separator
  * @return vertical separator
  */
-global define term VSeparator() ``{
+define term VSeparator() ``{
     return `VSpacing(`opt(`vstretch), 0.1);
 }
 
@@ -36,7 +36,7 @@ global define term VSeparator() ``{
  * Horizontal separator
  * @return horizontal separator
  */
-global define term HSeparator() ``{
+define term HSeparator() ``{
     return `HSpacing(`opt(`hstretch), 0.1);
 }
 
@@ -46,7 +46,7 @@ global define term HSeparator() ``{
  * @return created widget
  * @see <a href="widgets.html">widgets.ycp</a>
  */
-global define term settings2widget(string ID) ``{
+define term settings2widget(string ID) ``{
 
     map m = WIDGETS[ID]:$[];
     string label = m["Label"]:"";
@@ -92,25 +92,27 @@ global define term settings2widget(string ID) ``{
     integer i = 0;
 
     while(i < size(li)) {
-        // string|list it
-        any it = li[i]:"";
-        string id_t = "";
-        string id_s = "";
-        if(is(it, string)) {
-            id_t = (string) it;
-            id_s = (string) it;
-        }
-        else {
-            list<string> it_list = (list<string>) it;
+	// string|list it
+	y2debug("li=%1 (%2)", li, i);
+	any it = li[i]:nil;
+	y2debug("it=%1", it);
+	string id_t = "";
+	string id_s = "";
+	if(is(it, string)) {
+	    id_t = (string) it;
+	    id_s = (string) it;
+	}
+	else {
+	    list<string> it_list = (list<string>) it;
 
-            id_t = it_list[0]:"";
-            id_s = it_list[1]:"";
-        }
-        if(value == id_t)
-            combo = add(combo,`item(`id(id_t), id_s, true));
-        else
-            combo = add(combo,`item(`id(id_t), id_s));
-        i=i+1;
+	    id_t = it_list[0]:"";
+	    id_s = it_list[1]:"";
+	}
+	if(value == id_t)
+	    combo = add(combo,`item(`id(id_t), id_s, true));
+	else
+	    combo = add(combo,`item(`id(id_t), id_s));
+	i=i+1;
     }
 
     term combobox = nil;
@@ -129,7 +131,7 @@ global define term settings2widget(string ID) ``{
  * Query the widget with `id(ID) for its `Value
  * @param ID security setting identifier
  */
-global define void widget2settings(string ID) ``{
+define void widget2settings(string ID) ``{
     any ret = UI::QueryWidget(`id(ID), `Value);
     string new = "";
     if(is(ret, boolean)) {
@@ -162,7 +164,7 @@ global define void widget2settings(string ID) ``{
  * @param T frame contents
  * @return frame with contents
  */
-global define term XFrame(float f1, float f2, string S, term T) ``{
+define term XFrame(float f1, float f2, string S, term T) ``{
   return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
 }
 
@@ -172,7 +174,7 @@ global define term XFrame(float f1, float f2, string S, term T) ``{
  * @param maxID ID os the maximum widget
  * @return true or false
  */
-global define boolean checkMinMax(string minID, string maxID) ``{
+define boolean checkMinMax(string minID, string maxID) ``{
     any min = UI::QueryWidget(`id(minID), `Value);
     any max = UI::QueryWidget(`id(maxID), `Value);
     if(is(min, integer) || is(min, float))
@@ -186,7 +188,7 @@ global define boolean checkMinMax(string minID, string maxID) ``{
  * If modified, ask for confirmation
  * @return true if abort is confirmed
  */
-global define boolean ReallyAbort() ``{
+define boolean ReallyAbort() ``{
     return !Security::Modified() || Popup::ReallyAbort(true);
 }
 

@@ -23,7 +23,7 @@ include "security/users.ycp";
  * Main workflow of the security configuration
  * @return any Returned value from WizardSequencer() call
  */
-global define any MainSequence() ``{
+define any MainSequence() ``{
 
     map aliases = $[
 	"main"     : ``(MainDialog()),
@@ -72,7 +72,7 @@ global define any MainSequence() ``{
  * Whole configuration of security
  * @return any Returned value from WizardSequencer() call
  */
-global define any SecuritySequence() ``{
+define any SecuritySequence() ``{
 
     map aliases = $[
 	"read"	: [ ``( ReadDialog() ), true ],
@@ -108,7 +108,7 @@ global define any SecuritySequence() ``{
  * For use with autoinstallation.
  * @return any Returned value from WizardSequencer() call
  */
-global define any SecurityAutoSequence() ``{
+define any SecurityAutoSequence() ``{
 
     /* Dialog caption */
     string caption = _("Security configuration");

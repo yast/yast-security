@@ -69,7 +69,7 @@ textdomain "security";
 /**
  * All widgets are here
  */
-global map WIDGETS = $[
+map WIDGETS = $[
 
     "CONSOLE_SHUTDOWN" : $[
 	"Widget" : "ComboBox",

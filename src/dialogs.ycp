@@ -22,7 +22,7 @@ include "security/routines.ycp";
  * Boot dialog
  * @return dialog result
  */
-global define symbol BootDialog() ``{
+define symbol BootDialog() ``{
 
     /* Boot dialog caption */
     string caption = _("Boot Settings");
@@ -96,7 +96,7 @@ global define symbol BootDialog() ``{
  * Misc dialog
  * @return dialog result
  */
-global define symbol MiscDialog() ``{
+define symbol MiscDialog() ``{
 
     /* Misc dialog caption */
     string caption = _("Miscellaneous Settings");
@@ -158,7 +158,7 @@ global define symbol MiscDialog() ``{
  * Password dialog
  * @return dialog result
  */
-global define symbol PassDialog() ``{
+define symbol PassDialog() ``{
 
     /* Password dialog caption */
     string caption = _("Password Settings");
@@ -256,7 +256,7 @@ global define symbol PassDialog() ``{
  * Login dialog
  * @return dialog result
  */
-global define symbol LoginDialog() ``{
+define symbol LoginDialog() ``{
 
     /* Login dialog caption */
     string caption = _("Login Settings");
