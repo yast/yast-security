@@ -65,7 +65,7 @@ global define BootDialog() ``{
     term contents = nil;
 
     Wizard::SetContentsButtons(caption,contents,help,
-	    BackButtonLabel(),NextBut
+	    BackButtonLabel(),NextButtonLabel());
 
     any ret = nil;
     while(true) {
