@@ -15,9 +15,9 @@
  *
  * This is a write-only client. It takes its arguments and just
  * write the settings.
- */ 
+ */
 
-/** 
+/**
  * @param first a map of security settings
  * @return boolean success of operation
  * @example map mm = $[ "FAIL_DELAY" : "77" ];
@@ -41,7 +41,7 @@ if(!is(Args(0),map)) {
     return false;
 }
 
-map settings = select(args,0);
+map settings = select(args,0,$[]);
 y2debug("Only writing... (%1)",settings);
 return SecurityWrite(settings);
 

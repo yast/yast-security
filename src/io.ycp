@@ -181,7 +181,7 @@ global define SecurityRead() ``{
     /* md5 support */
     list pam_list = SCR::Read(.pam.passwd.password.pam_unix);
     if(pam_list == [] || pam_list == nil) return m;
-    map pam_map = select(pam_list,0);
+    map pam_map = select(pam_list,0,$[]);
     boolean pam_support = contains(splitstring(lookup(pam_map , "arguments", ""), " "), "md5");
     m = add(m,"MD5_SUPPORT", pam_support?"yes":"no");
     return m;
