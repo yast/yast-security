@@ -209,7 +209,7 @@ define symbol PassDialog() ``{
 	    {
 		// Popup text, %1 is number
 		Popup::Error (sformat (_("The minimum password length cannot be larger than the maximum.
-Maximum password length for the selected encryption method is %1."),
+The maximum password length for the selected encryption method is %1."),
 		Security::PasswordMaxLengths[enc]:8));
 		continue;
 	    }
