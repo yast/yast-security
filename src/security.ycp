@@ -37,7 +37,7 @@ map YaST2SecurityModule = $[
   "path" : "security",
   "menu" : UI(_("Security")),
   "help" : UI(_("Configure all local security settings.
-<p>You <b>DON'T</b> need to be logged in as <i>root</i>
+<p>You need to be logged in as <i>root</i>
 in order to do this.</p>"))
 ];
 
