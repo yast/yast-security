@@ -1,0 +1,26 @@
+/**
+ * File:	login_defs.scr
+ * Summary:	Agent for reading/writing /etc/login.defs
+ * Author:	Michal Svec <msvec@suse.cz>
+ * Access:	read / write
+ *
+ * Example:
+ *   Dir(.etc.login_defs)
+ *   (["FAIL_DELAY", "FAILLOG_ENAB", ...])
+ **
+ *   Read(.etc.login_defs.FAIL_DELAY)
+ *   ("3")
+ **
+ *   Write(.etc.login_defs.FAIL_DELAY, "1")
+ *   (true)
+ *
+ * $Id$
+ *
+ * Read/Sets the values defined in <tt>/etc/login.defs</tt>
+ * in an easy manner.
+ */
+.etc.login_defs
+
+`ag_ini(
+  RcFile("/etc/login.defs"," 	")
+)
