@@ -36,6 +36,7 @@ global map<string,string> Settings = $[
     "LASTLOG_ENAB"			: "yes",
     "OBSCURE_CHECKS_ENAB"		: "yes",
     "PASSWD_ENCRYPTION"			: "des",
+    "GROUP_ENCRYPTION"			: "des",
     "PASSWD_USE_CRACKLIB"		: "yes",
     "PASS_MAX_DAYS"			: "99999",
     "PASS_MAX_LEN"			: "7",
@@ -259,7 +260,8 @@ global define boolean Read() {
     string method = PamSettings::GetHashMethod ();
     if (method == "" || !contains (["des","md5","blowfish"],method))
 	method = "des";
-    Settings["PASSWD_ENCRYPTION"] = method;
+    Settings["PASSWD_ENCRYPTION"]	= method;
+    Settings["GROUP_ENCRYPTION"]	= PamSettings::GetGroupHashMethod ();
 
     /* obscure checks */
     boolean obscure = !contains (pam_check_settings, "no_obscure_checks");

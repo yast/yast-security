@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 27 11:47:50 CEST 2004 - jsuchome@suse.cz
+
+- read also group encryption from /etc/default/passwd
+- 2.10.2
+
+-------------------------------------------------------------------
 Mon Jun 28 15:07:42 CEST 2004 - jsuchome@suse.cz
 
 - updated to current yast2-pam usage
