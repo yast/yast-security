@@ -26,7 +26,7 @@ textdomain "security";
  * @param ID the item identifier
  * @param val the item value
  * @return map the updated map
- * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
+ * @see <a href="widgets.html">widgets.ycp</a>
  */
 global define updateValue(map widgets, string ID, string val) ``{
     map item = lookup(widgets,ID,$[]);
@@ -80,7 +80,7 @@ global define widgets2settings(map settings, map widgets) ``{
  * to the map: $["FAIL_DELAY":"3"]
  * @param l the list to convert
  * @return map a converted map
- * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
+ * @see <a href="widgets.html">widgets.ycp</a>
  */
 global define list2map(list l) ``{
     if(l==[]) return $[];

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jul  8 19:56:03 CEST 2002 - msvec@suse.cz
+
+- use Wizard and other predefined functions
+- drastic reduction and simplification of UI code
+- 2.6.3
+
+-------------------------------------------------------------------
 Thu Jul 04 20:51:37 CEST 2002 - arvin@suse.de
 
 - moved non binary files to /usr/share/YaST2

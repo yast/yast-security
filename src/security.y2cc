@@ -18,7 +18,7 @@ Group = Security
 Icon = security.png
 
 ; *one* *short* descriptive line for y2cc
-Helptext = _("Configure local security settings.")
+Helptext = _("Configure local security settings")
 
 ; arguments, seperated by space
 Arguments = 

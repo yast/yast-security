@@ -14,6 +14,7 @@ textdomain "security";
 import "Wizard";
 
 include "security/ui.ycp";
+include "security/helps.ycp";
 
 /**
  * Read settings dialog
@@ -21,15 +22,7 @@ include "security/ui.ycp";
  */
 global define symbol ReadDialog() ``{
 
-    /* Read dialog help 1/2 */
-    string help = _("<p><b><big>Initializing security configuration</big></b>
-<br>Please wait...<br></p>") +
-
-    /* Read dialog help 2/2 */
-_("<p><b><big>Aborting the initialization:</big></b><br>
-Safely abort the configuration utility by pressing <b>Abort</b> now.</p>");
-
-    Wizard::RestoreHelp(help);
+    Wizard::RestoreHelp(HELPS["read"]:"");
     Security::AbortFunction = ``{return PollAbort();};
     boolean ret = Security::Read();
     return ret ? `next : `abort;
@@ -41,441 +34,11 @@ Safely abort the configuration utility by pressing <b>Abort</b> now.</p>");
  */
 global define symbol WriteDialog() ``{
 
-    /* Write dialog help 1/2 */
-    string help = _("<p><b><big>Saving security configuration</big></b>
-<br>Please wait...<br></p>") +
-
-    /* Write dialog help 2/2 */
-_("<p><b><big>Aborting saving:</big></b><br>
-Abort saving by pressing <b>Abort</b>.</p>");
-
-    Wizard::RestoreHelp(help);
+    Wizard::RestoreHelp(HELPS["write"]:"");
     Security::AbortFunction = ``{return PollAbort();};
     boolean ret = Security::Write();
     return ret ? `next : `abort;
 }
-
-if(false) {
-/**
- * Main dialog
- * @return dialog result
- */
-global define MainDialog() ``{
-
-  list settings = AllSecuritySettings();
-  boolean RBgroup = true;
-
-  SuSEDialog("Main",[`back,`finish],
-    `HVCenter(
-    `VBox(
-    `HVSquash(
-    // frame caption
-    `Frame( _("Current security settings:"),
-      `HBox(`HSpacing(0.8),
-      `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
-      `HSpacing(0.8))
-    )),
-    `VSpacing(0.6),
-    // push button on main screen
-    `HVCenter(`PushButton(`id(`details),_("&Details..."))),
-    `VSpacing(0.6)
-    )
-  ));
-
-  any curr = UI::QueryWidget(`id(`rb),`CurrentButton);
-  if( curr == `custom) {
-      UI::ChangeWidget(`id(`details),`Enabled,false);
-      // push button
-      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
-  }
-
-  any ret = nil;
-  any subret = nil;
-  map old_WIDGETS = WIDGETS;
-
-  while(true) {
-    ret = processInput();
-    y2debug("rettt: %1",ret);
-
-    if(ret == `ok) {                        /* Save the settings */
-      string current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
-      map current_sets = FindSettings(settings,current_defs);
-      WIDGETS = settings2widgets(WIDGETS,current_sets);
-      break;
-    }
-    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
-      break;                                /* Don't save the settings */
-    else if(ret == `details || ret ==`next)  {
-      RBgroup=false;
-      y2debug("Running wizzard: %1",ret); /* Run the wizzard */
-      any current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
-      if(current_defs!=`custom) {
-        //string current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
-        map current_sets = FindSettings(settings,current_defs);
-        WIDGETS = settings2widgets(WIDGETS,current_sets);
-      }
-        //UI(`CloseDialog());
-        subret = SecurityWizzard();
-        //y2debug("subret=%1",subret);
-        if(subret == `back) {
-          RBgroup=true;
-          SuSEDialogUP("Main",[`back,`finish],
-            `HVCenter(
-            `VBox(
-            `HVSquash(
-            // frame caption
-            `Frame( _("Current security settings:"),
-              `HBox(`HSpacing(0.8),
-              `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
-              `HSpacing(0.8))
-            )),
-            `VSpacing(0.6),
-            // push button
-            `HVCenter(`PushButton(`id(`details),_("&Details..."))),
-            `VSpacing(0.6)
-            )
-          ));
-
-          /* Update the Finish|Next button */
-          any curr2 = UI::QueryWidget(`id(`rb),`CurrentButton);
-          if( curr2 == `custom) {
-	      UI::ChangeWidget(`id(`details),`Enabled,false);
-	      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
-          }
-          /* FIXME: update the current RB? Probably not*/
-
-          continue;
-        }
-        else if(subret == `abort || subret == `cancel || subret == nil)
-          ret = nil;
-        else
-          ret = `ok;
-        break;
-    }
-    else if(ret == `custom) {                /* Change the [Finish] to [Next] */
-      y2debug("custom radio button");
-      UI::ChangeWidget(`id(`details),`Enabled,false);
-      // push button
-      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
-    }
-    else {                                /* Other radio button */
-      y2debug("SecurityMainDialog: Huh? %1",ret);
-      UI::ChangeWidget(`id(`details),`Enabled,true);
-      // push button
-      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),FinishButtonLabel()));
-      if(ret == _("Level &3 (Network/Server)"))
-        // popup if level 3 is choosen
-        PopupOK(_("You have chosen 'Level 3'. This setup
-provides a basic configuration for network servers
-but not a completed 'full security' setting.
-
-You need expert knowledge to make a
-network server secure."));
-
-    }
-    y2debug("subret: %1",subret);
-  }
-
-  /* [Finish]ed */
-  if(ret == `ok && old_WIDGETS!=WIDGETS) {
-    y2debug("YES");
-    y2debug("old_WIDGETS=%1",old_WIDGETS);
-    y2debug("new_WIDGETS=%1",WIDGETS);
-    if(RBgroup==true) {
-      string current_defs = UI::QueryWidget(`id(`rb),`CurrentButton);
-      //if(!is nil(current_defs)) {
-      if(current_defs != nil && current_defs != "") {
-        y2debug("current_defs: %1",current_defs);
-        map current_sets = FindSettings(settings,current_defs);
-        WIDGETS = settings2widgets(WIDGETS,current_sets);
-      }
-    }
-    UI::CloseDialog();
-    return `ok;
-  }
-
-  UI::CloseDialog();
-  return nil;
-};
-
-/**
- * Wizzard for all security settings
- */
-global define SecurityWizzard() ``{
-  integer current = 0;
-
-  any ret = nil;
-
-  while(true) {
-    y2debug("current: %1",current);
-    if(current==0) ret = SecurityPasswdDialog();
-    else if(current==1) ret = SecurityBootDialog();
-    else if(current==2) ret = SecurityLoginDialog();
-    else if(current==3) ret = SecurityAdduserDialog();
-    else if(current==4) ret = SecurityMiscDialog();
-
-    y2debug("ret: %1",ret);
-    if(ret==`next) {
-      current=current+1;
-      if(current>4) break;
-    }
-    else if(ret==`back) {
-      current=current-1;
-      if(current<0) break;
-    }
-    else if(ret == `abort || ret==nil || ret==`ok) break;
-  }
-
-  y2debug("aborting: %1",ret);
-  return ret;
-};
-
-/**
- * Main security settings dialog
- */
-global define SecurityDetailsDialog() ``{
-  SuSEDialog("Main", [`back,`finish], `VBox(
-    // security item captions
-    VSeparator(), SecurityItem(`passwd,_("Password settings")),
-    VSeparator(), SecurityItem(`boot,  _("Boot settings")),
-    VSeparator(), SecurityItem(`login, _("Login settings")),
-    VSeparator(), SecurityItem(`uid,   _("User and group ID settings")),
-    VSeparator(), SecurityItem(`misc,  _("Miscellaneous settings")),
-    VSeparator(),`VSpacing(2)
-  ));
-
-  any ret = nil;
-  any subret = nil;
-  boolean changed = false;
-
-  while(true) {
-    ret = processInput();
-    if(ret == `ok)
-      break;
-    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
-      break;
-    else if(ret == `boot)  subret = SecurityBootDialog();
-    else if(ret == `login) subret = SecurityLoginDialog();
-    else if(ret == `passwd) subret = SecurityPasswdDialog();
-    else if(ret == `misc) subret = SecurityMiscDialog();
-    else if(ret == `uid) subret = SecurityAdduserDialog();
-    else y2debug("SecurityDetailsDialog: Huh? %1",ret);
-    if(subret == `ok) changed = true;
-  }
-
-  UI::CloseDialog();
-
-  /* return `ok only if something changed */
-  if(ret == `ok && changed == true)
-    return `ok;
-
-  return nil;
-};
-
-/**
- * Frame with spacings
- */
-global define XFrame(float f1, float f2, string S, term T) ``{
-  return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
-};
-
-/**
- * Login settings dialog
- */
-global define SecurityLoginDialog() ``{
-  SuSEDialogUP("Login", [], `VBox(
-//`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
-  // SecurityLoginDialog caption
-XFrame(2.0,0.9,_("Login"),`VBox(
-    //VSeparator(),
-    map2widget("FAIL_DELAY"),
-    //VSeparator(),
-    `VSpacing(0.5),
-    map2widget("FAILLOG_ENAB"),
-    VSeparator(),
-    map2widget("LASTLOG_ENAB"),
-    VSeparator(),
-    map2widget("DISPLAYMANAGER_REMOTE_ACCESS")
-    //VSeparator()
-))
-//,`VSpacing(1.7)
-));
-  any ret = processInput();
-  if(ret == `ok || ret ==`next) {
-    updateWidget("FAILLOG_ENAB");
-    updateWidget("LASTLOG_ENAB");
-    updateWidget("FAIL_DELAY");
-  }
-  //UI(`CloseDialog());
-  return ret;
-};
-
-/**
- * Files permissions dialog
- */
-global define SecurityPermsDialog() ``{
-  SuSEDialogUP("Perms", [], `VBox(
-    VSeparator(),
-    map2widget("PERMISSION_SECURITY"),
-    VSeparator()
-  ));
-  any ret = processInput();
-  if(ret == `ok || ret ==`next) {
-    updateWidget("PERMISSION_SECURITY");
-  }
-  //UI(`CloseDialog());
-  return ret;
-};
-
-/**
- * Other security settings dialog
- */
-global define SecurityMiscDialog() ``{
-  SuSEDialogUP("Misc", [`back,`abort,`finish], `VBox(
-    VSeparator(),
-//`Frame("Permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
-    map2widget("PERMISSION_SECURITY"), /* See the SecurityPermsDialog */
-//`VSpacing(0.3)),`HSpacing(1))),
-//`VSpacing(1.5),
-//`Frame("Other settings",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
-    VSeparator(),
-    map2widget("RUN_UPDATEDB_AS"),
-    `VSpacing(1.0),
-    map2widget("CWD_IN_ROOT_PATH"),
-    //VSeparator()
-//),`HSpacing(1)))
-    `VSpacing(1.8)
-  ));
-  any ret = processInput();
-  if(ret == `ok || ret ==`next) {
-    updateWidget("PERMISSION_SECURITY");
-    updateWidget("CWD_IN_ROOT_PATH");
-    updateWidget("RUN_UPDATEDB_AS");
-  }
-  //UI(`CloseDialog());
-  return ret;
-};
-
-/**
- * Password security settings dialog
- */
-global define SecurityPasswdDialog() ``{
-  SuSEDialogUP("Password", [], `VBox(
-    //VSeparator(),
-    //`VSpacing(-0.2),
-    // SecurityPasswdDialog caption
-    XFrame(0.3,0.15,_("Checks"),`VBox(
-    map2widget("PASSWD_USE_CRACKLIB"),
-    VSeparator(),
-    map2widget("OBSCURE_CHECKS_ENAB"),
-    VSeparator(),
-    map2widget("MD5_SUPPORT"),
-    VSeparator()
-    )),
-    `VSpacing(0.15),
-    // SecurityPasswdDialog
-    `Frame(_("Password length"),`HBox(
-    `HSpacing(0.4),
-    map2widget("PASS_MIN_LEN"),
-    `HSpacing(0.4),
-    map2widget("PASS_MAX_LEN"),
-    `HSpacing(0.4)
-    )),
-    `VSpacing(0.1),
-    // SecurityPasswdDialog
-    `Frame(_("Days of password change warning"),`HBox(
-    `HSpacing(0.4),
-    map2widget("PASS_MIN_DAYS"),
-    `HSpacing(0.4),
-    map2widget("PASS_MAX_DAYS"),
-    `HSpacing(0.4)
-    )),
-    `VSpacing(0.15),
-    map2widget("PASS_WARN_AGE"),
-    `VSpacing(0.0)
-  ));
-  any ret = nil;
-  while(true) {
-    ret = processInput();
-    if(ret == `ok || ret ==`next) {
-      if(checkMinMax("PASS_MIN_LEN","PASS_MAX_LEN")!=true) {
-        // bad password data
-        PopupOK(_("The minimum password length cannot be larger than maximum"));
-        continue;
-      }
-      if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS")!=true) {
-        // bad password data
-        PopupOK(_("The minimum number of days cannot be larger than maximum"));
-        continue;
-      }
-    }
-    break;
-  }
-  if(ret == `ok || ret ==`next) {
-    updateWidget("PASS_MIN_DAYS");
-    updateWidget("PASS_MAX_DAYS");
-    updateWidget("PASS_MIN_LEN");
-    updateWidget("PASS_MAX_LEN");
-    updateWidget("PASSWD_USE_CRACKLIB");
-    updateWidget("OBSCURE_CHECKS_ENAB");
-    updateWidget("PASS_WARN_AGE");
-    updateWidget("MD5_SUPPORT");
-  }
-  //UI(`CloseDialog());
-  return ret;
-};
-
-/**
- * Adduser security settings dialog
- */
-global define SecurityAdduserDialog() ``{
-  SuSEDialogUP("Adduser", [], `VBox(
-    VSeparator(),
-    // SecurityAdduserDialog caption
-    XFrame(1.8,0.5,_("User ID limitations"),`HBox(
-    map2widget("UID_MIN"),
-    `HSpacing(1.5),
-    map2widget("UID_MAX")
-    )),
-    `VSpacing(0.7),
-    // SecurityAdduserDialog caption
-    XFrame(1.8,0.5,_("Group ID limitations"),`HBox(
-    map2widget("GID_MIN"),
-    `HSpacing(1.5),
-    map2widget("GID_MAX")
-    )),
-    `VSpacing(1.7)
-    //VSeparator()
-    //,`HSpacing(1)
-  ));
-  any ret = nil;
-  while(true) {
-    ret = processInput();
-    if(ret == `ok || ret ==`next) {
-      if(checkMinMax("UID_MIN","UID_MAX")!=true) {
-        // SecurityAdduserDialog error
-        PopupOK(_("The minimum user ID cannot be larger than maximum"));
-        continue;
-      }
-      if(checkMinMax("GID_MIN","GID_MAX")!=true) {
-        // SecurityAdduserDialog error
-        PopupOK(_("The minimum group IDs cannot be larger than maximum"));
-        continue;
-      }
-    }
-    break;
-  }
-  if(ret == `ok || ret ==`next) {
-    updateWidget("GID_MIN");
-    updateWidget("GID_MAX");
-    updateWidget("UID_MIN");
-    updateWidget("UID_MAX");
-  }
-  //UI(`CloseDialog());
-  return ret;
-};
-
-} /* if(false) */
 
 /**
  * Main dialog
@@ -483,13 +46,11 @@ global define SecurityAdduserDialog() ``{
  */
 global define symbol MainDialog() ``{
 
-    /* Boot dialog caption */
-    string caption = "";
+    /* Main dialog caption */
+    string caption = _("Local security configuration");
+    string help = HELPS["main"]:"";
 
-    /* Boot dialog help 1/3 */
-    string help = "";
-
-    /* Boot dialog contents */
+    /* Main dialog contents */
     term contents = nil;
 
     Wizard::SetContentsButtons(caption, contents, help,
@@ -531,13 +92,11 @@ global define symbol MainDialog() ``{
  */
 global define symbol PasswordDialog() ``{
 
-    /* Boot dialog caption */
-    string caption = "";
+    /* Password dialog caption */
+    string caption = _("Password settings");
+    string help = HELPS["password"]:"";
 
-    /* Boot dialog help 1/3 */
-    string help = "";
-
-    /* Boot dialog contents */
+    /* Password dialog contents */
     term contents = nil;
 
     Wizard::SetContentsButtons(caption, contents, help,
@@ -581,20 +140,7 @@ global define symbol BootDialog() ``{
 
     /* Boot dialog caption */
     string caption = _("Boot settings");
-
-    /* Boot dialog help 1/3 */
-    string help = _("<p>In this dialog, change various boot settings.</p>") +
-
-    /* Boot dialog help 2/3 */
-_("<p><b>How to interpret Ctrl + Alt + Del</b><br>
-When someone at the console has pressed the CTRL + ALT + DEL key
-combination, the system usually reboots. Sometimes it is desirable
-to ignore this event, for example, when the system serves as both
-workstation and server.</p>") +
-
-    /* Boot dialog help 3/3 */
-_("<p><b>Shutdown behavior of KDM</b><br>
-Set who is allowed to shut down the machine from KDM.</p>");
+    string help = HELPS["boot"]:"";
 
     /* Boot dialog contents */
     term contents = `HVCenter(`HVSquash(`HBox(
@@ -652,13 +198,11 @@ Set who is allowed to shut down the machine from KDM.</p>");
  */
 global define symbol LoginDialog() ``{
 
-    /* Boot dialog caption */
-    string caption = "";
+    /* Login dialog caption */
+    string caption = _("Login settings");
+    string help = HELPS["login"]:"";
 
-    /* Boot dialog help 1/3 */
-    string help = "";
-
-    /* Boot dialog contents */
+    /* Login dialog contents */
     term contents = nil;
 
     Wizard::SetContentsButtons(caption, contents, help,
@@ -700,13 +244,11 @@ global define symbol LoginDialog() ``{
  */
 global define symbol AdduserDialog() ``{
 
-    /* Boot dialog caption */
-    string caption = "";
+    /* Adduser dialog caption */
+    string caption = _("Adding user settings");
+    string help = HELPS["adduser"]:"";
 
-    /* Boot dialog help 1/3 */
-    string help = "";
-
-    /* Boot dialog contents */
+    /* Adduser dialog contents */
     term contents = nil;
 
     Wizard::SetContentsButtons(caption, contents, help,
@@ -748,13 +290,11 @@ global define symbol AdduserDialog() ``{
  */
 global define symbol MiscDialog() ``{
 
-    /* Boot dialog caption */
-    string caption = "";
+    /* Misc dialog caption */
+    string caption = _("Miscellaneous settings");
+    string help = HELPS["misc"]:"";
 
-    /* Boot dialog help 1/3 */
-    string help = "";
-
-    /* Boot dialog contents */
+    /* Misc dialog contents */
     term contents = nil;
 
     Wizard::SetContentsButtons(caption, contents, help,
@@ -790,10 +330,10 @@ global define symbol MiscDialog() ``{
     return ret;
 }
 
-if(true) {
-map STRINGS = CallFunction(`ui_helps());
-map WIDGETS = CallFunction(`ui_widgets());
+if(false) {
 Wizard::CreateDialog();
+include "security/widgets.ycp";
+
 //MainDialog();
 //PassDialog();
 BootDialog();

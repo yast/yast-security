@@ -1,15 +1,8 @@
 /**
- * File:
- *   ui.ycp
- *
- * Module:
- *   Security configuration
- *
- * Summary:
- *   User interface functions
- *
- * Authors:
- *   Michal Svec <msvec@suse.cz>
+ * File:	ui.ycp
+ * Module:	Security configuration
+ * Summary:	User interface functions
+ * Authors:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
  *
@@ -18,7 +11,6 @@
  * <pre>
  * Usage:
  *   include "security/ui.ycp";
- *   map STRINGS = CallFunction(`your_helps());
  *   map WIDGETS = CallFunction(`your_widgets());
  * </pre>
  */
@@ -30,13 +22,14 @@ textdomain "security";
 include "security/routines.ycp";
 include "security/settings.ycp";
 include "security/functions_ui.ycp";
+include "security/helps.ycp";
 
 include "ui/common_messages.ycp";
 
 /**
  * Return a widget from the WIDGETS map created acording to the ID.
  * @return term the created widget
- * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
+ * @see <a href="widgets.html">widgets.ycp</a>
  */
 global define map2widget(string ID) ``{
     map m = lookup(WIDGETS,ID,$[]);
@@ -195,118 +188,6 @@ global define HSeparator() ``{
 };
 
 /**
- * Construct a button according to the symbol.
- * If the button is OK, Finish or Next, it is defined as Replace Point `rp.
- * @param button the button symbol
- * @return term the button
- */
-global define Button(symbol button) ``{
-    map BUTTONS = $[
-	`ok : OKButtonLabel(),
-	`back : BackButtonLabel(),
-	`next : NextButtonLabel(),
-	`help : HelpButtonLabel(),
-	`abort : AbortButtonLabel(),
-	`finish : FinishButtonLabel(),
-	`cancel : CancelButtonLabel(),
-	// pushbutton label
-	`details : _("&Details"),
-	// pushbutton label
-	`expert : _("&Expert"),
-	`yes : YesButtonLabel(),
-	`no : NoButtonLabel()
-    ];
-    string text = lookup(BUTTONS,button,"");
-    if (text == "")
-        return nil;
-
-    term ret = nil;
-
-    if (button == `ok || button == `finish || button == `next)
-        ret = `ReplacePoint(`id(`rp),`PushButton(`id(button), `opt(`default), text));
-    else
-        ret = `PushButton(`id(button), text);
-
-    return ret;
-}
-
-/**
- * Create the bottom buttons. By default [Back], [Abort] and [Next].
- * @param buttons a list of buttons to be created
- * @return term the bottom buttons term (HBox)
- * @see
- */
-global define BottomButtons(list buttons) ``{
-    symbol B1 = nil;
-    symbol B2 = nil;
-    symbol B3 = nil;
-
-    if (buttons == [] ) buttons = [ `back, `abort, `next];
-
-    term TT = `HBox();
-
-    TT = foreach (`s,buttons,``{
-        any x = Button(s);
-        TT = add(TT,x);
-        x = `HStretch();
-        TT = add(TT, x);
-        return TT;
-    });
-
-    return remove(TT,size(TT));
-};
-
-/**
- * Create the main dialog widget
- * @param ID identifier of the caption and helptext
- * @param buttons a list of bottom buttons
- * @param contents the contents of the dialog
- * @return any the UI return value
- * @see BottomButtons
- * @see STRINGS
- * @see SuSEDialogUP
- */
-global define SuSEDialog(string ID, list buttons, term contents) ``{
-  //map dmap = lookup(STRINGS(),ID,$[]);
-  map dmap = lookup(STRINGS,ID,$[]);
-  string help_text = lookup(dmap,"help","");
-  string caption = lookup(dmap,"caption","");
-
-  any ret = UI::OpenDialog( `opt(`defaultsize),
-    `VBox(`Image(`suseheader, "SuSE"), `HBox(
-      `HWeight(30, `ReplacePoint(`id(`rp_help),`RichText(`id(`help), help_text))),
-      `HWeight(70,
-        `HVCenter( `VBox(
-          `Top(`Left(`ReplacePoint(`id(`rp_caption),`Heading(`id(`title), caption)))),
-          VSeparator(),
-          `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5)))),
-          //`HVCenter(`Frame(caption,T)),
-          VSeparator(),
-          `ReplacePoint(`id(`rp_buttons),BottomButtons(buttons))
-        )))
-  )));
-
-  return ret;
-};
-
-/**
- * Update the main dialog widget
- * Same as SuSEDialog, just update only variant.
- * @see SuSEDialog
- */
-global define SuSEDialogUP(string ID, list buttons, term T) ``{
-  //map dmap = lookup(STRINGS(),ID,$[]);
-  map dmap = lookup(STRINGS,ID,$[]);
-  string help_text = lookup(dmap,"help","");
-  string caption = lookup(dmap,"caption","");
-
-  UI::ReplaceWidget(`id(`rp_help), `RichText(`id(`help), help_text));
-  UI::ReplaceWidget(`id(`rp_caption), `Heading(`id(`title), caption));
-  UI::ReplaceWidget(`id(`rp_main), T);
-  UI::ReplaceWidget(`id(`rp_buttons), BottomButtons(buttons));
-};
-
-/**
  * Update one value in the WIDGETS map from the widget value
  * @param ID the item ID (same in the widget and in WIDGETS)
  */
@@ -456,28 +337,35 @@ global define SecurityMainDialog(map defs) ``{
   list settings = AllSecuritySettings();
   boolean RBgroup = true;
 
-  SuSEDialog("Main",[`back,`finish],
-    `HVCenter(
-    `VBox(
-    `HVSquash(
-    // frame caption
-    `Frame( _("Current security settings:"),
-      `HBox(`HSpacing(0.8),
-      `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
-      `HSpacing(0.8))
-    )),
-    `VSpacing(0.6),
-    // push button on main screen
-    `HVCenter(`PushButton(`id(`details),_("&Details..."))),
-    `VSpacing(0.6)
-    )
-  ));
+    /* Main dialog caption */
+    string caption = _("Local security configuration");
+    string help = HELPS["main"]:"";
+
+    /* Main dialog contents */
+    term contents = `HVCenter(
+	`VBox(
+	`HVSquash(
+	// frame caption
+	`Frame( _("Current security settings:"),
+	  `HBox(`HSpacing(0.8),
+	  `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
+	  `HSpacing(0.8))
+	)),
+	`VSpacing(0.6),
+	// push button on main screen
+	`HVCenter(`PushButton(`id(`details),_("&Details..."))),
+	`VSpacing(0.6)
+	)
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    Wizard::SetContentsButtons(caption, contents, help,
+            BackButtonLabel(), FinishButtonLabel());
 
   any curr = UI::QueryWidget(`id(`rb),`CurrentButton);
   if( curr == `custom) {
       UI::ChangeWidget(`id(`details),`Enabled,false);
-      // push button
-      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
+      Wizard::ReplaceNextButton(`PushButton(`id(`next), NextButtonLabel()));
   }
 
   any ret = nil;
@@ -510,28 +398,33 @@ global define SecurityMainDialog(map defs) ``{
         //y2debug("subret=%1",subret);
         if(subret == `back) {
           RBgroup=true;
-          SuSEDialogUP("Main",[`back,`finish],
-            `HVCenter(
-            `VBox(
-            `HVSquash(
-            // frame caption
-            `Frame( _("Current security settings:"),
-              `HBox(`HSpacing(0.8),
-              `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
-              `HSpacing(0.8))
-            )),
-            `VSpacing(0.6),
-            // push button
-            `HVCenter(`PushButton(`id(`details),_("&Details..."))),
-            `VSpacing(0.6)
-            )
-          ));
+
+    /* Main dialog contents */
+    term contents = `HVCenter(
+	`VBox(
+	`HVSquash(
+	// frame caption
+	`Frame( _("Current security settings:"),
+	  `HBox(`HSpacing(0.8),
+	  `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
+	  `HSpacing(0.8))
+	)),
+	`VSpacing(0.6),
+	// push button on main screen
+	`HVCenter(`PushButton(`id(`details),_("&Details..."))),
+	`VSpacing(0.6)
+	)
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    Wizard::SetContentsButtons(caption, contents, help,
+            BackButtonLabel(), FinishButtonLabel());
 
           /* Update the Finish|Next button */
           any curr2 = UI::QueryWidget(`id(`rb),`CurrentButton);
           if( curr2 == `custom) {
 	      UI::ChangeWidget(`id(`details),`Enabled,false);
-	      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
+	      Wizard::ReplaceNextButton(`PushButton(`id(`next), NextButtonLabel()));
           }
           /* FIXME: update the current RB? Probably not*/
 
@@ -546,14 +439,13 @@ global define SecurityMainDialog(map defs) ``{
     else if(ret == `custom) {                /* Change the [Finish] to [Next] */
       y2debug("custom radio button");
       UI::ChangeWidget(`id(`details),`Enabled,false);
-      // push button
-      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel()));
+      Wizard::ReplaceNextButton(`PushButton(`id(`next), NextButtonLabel()));
     }
     else {                                /* Other radio button */
       y2debug("SecurityMainDialog: Huh? %1",ret);
       UI::ChangeWidget(`id(`details),`Enabled,true);
       // push button
-      UI::ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),FinishButtonLabel()));
+      Wizard::ReplaceNextButton(`PushButton(`id(`finish), FinishButtonLabel()));
       if(ret == _("Level &3 (Network/Server)"))
         // popup if level 3 is choosen
         PopupOK(_("You have chosen 'Level 3'. This setup
@@ -622,48 +514,6 @@ global define SecurityWizzard() ``{
 };
 
 /**
- * Main security settings dialog
- */
-global define SecurityDetailsDialog() ``{
-  SuSEDialog("Main", [`back,`finish], `VBox(
-    // security item captions
-    VSeparator(), SecurityItem(`passwd,_("Password settings")),
-    VSeparator(), SecurityItem(`boot,  _("Boot settings")),
-    VSeparator(), SecurityItem(`login, _("Login settings")),
-    VSeparator(), SecurityItem(`uid,   _("User and group ID settings")),
-    VSeparator(), SecurityItem(`misc,  _("Miscellaneous settings")),
-    VSeparator(),`VSpacing(2)
-  ));
-
-  any ret = nil;
-  any subret = nil;
-  boolean changed = false;
-
-  while(true) {
-    ret = processInput();
-    if(ret == `ok)
-      break;
-    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
-      break;
-    else if(ret == `boot)  subret = SecurityBootDialog();
-    else if(ret == `login) subret = SecurityLoginDialog();
-    else if(ret == `passwd) subret = SecurityPasswdDialog();
-    else if(ret == `misc) subret = SecurityMiscDialog();
-    else if(ret == `uid) subret = SecurityAdduserDialog();
-    else y2debug("SecurityDetailsDialog: Huh? %1",ret);
-    if(subret == `ok) changed = true;
-  }
-
-  UI::CloseDialog();
-
-  /* return `ok only if something changed */
-  if(ret == `ok && changed == true)
-    return `ok;
-
-  return nil;
-};
-
-/**
  * Frame with spacings
  */
 global define XFrame(float f1, float f2, string S, term T) ``{
@@ -674,142 +524,153 @@ global define XFrame(float f1, float f2, string S, term T) ``{
  * Boot settings dialog
  */
 global define SecurityBootDialog() ``{
-  SuSEDialogUP("Boot", [], `VBox(
-  // SecurityBootDialog caption
-XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
-    VSeparator(),
-    map2widget("CONSOLE_SHUTDOWN"),
-    `VSpacing(0.4),
-    map2widget("KDM_SHUTDOWN")//,
-    //VSeparator()
-//,`VSpacing(0.3)
-),`HSpacing(1.5)))
-//,`VSpacing(2.5)
-  ));
-  any ret = processInput();
-  if(ret == `ok || ret ==`next) {
-    updateWidget("CONSOLE_SHUTDOWN");
-    updateWidget("KDM_SHUTDOWN");
-  }
-  //UI(`CloseDialog());
-  return ret;
+
+    /* Boot dialog caption */
+    string caption = _("Boot settings");
+    string help = HELPS["boot"]:"";
+
+    /* Boot dialog contents */
+    term contents = `VBox(
+	/* Frame label */
+	XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(
+	    VSeparator(),
+	    map2widget("CONSOLE_SHUTDOWN"),
+	    `VSpacing(0.4),
+	    map2widget("KDM_SHUTDOWN")
+	),`HSpacing(1.5)))
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    Wizard::SetContentsButtons(caption, contents, help,
+            BackButtonLabel(), NextButtonLabel());
+
+    any ret = processInput();
+    if(ret == `ok || ret ==`next) {
+	updateWidget("CONSOLE_SHUTDOWN");
+	updateWidget("KDM_SHUTDOWN");
+    }
+
+    return ret;
 };
 
 /**
  * Login settings dialog
  */
 global define SecurityLoginDialog() ``{
-  SuSEDialogUP("Login", [], `VBox(
-//`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
-  // SecurityLoginDialog caption
-XFrame(2.0,0.9,_("Login"),`VBox(
-    //VSeparator(),
-    map2widget("FAIL_DELAY"),
-    //VSeparator(),
-    `VSpacing(0.5),
-    map2widget("FAILLOG_ENAB"),
-    VSeparator(),
-    map2widget("LASTLOG_ENAB"),
-    VSeparator(),
-    map2widget("DISPLAYMANAGER_REMOTE_ACCESS")
-    //VSeparator()
-))
-//,`VSpacing(1.7)
-));
-  any ret = processInput();
-  if(ret == `ok || ret ==`next) {
-    updateWidget("FAILLOG_ENAB");
-    updateWidget("LASTLOG_ENAB");
-    updateWidget("FAIL_DELAY");
-  }
-  //UI(`CloseDialog());
-  return ret;
-};
 
-/**
- * Files permissions dialog
- */
-global define SecurityPermsDialog() ``{
-  SuSEDialogUP("Perms", [], `VBox(
-    VSeparator(),
-    map2widget("PERMISSION_SECURITY"),
-    VSeparator()
-  ));
-  any ret = processInput();
-  if(ret == `ok || ret ==`next) {
-    updateWidget("PERMISSION_SECURITY");
-  }
-  //UI(`CloseDialog());
-  return ret;
+    /* Login dialog caption */
+    string caption = _("Login settings");
+    string help = HELPS["login"]:"";
+
+    /* Login dialog contents */
+    term contents = `VBox(
+	XFrame(2.0,0.9,_("Login"),`VBox(
+	    //VSeparator(),
+	    map2widget("FAIL_DELAY"),
+	    //VSeparator(),
+	    `VSpacing(0.5),
+	    map2widget("FAILLOG_ENAB"),
+	    VSeparator(),
+	    map2widget("LASTLOG_ENAB"),
+	    VSeparator(),
+	    map2widget("DISPLAYMANAGER_REMOTE_ACCESS")
+	    //VSeparator()
+	))
+	//,`VSpacing(1.7)
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    Wizard::SetContentsButtons(caption, contents, help,
+            BackButtonLabel(), NextButtonLabel());
+
+    any ret = processInput();
+    if(ret == `ok || ret ==`next) {
+	updateWidget("FAILLOG_ENAB");
+	updateWidget("LASTLOG_ENAB");
+	updateWidget("FAIL_DELAY");
+    }
+
+    return ret;
 };
 
 /**
  * Other security settings dialog
  */
 global define SecurityMiscDialog() ``{
-  SuSEDialogUP("Misc", [`back,`abort,`finish], `VBox(
-    VSeparator(),
-//`Frame("Permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
-    map2widget("PERMISSION_SECURITY"), /* See the SecurityPermsDialog */
-//`VSpacing(0.3)),`HSpacing(1))),
-//`VSpacing(1.5),
-//`Frame("Other settings",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
-    VSeparator(),
-    map2widget("RUN_UPDATEDB_AS"),
-    `VSpacing(1.0),
-    map2widget("CWD_IN_ROOT_PATH"),
-    //VSeparator()
-//),`HSpacing(1)))
-    `VSpacing(1.8)
-  ));
-  any ret = processInput();
-  if(ret == `ok || ret ==`next) {
-    updateWidget("PERMISSION_SECURITY");
-    updateWidget("CWD_IN_ROOT_PATH");
-    updateWidget("RUN_UPDATEDB_AS");
-  }
-  //UI(`CloseDialog());
-  return ret;
+
+    /* Misc dialog caption */
+    string caption = _("Miscellaneous settings");
+    string help = HELPS["misc"]:"";
+
+    /* Misc dialog contents */
+    term contents = `VBox(
+	VSeparator(),
+	map2widget("PERMISSION_SECURITY"),
+	VSeparator(),
+	map2widget("RUN_UPDATEDB_AS"),
+	`VSpacing(1.0),
+	map2widget("CWD_IN_ROOT_PATH"),
+	`VSpacing(1.8)
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    Wizard::SetContentsButtons(caption, contents, help,
+            BackButtonLabel(), FinishButtonLabel());
+
+    any ret = processInput();
+    if(ret == `ok || ret ==`next) {
+	updateWidget("PERMISSION_SECURITY");
+	updateWidget("CWD_IN_ROOT_PATH");
+	updateWidget("RUN_UPDATEDB_AS");
+    }
+
+    return ret;
 };
 
 /**
  * Password security settings dialog
  */
 global define SecurityPasswdDialog() ``{
-  SuSEDialogUP("Password", [], `VBox(
-    //VSeparator(),
-    //`VSpacing(-0.2),
-    // SecurityPasswdDialog caption
-    XFrame(0.3,0.15,_("Checks"),`VBox(
-    map2widget("PASSWD_USE_CRACKLIB"),
-    VSeparator(),
-    map2widget("OBSCURE_CHECKS_ENAB"),
-    VSeparator(),
-    map2widget("MD5_SUPPORT"),
-    VSeparator()
-    )),
-    `VSpacing(0.15),
-    // SecurityPasswdDialog
-    `Frame(_("Password length"),`HBox(
-    `HSpacing(0.4),
-    map2widget("PASS_MIN_LEN"),
-    `HSpacing(0.4),
-    map2widget("PASS_MAX_LEN"),
-    `HSpacing(0.4)
-    )),
-    `VSpacing(0.1),
-    // SecurityPasswdDialog
-    `Frame(_("Days of password change warning"),`HBox(
-    `HSpacing(0.4),
-    map2widget("PASS_MIN_DAYS"),
-    `HSpacing(0.4),
-    map2widget("PASS_MAX_DAYS"),
-    `HSpacing(0.4)
-    )),
-    `VSpacing(0.15),
-    map2widget("PASS_WARN_AGE"),
-    `VSpacing(0.0)
-  ));
+
+    /* Password dialog caption */
+    string caption = _("Password settings");
+    string help = HELPS["password"]:"";
+
+    /* Password dialog contents */
+    term contents = `VBox(
+	XFrame(0.3,0.15,_("Checks"),`VBox(
+	    map2widget("PASSWD_USE_CRACKLIB"),
+	    VSeparator(),
+	    map2widget("OBSCURE_CHECKS_ENAB"),
+	    VSeparator(),
+	    map2widget("MD5_SUPPORT"),
+	    VSeparator()
+	)),
+	`VSpacing(0.15),
+	`Frame(_("Password length"),`HBox(
+	    `HSpacing(0.4),
+	    map2widget("PASS_MIN_LEN"),
+	    `HSpacing(0.4),
+	    map2widget("PASS_MAX_LEN"),
+	    `HSpacing(0.4)
+	)),
+	`VSpacing(0.1),
+	`Frame(_("Days of password change warning"),`HBox(
+	    `HSpacing(0.4),
+	    map2widget("PASS_MIN_DAYS"),
+	    `HSpacing(0.4),
+	    map2widget("PASS_MAX_DAYS"),
+	    `HSpacing(0.4)
+	)),
+	`VSpacing(0.15),
+	map2widget("PASS_WARN_AGE"),
+	`VSpacing(0.0)
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    Wizard::SetContentsButtons(caption, contents, help,
+            BackButtonLabel(), NextButtonLabel());
+
   any ret = nil;
   while(true) {
     ret = processInput();
@@ -845,25 +706,34 @@ global define SecurityPasswdDialog() ``{
  * Adduser security settings dialog
  */
 global define SecurityAdduserDialog() ``{
-  SuSEDialogUP("Adduser", [], `VBox(
-    VSeparator(),
-    // SecurityAdduserDialog caption
-    XFrame(1.8,0.5,_("User ID limitations"),`HBox(
-    map2widget("UID_MIN"),
-    `HSpacing(1.5),
-    map2widget("UID_MAX")
-    )),
-    `VSpacing(0.7),
-    // SecurityAdduserDialog caption
-    XFrame(1.8,0.5,_("Group ID limitations"),`HBox(
-    map2widget("GID_MIN"),
-    `HSpacing(1.5),
-    map2widget("GID_MAX")
-    )),
-    `VSpacing(1.7)
-    //VSeparator()
-    //,`HSpacing(1)
-  ));
+
+    /* Adduser dialog caption */
+    string caption = _("Adding user settings");
+    string help = HELPS["adduser"]:"";
+
+    /* Adduser dialog contents */
+    term contents = `VBox(
+	VSeparator(),
+	/* Frame label */
+	XFrame(1.8,0.5,_("User ID limitations"),`HBox(
+	map2widget("UID_MIN"),
+	`HSpacing(1.5),
+	map2widget("UID_MAX")
+	)),
+	`VSpacing(0.7),
+	/* Frame label */
+	XFrame(1.8,0.5,_("Group ID limitations"),`HBox(
+	map2widget("GID_MIN"),
+	`HSpacing(1.5),
+	map2widget("GID_MAX")
+	)),
+	`VSpacing(1.7)
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    Wizard::SetContentsButtons(caption, contents, help,
+            BackButtonLabel(), NextButtonLabel());
+
   any ret = nil;
   while(true) {
     ret = processInput();
@@ -891,5 +761,5 @@ global define SecurityAdduserDialog() ``{
   return ret;
 };
 
-} /* YaST2: Local security configuration EOF */
-
+/* EOF */
+}

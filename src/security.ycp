@@ -20,14 +20,16 @@
 
 textdomain "security";
 
-y2milestone("Security module started");
+/* The main () */
 y2milestone("----------------------------------------");
+y2milestone("Security module started");
+
+include "security/wizards.ycp";
 
 include "security/io.ycp";
 include "security/ui.ycp";
-
-map STRINGS = CallFunction(`ui_helps());
-map WIDGETS = CallFunction(`ui_widgets());
+include "security/widgets.ycp";
+// map WIDGETS = CallFunction(`widgets());
 
 /* The main() */
 
@@ -39,6 +41,7 @@ y2debug("settings: %1",settings);
 WIDGETS = settings2widgets(WIDGETS,settings);
 y2debug("WIDGETS: %1",WIDGETS);
 
+Wizard::CreateDialog();
 any ret = SecurityMainDialog(settings);
 y2debug("WIDGETS: %1",WIDGETS);
 y2debug("settings: %1",settings);
@@ -53,7 +56,13 @@ if(ret == `ok) {
     InfoClose();
 }
 
+/*
+ret = SecuritySequence();
+y2debug("ret == %1", ret);
+*/
+
 y2milestone("Security module finished");
+y2milestone("----------------------------------------");
 return ret;
 
 /* EOF */

@@ -7,14 +7,13 @@ yncludedir = @yncludedir@/security
 client_DATA =			\
 	security.ycp		\
 	security_auto.ycp	\
-	security_write.ycp	\
-				\
-	ui_helps.ycp		\
-	ui_widgets.ycp
+	security_write.ycp
 
 ynclude_DATA =			\
 	dialogs.ycp		\
 	wizards.ycp		\
+	widgets.ycp		\
+	helps.ycp		\
 				\
 	routines.ycp		\
 	settings.ycp		\
