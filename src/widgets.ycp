@@ -74,7 +74,7 @@ global map WIDGETS = $[
     "CONSOLE_SHUTDOWN" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&How to Interpret Ctrl + Alt + Del:"),
+	"Label" : _("Interpretation of Ctrl + Alt + Del:"),
 	"Options" : [
 	    /* ComboBox value */
 	    ["ignore", _("Ignore")],
@@ -124,7 +124,7 @@ global map WIDGETS = $[
     "FAIL_DELAY" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Delay After Incorrect Login Attempt:"),
+	"Label" : _("&Delay after Incorrect Login Attempt:"),
 	"Value" : "3"
     ],
 
@@ -216,14 +216,14 @@ global map WIDGETS = $[
     "PASS_MIN_LEN" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Minimum Password Acceptable Length"),
+	"Label" : _("&Minimum Acceptable Password Length"),
 	"Value" : "5"
     ],
 
     "PASS_WARN_AGE" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Days Before Password Expires Warning:"),
+	"Label" : _("&Days before Password Expires Warning:"),
 	"Value" : "7"
     ],
 

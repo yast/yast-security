@@ -25,7 +25,7 @@ include "security/routines.ycp";
 global define symbol AdduserDialog() ``{
 
     /* Adduser dialog caption */
-    string caption = _("Adding User Settings");
+    string caption = _("Adding User");
     string help = HELPS["adduser"]:"";
 
     /* Adduser dialog contents */

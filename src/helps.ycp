@@ -41,11 +41,12 @@ Abort saving by pressing <b>Abort</b>.</p>"),
     "boot" : _("<p>In this dialog, change various boot settings.</p>") +
 
     /* Boot dialog help 2/3 */
-    _("<p><b>How to Interpret Ctrl + Alt + Del</b><br>
+    _("<p><b>Interpretation of Ctrl + Alt + Del</b><br>
 When someone at the console has pressed the CTRL + ALT + DEL key
 combination, the system usually reboots. Sometimes it is desirable
 to ignore this event, for example, when the system serves as both
-workstation and server.</p>") +
+workstation and server.</p>
+") +
 
     /* Boot dialog help 3/3 */
     _("<p><b>Shutdown Behavior of KDM</b><br>
@@ -88,10 +89,11 @@ any type of service, network or any other.</p>") +
 settings are mainly stored in the '/etc/login.defs' file.</p>") +
 
     /* Login dialog help 1/5 */
-    _("<p><b>Delay After Incorrect Login Attempt</b><br>
+    _("<p><b>Delay after Incorrect Login Attempt</b><br>
 It is advisable to wait some time after an incorrect login attempt to prevent
 password guessing. Make the time small enough so users do not need to wait to
-retry if a password is mistyped. A sensible value is '3' seconds.</p>") +
+retry if a password is mistyped. A sensible value is '3' seconds.</p>
+") +
 
     /* Login dialog help 1/5 */
     _("<p><b>Record Failed Login Attempts</b><br> It is useful to know if
@@ -146,26 +148,30 @@ passwords with the help of a dictionary.</p>") +
 
     /* Password dialog help 5/8 */
     _("<p><b>Number of Significant Characters in the Password</b><br>
-Maximal number of significant characters in the password. Default is 8 for
-the <i>DES</i> encryption method, don't change it unless your encryption
+Maximum number of significant characters in the password. Default is eight for
+the <i>DES</i> encryption method. Do not change it unless your encryption
 function (crypt) is better. This option is ignored for the other encryption
-methods, for the <i>MD5</i> it is 127 and for the <i>Blowfish</i> it is 72.
-</p>") +
+methods. For <i>MD5</i>, it is 127. For <i>Blowfish</i>, it is 72.
+</p>
+") +
 
     /* Password dialog help 6/8 */
-    _("<p><b>Minimum Password Acceptable Length</b><br>
+    _("<p><b>Minimum Acceptable Password Length</b><br>
 The minimum number of characters in an acceptable password. An attempt to
 assign a password with fewer characters will be rejected. A zero value
-suppresses this check.</p>") +
+suppresses this check.</p>
+") +
 
     /* Password dialog help 7/8 */
-    _("<p><b>Days of Password Change Warning</b><br>Set the minimum and
-maximum time for warning that the password must be changed.</p>") +
+    _("<p><b>Days to Password Change Warning</b><br>Set the minimum and
+maximum time for warning that the password must be changed.</p>
+") +
 
     /* Password dialog help 8/8 */
-    _("<p><b>Days Before Password Expires Warning</b><br> This entry sets the
+    _("<p><b>Days before Password Expires Warning</b><br> This entry sets the
 number of days users are warned before their passwords expire. The longer the
-time, the less likely it is that a user can guess passwords.</p>"),
+time, the less likely it is that a user can guess passwords.</p>
+"),
 
 
     /* Adduser dialog help 1/2 */
@@ -201,8 +207,9 @@ be viewed by the user root. Some programs can only be launched by root or by
 daemons, not by an ordinary user.</p>") +
 
     /* Misc dialog help 5/14 */
-    _("<p>\"Paranoid\":  If you are really paranoid, use this setting. You must
-decide which users will be able to run X applications and setuid programs.</p>") +
+    _("<p>\"Paranoid\":  For an extremely secure system, use this setting. You must
+decide which users are able to run X applications and setuid programs.</p>
+") +
 
     /* Misc dialog help 6/14 */
     _("<p><b>User Launching updatedb</b><br> The program updatedb runs regularly,
@@ -252,8 +259,9 @@ current directory prefixed with a \"./\". Example: \"./configure\".</p>") +
 
     /* Misc dialog help 14/14 */
     _("<p><b>Enable Magic SysRq Keys</b><br> If you check this option, you
-will have some control over the system even if it crashes (e.g. during kernel
-debugging). For details see <i>/usr/src/linux/Documentation/sysrq.txt</i></p>"),
+will have some control over the system even if it crashes (e.g., during kernel
+debugging). For details, see <i>/usr/src/linux/Documentation/sysrq.txt</i></p>
+"),
 
 ];
 

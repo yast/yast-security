@@ -181,7 +181,7 @@ global define symbol PassDialog() ``{
 	settings2widget("PASS_MIN_LEN"),
 	`VSpacing(1.0),
 	/* Frame label */
-	`Frame(_("Days of Password Change Warning"),`HBox(
+	`Frame(_("Days to Password Change Warning"),`HBox(
 	    `HSpacing(0.4),
 	    settings2widget("PASS_MIN_DAYS"),
 	    `HSpacing(0.4),
