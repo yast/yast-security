@@ -452,6 +452,7 @@ global define boolean Write() ``{
 
     SCR::Execute(.target.bash, "/sbin/SuSEconfig --module xdm");
     SCR::Execute(.target.bash, "/sbin/SuSEconfig --module kde3");
+    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module kdm3");
     SCR::Execute(.target.bash, "/sbin/SuSEconfig --module permissions");
     SCR::Execute(.target.bash, "/sbin/SuSEconfig --module profiles");
 

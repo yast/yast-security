@@ -117,6 +117,7 @@ Write	.etc.security.v."pam_pwcheck"."password" "minlen=l10" true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
 Execute	.target.bash "/sbin/SuSEconfig --module xdm" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
+Execute	.target.bash "/sbin/SuSEconfig --module kdm3" 0
 Execute	.target.bash "/sbin/SuSEconfig --module permissions" 0
 Execute	.target.bash "/sbin/SuSEconfig --module profiles" 0
 Return	true

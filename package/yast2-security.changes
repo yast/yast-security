@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb 24 12:48:18 CET 2004 - msvec@suse.cz
+
+- fix enabling of the remote XDM access (#34879)
+- 2.9.5
+
+-------------------------------------------------------------------
 Fri Feb  6 14:33:48 CET 2004 - msvec@suse.cz
 
 - use Sequencer module
