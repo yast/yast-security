@@ -18,7 +18,7 @@ The WIDGETS format:
 map WIDGETS = $[
     "Item unique ID" : $[
 	"Widget" : "ComboBox",
-	"Label" : "Item label",
+	"Label" : "Item Label",
 	"Options" : [ "option1", "option2", ... ],
 	"Value" : "option2"
     ],
@@ -74,7 +74,7 @@ global map WIDGETS = $[
     "CONSOLE_SHUTDOWN" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&How to interpret Ctrl + Alt + Del:"),
+	"Label" : _("&How to Interpret Ctrl + Alt + Del:"),
 	"Options" : [
 	    /* ComboBox value */
 	    ["ignore", _("Ignore")],
@@ -89,7 +89,7 @@ global map WIDGETS = $[
     "CWD_IN_ROOT_PATH" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("&Current directory in root's path"),
+	"Label" : _("&Current Directory in root's Path"),
 	"Value" : "yes"
     ],
 
@@ -103,21 +103,28 @@ global map WIDGETS = $[
     "DISPLAYMANAGER_REMOTE_ACCESS" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("Allow remote &graphical login"),
+	"Label" : _("Allow Remote &Graphical Login"),
+	"Value" : "no"
+    ],
+
+    "ENABLE_SYSRQ" : $[
+	"Widget" : "CheckBox",
+	/* CheckBox label */
+	"Label" : _("Enable &Magic SysRq Keys"),
 	"Value" : "no"
     ],
 
     "FAILLOG_ENAB" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("Record &failed login attempts"),
+	"Label" : _("Record &Failed Login Attempts"),
 	"Value" : "yes"
     ],
 
     "FAIL_DELAY" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Delay after Incorrect Login Attempt:"),
+	"Label" : _("&Delay After Incorrect Login Attempt:"),
 	"Value" : "3"
     ],
 
@@ -138,7 +145,7 @@ global map WIDGETS = $[
     "KDM_SHUTDOWN" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&Shutdown behavior of KDM:"),
+	"Label" : _("&Shutdown Behavior of KDM:"),
 	"Options" : [
 	    /* ComboBox value */
 	    ["root",_("Only root")],
@@ -157,21 +164,21 @@ global map WIDGETS = $[
     "LASTLOG_ENAB" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("R&ecord successful login attempts"),
+	"Label" : _("R&ecord Successful Login Attempts"),
 	"Value" : "yes"
     ],
 
     "OBSCURE_CHECKS_ENAB" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("&Plausibility test for password"),
+	"Label" : _("&Plausibility Test for Password"),
 	"Value" : "yes"
     ],
 
     "PASSWD_ENCRYPTION" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("P&assword encryption method"),
+	"Label" : _("P&assword Encryption Method"),
 	/* ComboBox values */
 	"Options" : [["des","DES"],["md5","MD5"],["blowfish","Blowfish"]],
 	"Value" : "des"
@@ -180,7 +187,7 @@ global map WIDGETS = $[
     "PASSWD_USE_CRACKLIB" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("&Checking new passwords"),
+	"Label" : _("&Checking New Passwords"),
 	"Value" : "yes"
     ],
 
@@ -215,14 +222,14 @@ global map WIDGETS = $[
     "PASS_WARN_AGE" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Days before password expires warning:"),
+	"Label" : _("&Days Before Password Expires Warning:"),
 	"Value" : "7"
     ],
 
     "PERMISSION_SECURITY" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&Setting of file permissions:"),
+	"Label" : _("&Setting of File Permissions:"),
 	"Options" : [
 	    /* ComboBox value */
 	    ["easy",_("Easy")],
@@ -237,7 +244,7 @@ global map WIDGETS = $[
     "RUN_UPDATEDB_AS" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&User launching updatedb:"),
+	"Label" : _("&User Launching updatedb:"),
 	"Options" : [ "nobody", "root" ],
 	"Value" : "nobody"
     ],

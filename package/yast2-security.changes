@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 10 12:16:03 CEST 2003 - msvec@suse.de
+
+- support for enabling of SysRq keys
+- 2.8.0
+
+-------------------------------------------------------------------
 Mon Mar  3 11:25:24 CET 2003 - msvec@suse.de
 
 - autoinstallation fixes by nashif

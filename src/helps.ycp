@@ -156,7 +156,7 @@ Set the minimum and maximum possible group ID.</p>"),
     "misc" : _("<p>In this dialog, change miscellaneous settings.</p>") +
 
     /* Misc dialog help 2/14 */
-    _("<p><b>Setting File Permissions</b><br> Settings for the permissions
+    _("<p><b>Setting of File Permissions</b><br> Settings for the permissions
 of certain system files are set according to the data in /etc/permissions.secure
 or /etc/permissions.easy. Which file is used depends on this selection.
 Launching SuSEconfig sets these permissions according to /etc/permissions.*.
@@ -220,7 +220,12 @@ path of root, making it the last to be searched.</p>") +
 
     /* Misc dialog help 14/14 */
     _("<p>\"no\": the user root always must launch programs in the
-current directory prefixed with a \"./\". Example: \"./configure\".</p>"),
+current directory prefixed with a \"./\". Example: \"./configure\".</p>") +
+
+    /* Misc dialog help 14/14 */
+    _("<p><b>Enable Magic SysRq Keys</b><br> If you check this option, you
+will have some control over the system even if it crashes (e.g. during kernel
+debugging). For details see <i>/usr/src/linux/Documentation/sysrq.txt</i></p>"),
 
 ];
 

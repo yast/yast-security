@@ -1,5 +1,26 @@
-1. implement Read and Write	[io.ycp]
-2. update testsuite		[testsuite/tests/*.ycp; make check]
-3. create a new widget		[ui_widgets.ycp]
-4. add helptext for it		[ui_helps.ycp]
-5. place the widget		[ui.ycp]
+# $Id$
+
+Adding a New Widget to the Security Configuration
+-------------------------------------------------
+
+Security.ycp:
+- update map Settings				[map Settings]
+- update map Locations				[map Locations]
+- implement custom Read|Write if required	[Read|Write]
+
+levels.ycp:
+- update security levels defaults		[map Levels]
+
+widgets.ycp:
+- add a widget definition			[map WIDGETS]
+
+dialogs.ycp:
+- place widget intro the correct dialog		[settings2widget(ID)]
+- get a dialog result value			[widget2settings(ID)]
+
+helps.ycp:
+- add a help text to the correct dialog		[map HELPS]
+
+Update testsuite:
+- testsuite/*.ycp
+- make check

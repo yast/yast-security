@@ -17,11 +17,13 @@ Write	.sysconfig.locate.RUN_UPDATEDB_AS "nobody" true
 Write	.sysconfig.security.PERMISSION_SECURITY "secure local" true
 Write	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "no" true
 Write	.sysconfig.suseconfig.CWD_IN_USER_PATH "no" true
+Write	.sysconfig.sysctl.ENABLE_SYSRQ "no" true
 Write	.etc.login_defs nil true
 Write	.sysconfig.displaymanager nil true
 Write	.sysconfig.locate nil true
 Write	.sysconfig.security nil true
 Write	.sysconfig.suseconfig nil true
+Write	.sysconfig.sysctl nil true
 Write	.etc.inittab.ca ":ctrlaltdel:/bin/true" true
 Write	.etc.inittab nil true
 Write	.pam.all.password.pam_unix2 "-md5" true
@@ -45,6 +47,7 @@ Write	.pam.sshd.password.pam_unix "-blowfish" true
 Write	.pam.rlogin.password.pam_pwcheck "-blowfish" true
 Write	.pam.rlogin.password.pam_unix "-blowfish" true
 Write	.pam.all.password.pam_pwcheck "+use_cracklib" true
+Execute	.target.bash "echo 0 > /proc/sys/kernel/sysrq" 0
 Execute	.target.bash "/sbin/SuSEconfig --module xdm" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
 Execute	.target.bash "/sbin/SuSEconfig --module permissions" 0

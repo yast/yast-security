@@ -112,6 +112,8 @@ global define symbol MiscDialog() ``{
 	settings2widget("CWD_IN_ROOT_PATH"),
 	VSeparator(),
 	settings2widget("CWD_IN_USER_PATH"),
+	`VSpacing(1.0),
+	settings2widget("ENABLE_SYSRQ"),
 	`VSpacing(1.8)
     );
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
@@ -146,6 +148,7 @@ global define symbol MiscDialog() ``{
 	widget2settings("CWD_IN_ROOT_PATH");
 	widget2settings("CWD_IN_USER_PATH");
 	widget2settings("RUN_UPDATEDB_AS");
+	widget2settings("ENABLE_SYSRQ");
     }
 
     return ret;

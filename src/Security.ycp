@@ -24,6 +24,7 @@ global map Settings = $[
     "CWD_IN_ROOT_PATH"			: "yes",
     "CWD_IN_USER_PATH"			: "yes",
     "DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
+    "ENABLE_SYSRQ"			: "no",
     "FAILLOG_ENAB"			: "yes",
     "FAIL_DELAY"			: "3",
     "GID_MAX"				: "60000",
@@ -76,6 +77,9 @@ map Locations = $[
     ],
     ".sysconfig.locate" : [
 	"RUN_UPDATEDB_AS",
+    ],
+    ".sysconfig.sysctl" : [
+	"ENABLE_SYSRQ",
     ],
 ];
 
@@ -388,6 +392,13 @@ global define boolean Write() ``{
     /* use cracklib? */
     string pam_string = (Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes") ? "+use_cracklib" : "-use_cracklib";
     SCR::Write(.pam.all.password.pam_pwcheck, pam_string);
+
+    /* enable sysrq? */
+    boolean sysrq = Settings["ENABLE_SYSRQ"]:"no" == "yes";
+    if(sysrq)
+	SCR::Execute(.target.bash, "echo 1 > /proc/sys/kernel/sysrq");
+    else
+	SCR::Execute(.target.bash, "echo 0 > /proc/sys/kernel/sysrq");
 
     /* Finish him: SuSEconfig */
     sleep(sl);

@@ -23,6 +23,8 @@ Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
 Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_USER_PATH "r3"
+Read	.target.size "/etc/sysconfig/sysctl" 1
+Read	.sysconfig.sysctl.ENABLE_SYSRQ "r8"
 Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
 Read	.pam.all.password.pam_unix2 nil

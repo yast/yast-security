@@ -31,6 +31,9 @@ map scr_info = $[
 	"locate" : $[
 	    "RUN_UPDATEDB_AS"		:	"r7",
 	],
+	"sysctl" : $[
+	    "ENABLE_SYSRQ"		:	"r8",
+	],
     ],
     "etc" : $[
 	"login_defs" : $[
