@@ -2,6 +2,8 @@
 
 yncludedir = @yncludedir@/security
 
+YCPCFLAGS = -I .
+
 client_DATA =			\
 	security.ycp		\
 	security_auto.ycp	\
@@ -24,5 +26,10 @@ config_DATA = security.y2cc
 desktop_DATA = security.desktop
 
 EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
+
+symlinks:
+	test -L security || ln -sf . security
+
+ycpchook = symlinks
 
 include $(top_srcdir)/Makefile.am.common
