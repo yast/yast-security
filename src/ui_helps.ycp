@@ -119,7 +119,7 @@ be changed.</p>")) +
 UI(_("<p><b>Days before password expiry warning?</b><br>
 This entry sets the number of days the user is warned before their password
  expiry. The longer the time, the less likely it is that a user can guess passwords.</p>"))
-//+ ""
++ "<p></p>"
   ],
 
   "Adduser" : $[
