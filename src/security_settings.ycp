@@ -20,7 +20,7 @@ return [
   $[
     "name" : "Default",
     // radio button label
-    "settings" : _("Level &3 (Network/Server)")
+    "settings" : UI(_("Level &3 (Network/Server)"))
     //"settings" : "Secure"
   ],
 

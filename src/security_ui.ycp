@@ -494,9 +494,6 @@ network server secure.")));
     y2debug("subret: %1",subret);
   }
 
-  UI(`CloseDialog());
-
-
   /* [Finish]ed */
   if(ret == `ok && old_WIDGETS!=WIDGETS) {
     y2debug("YES");
@@ -504,9 +501,11 @@ network server secure.")));
     y2debug("current_defs: %1",current_defs);
     map current_sets = FindSettings(settings,current_defs);
     WIDGETS = defs2options(WIDGETS,current_sets);
+    UI(`CloseDialog());
     return `ok;
   }
 
+  UI(`CloseDialog());
   return nil;
 };
 
