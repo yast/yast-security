@@ -461,7 +461,7 @@ define SecurityMainDialog(map defs) ``{
           any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
           if( curr2 == `custom) {
             UI(`ChangeWidget(`id(`details),`Enabled,false));
-            UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),"Next")));
+            UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
           }
           /* FIXME: update the current RB? Probably not*/
 
