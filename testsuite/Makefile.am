@@ -12,4 +12,7 @@ all-local: $(testsuite_prepare)
 clean-local: $(testsuite_prepare)
 	make -f $(testsuite_prepare) RPMNAME=$(RPMNAME) srcdir=$(srcdir) clean
 
+#%:
+	#make -f $(testsuite_prepare) RPMNAME=$(RPMNAME) srcdir=$(srcdir) $@
+
 #EXTRA_DIST = README
