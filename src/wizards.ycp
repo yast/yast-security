@@ -15,6 +15,7 @@ import "Wizard";
 
 include "wizard/sequencer.ycp";
 include "security/dialogs.ycp";
+include "security/users.ycp";
 
 /**
  * Whole configuration of security

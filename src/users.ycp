@@ -1,0 +1,104 @@
+/**
+ * File:	include/security/users.ycp
+ * Package:	Security configuration
+ * Summary:	Users dialogs definitions
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+textdomain "security";
+
+import "Wizard";
+
+// FIXME include "security/ui.ycp";
+include "security/helps.ycp";
+
+/**
+ * Adduser dialog
+ * @return dialog result
+ */
+global define symbol AdduserDialog() ``{
+
+    /* Adduser dialog caption */
+    string caption = _("Adding user settings");
+    string help = HELPS["adduser"]:"";
+
+    /* Adduser dialog contents */
+    term contents = `VBox(
+	VSeparator(),
+	/* Frame label */
+	XFrame(1.8,0.5,_("User ID limitations"),`HBox(
+	map2widget("UID_MIN"),
+	`HSpacing(1.5),
+	map2widget("UID_MAX")
+	)),
+	`VSpacing(0.7),
+	/* Frame label */
+	XFrame(1.8,0.5,_("Group ID limitations"),`HBox(
+	map2widget("GID_MIN"),
+	`HSpacing(1.5),
+	map2widget("GID_MAX")
+	)),
+	`VSpacing(1.7)
+    );
+
+    contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
+    Wizard::SetContentsButtons(caption, contents, help,
+	    BackButtonLabel(), NextButtonLabel());
+
+    any ret = nil;
+    while(true) {
+	ret = UI::UserInput();
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel) {
+	    if(ReallyAbort()) break;
+	    else continue;
+	}
+	/* back */
+	else if(ret == `back) {
+	    break;
+	}
+	/* next */
+	else if(ret == `next) {
+	    if(checkMinMax("UID_MIN","UID_MAX") != true) {
+		/* Popup text */
+		PopupOK(_("The minimum user ID cannot be larger than maximum"));
+		continue;
+	    }
+	    if(checkMinMax("GID_MIN","GID_MAX") != true) {
+		/* Popup text */
+		PopupOK(_("The minimum group IDs cannot be larger than maximum"));
+		continue;
+	    }
+	    break;
+	}
+	else {
+	    y2error("Unexpected return code: %1", ret);
+	    continue;
+	}
+    };
+
+    if(ret == `next) {
+	updateWidget("GID_MIN");
+	updateWidget("GID_MAX");
+	updateWidget("UID_MIN");
+	updateWidget("UID_MAX");
+	// Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
+    }
+
+    return ret;
+}
+
+if(false) {
+Wizard::CreateDialog();
+include "security/widgets.ycp";
+
+AdduserDialog();
+}
+
+/* EOF */
+}

@@ -10,6 +10,7 @@ client_DATA =			\
 	security_write.ycp
 
 ynclude_DATA =			\
+	users.ycp		\
 	dialogs.ycp		\
 	wizards.ycp		\
 	widgets.ycp		\

@@ -23,8 +23,13 @@ include "security/routines.ycp";
 include "security/settings.ycp";
 include "security/functions_ui.ycp";
 include "security/helps.ycp";
+include "security/users.ycp";
 
 include "ui/common_messages.ycp";
+
+global define ReallyAbort() ``{
+    return UI::ReallyAbortPopup(true);
+}
 
 /**
  * Return a widget from the WIDGETS map created acording to the ID.
@@ -494,7 +499,7 @@ global define SecurityWizzard() ``{
     if(current==0) ret = SecurityPasswdDialog();
     else if(current==1) ret = SecurityBootDialog();
     else if(current==2) ret = SecurityLoginDialog();
-    else if(current==3) ret = SecurityAdduserDialog();
+    else if(current==3) ret = AdduserDialog(); //SecurityAdduserDialog();
     else if(current==4) ret = SecurityMiscDialog();
 
     y2debug("ret: %1",ret);

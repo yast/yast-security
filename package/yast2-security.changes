@@ -3,6 +3,7 @@ Mon Jul  8 19:56:03 CEST 2002 - msvec@suse.cz
 
 - use Wizard and other predefined functions
 - drastic reduction and simplification of UI code
+- split adduser dialog
 - 2.6.3
 
 -------------------------------------------------------------------

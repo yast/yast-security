@@ -87,52 +87,6 @@ global define symbol MainDialog() ``{
 }
 
 /**
- * Password dialog
- * @return dialog result
- */
-global define symbol PasswordDialog() ``{
-
-    /* Password dialog caption */
-    string caption = _("Password settings");
-    string help = HELPS["password"]:"";
-
-    /* Password dialog contents */
-    term contents = nil;
-
-    Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
-
-    any ret = nil;
-    while(true) {
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort || ret == `cancel) {
-	    if(ReallyAbort()) break;
-	    else continue;
-	}
-	else if(ret == `back) {
-	    break;
-	}
-	else if(ret == `next) {
-	    /* FIXME: check_* */
-	    break;
-	}
-	else {
-	    y2error("Unexpected return code: %1", ret);
-	    continue;
-	}
-    };
-
-    if(ret == `next) {
-	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
-	// ...
-    }
-
-    return ret;
-}
-
-/**
  * Boot dialog
  * @return dialog result
  */
@@ -176,98 +130,6 @@ global define symbol BootDialog() ``{
 	    else continue;
 	}
 	else if(ret == `back || ret == `next) {
-	    break;
-	}
-	else {
-	    y2error("Unexpected return code: %1", ret);
-	    continue;
-	}
-    };
-
-    if(ret == `next) {
-	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
-	// ...
-    }
-
-    return ret;
-}
-
-/**
- * Login dialog
- * @return dialog result
- */
-global define symbol LoginDialog() ``{
-
-    /* Login dialog caption */
-    string caption = _("Login settings");
-    string help = HELPS["login"]:"";
-
-    /* Login dialog contents */
-    term contents = nil;
-
-    Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
-
-    any ret = nil;
-    while(true) {
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort || ret == `cancel) {
-	    if(ReallyAbort()) break;
-	    else continue;
-	}
-	else if(ret == `back) {
-	    break;
-	}
-	else if(ret == `next) {
-	    /* FIXME: check_* */
-	    break;
-	}
-	else {
-	    y2error("Unexpected return code: %1", ret);
-	    continue;
-	}
-    };
-
-    if(ret == `next) {
-	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
-	// ...
-    }
-
-    return ret;
-}
-
-/**
- * Adduser dialog
- * @return dialog result
- */
-global define symbol AdduserDialog() ``{
-
-    /* Adduser dialog caption */
-    string caption = _("Adding user settings");
-    string help = HELPS["adduser"]:"";
-
-    /* Adduser dialog contents */
-    term contents = nil;
-
-    Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
-
-    any ret = nil;
-    while(true) {
-	ret = UI::UserInput();
-
-	/* abort? */
-	if(ret == `abort || ret == `cancel) {
-	    if(ReallyAbort()) break;
-	    else continue;
-	}
-	else if(ret == `back) {
-	    break;
-	}
-	else if(ret == `next) {
-	    /* FIXME: check_* */
 	    break;
 	}
 	else {
@@ -330,15 +192,104 @@ global define symbol MiscDialog() ``{
     return ret;
 }
 
+/**
+ * Password dialog
+ * @return dialog result
+ */
+global define symbol PasswordDialog() ``{
+
+    /* Password dialog caption */
+    string caption = _("Password settings");
+    string help = HELPS["password"]:"";
+
+    /* Password dialog contents */
+    term contents = nil;
+
+    Wizard::SetContentsButtons(caption, contents, help,
+	    BackButtonLabel(), NextButtonLabel());
+
+    any ret = nil;
+    while(true) {
+	ret = UI::UserInput();
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel) {
+	    if(ReallyAbort()) break;
+	    else continue;
+	}
+	else if(ret == `back) {
+	    break;
+	}
+	else if(ret == `next) {
+	    /* FIXME: check_* */
+	    break;
+	}
+	else {
+	    y2error("Unexpected return code: %1", ret);
+	    continue;
+	}
+    };
+
+    if(ret == `next) {
+	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
+	// ...
+    }
+
+    return ret;
+}
+
+/**
+ * Login dialog
+ * @return dialog result
+ */
+global define symbol LoginDialog() ``{
+
+    /* Login dialog caption */
+    string caption = _("Login settings");
+    string help = HELPS["login"]:"";
+
+    /* Login dialog contents */
+    term contents = nil;
+
+    Wizard::SetContentsButtons(caption, contents, help,
+	    BackButtonLabel(), NextButtonLabel());
+
+    any ret = nil;
+    while(true) {
+	ret = UI::UserInput();
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel) {
+	    if(ReallyAbort()) break;
+	    else continue;
+	}
+	else if(ret == `back) {
+	    break;
+	}
+	else if(ret == `next) {
+	    /* FIXME: check_* */
+	    break;
+	}
+	else {
+	    y2error("Unexpected return code: %1", ret);
+	    continue;
+	}
+    };
+
+    if(ret == `next) {
+	Security::xxx = UI::QueryWidget(`id(`xxx), `Value);
+	// ...
+    }
+
+    return ret;
+}
+
 if(false) {
 Wizard::CreateDialog();
 include "security/widgets.ycp";
 
 //MainDialog();
-//PassDialog();
 BootDialog();
-//LoginDialog();
-//AdduserDialog();
 //MiscDialog();
 }
 
