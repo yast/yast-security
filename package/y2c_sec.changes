@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Fri Dec 15 13:26:24 CET 2000 - msvec@suse.cz
+
+- help text for the main screen added (#4619)
+- check the minimum <= maximum (#4682)
+
+-------------------------------------------------------------------
+Wed Dec 13 19:12:30 CET 2000 - mike@suse.de
+
+- new menuentry file
+
+-------------------------------------------------------------------
 Wed Dec 13 08:45:08 CET 2000 - msvec@suse.cz
 
 - menuentry updated
