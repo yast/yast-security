@@ -1,4 +1,7 @@
+-------------------------------------------------------------------
+Fri Apr 13 09:52:36 CEST 2001 - msvec@suse.cz
 
+- enabled abuild checking
 - fixed help text (#6190)
 - version 2.3.3
 
