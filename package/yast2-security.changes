@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
 Sun May 11 00:04:54 CEST 2003 - msvec@suse.de
 
-- maximum password length is related to encryption method
+- maximum password length is related to encryption method (#13291)
 - support for enabling of SysRq keys
+- define password lengths (#13291)
 - improved documentation
 - better help texts
 - 2.8.0
