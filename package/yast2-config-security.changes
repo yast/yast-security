@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Sat Jan 26 19:49:14 CET 2002 - nashif@suse.de
+
+- Added agents to file list
+- 2.5.6
+
+-------------------------------------------------------------------
 Wed Jan 16 20:24:11 CET 2002 - msvec@suse.cz
 
 - added pam_unix2 and rlogin|gdm to MD5 settings (md5 is #9543)
