@@ -3,7 +3,7 @@
 #
 
 AUTOMAKE_OPTIONS = dejagnu
-EXTRA_DIST = tests/ tests/*.out tests/*.err tests/*.ycp $(wildcard tests/*.yh)
+EXTRA_DIST = tests/*.out tests/*.err tests/*.ycp $(wildcard tests/*.yh)
 
 testsuite_prepare=/usr/lib/YaST2/testsuite/Makefile.testsuite
 

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jul  3 13:08:02 CEST 2001 - msvec@suse.cz
+
+- adapted to the system agent split
+- added missing shortcuts
+- version 2.4.0
+
+-------------------------------------------------------------------
 Wed May  2 10:32:28 CEST 2001 - msvec@suse.cz
 
 - fix menuentry file
