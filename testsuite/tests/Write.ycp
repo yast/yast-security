@@ -16,7 +16,7 @@ include "testsuite.ycp";
 include "security/io.ycp";
 
 map m = $[
-	"CONSOLE_SHUTDOWN"	:	"r1",
+	"CONSOLE_SHUTDOWN"	:	"reboot",
 	"CWD_IN_ROOT_PATH"	:	"r2",
 	"KDM_SHUTDOWN"		:	"r3",
 	"DISPLAYMANAGER_REMOTE_ACCESS" :"r4",

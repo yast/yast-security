@@ -104,7 +104,6 @@ global define WriteSysConfig(map m, string p, string item) ``{
  */
 global define SettingsSysConfig() ``{
     return [
-        "CONSOLE_SHUTDOWN",
         "CWD_IN_ROOT_PATH",
 	"DISPLAYMANAGER_REMOTE_ACCESS",
         "KDM_SHUTDOWN",
@@ -177,15 +176,34 @@ global define SecurityRead() ``{
 
     /* login.defs */
     m = ApplyRead(``(ReadLoginDefs()),SettingsLoginDefs(),m);
+
     /* sysconfig */
     // m = ApplyRead(``(ReadSysConfig()),SettingsSysConfig(),m);
-    m = add(m, "CONSOLE_SHUTDOWN", ReadSysConfig("security", "CONSOLE_SHUTDOWN"));
     m = add(m, "PERMISSION_SECURITY", ReadSysConfig("security", "PERMISSION_SECURITY"));
     m = add(m, "CWD_IN_ROOT_PATH", ReadSysConfig("suseconfig", "CWD_IN_ROOT_PATH"));
     m = add(m, "KDM_SHUTDOWN", ReadSysConfig("displaymanager", "KDM_SHUTDOWN"));
     m = add(m, "DISPLAYMANAGER_REMOTE_ACCESS", ReadSysConfig("displaymanager", "DISPLAYMANAGER_REMOTE_ACCESS"));
     m = add(m, "RUN_UPDATEDB_AS", ReadSysConfig("locate", "RUN_UPDATEDB_AS"));
 
+    /* inittab */
+    list inittab = SCR::Dir(.etc.inittab);
+    if(contains(inittab, "ca")) {
+	string ca = SCR::Read(.etc.inittab.ca);
+	if(issubstring(ca, "/bin/true") || issubstring(ca, "/bin/false"))
+	    m = add(m, "CONSOLE_SHUTDOWN", "ignore");
+	else if(issubstring(ca, "reboot") || issubstring(ca, " -r"))
+	    m = add(m, "CONSOLE_SHUTDOWN", "reboot");
+	else if(issubstring(ca, "halt") || issubstring(ca, " -h"))
+	    m = add(m, "CONSOLE_SHUTDOWN", "halt");
+	else {
+	    y2error("Unknown ca status: %1", ca);
+	    m = add(m, "CONSOLE_SHUTDOWN", "ignore");
+	}
+    }
+    else
+	m = add(m, "CONSOLE_SHUTDOWN", "ignore");
+
+    /* pam stuff */
     map pam_unix_map = $[];
     list pam_list = SCR::Read(.pam.all.password.pam_unix2);
     if(pam_list != [] && pam_list != nil)
@@ -235,14 +253,23 @@ global define SecurityWrite(map m) ``{
     //ret = add(ret,SCR::Write(.sysconfig.security,nil));
 
     /* sysconfig */
-    WriteSysConfig(m, "security", "CONSOLE_SHUTDOWN");
     WriteSysConfig(m, "security", "PERMISSION_SECURITY");
     WriteSysConfig(m, "suseconfig", "CWD_IN_ROOT_PATH");
     WriteSysConfig(m, "displaymanager", "KDM_SHUTDOWN");
     WriteSysConfig(m, "displaymanager", "DISPLAYMANAGER_REMOTE_ACCESS");
     WriteSysConfig(m, "locate", "RUN_UPDATEDB_AS");
 
+    /* inittab */
+    string ca = lookup(m, "CONSOLE_SHUTDOWN", "ignore");
+    if(ca == "reboot")
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/sbin/shutdown -r -t 4 now");
+    else if(ca == "halt")
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/sbin/shutdown -h -t 4 now");
+    else
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/bin/true");
+
     /* flush */
+    SCR::Write(.etc.inittab,nil);
     SCR::Write(.etc.login_defs,nil);
     SCR::Write(.sysconfig.security,nil);
     SCR::Write(.sysconfig.suseconfig,nil);
@@ -273,7 +300,10 @@ global define SecurityWrite(map m) ``{
     ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, pam_string));
 
     /* finish him */
-    ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --nonewpackage"));
+    ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --module xdm"));
+    ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --module kde3"));
+    ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --module permissions"));
+    ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --module profiles"));
     return ret;
 };
 

@@ -11,12 +11,13 @@ Write	.etc.login_defs.PASS_MIN_LEN "6" true
 Write	.etc.login_defs.PASS_WARN_AGE "14" true
 Write	.etc.login_defs.UID_MAX "60000" true
 Write	.etc.login_defs.UID_MIN "100" true
-Write	.sysconfig.security.CONSOLE_SHUTDOWN "ignore" true
 Write	.sysconfig.security.PERMISSION_SECURITY "secure local" true
 Write	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "no" true
 Write	.sysconfig.displaymanager.KDM_SHUTDOWN "root" true
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "no" true
 Write	.sysconfig.locate.RUN_UPDATEDB_AS "nobody" true
+Write	.etc.inittab.ca ":ctrlaltdel:/bin/true" true
+Write	.etc.inittab nil true
 Write	.etc.login_defs nil true
 Write	.sysconfig.security nil true
 Write	.sysconfig.suseconfig nil true

@@ -11,12 +11,13 @@ Write	.etc.login_defs.PASS_MIN_LEN "l11" true
 Write	.etc.login_defs.PASS_WARN_AGE "l12" true
 Write	.etc.login_defs.UID_MAX "l13" true
 Write	.etc.login_defs.UID_MIN "l14" true
-Write	.sysconfig.security.CONSOLE_SHUTDOWN "r1" true
 Write	.sysconfig.security.PERMISSION_SECURITY "r5 local" true
 Write	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2" true
 Write	.sysconfig.displaymanager.KDM_SHUTDOWN "r3" true
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r4" true
 Write	.sysconfig.locate.RUN_UPDATEDB_AS "r7" true
+Write	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now" true
+Write	.etc.inittab nil true
 Write	.etc.login_defs nil true
 Write	.sysconfig.security nil true
 Write	.sysconfig.suseconfig nil true
