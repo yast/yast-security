@@ -28,7 +28,7 @@ textdomain "security";
  * @see InfoClose
  */
 
-define Info(string message) ``{
+global define Info(string message) ``{
   any ret = UI(`OpenDialog(
         `opt(`decorated),
         `HBox(
@@ -51,7 +51,7 @@ define Info(string message) ``{
  * @see Info
  */
 
-define InfoClose() ``{
+global define InfoClose() ``{
   any ret = UI(`CloseDialog());
   return ret;
 };
@@ -62,7 +62,7 @@ define InfoClose() ``{
  * @return any the user input
  */
 
-define Popup(string message) ``{
+global define Popup(string message) ``{
   map BUTTONS = CallFunction(`buttons());
   UI(`OpenDialog(
         `opt(`decorated),
@@ -93,7 +93,7 @@ define Popup(string message) ``{
  * @see Popup
  */
 
-define PopupOK(string message) ``{
+global define PopupOK(string message) ``{
   map BUTTONS = CallFunction(`buttons());
   UI(`OpenDialog(
         `opt(`decorated),
@@ -124,7 +124,7 @@ define PopupOK(string message) ``{
  * @see PopupOK
  */
 
-define Message(any message) ``{
+global define Message(any message) ``{
   map BUTTONS = CallFunction(`buttons());
   UI(`OpenDialog(
         `opt(`decorated),
@@ -149,7 +149,7 @@ define Message(any message) ``{
  * @see Message
  */
 
-define Debug(any message) ``{
+global define Debug(any message) ``{
   Message(message);
 };
 
@@ -159,10 +159,10 @@ define Debug(any message) ``{
  * @see Choose
  */
 
-define BrowseMap(map m) ``{
+global define BrowseMap(map m) ``{
   list choose = mapkeys(m);
-  string|void var = Choose(choose);
-  while(var != nil) {
+  string var = Choose(choose);
+  while(!isnil(var)) {
     Message(lookup(m,var));
     choose = maplist(`var,`val,m,``(var));
     var = Choose(choose);
@@ -172,11 +172,11 @@ define BrowseMap(map m) ``{
 /**
  * Choose from the list of strings 
  * @param sel a list of strings
- * @return string|void the selected string
+ * @return string the selected string
  */
 
-define Choose(list sel) ``{
-  string|void item = nil;
+global define Choose(list sel) ``{
+  string item = nil;
   map BUTTONS = CallFunction(`buttons());
 
   UI(`OpenDialog(
@@ -188,7 +188,7 @@ define Choose(list sel) ``{
   any ret = nil;
   do {
     ret = UI(`UserInput());
-  } while (ret != `cancel && ret != `ok && ret != nil);
+  } while (ret != `cancel && ret != `ok && !isnil(ret));
 
   if ((ret == `ok) && (sel != []))
     item = UI(`QueryWidget(`id(`sel), `CurrentItem));

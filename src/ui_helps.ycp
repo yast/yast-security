@@ -34,7 +34,7 @@ textdomain "security";
  * @return map a map of texts
  */
  
-define STRINGS() ``{ return $[
+global define STRINGS() ``{ return $[
 
   "Main" : $[
     // main screen caption

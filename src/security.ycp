@@ -27,9 +27,9 @@ textdomain "security";
 include "security/io.ycp";
 include "security/ui.ycp";
 
-map BUTTONS = CallFunction(`buttons());
-map STRINGS = CallFunction(`security_helps());
-map WIDGETS = CallFunction(`security_widgets());
+map BUTTONS = CallFunction(`ui_buttons());
+map STRINGS = CallFunction(`ui_helps());
+map WIDGETS = CallFunction(`ui_widgets());
 
 /* The main() */
 

@@ -36,8 +36,8 @@ include "security/functions_ui.ycp";
  * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
  */
 
-define map2widget(string ID) ``{
-/* define map2widget(string ID , map m) ``{
+global define map2widget(string ID) ``{
+/* global define map2widget(string ID , map m) ``{
   string ID = lookup(m,"ID"); */
   map m = lookup(WIDGETS,ID);
   string label = lookup(m,"Label");
@@ -121,7 +121,7 @@ define map2widget(string ID) ``{
  * @return any the item's value
  */
 
-define widget2value(string ID) ``{
+global define widget2value(string ID) ``{
   any ret = UI(`QueryWidget(`id(ID),`Value));
   if(is(ret,boolean))
     if(ret==true)
@@ -140,7 +140,7 @@ define widget2value(string ID) ``{
  * @return any the returned value
  */
 
-define processInput() ``{
+global define processInput() ``{
   any ret = nil;
 
   while(true) {
@@ -156,7 +156,7 @@ All changes you made will be lost.")));
 
   if(ret == `ok || ret == `finish)
     return `ok;
-  if(ret == `cancel || ret == nil)
+  if(ret == `cancel || isnil(ret))
     return nil;
 
   return ret;
@@ -167,7 +167,7 @@ All changes you made will be lost.")));
  * @return term the vertical separator
  */
 
-define VSeparator() ``{
+global define VSeparator() ``{
   return `VSpacing(`opt(`vstretch),0.1);
 };
 
@@ -176,7 +176,7 @@ define VSeparator() ``{
  * @return term the horizontal separator
  */
 
-define HSeparator() ``{
+global define HSeparator() ``{
   return `HSpacing(`opt(`hstretch),0.1);
 };
 
@@ -184,16 +184,16 @@ define HSeparator() ``{
  * Construct a button according to the symbol.
  * If the button is OK, Finish or Next, it is defined as Replace Point `rp.
  * @param button the button symbol
- * @return term|void the button
+ * @return term the button
  * @see <a href="ui_buttons.html">ui_buttons.ycp</a>
  */
 
-define Button(symbol button) ``{
-  string|void text = lookup(BUTTONS,B);
-  if (text == nil)
+global define Button(symbol button) ``{
+  string text = lookup(BUTTONS,button);
+  if (isnil(text))
     return nil;
 
-  term|void ret = nil;
+  term ret = nil;
 
   if (button == `ok || button == `finish || button == `next)
     ret = `ReplacePoint(`id(`rp),`PushButton(`id(button), `opt(`default), text));
@@ -210,10 +210,10 @@ define Button(symbol button) ``{
  * @see 
  */
 
-define BottomButtons(list buttons) ``{
-  symbol|void B1 = nil;
-  symbol|void B2 = nil;
-  symbol|void B3 = nil;
+global define BottomButtons(list buttons) ``{
+  symbol B1 = nil;
+  symbol B2 = nil;
+  symbol B3 = nil;
 
   if (buttons == [] ) buttons = [ `back, `abort, `next];
 
@@ -241,7 +241,7 @@ define BottomButtons(list buttons) ``{
  * @see SuSEDialogUP
  */
 
-define SuSEDialog(string ID, list buttons, term contents) ``{
+global define SuSEDialog(string ID, list buttons, term contents) ``{
   //map dmap = lookup(STRINGS(),ID);
   map dmap = lookup(STRINGS,ID);
   string help_text = lookup(dmap,"help");
@@ -270,7 +270,7 @@ define SuSEDialog(string ID, list buttons, term contents) ``{
  * @see SuSEDialog
  */
 
-define SuSEDialogUP(string ID, list buttons, term T) ``{
+global define SuSEDialogUP(string ID, list buttons, term T) ``{
   //map dmap = lookup(STRINGS(),ID);
   map dmap = lookup(STRINGS,ID);
   string help_text = lookup(dmap,"help");
@@ -287,7 +287,7 @@ define SuSEDialogUP(string ID, list buttons, term T) ``{
  * @param ID the item ID (same in the widget and in WIDGETS)
  */
 
-define updateWidget(string ID) ``{
+global define updateWidget(string ID) ``{
   any val = widget2value(ID);
   WIDGETS = updateValue(WIDGETS,ID,val);
 };
@@ -300,7 +300,7 @@ define updateWidget(string ID) ``{
  * @return term the created widget
  */
 
-define SecurityItem(any ID, string text) ``{
+global define SecurityItem(any ID, string text) ``{
   term T = `VWeight( 15,
     `PushButton ( `id( ID ), `opt( `hstretch ), text )
   );
@@ -311,19 +311,19 @@ define SecurityItem(any ID, string text) ``{
  * Search the whole settings list for the given string id
  * @param settings the list of settings
  * @param ident the item identifier
- * @return map|void the found settings or nil, if not found
+ * @return map the found settings or nil, if not found
  */
 
-define FindSettings(list settings, string ident) ``{
-  map|void ret = nil;
+global define FindSettings(list settings, string ident) ``{
+  map ret = nil;
 
-  map|void mm = find(`item,settings,``{
+  map mm = find(`item,settings,``{
     string key = lookup(item,"name");
     if (key == ident) return true;
     return false;
   });
 
-  if (mm == nil)
+  if (isnil(mm))
     ret = nil;
   else
     ret = lookup(mm,"settings");
@@ -335,14 +335,14 @@ define FindSettings(list settings, string ident) ``{
  * Search the whole settings list for the current settings
  * @param settings the list of settings
  * @param current the current settings
- * @return map|void the name of current settings or nil, if not found
+ * @return map the name of current settings or nil, if not found
  */
 
-define CurrentSettings(list settings, map current) ``{
-  string|void ret = nil;
+global define CurrentSettings(list settings, map current) ``{
+  string ret = nil;
 
   y2debug("current: %1",current);
-  map|void mm = find(`item,settings,``{
+  map mm = find(`item,settings,``{
     string key = lookup(item,"name");
     if(key=="Default") return false;
 
@@ -357,14 +357,18 @@ define CurrentSettings(list settings, map current) ``{
     return false;
   });
 
-  //y2debug("mm: %1",mm);
-  if (mm == nil)
+  y2debug("mm: %1",mm);
+  y2debug("mm: %1",isnil(mm));
+  // FIXME
+  if(isnil(mm))
     ret = nil;
   else
     ret = lookup(mm,"name");
 
   //return "Secure";
   //return nil;
+  y2debug("ret=%1",ret);
+  y2debug("ret=%1",isnil(ret));
   return ret;
 };
 
@@ -374,12 +378,14 @@ define CurrentSettings(list settings, map current) ``{
  * @param defs the default values
  */
 
-define SecuritySettings(list settings, map defs) ``{
-  string|void current = CurrentSettings(settings,defs);
+global define SecuritySettings(list settings, map defs) ``{
+  string current = CurrentSettings(settings,defs);
   //current="Server";
+  y2debug("current=%1",current);
+  y2debug("current=%1",isnil(current));
 
   boolean enab = false;
-  if(current==nil) enab=true;
+  if(isnil(current)) enab=true;
 
   term T = `VBox();
   T = add(T,`VSpacing(0.5));
@@ -414,7 +420,7 @@ define SecuritySettings(list settings, map defs) ``{
  * @param curr the given settings
  */
 
-define updateWIDGETS(any curr) ``{
+global define updateWIDGETS(any curr) ``{
   any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
   if(curr2!=curr)
   changed = true;
@@ -429,9 +435,9 @@ define updateWIDGETS(any curr) ``{
  * @param defs the security definitions
  */
 
-define SecurityMainDialog(map defs) ``{
+global define SecurityMainDialog(map defs) ``{
 
-  list settings = CallFunction(`security_settings());
+  list settings = CallFunction(`settings());
   boolean RBgroup = true;
 
   SuSEDialog("Main",[`back,`finish], 
@@ -472,7 +478,7 @@ define SecurityMainDialog(map defs) ``{
       WIDGETS = defs2options(WIDGETS,current_sets);
       break;
     }
-    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
+    else if(ret == `abort || ret == `back || ret == `cancel || isnil(ret))
       break;				/* Don't save the settings */
     else if(ret == `details || ret ==`next)  {
       RBgroup=false;
@@ -515,7 +521,7 @@ define SecurityMainDialog(map defs) ``{
 
           continue;
 	}
-	else if(subret == `abort || subret == `cancel || subret == nil)
+	else if(subret == `abort || subret == `cancel || isnil(subret))
 	  ret = nil;
 	else
 	  ret = `ok;
@@ -549,8 +555,8 @@ network server secure.")));
   if(ret == `ok && old_WIDGETS!=WIDGETS) {
     y2debug("YES");
     if(RBgroup==true) {
-      string|void current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
-      if(current_defs!=nil) {
+      string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+      if(!isnil(current_defs)) {
         y2debug("current_defs: %1",current_defs);
         map current_sets = FindSettings(settings,current_defs);
         WIDGETS = defs2options(WIDGETS,current_sets);
@@ -568,7 +574,7 @@ network server secure.")));
  * Wizzard for all security settings
  */
 
-define SecurityWizzard() ``{
+global define SecurityWizzard() ``{
   integer current = 0;
 
   any ret = nil;
@@ -590,7 +596,7 @@ define SecurityWizzard() ``{
       current=current-1;
       if(current<0) break;
     }
-    else if(ret == `abort || ret==nil || ret==`ok) break;
+    else if(ret == `abort || isnil(ret) || ret==`ok) break;
   }
 
   y2debug("aborting: %1",ret);
@@ -601,7 +607,7 @@ define SecurityWizzard() ``{
  * Main security settings dialog
  */
 
-define SecurityDetailsDialog() ``{
+global define SecurityDetailsDialog() ``{
   SuSEDialog("Main", [`back,`finish], `VBox(
     // security item captions
     VSeparator(), SecurityItem(`passwd,_("Password settings")),
@@ -620,7 +626,7 @@ define SecurityDetailsDialog() ``{
     ret = processInput();
     if(ret == `ok)
       break;
-    else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
+    else if(ret == `abort || ret == `back || ret == `cancel || isnil(ret))
       break;
     else if(ret == `boot)  subret = SecurityBootDialog();
     else if(ret == `login) subret = SecurityLoginDialog();
@@ -644,7 +650,7 @@ define SecurityDetailsDialog() ``{
  * Frame with spacings
  */
 
-define XFrame(float f1, float f2, locale S, term T) ``{
+global define XFrame(float f1, float f2, locale S, term T) ``{
   return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
 };
 
@@ -652,7 +658,7 @@ define XFrame(float f1, float f2, locale S, term T) ``{
  * Boot settings dialog
  */
 
-define SecurityBootDialog() ``{
+global define SecurityBootDialog() ``{
   SuSEDialogUP("Boot", [], `VBox(
   // SecurityBootDialog caption
 XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
@@ -678,7 +684,7 @@ XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
  * Login and password settings dialog
  */
 
-define SecurityLoginDialog() ``{
+global define SecurityLoginDialog() ``{
   SuSEDialogUP("Login", [], `VBox(
 //`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
   // SecurityLoginDialog caption
@@ -708,7 +714,7 @@ XFrame(2.0,0.9,_("Login"),`VBox(
  * Files permissions dialog
  */
 
-define SecurityPermsDialog() ``{
+global define SecurityPermsDialog() ``{
   SuSEDialogUP("Perms", [], `VBox(
     VSeparator(),
     map2widget("PERMISSION_SECURITY"),
@@ -726,7 +732,7 @@ define SecurityPermsDialog() ``{
  * Other security settings dialog
  */
 
-define SecurityMiscDialog() ``{
+global define SecurityMiscDialog() ``{
   SuSEDialogUP("Misc", [`back,`abort,`finish], `VBox(
     VSeparator(),
 //`Frame("Permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
@@ -759,7 +765,7 @@ define SecurityMiscDialog() ``{
  * Password security settings dialog
  */
 
-define checkMinMax(string minID, string maxID) ``{
+global define checkMinMax(string minID, string maxID) ``{
   any min = UI(`QueryWidget(`id(minID),`Value));
   any max = UI(`QueryWidget(`id(maxID),`Value));
   if(is(min,integer|float) && is(max,integer|float) && min<=max)
@@ -771,7 +777,7 @@ define checkMinMax(string minID, string maxID) ``{
  * Password security settings dialog
  */
 
-define SecurityPasswdDialog() ``{
+global define SecurityPasswdDialog() ``{
   SuSEDialogUP("Password", [], `VBox(
     //VSeparator(),
     //`VSpacing(-0.2),
@@ -838,7 +844,7 @@ define SecurityPasswdDialog() ``{
  * Adduser security settings dialog
  */
 
-define SecurityAdduserDialog() ``{
+global define SecurityAdduserDialog() ``{
   SuSEDialogUP("Adduser", [], `VBox(
     VSeparator(),
     // SecurityAdduserDialog caption

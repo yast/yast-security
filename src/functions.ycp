@@ -29,7 +29,7 @@ textdomain "security";
  * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
  */
 
-define updateValue(map opts, string ID, string val) ``{
+global define updateValue(map opts, string ID, string val) ``{
   map item = lookup(opts,ID);
   //if(val!="") {
     item = add(item,"Value",val);
@@ -43,7 +43,7 @@ define updateValue(map opts, string ID, string val) ``{
  * FIXME
  */
 
-define defs2options(map opts, map defs) ``{
+global define defs2options(map opts, map defs) ``{
   map o = opts;
   o = foreach(`key, `value, defs, ``{
     o = updateValue(o,key,value);
@@ -57,7 +57,7 @@ define defs2options(map opts, map defs) ``{
  * FIXME
  */
 
-define options2defs(map default, map opts) ``{
+global define options2defs(map default, map opts) ``{
   map defs = default;
   y2debug("defs: %1",defs);
   map de = mapmap(`key,`value, opts,``{
@@ -76,13 +76,13 @@ define options2defs(map default, map opts) ``{
  * Convert list of the form: [$["value":"3", "variable":"FAIL_DELAY"], ... ]
  * to the map: $["FAIL_DELAY":"3"]
  * @param l the list to convert
- * @return map|void a converted map
+ * @return map a converted map
  * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
  */
 
-define list2map(list|void l) ``{
+global define list2map(list l) ``{
   map m = $[];
-  if(l==nil)
+  if(isnil(l))
     return m;
   m = foreach(`item, l, ``{
     m = add(m, lookup(item, "variable"), lookup(item, "value"));
@@ -94,13 +94,13 @@ define list2map(list|void l) ``{
 /**
  * Complement to the list2map function
  * @param m the map to convert
- * @return list|void a converted list
+ * @return list a converted list
  * @see list2map
  */
 
-define map2list(map|void m) ``{
+global define map2list(map m) ``{
   list l = [];
-  if(m==nil)
+  if(isnil(m))
     return l;
   l = foreach(`key, `value, m, ``{
     map mm = add($[], "value", value);
@@ -117,8 +117,8 @@ define map2list(map|void m) ``{
  * @return list a list of all keys from the map
  */
 
-define mapkeys(map|void m) ``{
-  if(m==nil) return [];
+global define mapkeys(map m) ``{
+  if(isnil(m)) return [];
   return maplist(`var, `val, m, ``(var));
 }
 
@@ -129,8 +129,8 @@ define mapkeys(map|void m) ``{
  * @return any the found value
  */
 
-define mapvalue(map|void m, any k) ``{
-  if(m==nil)
+global define mapvalue(map m, any k) ``{
+  if(isnil(m))
     return nil;
   return lookup(m, k);
 }
