@@ -1,16 +1,23 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   ui_widgets.ycp
  *
- * Description:
- *   Security widgets definitions.
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   Security widgets definitions
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
- */
+ *
+ * This file contains the definitions of all widgets used by the
+ * security module. They are all in one map (function) called
+ * WIDGETS.
 
-/*
+<pre>
 
 The WIDGETS format:
 -------------------
@@ -53,7 +60,14 @@ updatewidget("ID")
 processinput()
 - return true (OK) or false (abort, back, nil, help!, ...)
 
-*/
+</pre>
+
+ *
+ */
+
+/**
+ * @return map all widgets
+ */
 
 {
 

@@ -4,7 +4,7 @@
 
 menudir = $(YAST2DIR)/menuentries
 modulesdir = $(YAST2DIR)/clients
-includedir = $(YAST2DIR)/include
+includedir = $(YAST2DIR)/include/security
 
 modules_DATA =			\
 	buttons.ycp		\

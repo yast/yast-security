@@ -1,19 +1,39 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   ui_helps.ycp
  *
- * Description:
- *   Helps definition.
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   Helps definition
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * This file contains all helps for the security module screens.
+ * They are in one huge map (function) called STRINGS.
+ *
+ * <pre>
+ * The STRINGS item map format is:
+ * &lt;string ID> : $[
+ *   "caption" : &lt;string caption>,
+ *   "help" : &lt;string helptext>
+ * ]
+ * </pre>
  */
 
 {
 
 textdomain "security";
 
+/**
+ * Return all security module help texts and captions
+ * @return map a map of texts
+ */
+ 
 define STRINGS() ``{ return $[
 
   "Main" : $[

@@ -5,22 +5,28 @@
  * Module:
  *   Security configuration
  *
- * Description:
- *   Input and output functions.
+ * Summary:
+ *   Input and output functions
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * These functions are used for input and output of security
+ * settings.
+ *
  */
 
 {
 
 textdomain "security";
-include "general.ycp";
+include "security/functions.ycp";
 
 /**
- * Lookup default settings (or setting if item is not nil)
+ * Lookup the setting in the settings map.
+ * If the item is empty, lookup the default setting
+ * (its name is "Default").
  * @param item the item to be looked up
  * @return map the default settings
  */
@@ -72,7 +78,7 @@ define ReadRcConfig(string item) ``{
  * Write one setting into the SCR -- login.defs
  * @param m map with all security settings
  * @param item value to be written
- * @return ? success
+ * @return boolean|void success
  */
 
 define WriteLoginDefs(map m, string item) ``{
@@ -87,7 +93,7 @@ define WriteLoginDefs(map m, string item) ``{
  * Write one setting into the SCR -- rc.config
  * @param m map with all security settings
  * @param item value to be written
- * @return ? success
+ * @return boolean|void success
  */
 
 define WriteRcConfig(map m, string item) ``{
@@ -164,7 +170,7 @@ define ApplyRead(term t, list l, map m) ``{
  * @param t the write function
  * @param l the list of variables
  * @param m the map with variables and values
- * @return list sucess
+ * @return list sucesses of operations
  */
 
 define ApplyWrite(term t, list l, map m) ``{
@@ -192,7 +198,7 @@ define SecurityRead() ``{
 /**
  * Update the SCR from the map of all security settings
  * @param m a map of all security settings
- * @return list success
+ * @return list successes of operations
  */
 
 define SecurityWrite(map m) ``{
@@ -203,7 +209,7 @@ define SecurityWrite(map m) ``{
 
 /**
  * Write the security data from SCR to the disk
- * @return list success
+ * @return list success of operation
  */
 
 define SecurityFinish() ``{

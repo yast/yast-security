@@ -1,13 +1,34 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   settings.ycp
  *
- * Description:
- *   Security settings definition.
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   Security settings definitions
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * This file contains definitions of all security settings.
+ * They are in one huge list.
+ *
+ * <pre>
+ * $[
+ *   "name" : &lt;string Level>
+ *   "settings" : $[
+ *     &lt;string ID> : &lt;string Value>,
+ *     ...
+ *   ]
+ * ]
+ * </pre>
+ */
+
+/**
+ * @return list all security settings
  */
 
 {

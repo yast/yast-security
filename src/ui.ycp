@@ -1,47 +1,44 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   ui.ycp
  *
- * Description:
- *   User interface functions.
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   User interface functions
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
- */
-
-/*
+ *
+ * These functions are used for the user interface creation
+ * and interaction.
+ * <pre>
  * Usage:
- *   include "security_ui.ycp";
+ *   include "security/ui.ycp";
  *   map BUTTONS = CallFunction(`buttons());
  *   map STRINGS = CallFunction(`your_helps());
  *   map WIDGETS = CallFunction(`your_widgets());
+ * </pre>
  */
 
 {
 
 textdomain "security";
-include "general.ycp";
-include "general_ui.ycp";
+include "security/functions.ycp";
+include "security/functions_ui.ycp";
 
-/* Menuentry for the YaST2 menu */
+/**
+ * Return a widget from the WIDGETS map created acording to the ID.
+ * @return term the created widget
+ * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
+ */
 
-define YaST2MenuEntry(map m) ``{
-  string mpath = lookup(m,"path");
-  string mmenu = lookup(m,"menu");
-  string mhelp = lookup(m,"help");
-  return [ mpath, $[
-    `menuentry    : mmenu,
-    `arguments    : [ ],
-    `widget       : `RichText(mhelp),
-    `codefragment : nil
-  ]];
-};
-
-/* map2widget -- see security_maps.ycp */
-
-define map2widget(string ID /*, map m*/) ``{
-  /* string ID = lookup(m,"ID"); */
+define map2widget(string ID) ``{
+/* define map2widget(string ID , map m) ``{
+  string ID = lookup(m,"ID"); */
   map m = lookup(WIDGETS,ID);
   string label = lookup(m,"Label");
   string value = lookup(m,"Value");
@@ -118,7 +115,9 @@ define map2widget(string ID /*, map m*/) ``{
   );
 };
 
-/* Query the widget with `id(ID) for its `Value */
+/**
+ * Query the widget with `id(ID) for its `Value
+ */
 
 define widget2value(string ID) ``{
   any ret = UI(`QueryWidget(`id(ID),`Value));
@@ -133,7 +132,9 @@ define widget2value(string ID) ``{
   return ret;
 };
 
-/* Process the UI input and return `ok or nil */
+/**
+ * Process the UI input and return `ok or nil
+ */
 
 define processInput() ``{
   any ret = nil;
@@ -157,19 +158,25 @@ All changes you made will be lost.")));
   return ret;
 };
 
-/* Vertical separator */
+/**
+ * Vertical separator
+ */
 
 define VSeparator() ``{
   return `VSpacing(`opt(`vstretch),0.1);
 };
 
-/* Horizontal separator */
+/**
+ * Horizontal separator
+ */
 
 define HSeparator() ``{
   return `HSpacing(`opt(`hstretch),0.1);
 };
 
-/* str2term */
+/**
+ * str2term
+ */
 
 define str2term(symbol B) ``{
   string|void button = lookup(BUTTONS,B);
@@ -206,7 +213,9 @@ define str2term(symbol B) ``{
   return OKButton;
 }
 
-/* Bottom buttons -- [Back] and [OK] */
+/**
+ * Bottom buttons -- [Back] and [OK]
+ */
 
 define BottomButtons(list buttons) ``{
   symbol|void B1 = nil;
@@ -228,7 +237,9 @@ define BottomButtons(list buttons) ``{
   return remove(TT,size(TT));
 };
 
-/* The main dialog widget */
+/**
+ * The main dialog widget
+ */
 
 define SuSEDialog(string ID, list buttons, term T) ``{
   //map dmap = lookup(STRINGS(),ID);
@@ -251,7 +262,9 @@ define SuSEDialog(string ID, list buttons, term T) ``{
   ))));
 };
 
-/* Update the main dialog widget */
+/**
+ * Update the main dialog widget
+ */
 
 define SuSEDialogUP(string ID, list buttons, term T) ``{
   //map dmap = lookup(STRINGS(),ID);
@@ -265,7 +278,9 @@ define SuSEDialogUP(string ID, list buttons, term T) ``{
   UI(`ReplaceWidget(`id(`rp_buttons), BottomButtons(buttons)));
 };
 
-/* Update one value in the WIDGETS map from the widget value */
+/**
+ * Update one value in the WIDGETS map from the widget value
+ */
 
 define updateWidget(string ID) ``{
   any val = widget2value(ID);
@@ -273,7 +288,9 @@ define updateWidget(string ID) ``{
 };
 
 
-/* One security item */
+/**
+ * One security item
+ */
 
 define SecurityItem(any ID, string str) ``{
   term T=`VWeight( 15,
@@ -282,7 +299,9 @@ define SecurityItem(any ID, string str) ``{
   return T;
 };
 
-/* Search the whole settings map for the given string id */
+/**
+ * Search the whole settings map for the given string id
+ */
 
 define FindSettings(list settings, string ident) ``{
   map|void ret = nil;
@@ -301,7 +320,9 @@ define FindSettings(list settings, string ident) ``{
   return ret;
 };
 
-/* Search the whole settings map for the given map */
+/**
+ * Search the whole settings map for the given map
+ */
 
 define CurrentSettings(list settings, map current) ``{
   string|void ret = nil;
@@ -333,7 +354,9 @@ define CurrentSettings(list settings, map current) ``{
   return ret;
 };
 
-/* Build a RadioButton group from security_settings */
+/**
+ * Build a RadioButton group from security_settings
+ */
 
 define SecuritySettings(list settings, map defs) ``{
   string|void current = CurrentSettings(settings,defs);
@@ -370,6 +393,10 @@ define SecuritySettings(list settings, map defs) ``{
   return T;
 };
 
+/**
+ * update the WIDGETS map ... ?
+ */
+
 define updateWIDGETS(any curr) ``{
   any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
   if(curr2!=curr)
@@ -379,7 +406,9 @@ define updateWIDGETS(any curr) ``{
   WIDGETS = defs2options(WIDGETS,current_sets);
 }
 
-/* Main security settings dialog */
+/**
+ * Main security settings dialog
+ */
 
 define SecurityMainDialog(map defs) ``{
 
@@ -516,7 +545,9 @@ network server secure.")));
   return nil;
 };
 
-/* Wizzard for all security settings */
+/**
+ * Wizzard for all security settings
+ */
 
 define SecurityWizzard() ``{
   integer current = 0;
@@ -547,7 +578,9 @@ define SecurityWizzard() ``{
   return ret;
 };
 
-/* Main security settings dialog */
+/**
+ * Main security settings dialog
+ */
 
 define SecurityDetailsDialog() ``{
   SuSEDialog("Main", [`back,`finish], `VBox(
@@ -588,13 +621,17 @@ define SecurityDetailsDialog() ``{
   return nil;
 };
 
-/* Frame with spacings */
+/**
+ * Frame with spacings
+ */
 
 define XFrame(float f1, float f2, locale S, term T) ``{
   return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
 };
 
-/* Boot settings dialog */
+/**
+ * Boot settings dialog
+ */
 
 define SecurityBootDialog() ``{
   SuSEDialogUP("Boot", [], `VBox(
@@ -618,7 +655,9 @@ XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
   return ret;
 };
 
-/* Login and password settings dialog */
+/**
+ * Login and password settings dialog
+ */
 
 define SecurityLoginDialog() ``{
   SuSEDialogUP("Login", [], `VBox(
@@ -646,7 +685,9 @@ XFrame(2.0,0.9,_("Login"),`VBox(
   return ret;
 };
 
-/* Files permissions dialog */
+/**
+ * Files permissions dialog
+ */
 
 define SecurityPermsDialog() ``{
   SuSEDialogUP("Perms", [], `VBox(
@@ -662,7 +703,9 @@ define SecurityPermsDialog() ``{
   return ret;
 };
 
-/* Other security settings dialog */
+/**
+ * Other security settings dialog
+ */
 
 define SecurityMiscDialog() ``{
   SuSEDialogUP("Misc", [`back,`abort,`finish], `VBox(
@@ -693,7 +736,9 @@ define SecurityMiscDialog() ``{
   return ret;
 };
 
-/* Password security settings dialog */
+/**
+ * Password security settings dialog
+ */
 
 define checkMinMax(string minID, string maxID) ``{
   any min = UI(`QueryWidget(`id(minID),`Value));
@@ -702,6 +747,10 @@ define checkMinMax(string minID, string maxID) ``{
     return true;
   return false;
 }
+
+/**
+ * Password security settings dialog
+ */
 
 define SecurityPasswdDialog() ``{
   SuSEDialogUP("Password", [], `VBox(
@@ -766,7 +815,9 @@ define SecurityPasswdDialog() ``{
   return ret;
 };
 
-/* Adduser security settings dialog */
+/**
+ * Adduser security settings dialog
+ */
 
 define SecurityAdduserDialog() ``{
   SuSEDialogUP("Adduser", [], `VBox(

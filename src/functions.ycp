@@ -1,19 +1,33 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   functions.ycp
  *
- * Description:
- *   General functions.
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   Generally usable functions
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * This file contains generally usable functions.
  */
 
 {
 
 textdomain "security";
-/* update one value in the WIDGETS map */
+
+/**
+ * Update one value ("Value") in the map and return the updated map
+ * @param opts the map to be updated
+ * @param ID the item identifier
+ * @param val the item value
+ * @return map the updated map
+ * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
+ */
 
 define updateValue(map opts, string ID, string val) ``{
   map item = lookup(opts,ID);
@@ -24,7 +38,10 @@ define updateValue(map opts, string ID, string val) ``{
   return opts;
 };
 
-/* Convert security definitions (io) to the UI options map */
+/**
+ * Convert security definitions (io) to the UI options map.
+ * FIXME
+ */
 
 define defs2options(map opts, map defs) ``{
   map o = opts;
@@ -35,7 +52,10 @@ define defs2options(map opts, map defs) ``{
   return o;
 };
 
-/* Convert the UI options map to the security definitions (io) */
+/**
+ * Convert the UI options map to the security definitions (io)
+ * FIXME
+ */
 
 define options2defs(map default, map opts) ``{
   map defs = default;
@@ -52,11 +72,12 @@ define options2defs(map default, map opts) ``{
   return defs;
 };
 
-/*
- * Convert list of the form:
- *   [$["value":"3", "variable":"FAIL_DELAY"], ... ]
- * to this map:
- *   $["FAIL_DELAY":"3"]
+/**
+ * Convert list of the form: [$["value":"3", "variable":"FAIL_DELAY"], ... ]
+ * to the map: $["FAIL_DELAY":"3"]
+ * @param l the list to convert
+ * @return map|void a converted map
+ * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
  */
 
 define list2map(list|void l) ``{
@@ -70,7 +91,12 @@ define list2map(list|void l) ``{
   return m;
 }
 
-/* Complement to the previous function */
+/**
+ * Complement to the list2map function
+ * @param m the map to convert
+ * @return list|void a converted list
+ * @see list2map
+ */
 
 define map2list(map|void m) ``{
   list l = [];
@@ -85,16 +111,25 @@ define map2list(map|void m) ``{
   return l;
 }
 
-/* Return all keys from the map */
+/**
+ * Return all keys from the map
+ * @param m the map
+ * @return list a list of all keys from the map
+ */
 
 define mapkeys(map|void m) ``{
   if(m==nil) return [];
   return maplist(`var, `val, m, ``(var));
 }
 
-/* Return value for the given key */
+/**
+ * Return value from a map for the given key
+ * @param m the map
+ * @param k the key
+ * @return any the found value
+ */
 
-define mapvalue(map m, any k) ``{
+define mapvalue(map|void m, any k) ``{
   if(m==nil)
     return nil;
   return lookup(m, k);

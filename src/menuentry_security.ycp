@@ -1,11 +1,33 @@
+/**
+ * File:
+ *   menuentry_security.ycp
+ *
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   The definition of menu entry
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ *
+ */
+
+/**
+ * @return list the menuentry
+ */
+
 {
-  ////////////////////////////////////////////////////////////////////////////////////////
-  // set the textdomain, (generally the name of the module for example "lan" for y2c_lan
-  // in doubt do a "grep textdomain" in the main module, you are calling 
-   textdomain "security";
+
+////////////////////////////////////////////////////////////////////////////////////////
+// set the textdomain, (generally the name of the module for example "lan" for y2c_lan
+// in doubt do a "grep textdomain" in the main module, you are calling 
+textdomain "security";
    
-   return([ "security",
-   $[
+return [ "security", $[
+
      ////////////////////////////////////////////////////////////////////////////////////////
      // name of textdomain, generally the name of the module for example "lan" for y2c_lan //
      `textdomain    : "security",
@@ -37,9 +59,11 @@ in order to do this.</p>"))),
       `helptext     : UI(_("Configure all local security settings")),
    
       ////////////////////////////////////////////////////////////////////////////////
-      // leaf nil, experts only ;-)
+      // leave nil, experts only ;-)
       `codefragment : nil 
    
    ]
-   ]);
+];
+
+/* EOF */
 }

@@ -1,19 +1,33 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   security_write.ycp
  *
- * Description:
- *   Only writing client
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   Writing only client
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * This is a write-only client. It takes its arguments and just
+ * write the settings.
+ */ 
+
+/** 
+ * @param first a map of security settings
+ * @return boolean success of operation
+ * @example map mm = $[ "FAIL_DELAY" : "77" ];
+ * @example any ret = CallModule("security_write",[mm]);
  */
 
 {
 
 textdomain "security";
-include "security_io.ycp";
+include "security/io.ycp";
 
 list args = Args();
 if(size(args)>0) {
@@ -23,7 +37,7 @@ if(size(args)>0) {
   return ret;
 }
 else
-  y2debug("NOT writing, probably some mistake...");
+  y2error("NOT writing, probably some mistake...");
 
 return false;
 

@@ -1,20 +1,32 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   functions_ui.ycp
  *
- * Description:
- *   General user interface functions.
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   Generally usable user interface functions
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * This file contains the generally usable user interface functions.
+ * 
  */
 
 {
 
 textdomain "security";
 
-/* Info box */
+/**
+ * Display an info box (text label). It is closed by InfoClose().
+ * @param message the message to be displayed
+ * @return any success
+ * @see InfoClose
+ */
 
 define Info(string message) ``{
   any ret = UI(`OpenDialog(
@@ -33,12 +45,22 @@ define Info(string message) ``{
   return ret;
 };
 
+/**
+ * Close an info box
+ * @return any success
+ * @see Info
+ */
+
 define InfoClose() ``{
   any ret = UI(`CloseDialog());
   return ret;
 };
 
-/* Popup box */
+/**
+ * Display a popup box with text, [OK] and [Cancel] buttons.
+ * @param message the message to be displayed
+ * @return any the user input
+ */
 
 define Popup(string message) ``{
   map BUTTONS = CallFunction(`buttons());
@@ -64,6 +86,13 @@ define Popup(string message) ``{
   return ret;
 };
 
+/**
+ * Display a popup box with text and [OK] button.
+ * @param message the message to be displayed
+ * @return any the user input
+ * @see Popup
+ */
+
 define PopupOK(string message) ``{
   map BUTTONS = CallFunction(`buttons());
   UI(`OpenDialog(
@@ -87,7 +116,13 @@ define PopupOK(string message) ``{
   return ret;
 };
 
-/* Message box */
+/**
+ * Display a message box with text and [OK] button.
+ * It is almost the same as PopupOK, only its param can be any.
+ * @param message the message to be displayed
+ * @return any the user input
+ * @see PopupOK
+ */
 
 define Message(any message) ``{
   map BUTTONS = CallFunction(`buttons());
@@ -109,13 +144,20 @@ define Message(any message) ``{
   UI(`CloseDialog());
 };
 
-/* Debug box */
+/**
+ * Display a debug box. This is an alias for the Message.
+ * @see Message
+ */
 
 define Debug(any message) ``{
   Message(message);
 };
 
-/* Browse the map */
+/**
+ * Browse the map 
+ * @param m a map to browse
+ * @see Choose
+ */
 
 define BrowseMap(map m) ``{
   list choose = mapkeys(m);
@@ -127,7 +169,11 @@ define BrowseMap(map m) ``{
   }
 }
 
-/* Choose from the list of strings */
+/**
+ * Choose from the list of strings 
+ * @param sel a list of strings
+ * @return string|void the selected string
+ */
 
 define Choose(list sel) ``{
   string|void item = nil;

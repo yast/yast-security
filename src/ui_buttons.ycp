@@ -1,13 +1,23 @@
-/*
- * YaST2: Local security configuration
+/**
+ * File:
+ *   ui_buttons.ycp
  *
- * Description:
- *   Buttons definitions.
+ * Module:
+ *   Security configuration
+ *
+ * Summary:
+ *   Buttons definitions
  *
  * Authors:
  *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
+ *
+ * This file contains definitions of button texts.
+ */
+
+/**
+ * @return map a map of buttons texts
  */
 
 {
