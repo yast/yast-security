@@ -22,6 +22,6 @@ include_DATA =			\
 	io.ycp			\
 	ui.ycp
 
-menu_DATA = menuentry_security.ycp
+menu_DATA = menuentry_security.y2cc
 
 EXTRA_DIST = $(modules_DATA) $(clients_DATA) $(menu_DATA) $(include_DATA)
