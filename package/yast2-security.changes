@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Nov  2 09:34:50 CET 2004 - jsuchome@suse.cz
+
+- do not set maximum password length (#29112)
+- 2.11.0
+
+-------------------------------------------------------------------
 Tue Aug 31 00:53:45 CEST 2004 - nashif@suse.de
 
 - use modified flag (#43904) in auto clients

@@ -144,25 +144,17 @@ to encrypt passwords. A lot of CPU power is needed to calculate the hash,
 which makes it difficult to crack passwords with the help of a dictionary.</p>")
     +
 
-    /* Password dialog help 5/8 */
-    _("<p><b>Number of Significant Characters in the Password</b><br>
-Maximum number of significant characters in the password. Default is eight for
-the <i>DES</i> encryption method. Do not change it unless your encryption
-function (crypt) is better. This option is ignored for the other encryption
-methods. For <i>MD5</i>, it is 127. For <i>Blowfish</i>, it is 72.
-</p>") +
-
-    /* Password dialog help 6/8 */
+    /* Password dialog help 5/7 */
     _("<p><b>Minimum Acceptable Password Length</b><br>
 The minimum number of characters in an acceptable password. An attempt to
 assign a password with fewer characters will be rejected. A zero value
 suppresses this check.</p>") +
 
-    /* Password dialog help 7/8 */
+    /* Password dialog help 6/7 */
     _("<p><b>Days to Password Change Warning</b><br>Set the minimum and
 maximum time for warning that the password must be changed.</p>") +
 
-    /* Password dialog help 8/8 */
+    /* Password dialog help 7/7 */
     _("<p><b>Days before Password Expires Warning</b><br> This entry sets the
 number of days users are warned before their passwords expire. The longer the
 time, the less likely it is that a user can guess passwords.</p>"),

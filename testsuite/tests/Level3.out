@@ -79,10 +79,6 @@ Write	.etc.security.v."pam_pwcheck"."password" "" true
 Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
 Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "" true
-Dir	.etc.security.section: []
-Read	.etc.security.v."pam_pwcheck"."password" nil
-Dir	.etc.security.section: []
 Write	.etc.security.v."pam_pwcheck"."password" "minlen=6" true
 Write	.etc.security nil true
 Write	.etc.default.passwd nil true

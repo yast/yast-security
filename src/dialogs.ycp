@@ -176,8 +176,6 @@ define symbol PassDialog() ``{
 	`VSpacing(1.0),
 	settings2widget("PASSWD_ENCRYPTION"),
 	`VSpacing(1.0),
-	settings2widget("PASS_MAX_LEN"),
-	`VSpacing(1.0),
 	settings2widget("PASS_MIN_LEN"),
 	`VSpacing(1.0),
 	/* Frame label */
@@ -197,9 +195,6 @@ define symbol PassDialog() ``{
     Wizard::SetContentsButtons(caption, contents, help,
 	    Label::BackButton(), Label::NextButton());
 
-    string enc = (string) UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
-    UI::ChangeWidget(`id("PASS_MAX_LEN"), `Enabled, enc == "des");
-
     any ret = nil;
     while(true) {
 	ret = UI::UserInput();
@@ -208,12 +203,6 @@ define symbol PassDialog() ``{
 	if(ret == `abort || ret == `cancel) {
 	    if(ReallyAbort()) break;
 	    else continue;
-	}
-	else if(ret == "PASSWD_ENCRYPTION") {
-	    string enc = (string) UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
-	    UI::ChangeWidget(`id("PASS_MAX_LEN"), `Enabled, enc == "des");
-	    y2debug("enc=%1", enc);
-	    continue;
 	}
 	else if(ret == `back) {
 	    break;
@@ -225,14 +214,20 @@ define symbol PassDialog() ``{
 		Popup::Error(_("The minimum number of days cannot be larger than maximum"));
 		continue;
 	    }
-	    if(checkMinMax("PASS_MIN_LEN","PASS_MAX_LEN") != true) {
-		/* Popup text */
-		Popup::Error(_("The minimum password length cannot be larger than maximum"));
+	    string enc	=
+		(string) UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
+	    integer min = (integer) UI::QueryWidget(`id("PASS_MIN_LEN"),`Value);
+	    if (min > Security::PasswordMaxLengths[enc]:8)
+	    {
+		// Popup text, %1 is number
+		Popup::Error (sformat (_("The minimum password length cannot be larger than maximum.
+Maximum password length for selected encryption method is %1."),
+		Security::PasswordMaxLengths[enc]:8));
 		continue;
 	    }
 	    break;
 	}
-	else {
+	else if (ret != "PASSWD_ENCRYPTION") {
 	    y2error("Unexpected return code: %1", ret);
 	    continue;
 	}
@@ -242,7 +237,6 @@ define symbol PassDialog() ``{
 	widget2settings("PASS_MIN_DAYS");
 	widget2settings("PASS_MAX_DAYS");
 	widget2settings("PASS_MIN_LEN");
-	widget2settings("PASS_MAX_LEN");
 	widget2settings("PASSWD_USE_CRACKLIB");
 	widget2settings("OBSCURE_CHECKS_ENAB");
 	widget2settings("PASS_WARN_AGE");

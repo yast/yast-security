@@ -199,13 +199,6 @@ map WIDGETS = $[
 	"Value" : "99999"
     ],
 
-    "PASS_MAX_LEN" : $[
-	"Widget" : "IntField",
-	/* IntField label */
-	"Label" : _("Numb&er of Significant Characters in the Password"),
-	"Value" : "8"
-    ],
-
     "PASS_MIN_DAYS" : $[
 	"Widget" : "IntField",
 	/* IntField label */
