@@ -91,7 +91,7 @@ return $[
     //  Boot options combo box caption
     "Label" : UI(_("Shutdown behaviour of KDM:")),
     //  Boot options combo box options
-    "Options" : [["root",UI(_("Only root"))],["all",UI(_("All users"))],["none",UI(_("Nobody"))],["local",UI(_("Local users"))]],
+    "Options" : [["root",UI(_("Only root"))],["all",UI(_("All users"))],["none",UI(_("Nobody"))],["local",UI(_("Local users"))],["auto",UI(_("Automatic"))]],
     "Value" : "all"
   ],
 

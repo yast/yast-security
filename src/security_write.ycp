@@ -31,13 +31,14 @@ include "security/io.ycp";
 
 list args = Args();
 if(size(args)>0) {
-  y2debug("Only writing... (%1)",Args(0));
-  list ret = SecurityWrite(Args(0));
-  SecurityFinish();
-  return ret;
+    y2debug("Only writing... (%1)",Args(0));
+    /* FIXME: check the Args(0), is map? is ok? */
+    list ret = SecurityWrite(Args(0));
+    SecurityFinish();
+    return ret;
 }
 else
-  y2error("NOT writing, probably some mistake...");
+    y2error("NOT writing, probably some mistake...");
 
 return false;
 

@@ -38,22 +38,22 @@ y2debug("Security Module started");
 map security_defs = SecurityRead();
 y2debug("security_defs: %1",security_defs);
 
-map WIDGETS = defs2options(WIDGETS,security_defs);
+map WIDGETS = settings2widgets(WIDGETS,security_defs);
 y2debug("WIDGETS: %1",WIDGETS);
 
 any ret = SecurityMainDialog(security_defs);
 y2debug("WIDGETS: %1",WIDGETS);
 y2debug("security_defs: %1",security_defs);
-security_defs = options2defs(LookupDefault(nil), WIDGETS);
+security_defs = widgets2settings(LookupDefault(nil), WIDGETS);
 y2debug("security_defs: %1:",security_defs);
 y2debug("ret: %1",ret);
 
 if(ret == `ok) {
-  // info text show at end of module
-  Info(UI(_("Please wait while updating configuration files.")));
-  y2debug("Write: %1",SecurityWrite(security_defs));
-  y2debug("Finish: %1",SecurityFinish());
-  InfoClose();
+    // info text show at end of module
+    Info(UI(_("Please wait while updating configuration files.")));
+    y2debug("Write: %1",SecurityWrite(security_defs));
+    y2debug("Finish: %1",SecurityFinish());
+    InfoClose();
 }
 
 y2debug("Security Module finished");

@@ -7,17 +7,18 @@ DOC:
 
 index.html (from security.txt)
 user.html
-implementation.html
+impl.html
 
 Urgent:
 - grep FIXME *.ycp
 - Test ROOT_LOGIN_REMOTE hack!
 - STRINGS -> HELPS();
-- settings.ycp -> items.ycp?
-- RcConfig_settings -> Settings_RcConfig
-- rename includes
-- reorder functions (see impl.txt)
 - permissions: local (replace or add?) -- maybe "Add local perms" [X]
+- all files -> include/
+
+Rewrite:
+- finished: io, routines, security, security_write, settings
+- todo: functions_ui->ui, ui_buttons(rm), ui_helps(?inc), ui_widgets(inc?)
 
 IO:
 - updateValue checking val and bounds

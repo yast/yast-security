@@ -5,7 +5,7 @@
 SUBDIRS = autodocs
 
 docdir = @DOCDIR@
-htmldir = $(docdir)/config/security
+htmldir = $(docdir)
 
 html_DATA =		\
 	security.txt	\

@@ -14,7 +14,7 @@ Name:		@RPMNAME@
 Release:	1
 Copyright:	(c) 2000 SuSE GmbH
 Group:		System Environment/YaST
-Requires:	yast2 yast2-trans-security
+Requires:	yast2 y2t_sec
 Provides:	y2c_sec
 Obsoletes:	y2c_sec
 BuildArchitectures: noarch
@@ -34,25 +34,20 @@ Source0:	@RPMNAME@-@VERSION@.tar.bz2
 %build
 ./configure
 make
-make check
+#make check
 
 %install
 make install
 %{?suse_check}
 
 %files
-
-%dir @YAST2DIR@/clients
-%dir @YAST2DIR@/menuentries
-%dir @YAST2DIR@/include
 %dir @YAST2DIR@/include/security
-%dir @DOCDIR@/config/security
+%dir @DOCDIR@
 @YAST2DIR@/menuentries/menuentry_security.ycp
 @YAST2DIR@/clients/security.ycp
 @YAST2DIR@/clients/security_write.ycp
-@YAST2DIR@/clients/settings.ycp
 @YAST2DIR@/clients/ui_buttons.ycp
 @YAST2DIR@/clients/ui_helps.ycp
 @YAST2DIR@/clients/ui_widgets.ycp
 @YAST2DIR@/include/security/*
-@DOCDIR@/config/security/*
+@DOCDIR@/*

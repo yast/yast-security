@@ -13,13 +13,13 @@ modules_DATA =			\
 	security_write.ycp
 
 clients_DATA =			\
-	settings.ycp		\
 	ui_buttons.ycp		\
 	ui_helps.ycp		\
 	ui_widgets.ycp
 
 include_DATA =			\
-	functions.ycp		\
+	routines.ycp		\
+	settings.ycp		\
 	functions_ui.ycp	\
 	io.ycp			\
 	ui.ycp

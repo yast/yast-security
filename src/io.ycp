@@ -21,7 +21,9 @@
 {
 
 textdomain "security";
-include "security/functions.ycp";
+
+include "security/routines.ycp";
+include "security/settings.ycp";
 
 /**
  * Lookup the setting in the settings map.
@@ -30,16 +32,14 @@ include "security/functions.ycp";
  * @param item the item to be looked up
  * @return map the default settings
  */
-
 global define LookupDefault(string item) ``{
-  list settings = CallFunction(`settings());
-  map default = find(`s,settings,``(lookup(s,"name")=="Default"));
-  string def = lookup(default,"settings");
-  map ret = find(`s,settings,``(lookup(s,"name")==def));
-  map ret = lookup(ret,"settings");
-  if(!isnil(item) && item!="")
-    return lookup(ret,item);
-  return ret;
+    list settings = AllSecuritySettings();
+    map default = find(`s,settings,``(lookup(s,"name")=="Default"));
+    string def = lookup(default,"settings");
+    map ret = find(`s,settings,``(lookup(s,"name")==def));
+    map ret = lookup(ret,"settings");
+    if(item!="") return lookup(ret,item);
+    return ret;
 };
 
 /**
@@ -47,13 +47,12 @@ global define LookupDefault(string item) ``{
  * @param item value to be written
  * @return string the item value
  */
-
 global define ReadLoginDefs(string item) ``{
-  string pth = ".etc.login_defs." + item;
-  string ret = SCR(`Read(topath(pth)));
-  if(isnil(ret)||ret == "")
-    ret = LookupDefault(item);
-  return ret;
+    string pth = ".etc.login_defs." + item;
+    string ret = SCR(`Read(topath(pth)));
+    if(ret == "")
+        ret = LookupDefault(item);
+    return ret;
 };
 
 /**
@@ -61,19 +60,13 @@ global define ReadLoginDefs(string item) ``{
  * @param item value to be written
  * @return string the item value
  */
-
 global define ReadRcConfig(string item) ``{
-  string pth = ".rc.system." + item;
-  string ret = SCR(`Read(topath(pth)));
-  if(isnil(ret))
-    ret = LookupDefault(item);
-  /*
-  if(item=="ROOT_LOGIN_REMOTE") {
-    if(ret=="yes") ret="no";
-    else ret="yes";
-  }
-  */
-  return ret;
+    string pth = ".rc.system." + item;
+    string ret = SCR(`Read(topath(pth)));
+    ret = tolower(ret);
+    if(ret=="")
+        ret = LookupDefault(item);
+    return ret;
 };
 
 /**
@@ -82,13 +75,12 @@ global define ReadRcConfig(string item) ``{
  * @param item value to be written
  * @return boolean success
  */
-
 global define WriteLoginDefs(map m, string item) ``{
-  string pth = ".etc.login_defs." + item;
-  string ret = lookup(m,item);
-  if(isnil(ret))
-    return nil;
-  return SCR(`Write(topath(pth),ret));
+    string pth = ".etc.login_defs." + item;
+    string ret = lookup(m,item);
+    if(ret=="")
+        return nil;
+    return SCR(`Write(topath(pth),ret));
 };
 
 /**
@@ -97,59 +89,50 @@ global define WriteLoginDefs(map m, string item) ``{
  * @param item value to be written
  * @return boolean success
  */
-
 global define WriteRcConfig(map m, string item) ``{
-  string pth = ".rc.system." + item;
-  string ret = lookup(m,item);
-  if(isnil(ret))
-    return nil;
-  /*
-  if(item=="ROOT_LOGIN_REMOTE") {
-    if(ret=="no") ret="yes";
-    else ret="no";
-  }
-  */
-  return SCR(`Write(topath(pth),ret));
+    string pth = ".rc.system." + item;
+    string ret = lookup(m,item);
+    if(ret=="")
+        return nil;
+    return SCR(`Write(topath(pth),ret));
 };
 
 /**
  * Return all settings which are in rc.config
  * @return list rc.config settings
  */
-
-global define RcConfig_settings() ``{
-return [
-  "CONSOLE_SHUTDOWN",
-  "KDM_SHUTDOWN",
-  "PERMISSION_SECURITY",
-  "CWD_IN_ROOT_PATH",
-  "RUN_UPDATEDB_AS",
-  "ROOT_LOGIN_REMOTE",
-  "PASSWD_USE_CRACKLIB"
-];
+global define SettingsRcConfig() ``{
+    return [
+        "CONSOLE_SHUTDOWN",
+        "KDM_SHUTDOWN",
+        "PERMISSION_SECURITY",
+        "CWD_IN_ROOT_PATH",
+        "RUN_UPDATEDB_AS",
+        "ROOT_LOGIN_REMOTE",
+        "PASSWD_USE_CRACKLIB"
+    ];
 };
 
 /**
  * Return all settings which are in login.defs
  * @return list login.defs settings
  */
-
-global define LoginDefs_settings() ``{
-return [
-  "FAILLOG_ENAB",
-  "LASTLOG_ENAB",
-  "FAIL_DELAY",
-  "PASS_WARN_AGE",
-  "OBSCURE_CHECKS_ENAB",
-  "GID_MIN",
-  "GID_MAX",
-  "UID_MIN",
-  "UID_MAX",
-  "PASS_MIN_DAYS",
-  "PASS_MAX_DAYS",
-  "PASS_MIN_LEN",
-  "PASS_MAX_LEN"
-];
+global define SettingsLoginDefs() ``{
+    return [
+        "FAILLOG_ENAB",
+        "LASTLOG_ENAB",
+        "FAIL_DELAY",
+        "PASS_WARN_AGE",
+        "OBSCURE_CHECKS_ENAB",
+        "GID_MIN",
+        "GID_MAX",
+        "UID_MIN",
+        "UID_MAX",
+        "PASS_MIN_DAYS",
+        "PASS_MAX_DAYS",
+        "PASS_MIN_LEN",
+        "PASS_MAX_LEN"
+    ];
 };
 
 /**
@@ -159,14 +142,13 @@ return [
  * @param m the map to be updated and returned
  * @return map updated map of the read variables
  */
-
 global define ApplyRead(term t, list l, map m) ``{
-  m = foreach(`i, l, ``{
-    term tt = add(t,i);
-    m = add(m,i,eval(tt));
+    m = foreach(`i, l, ``{
+        term tt = add(t,i);
+        m = add(m,i,eval(tt));
+        return m;
+    });
     return m;
-  });
-  return m;
 };
 
 /**
@@ -176,27 +158,25 @@ global define ApplyRead(term t, list l, map m) ``{
  * @param m the map with variables and values
  * @return list sucesses of operations
  */
-
 global define ApplyWrite(term t, list l, map m) ``{
-  list ret = [];
-  ret = foreach(`i, l, ``{
-    term tt = add(add(t,m),i);
-    ret = add(ret,eval(tt));
+    list ret = [];
+    ret = foreach(`i, l, ``{
+        term tt = add(add(t,m),i);
+        ret = add(ret,eval(tt));
+        return ret;
+    });
     return ret;
-  });
-  return ret;
 };
 
 /**
  * Fill the map of all security settings from the SCR
  * @return map all security settings
  */
-
 global define SecurityRead() ``{
-  map m = $[];
-  m = ApplyRead(``(ReadLoginDefs()),LoginDefs_settings(),m);
-  m = ApplyRead(``(ReadRcConfig()),RcConfig_settings(),m);
-  return m;
+    map m = $[];
+    m = ApplyRead(``(ReadLoginDefs()),SettingsLoginDefs(),m);
+    m = ApplyRead(``(ReadRcConfig()),SettingsRcConfig(),m);
+    return m;
 };
 
 /**
@@ -204,24 +184,22 @@ global define SecurityRead() ``{
  * @param m a map of all security settings
  * @return list successes of operations
  */
-
 global define SecurityWrite(map m) ``{
-  list l1 = ApplyWrite(``(WriteLoginDefs()),LoginDefs_settings(),m);
-  list l2 = ApplyWrite(``(WriteRcConfig()),RcConfig_settings(),m);
-  return flatten([l1,l2]);
+    list l1 = ApplyWrite(``(WriteLoginDefs()),SettingsLoginDefs(),m);
+    list l2 = ApplyWrite(``(WriteRcConfig()),SettingsRcConfig(),m);
+    return flatten([l1,l2]);
 };
 
 /**
  * Write the security data from SCR to the disk
  * @return list success of operation
  */
-
 global define SecurityFinish() ``{
-  list ret = [];
-  add(ret,SCR(`Write(.etc.login_defs,nil)));
-  add(ret,SCR(`Write(.rc.system,nil)));
-  add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig -quick --nonewpackage")));
-  return ret;
+    list ret = [];
+    add(ret,SCR(`Write(.etc.login_defs,nil)));
+    add(ret,SCR(`Write(.rc.system,nil)));
+    add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig -quick --nonewpackage")));
+    return ret;
 };
 
 } /* YaST2: Local security configuration EOF */

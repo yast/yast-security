@@ -63,7 +63,7 @@ global define InfoClose() ``{
  */
 
 global define Popup(string message) ``{
-  map BUTTONS = CallFunction(`buttons());
+  map BUTTONS = CallFunction(`ui_buttons());
   UI(`OpenDialog(
         `opt(`decorated),
         `HBox(
@@ -94,7 +94,7 @@ global define Popup(string message) ``{
  */
 
 global define PopupOK(string message) ``{
-  map BUTTONS = CallFunction(`buttons());
+  map BUTTONS = CallFunction(`ui_buttons());
   UI(`OpenDialog(
         `opt(`decorated),
         `HBox(
@@ -125,7 +125,7 @@ global define PopupOK(string message) ``{
  */
 
 global define Message(any message) ``{
-  map BUTTONS = CallFunction(`buttons());
+  map BUTTONS = CallFunction(`ui_buttons());
   UI(`OpenDialog(
         `opt(`decorated),
         `HBox(
@@ -162,7 +162,7 @@ global define Debug(any message) ``{
 global define BrowseMap(map m) ``{
   list choose = mapkeys(m);
   string var = Choose(choose);
-  while(!isnil(var)) {
+  while(var!="") {
     Message(lookup(m,var));
     choose = maplist(`var,`val,m,``(var));
     var = Choose(choose);
@@ -177,7 +177,7 @@ global define BrowseMap(map m) ``{
 
 global define Choose(list sel) ``{
   string item = nil;
-  map BUTTONS = CallFunction(`buttons());
+  map BUTTONS = CallFunction(`ui_buttons());
 
   UI(`OpenDialog(
     `VBox(`SelectionBox(`id(`sel), _("&Please choose"), sel),

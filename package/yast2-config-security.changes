@@ -1,9 +1,12 @@
 -------------------------------------------------------------------
-Fri Mar 16 14:58:29 CET 2001 - msvec@suse.cz
+- msvec@suse.cz
 
+- support for "auto" KDM setting
+- new libycp adaptation
 - autobuild checking
 - removed 7.1 hacks
 - source cleanup
+- version 2.3.1
 
 -------------------------------------------------------------------
 Wed Mar  7 10:50:57 CET 2001 - msvec@suse.cz

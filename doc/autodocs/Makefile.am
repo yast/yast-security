@@ -3,7 +3,7 @@
 #
 
 docdir = @DOCDIR@
-htmldir = $(docdir)/config/security/autodocs
+htmldir = $(docdir)/autodocs
 
 html_DATA = index.html $(wildcard *.html)
 MAINTAINERCLEANFILES = $(html_DATA)

@@ -27,7 +27,9 @@
 {
 
 textdomain "security";
-include "security/functions.ycp";
+
+include "security/routines.ycp";
+include "security/settings.ycp";
 include "security/functions_ui.ycp";
 
 /**
@@ -35,84 +37,82 @@ include "security/functions_ui.ycp";
  * @return term the created widget
  * @see <a href="ui_widgets.html">ui_widgets.ycp</a>
  */
-
 global define map2widget(string ID) ``{
-/* global define map2widget(string ID , map m) ``{
-  string ID = lookup(m,"ID"); */
-  map m = lookup(WIDGETS,ID);
-  string label = lookup(m,"Label");
-  string value = lookup(m,"Value");
-  string widget = lookup(m,"Widget");
+    map m = lookup(WIDGETS,ID);
+    string label = lookup(m,"Label");
+    string value = lookup(m,"Value");
+    string widget = lookup(m,"Widget");
 
-  /* "Widget" == "CheckBox" */
+    /* "Widget" == "CheckBox" */
 
-  if(widget == "CheckBox") {
-    boolean enabled = false;
-    if(value == "yes")
-      enabled = true;
-    return `VBox(
-      //VSeparator(),
-      `Left(`CheckBox(`id(ID),label,enabled)),
-      VSeparator()
-    );
-  }
-
-  /* "Widget" == "TextEntry" */
-
-  if(widget == "TextEntry") {
-    return `VBox(
-      `Left(`TextEntry(`id(ID),label,value)),
-      //VSeparator(),
-      VSeparator()
-    );
-  }
-
-  /* "Widget" == "IntField" */
-
-  if(widget == "IntField") {
-    return `VBox(
-      //VSeparator(),
-      `Left(`IntField(`id(ID),label,0,65000,tointeger(value))),
-      VSeparator()
-    );
-  }
-
-  /* "Widget" == "???" */
-
-  if(widget != "ComboBox") {
-    y2error("Unknown widget: %1", widget);
-    return VSeparator();
-  }
-
-  /* "Widget" == "ComboBox" */
-
-  list li = lookup(m,"Options");
-  list combo = [];
-  integer i = 0;
-
-  while(i < size(li)) {
-    string|list it = select(li,i);
-    string id_t = "";
-    string id_s = "";
-    if(is(it,string)) {
-      id_t = it;
-      id_s = it;
+    if(widget == "CheckBox") {
+        boolean enabled = false;
+        if(value == "yes")
+            enabled = true;
+        return `VBox(
+            //VSeparator(),
+            `Left(`CheckBox(`id(ID),label,enabled)),
+            VSeparator()
+        );
     }
-    else {
-      id_t = select(it,0);
-      id_s = select(it,1);
-    }
-    if(value == id_t)
-      combo = add(combo,`item(`id(id_t),id_s,true));
-    else
-      combo = add(combo,`item(`id(id_t),id_s));
-    i=i+1;
-  }
 
-  return `VBox(
-    `Left(`ComboBox(`id(ID),label,combo)),
-    VSeparator()
-  );
+    /* "Widget" == "TextEntry" */
+
+    if(widget == "TextEntry") {
+        return `VBox(
+            `Left(`TextEntry(`id(ID),label,value)),
+            //VSeparator(),
+            VSeparator()
+        );
+    }
+
+    /* "Widget" == "IntField" */
+
+    if(widget == "IntField") {
+        return `VBox(
+            //VSeparator(),
+            `Left(`IntField(`id(ID),label,0,65000,tointeger(value))),
+            VSeparator()
+        );
+    }
+
+    /* "Widget" == "???" */
+
+    if(widget != "ComboBox") {
+        y2error("Unknown widget: %1", widget);
+        return VSeparator();
+    }
+
+    /* "Widget" == "ComboBox" */
+
+    list li = lookup(m,"Options");
+    list combo = [];
+    integer i = 0;
+
+    while(i < size(li)) {
+        //string|list it = select(li,i);
+        any it = select(li,i);
+        string id_t = "";
+        string id_s = "";
+        if(is(it,string)) {
+            id_t = it;
+            id_s = it;
+        }
+        else {
+            id_t = select(it,0);
+            id_s = select(it,1);
+        }
+        if(value == id_t)
+            combo = add(combo,`item(`id(id_t),id_s,true));
+        else
+            combo = add(combo,`item(`id(id_t),id_s));
+        i=i+1;
+    }
+
+    return `VBox(
+        `Left(`ComboBox(`id(ID),label,combo)),
+        VSeparator()
+    );
 };
 
 /**
@@ -190,7 +190,8 @@ global define HSeparator() ``{
 
 global define Button(symbol button) ``{
   string text = lookup(BUTTONS,button);
-  if (isnil(text))
+  //if (isnil(text))
+  if (text == "")
     return nil;
 
   term ret = nil;
@@ -251,8 +252,8 @@ global define SuSEDialog(string ID, list buttons, term contents) ``{
     `VBox(`Image(`suseheader, "SuSE"), `HBox(
       `HWeight(30, `ReplacePoint(`id(`rp_help),`RichText(`id(`help), help_text))),
       `HWeight(70,
-	`HVCenter( `VBox(
-	  `Top(`Left(`ReplacePoint(`id(`rp_caption),`Heading(`id(`title), caption)))),
+        `HVCenter( `VBox(
+          `Top(`Left(`ReplacePoint(`id(`rp_caption),`Heading(`id(`title), caption)))),
           VSeparator(),
           `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5)))),
           //`HVCenter(`Frame(caption,T)),
@@ -323,7 +324,7 @@ global define FindSettings(list settings, string ident) ``{
     return false;
   });
 
-  if (isnil(mm))
+  if(mm == $[]) //isnil(mm))
     ret = nil;
   else
     ret = lookup(mm,"settings");
@@ -359,8 +360,7 @@ global define CurrentSettings(list settings, map current) ``{
 
   y2debug("mm: %1",mm);
   y2debug("mm: %1",isnil(mm));
-  // FIXME
-  if(isnil(mm))
+  if(mm == $[])
     ret = nil;
   else
     ret = lookup(mm,"name");
@@ -380,12 +380,12 @@ global define CurrentSettings(list settings, map current) ``{
 
 global define SecuritySettings(list settings, map defs) ``{
   string current = CurrentSettings(settings,defs);
-  //current="Server";
   y2debug("current=%1",current);
   y2debug("current=%1",isnil(current));
 
   boolean enab = false;
-  if(isnil(current)) enab=true;
+  //if(isnil(current)) enab=true;
+  if(current == "") enab=true;
 
   term T = `VBox();
   T = add(T,`VSpacing(0.5));
@@ -426,7 +426,7 @@ global define updateWIDGETS(any curr) ``{
   changed = true;
   string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
   map current_sets = FindSettings(settings,current_defs);
-  WIDGETS = defs2options(WIDGETS,current_sets);
+  WIDGETS = settings2widgets(WIDGETS,current_sets);
 }
 
 /**
@@ -437,7 +437,7 @@ global define updateWIDGETS(any curr) ``{
 
 global define SecurityMainDialog(map defs) ``{
 
-  list settings = CallFunction(`settings());
+  list settings = AllSecuritySettings();
   boolean RBgroup = true;
 
   SuSEDialog("Main",[`back,`finish], 
@@ -472,14 +472,14 @@ global define SecurityMainDialog(map defs) ``{
     ret = processInput();
     y2debug("rettt: %1",ret);
 
-    if(ret == `ok) {			/* Save the settings */
+    if(ret == `ok) {                        /* Save the settings */
       string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
       map current_sets = FindSettings(settings,current_defs);
-      WIDGETS = defs2options(WIDGETS,current_sets);
+      WIDGETS = settings2widgets(WIDGETS,current_sets);
       break;
     }
     else if(ret == `abort || ret == `back || ret == `cancel || isnil(ret))
-      break;				/* Don't save the settings */
+      break;                                /* Don't save the settings */
     else if(ret == `details || ret ==`next)  {
       RBgroup=false;
       y2debug("Running wizzard: %1",ret); /* Run the wizzard */
@@ -487,31 +487,31 @@ global define SecurityMainDialog(map defs) ``{
       if(current_defs!=`custom) {
         //string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
         map current_sets = FindSettings(settings,current_defs);
-        WIDGETS = defs2options(WIDGETS,current_sets);
+        WIDGETS = settings2widgets(WIDGETS,current_sets);
       }
         //UI(`CloseDialog());
-	subret = SecurityWizzard();
-	//y2debug("subret=%1",subret);
-	if(subret == `back) {
+        subret = SecurityWizzard();
+        //y2debug("subret=%1",subret);
+        if(subret == `back) {
           RBgroup=true;
           SuSEDialogUP("Main",[`back,`finish], 
             `HVCenter(
             `VBox(
             `HVSquash(
-	    // frame caption
+            // frame caption
             `Frame( _("Current security settings:"),
               `HBox(`HSpacing(0.8),
               `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
               `HSpacing(0.8))
             )),
             `VSpacing(0.6),
-	    // push button
+            // push button
             `HVCenter(`PushButton(`id(`details),_("&Details..."))),
             `VSpacing(0.6)
             )
           ));
 
-	  /* Update the Finish|Next button */
+          /* Update the Finish|Next button */
           any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
           if( curr2 == `custom) {
             UI(`ChangeWidget(`id(`details),`Enabled,false));
@@ -520,27 +520,27 @@ global define SecurityMainDialog(map defs) ``{
           /* FIXME: update the current RB? Probably not*/
 
           continue;
-	}
-	else if(subret == `abort || subret == `cancel || isnil(subret))
-	  ret = nil;
-	else
-	  ret = `ok;
-	break;
+        }
+        else if(subret == `abort || subret == `cancel || isnil(subret))
+          ret = nil;
+        else
+          ret = `ok;
+        break;
     }
-    else if(ret == `custom) {		/* Change the [Finish] to [Next] */
+    else if(ret == `custom) {                /* Change the [Finish] to [Next] */
       y2debug("custom radio button");
       UI(`ChangeWidget(`id(`details),`Enabled,false));
       // push button
       UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
     }
-    else {				/* Other radio button */
+    else {                                /* Other radio button */
       y2debug("SecurityMainDialog: Huh? %1",ret);
       UI(`ChangeWidget(`id(`details),`Enabled,true));
       // push button
       UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),_("&Finish"))));
       if(ret == UI(_("Level &3 (Network/Server)")))
-	// popup if level 3 is choosen
-	PopupOK(UI(_("You have chosen 'Level 3'. This setup
+        // popup if level 3 is choosen
+        PopupOK(UI(_("You have chosen 'Level 3'. This setup
 provides a basic configuration for network servers
 but not a completed 'full security' setting.
 
@@ -554,12 +554,15 @@ network server secure.")));
   /* [Finish]ed */
   if(ret == `ok && old_WIDGETS!=WIDGETS) {
     y2debug("YES");
+    y2debug("old_WIDGETS=%1",old_WIDGETS);
+    y2debug("new_WIDGETS=%1",WIDGETS);
     if(RBgroup==true) {
       string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
-      if(!isnil(current_defs)) {
+      //if(!isnil(current_defs)) {
+      if(current_defs != "") {
         y2debug("current_defs: %1",current_defs);
         map current_sets = FindSettings(settings,current_defs);
-        WIDGETS = defs2options(WIDGETS,current_sets);
+        WIDGETS = settings2widgets(WIDGETS,current_sets);
       }
     }
     UI(`CloseDialog());
@@ -768,8 +771,10 @@ global define SecurityMiscDialog() ``{
 global define checkMinMax(string minID, string maxID) ``{
   any min = UI(`QueryWidget(`id(minID),`Value));
   any max = UI(`QueryWidget(`id(maxID),`Value));
-  if(is(min,integer|float) && is(max,integer|float) && min<=max)
-    return true;
+  if(is(min,integer) || is(min,float))
+    if(is(max,integer) || is(max,float))
+      if(min<=max)
+        return true;
   return false;
 }
 
@@ -815,12 +820,12 @@ global define SecurityPasswdDialog() ``{
     ret = processInput();
     if(ret == `ok || ret ==`next) {
       if(checkMinMax("PASS_MIN_LEN","PASS_MAX_LEN")!=true) {
-	// bad password data
+        // bad password data
         PopupOK(UI(_("The minimum password length cannot be larger than maximum")));
         continue;
       }
       if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS")!=true) {
-	// bad password data
+        // bad password data
         PopupOK(UI(_("The minimum number of days cannot be larger than maximum")));
         continue;
       }
@@ -869,12 +874,12 @@ global define SecurityAdduserDialog() ``{
     ret = processInput();
     if(ret == `ok || ret ==`next) {
       if(checkMinMax("UID_MIN","UID_MAX")!=true) {
-	// SecurityAdduserDialog error
+        // SecurityAdduserDialog error
         PopupOK(UI(_("The minimum user ID cannot be larger than maximum")));
         continue;
       }
       if(checkMinMax("GID_MIN","GID_MAX")!=true) {
-	// SecurityAdduserDialog error
+        // SecurityAdduserDialog error
         PopupOK(UI(_("The minimum group IDs cannot be larger than maximum")));
         continue;
       }
