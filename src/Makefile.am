@@ -5,7 +5,7 @@
 menudir = $(YAST2DIR)/menuentries
 modulesdir = $(YAST2DIR)/clients
 clientsdir = $(YAST2DIR)/clients
-includedir = $(YAST2DIR)/include/security
+yincludedir = $(YAST2DIR)/include/security
 
 modules_DATA =			\
 	security.ycp		\
@@ -15,7 +15,7 @@ clients_DATA =			\
 	ui_helps.ycp		\
 	ui_widgets.ycp
 
-include_DATA =			\
+yinclude_DATA =			\
 	routines.ycp		\
 	settings.ycp		\
 	functions_ui.ycp	\
@@ -24,4 +24,4 @@ include_DATA =			\
 
 menu_DATA = menuentry_security.y2cc
 
-EXTRA_DIST = $(modules_DATA) $(clients_DATA) $(menu_DATA) $(include_DATA)
+EXTRA_DIST = $(modules_DATA) $(clients_DATA) $(menu_DATA) $(yinclude_DATA)
