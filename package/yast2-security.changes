@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jul 12 15:03:59 CEST 2002 - arvin@suse.de
+
+- use proper namespace for Args and CallFunction (#16776)
+
+-------------------------------------------------------------------
 Mon Jul  8 19:56:03 CEST 2002 - msvec@suse.cz
 
 - use Wizard and other predefined functions

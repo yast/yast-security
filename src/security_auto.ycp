@@ -15,7 +15,7 @@
  * @param first a map of security settings
  * @return boolean success of operation
  * @example map mm = $[ "FAIL_DELAY" : "77" ];
- * @example map ret = CallModule("security_auto", [ mm ]);
+ * @example map ret = WFM::CallModule("security_auto", [ mm ]);
  */
 
 {
@@ -36,13 +36,13 @@ import "Security";
 include "network/security/wizards.ycp";
 */
 
-list args = Args();
+list args = WFM::Args();
 if(size(args) <= 0) {
     y2error("Did not get the settings, probably some mistake...");
     return false;
 }
-if(!is(Args(0), map)) {
-    y2error("Bad argument for security_auto: %1", Args(0));
+if(!is(WFM::Args(0), map)) {
+    y2error("Bad argument for security_auto: %1", WFM::Args(0));
     return false;
 }
 
