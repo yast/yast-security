@@ -179,16 +179,19 @@ global define SecurityRead() ``{
     m = ApplyRead(``(ReadLoginDefs()),SettingsLoginDefs(),m);
     m = ApplyRead(``(ReadSysConfig()),SettingsSysConfig(),m);
 
-    list pam_list = SCR::Read(.pam.passwd.password.pam_pwcheck);
+    list pam_list = SCR::Read(.pam.all.password.pam_unix2);
     if(pam_list == [] || pam_list == nil) return m;
-    map pam_map = select(pam_list,0,$[]);
+    map pam_unix_map = select(pam_list,0,$[]);
+    pam_list = SCR::Read(.pam.all.password.pam_pwcheck);
+    if(pam_list == [] || pam_list == nil) return m;
+    map pam_check_map = select(pam_list,0,$[]);
 
     /* md5 support */
-    boolean pam_support = contains(splitstring(lookup(pam_map , "arguments", ""), " "), "md5");
+    boolean pam_support = contains(splitstring(lookup(pam_unix_map , "arguments", ""), " "), "md5");
     m = add(m,"MD5_SUPPORT", pam_support?"yes":"no");
 
     /* use cracklib? */
-    pam_support = contains(splitstring(lookup(pam_map , "arguments", ""), " "), "use_cracklib");
+    pam_support = contains(splitstring(lookup(pam_check_map , "arguments", ""), " "), "use_cracklib");
     m = add(m,"PASSWD_USE_CRACKLIB", pam_support?"yes":"no");
 
     return m;
@@ -210,30 +213,27 @@ global define SecurityWrite(map m) ``{
     ret = add(ret,SCR::Write(.sysconfig.security,nil));
 
     /* md5 support */
-    string pam_string = (lookup(m,"MD5_SUPPORT","no")=="yes")?"+md5":"-md5";
-    ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.login.password.pam_unix, pam_string));
-    ret = add(ret,SCR::Write(.pam.login.password.pam_unix2, pam_string));
-    ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix, pam_string));
-    ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix2, pam_string));
-    ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix, pam_string));
-    ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix2, pam_string));
-    ret = add(ret,SCR::Write(.pam.rlogin.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.rlogin.password.pam_unix, pam_string));
-    ret = add(ret,SCR::Write(.pam.rlogin.password.pam_unix2, pam_string));
-    ret = add(ret,SCR::Write(.pam.gdm.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.gdm.password.pam_unix, pam_string));
-    ret = add(ret,SCR::Write(.pam.gdm.password.pam_unix2, pam_string));
+    if (lookup(m, "MD5_SUPPORT", "no") == "yes") {
+       ret = add(ret,SCR::Write(.pam.all.password.pam_unix2, "+md5"));
+       ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, "+md5"));
+    }
+    else {
+       ret = add(ret,SCR::Write(.pam.all.password.pam_unix2, "-md5"));
+       ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, "-md5"));
+       /* Remove old config options */
+       ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, "-md5"));
+       ret = add(ret,SCR::Write(.pam.login.password.pam_unix, "-md5"));
+       ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, "-md5"));
+       ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix, "-md5"));
+       ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, "-md5"));
+       ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix, "-md5"));
+       ret = add(ret,SCR::Write(.pam.rlogin.password.pam_pwcheck, "-md5"));
+       ret = add(ret,SCR::Write(.pam.rlogin.password.pam_unix, "-md5"));
+    }
 
     /* use cracklib? */
-    pam_string = (lookup(m,"PASSWD_USE_CRACKLIB","no")=="yes")?"+use_cracklib":"-use_cracklib";
-    ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.rlogin.password.pam_pwcheck, pam_string));
-    ret = add(ret,SCR::Write(.pam.gdm.password.pam_pwcheck, pam_string));
+    string pam_string = (lookup(m,"PASSWD_USE_CRACKLIB","no")=="yes")?"+use_cracklib":"-use_cracklib";
+    ret = add(ret,SCR::Write(.pam.all.password.pam_pwcheck, pam_string));
 
     /* finish him */
     ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --nonewpackage"));

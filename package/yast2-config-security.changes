@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Feb  5 18:14:17 CET 2002 - kukuk@suse.de
+
+- Add support for global pam_unix2 and pam_pwcheck config files
+- Version 2.5.7
+
+-------------------------------------------------------------------
 Sat Jan 26 19:49:14 CET 2002 - nashif@suse.de
 
 - Added agents to file list
