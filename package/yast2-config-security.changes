@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jan 16 16:51:59 CET 2002 - pblahos@suse.cz
+
+- login_defs.scr now uses ini agent instead of rc-config agent
+- 2.5.4
+
+-------------------------------------------------------------------
 Thu Dec 20 11:16:04 CET 2001 - msvec@suse.cz
 
 - new menuentry file format
