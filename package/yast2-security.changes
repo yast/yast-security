@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  7 17:15:02 CET 2005 - jsuchome@suse.cz
+
+- merged texts from proofreading 
+- 2.11.3
+
+-------------------------------------------------------------------
 Fri Jan 21 15:27:47 CET 2005 - jsuchome@suse.cz
 
 - handle both "cracklib" and "use_cracklib" values in pam_pwcheck.conf
