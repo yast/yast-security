@@ -1,0 +1,157 @@
+/**
+ * File:	include/security/wizards.ycp
+ * Package:	Security configuration
+ * Summary:	Wizards definitions
+ * Authors:	Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+textdomain "security";
+
+import "Wizard";
+
+include "wizard/sequencer.ycp";
+include "security/dialogs.ycp";
+
+/**
+ * Whole configuration of security
+ * @return any Returned value from WizardSequencer() call
+ */
+global define any SecuritySequence() ``{
+
+    map aliases = $[
+	"read"	: [ ``( ReadDialog() ), true ],
+	"main"	:   ``( MainSequence() ),
+	"write"	: [ ``( WriteDialog() ), true ]
+    ];
+
+    map sequence = $[
+	"ws_start" : "read",
+	"read" : $[
+	    `abort	: `abort,
+	    `next	: "main"
+	],
+	"main" : $[
+	    `abort	: `abort,
+	    `next	: "write"
+	],
+	"write" : $[
+	    `abort	: `abort,
+	    `next	: `next
+	]
+    ];
+
+    string caption = _("Security configuration");
+    term contents = `Label(_("Initializing ..."));
+
+    Wizard::CreateDialog();
+    Wizard::SetContentsButtons(caption, contents, "",
+	    BackButtonLabel(), NextButtonLabel());
+
+    any ret = WizardSequencer(aliases, sequence);
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/**
+ * Whole configuration of security but without reading and writing.
+ * For use with autoinstallation.
+ * @return any Returned value from WizardSequencer() call
+ */
+global define any SecurityAutoSequence() ``{
+    string caption = _("Security configuration");
+    term contents = `Label(_("Initializing ..."));
+
+    Wizard::CreateDialog();
+    Wizard::SetContentsButtons(caption, contents, "",
+	    BackButtonLabel(), NextButtonLabel());
+
+    // Run the main configuration workflow
+    any ret = MainSequence();
+
+    UI::CloseDialog();
+    return ret;
+}
+
+/**
+ * Main workflow of the security configuration
+ * @return any Returned value from WizardSequencer() call
+ */
+global define any MainSequence() ``{
+    // TODO FIXME: adapt the following to your needs!
+    map aliases =
+	$[
+	    "detected"	:   ``( DetectedDialog() ),
+	    "overview"	:   ``( OverviewDialog() ),
+	    "configure"	: [ ``( AddSequence() ), true ],
+	    "add"	: [ ``( AddSequence() ), true ],
+	    "edit"	: [ ``( AddSequence() ), true ]
+	];
+
+    // TODO FIXME: adapt the following to your needs!
+    map sequence = $[
+	"ws_start" : "detected",
+	"detected" : $[
+	    `abort	: `abort,
+	    `next	: `next,
+	    `configure_button: "configure",
+	    `edit_button: "overview"
+	],
+	"overview" : $[
+	    `abort	: `abort,
+	    `next	: `next,
+	    `add_button	: "add",
+	    `edit_button: "edit"
+	],
+	"configure" : $[
+	    `abort	: `abort,
+	    `next	: "detected",
+	],
+	"add" : $[
+	    `abort	: `abort,
+	    `next	: "overview",
+	],
+	"edit" : $[
+	    `abort	: `abort,
+	    `next	: "overview",
+	]
+    ];
+
+    any ret = WizardSequencer(aliases, sequence);
+
+    return ret;
+}
+
+/**
+ * Add a configuration of security
+ * @return any Returned value from WizardSequencer() call
+ */
+global define any AddSequence() ``{
+    // TODO FIXME: adapt the following to your needs!
+    map aliases = $[
+	    "config1"	: ``( Configure1Dialog() ),
+	    "config2"	: ``( Configure2Dialog() )
+	];
+
+    // TODO FIXME: adapt the following to your needs!
+    map sequence = $[
+	"ws_start" : "config1",
+	"config1" : $[
+	    `abort	: `abort,
+	    `next	: "config2"
+	],
+	"config2" : $[
+	    `abort	: `abort,
+	    `next	: `next
+	]
+    ];
+
+    return WizardSequencer( aliases, sequence );
+}
+
+/* EOF */
+}

@@ -4,21 +4,24 @@
 
 yncludedir = @yncludedir@/security
 
-module_DATA =			\
-	security.ycp		\
-	security_write.ycp
-
 client_DATA =			\
+	security.ycp		\
+	security_auto.ycp	\
+	security_write.ycp	\
+				\
 	ui_helps.ycp		\
 	ui_widgets.ycp
 
 ynclude_DATA =			\
+	dialogs.ycp		\
+	wizards.ycp		\
+				\
 	routines.ycp		\
 	settings.ycp		\
 	functions_ui.ycp	\
 	io.ycp			\
 	ui.ycp
 
-menu_DATA = menuentry_security.y2cc
+config_DATA = security.y2cc
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(menu_DATA) $(ynclude_DATA)
+EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA)

@@ -457,7 +457,7 @@ global define SecurityMainDialog(map defs) ``{
   list settings = AllSecuritySettings();
   boolean RBgroup = true;
 
-  SuSEDialog("Main",[`back,`finish], 
+  SuSEDialog("Main",[`back,`finish],
     `HVCenter(
     `VBox(
     `HVSquash(
@@ -511,7 +511,7 @@ global define SecurityMainDialog(map defs) ``{
         //y2debug("subret=%1",subret);
         if(subret == `back) {
           RBgroup=true;
-          SuSEDialogUP("Main",[`back,`finish], 
+          SuSEDialogUP("Main",[`back,`finish],
             `HVCenter(
             `VBox(
             `HVSquash(

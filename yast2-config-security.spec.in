@@ -27,7 +27,7 @@ Summary:	Configuration of security
 %defattr(-,root,root)
 %dir @yncludedir@/security
 @yncludedir@/security/*
-@menudir@/menuentry_security.y2cc
+@configdir@/security.y2cc
 @clientdir@/security*.ycp
 @clientdir@/ui_helps.ycp
 @clientdir@/ui_widgets.ycp

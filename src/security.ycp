@@ -1,15 +1,8 @@
 /**
- * File:
- *   security.ycp
- *
- * Module:
- *   Security configuration
- *
- * Summary:
- *   Main file
- *
- * Authors:
- *   Michal Svec <msvec@suse.cz>
+ * File:	clients/security.ycp
+ * Package:	Security configuration
+ * Summary:	Main file
+ * Authors:	Michal Svec <msvec@suse.cz>
  *
  * $Id$
  *
