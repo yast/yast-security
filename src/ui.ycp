@@ -656,7 +656,7 @@ global define SecurityDetailsDialog() ``{
 /**
  * Frame with spacings
  */
-global define XFrame(float f1, float f2, locale S, term T) ``{
+global define XFrame(float f1, float f2, string S, term T) ``{
   return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
 };
 
