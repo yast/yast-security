@@ -225,13 +225,13 @@ not.</p>") +
     /* Misc dialog help 10/14 */
     _("<p><b>Current Directory in  root's Path</b><br> On a DOS system,
 the system first searched for executable files (programs) in the current
-directory then in the current path variable. In contrast, a UNIX system
+directory then in the current path variable. In contrast, a UNIX like system
 searches for them exclusively via the search path (variable PATH).</p>") +
 
     /* Misc dialog help 11/14 */
     _("<p><b>Current Directory in the Path of Regular Users</b><br> A DOS
 system first searches for executable files (programs) in the current
-directory then in the current path variable. In contrast, a UNIX
+directory then in the current path variable. In contrast, a UNIX like
 system searches for them exclusively via the search path (variable PATH).
 </p>") +
 

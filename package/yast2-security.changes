@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep 11 12:56:14 CEST 2003 - msvec@suse.cz
+
+- changed "UNIX system" to "UNIX like system" in helps (#30495)
+- 2.8.6
+
+-------------------------------------------------------------------
 Thu Sep 11 06:50:45 CEST 2003 - nashif@suse.de
 
 - #30291: return list of required packages for autoinstallation
