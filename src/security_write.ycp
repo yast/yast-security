@@ -19,13 +19,11 @@
 
 textdomain "security";
 
-y2milestone("Security write started");
 y2milestone("----------------------------------------");
+y2milestone("Security write started");
 
 import "Security";
 import "Progress";
-
-include "security/io.ycp"; // FIXME
 
 list args = WFM::Args();
 
@@ -39,23 +37,17 @@ if(!is(WFM::Args(0), map)) {
     return false;
 }
 
-// convert imported data to upper case
-map settings = mapmap(`k,`v, select(args,0,$[]), ``{
-            return([toupper(k),v]);
-        });
-
+map settings = args[0]:$[];
 y2milestone("Only writing... (%1)", settings);
 
-/*
 Progress::off();
 Security::Import(settings);
 boolean ret = Security::Write();
 Progress::on();
 
 y2milestone("Security write finished");
+y2milestone("----------------------------------------");
 return ret;
-*/
-return SecurityWrite(settings);
 
 /* EOF */
 }

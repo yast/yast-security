@@ -1,16 +1,11 @@
 # $Id$
 
 Bugs:
-- proper "local" permissions support
-- different passwords: des|md5|blowfish (#12758)
 - length check (#13291)
 - grep FIXME *.ycp
 
-Rewrite:
-- use Security
-- wizard sequencer and library
-- all files -> include/security/
-- security_auto, ...
+Documentation:
+- from notebook:Todo
 
 Enhancements:
 - better testsuite

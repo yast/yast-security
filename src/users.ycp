@@ -92,12 +92,5 @@ global define symbol AdduserDialog() ``{
     return ret;
 }
 
-if(false) {
-Wizard::CreateDialog();
-include "security/widgets.ycp";
-
-AdduserDialog();
-}
-
 /* EOF */
 }

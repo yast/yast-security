@@ -132,7 +132,7 @@ global define symbol MiscDialog() ``{
 	    break;
 	}
 	else if(ret == `next) {
-	    /* FIXME: check_* */
+	    /* check_* */
 	    break;
 	}
 	else {
@@ -280,7 +280,7 @@ global define symbol LoginDialog() ``{
 	    break;
 	}
 	else if(ret == `next) {
-	    /* FIXME: check_* */
+	    /* check_* */
 	    break;
 	}
 	else {

@@ -118,7 +118,7 @@ global define symbol MainDialog() ``{
 	    break;
 	}
 	else if(ret == `next || ret == `details) {
-	    /* FIXME: check_* */
+	    /* check_* */
 	    break;
 	}
 	else if(ret == `custom) {

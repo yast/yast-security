@@ -137,7 +137,6 @@ global define boolean Read() ``{
     string caption = _("Initializing security configuration");
     integer steps = 3;
 
-    /* FIXME */
     integer sl = 0*1000;
     sleep(sl);
 
@@ -269,7 +268,6 @@ global define boolean Write() ``{
     string caption = _("Saving security configuration");
     integer steps = 4;
 
-    /* FIXME */
     integer sl = 0*1000;
     sleep(sl);
 
