@@ -1,5 +1,7 @@
 #
-# Makefile.am
+# Makefile.am for modules/y2c_sec
+#
+# $Id$
 #
 
 SUBDIRS = src doc testsuite
@@ -19,4 +21,5 @@ CLEANFILES = $(RPMNAME).kdoc
 MAINTAINERCLEANFILES = package/$(RPMNAME)-$(VERSION).tar.bz2 package/$(RPMNAME).spec
 
 package: $(RPMNAME)-$(VERSION).tar.bz2
+	rm -f package/$(RPMNAME)-*.tar.bz2
 	mv $< package
