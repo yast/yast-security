@@ -47,6 +47,7 @@ global map Levels = $[
 
     "Level1" : $[
 	"CONSOLE_SHUTDOWN"		: "reboot",
+	"CRACKLIB_DICT_PATH"		: "/usr/lib/cracklib_dict",
 	"CWD_IN_ROOT_PATH"		: "yes",
 	"CWD_IN_USER_PATH"		: "yes",
 	"DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
@@ -73,6 +74,7 @@ global map Levels = $[
 
     "Level2" : $[
 	"CONSOLE_SHUTDOWN"		: "ignore",
+	"CRACKLIB_DICT_PATH"		: "/usr/lib/cracklib_dict",
 	"CWD_IN_ROOT_PATH"		: "no",
 	"CWD_IN_USER_PATH"		: "no",
 	"DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
@@ -99,6 +101,7 @@ global map Levels = $[
 
     "Level3" : $[
 	"CONSOLE_SHUTDOWN"		: "ignore",
+	"CRACKLIB_DICT_PATH"		: "/usr/lib/cracklib_dict",
 	"CWD_IN_ROOT_PATH"		: "no",
 	"CWD_IN_USER_PATH"		: "no",
 	"DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
