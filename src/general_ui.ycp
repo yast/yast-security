@@ -64,6 +64,29 @@ define Popup(string message) ``{
   return ret;
 };
 
+define PopupOK(string message) ``{
+  map BUTTONS = CallFunction(`buttons());
+  UI(`OpenDialog(
+        `opt(`decorated),
+        `HBox(
+          `HSpacing(1),
+          `VBox(
+            `VSpacing(0.2),
+            `Left(`Label(message)),
+	    `HBox(
+              `PushButton(`id(`ok),`opt(`default), lookup(BUTTONS,`ok))
+	    ),
+            `VSpacing(0.2)
+          ),
+          `HSpacing(1)
+        )
+    )
+  );
+  any ret = UI(`UserInput());
+  UI(`CloseDialog());
+  return ret;
+};
+
 /* Message box */
 
 define Message(any message) ``{

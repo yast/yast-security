@@ -127,14 +127,14 @@ define ApplyWrite(term t, list l, map m) ``{
 
 define SecurityRead() ``{
   map m = $[];
-  m = ApplyRead(``ReadLoginDefs(),LoginDefs_settings(),m);
-  m = ApplyRead(``ReadRcConfig(),RcConfig_settings(),m);
+  m = ApplyRead(``(ReadLoginDefs()),LoginDefs_settings(),m);
+  m = ApplyRead(``(ReadRcConfig()),RcConfig_settings(),m);
   return m;
 };
 
 define SecurityWrite(map m) ``{
-  list l1 = ApplyWrite(``WriteLoginDefs(),LoginDefs_settings(),m);
-  list l2 = ApplyWrite(``WriteRcConfig(),RcConfig_settings(),m);
+  list l1 = ApplyWrite(``(WriteLoginDefs()),LoginDefs_settings(),m);
+  list l2 = ApplyWrite(``(WriteRcConfig()),RcConfig_settings(),m);
   return flatten([l1,l2]);
 };
 

@@ -142,7 +142,8 @@ define processInput() ``{
     ret = UI(`UserInput());
     if(ret != `abort)
       break;
-    any re = Popup(UI(_("Do you really want to abort the security configuration?")));
+    any re = Popup(UI(_("Do you really want to abort the security configuration?
+All changes you made will be lost.")));
     if(re==`ok)
       break;
   }
@@ -425,6 +426,14 @@ define SecurityMainDialog(map defs) ``{
       y2error("SecurityMainDialog: Huh? %1",ret);
       UI(`ChangeWidget(`id(`details),`Enabled,true));
       UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),"Finish")));
+      if(ret == UI(_("Level 3 (Network server)")))
+	PopupOK(UI(_("You have chosen 'Level 3'. This setup
+provides a basic configuration for network servers
+but not a completed 'full security' setting.
+
+You need expert knowledge to make a
+network server secure.")));
+
     }
     y2debug("subret: %1",subret);
   }
