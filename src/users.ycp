@@ -23,21 +23,21 @@ include "security/routines.ycp";
 global define symbol AdduserDialog() ``{
 
     /* Adduser dialog caption */
-    string caption = _("Adding user settings");
+    string caption = _("Adding User Settings");
     string help = HELPS["adduser"]:"";
 
     /* Adduser dialog contents */
     term contents = `VBox(
 	VSeparator(),
 	/* Frame label */
-	XFrame(1.8,0.5,_("User ID limitations"),`HBox(
+	XFrame(1.8,0.5,_("User ID Limitations"),`HBox(
 	settings2widget("UID_MIN"),
 	`HSpacing(1.5),
 	settings2widget("UID_MAX")
 	)),
 	`VSpacing(0.7),
 	/* Frame label */
-	XFrame(1.8,0.5,_("Group ID limitations"),`HBox(
+	XFrame(1.8,0.5,_("Group ID Limitations"),`HBox(
 	settings2widget("GID_MIN"),
 	`HSpacing(1.5),
 	settings2widget("GID_MAX")

@@ -25,7 +25,7 @@ include "security/routines.ycp";
 global define symbol BootDialog() ``{
 
     /* Boot dialog caption */
-    string caption = _("Boot settings");
+    string caption = _("Boot Settings");
     string help = HELPS["boot"]:"";
 
     /* Boot dialog contents * /
@@ -47,7 +47,7 @@ global define symbol BootDialog() ``{
 	`VBox(
 	    `VSpacing(2),
 	    /* Frame label */
-	    `Frame(_("Boot permissions"),`HBox(
+	    `Frame(_("Boot Permissions"),`HBox(
 		`HSpacing(3),
 		`VBox(
 		    `VSpacing(1),
@@ -99,7 +99,7 @@ global define symbol BootDialog() ``{
 global define symbol MiscDialog() ``{
 
     /* Misc dialog caption */
-    string caption = _("Miscellaneous settings");
+    string caption = _("Miscellaneous Settings");
     string help = HELPS["misc"]:"";
 
     /* Misc dialog contents */
@@ -161,7 +161,7 @@ global define symbol MiscDialog() ``{
 global define symbol PassDialog() ``{
 
     /* Password dialog caption */
-    string caption = _("Password settings");
+    string caption = _("Password Settings");
     string help = HELPS["password"]:"";
 
     /* Password dialog contents */
@@ -177,7 +177,7 @@ global define symbol PassDialog() ``{
 	settings2widget("PASSWD_ENCRYPTION"),
 	`VSpacing(1.0),
 	/* Frame label */
-	`Frame(_("Password length"),`HBox(
+	`Frame(_("Password Length"),`HBox(
 	    `HSpacing(0.4),
 	    settings2widget("PASS_MIN_LEN"),
 	    `HSpacing(0.4),
@@ -186,7 +186,7 @@ global define symbol PassDialog() ``{
 	)),
 	`VSpacing(0.1),
 	/* Frame label */
-	`Frame(_("Days of password change warning"),`HBox(
+	`Frame(_("Days of Password Change Warning"),`HBox(
 	    `HSpacing(0.4),
 	    settings2widget("PASS_MIN_DAYS"),
 	    `HSpacing(0.4),
@@ -255,7 +255,7 @@ global define symbol PassDialog() ``{
 global define symbol LoginDialog() ``{
 
     /* Login dialog caption */
-    string caption = _("Login settings");
+    string caption = _("Login Settings");
     string help = HELPS["login"]:"";
 
     /* Login dialog contents */

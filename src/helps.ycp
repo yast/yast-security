@@ -41,14 +41,14 @@ Abort saving by pressing <b>Abort</b>.</p>"),
     "boot" : _("<p>In this dialog, change various boot settings.</p>") +
 
     /* Boot dialog help 2/3 */
-    _("<p><b>How to interpret Ctrl + Alt + Del</b><br>
+    _("<p><b>How to Interpret Ctrl + Alt + Del</b><br>
 When someone at the console has pressed the CTRL + ALT + DEL key
 combination, the system usually reboots. Sometimes it is desirable
 to ignore this event, for example, when the system serves as both
 workstation and server.</p>") +
 
     /* Boot dialog help 3/3 */
-    _("<p><b>Shutdown behavior of KDM</b><br>
+    _("<p><b>Shutdown Behavior of KDM</b><br>
 Set who is allowed to shut down the machine from KDM.</p>"),
 
 
@@ -80,7 +80,7 @@ to any type of a network or the Internet.</p>") +
 any type of service, network or any other.</p>") +
 
     /* Main dialog help 8/8 */
-    _("<p>Use <b>Custom settings</b> to create your own configuration.</p>"),
+    _("<p>Use <b>Custom Settings</b> to create your own configuration.</p>"),
 
 
     /* Login dialog help 1/5 */
@@ -88,7 +88,7 @@ any type of service, network or any other.</p>") +
 settings are mainly stored in the '/etc/login.defs' file.</p>") +
 
     /* Login dialog help 1/5 */
-    _("<p><b>Delay after Incorrect Login Attempt</b><br>
+    _("<p><b>Delay After Incorrect Login Attempt</b><br>
 It is advisable to wait some time after an incorrect login attempt to prevent
 password guessing. Make the time small enough so users do not need to wait to
 retry if a password is mistyped. A sensible value is '3' seconds.</p>") +
@@ -127,15 +127,19 @@ guessing of passwords very difficult. Check this box to enable additional
 checks.</p>") +
 
     /* Password dialog help 4/6 */
-    _("<p><b>Password length</b><br>
+    _("<p><b>Password Encryption Method</b><br>
+FIXME.</p>") +
+
+    /* Password dialog help 4/6 */
+    _("<p><b>Password Length</b><br>
 Set the minimum and maximum password length.</p>") +
 
     /* Password dialog help 5/6 */
-    _("<p><b>Days before Password Change Warning</b><br>Set the minimum and
+    _("<p><b>Days of Password Change Warning</b><br>Set the minimum and
 maximum time for warning that the password must be changed.</p>") +
 
     /* Password dialog help 6/6 */
-    _("<p><b>Days before Password Expiration Warning</b><br> This entry sets the
+    _("<p><b>Days Before Password Expires Warning</b><br> This entry sets the
 number of days users are warned before their passwords expire. The longer the
 time, the less likely it is that a user can guess passwords.</p>"),
 
@@ -144,7 +148,7 @@ time, the less likely it is that a user can guess passwords.</p>"),
     "adduser" : _("<p>In this dialog, change various useradd settings.</p>") +
 
     /* Adduser dialog help 2/3 */
-    _("<p><b>User ID limitations</b><br>
+    _("<p><b>User ID Limitations</b><br>
 Set the minimum and maximum possible user ID.</p>") +
 
     /* Adduser dialog help 3/3 */

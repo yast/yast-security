@@ -51,7 +51,7 @@ global define symbol WriteDialog() ``{
 global define symbol MainDialog() ``{
 
     /* Main dialog caption */
-    string caption = _("Local security configuration");
+    string caption = _("Local Security Configuration");
     string help = HELPS["main"]:"";
 
     /* Determine current settings */
@@ -73,7 +73,7 @@ global define symbol MainDialog() ``{
     });
     RB = add(RB, `VSpacing(0.6));
     /* RadioButton label */
-    RB = add(RB, `Left(`RadioButton(`id(`custom),`opt(`notify),_("&Custom settings"), current == `custom)));
+    RB = add(RB, `Left(`RadioButton(`id(`custom),`opt(`notify),_("&Custom Settings"), current == `custom)));
     RB = add(RB, `VSpacing(0.5));
     y2debug("RB=%1",RB);
 
@@ -82,7 +82,7 @@ global define symbol MainDialog() ``{
 	`VBox(
 	    `HVSquash(
 		/* Frame caption */
-		`Frame( _("Current security settings:"),
+		`Frame( _("Current Security Settings"),
 		    `HBox(`HSpacing(0.8),
 		    `RadioButtonGroup(`id(`rb), RB),
 		    `HSpacing(0.8))

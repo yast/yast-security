@@ -1,7 +1,6 @@
 # $Id$
 
 Bugs:
-- autoinstallation support (lower chars, proper client)
 - length check (#13291)
 
 Documentation:
