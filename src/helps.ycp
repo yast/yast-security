@@ -127,7 +127,7 @@ guessing of passwords very difficult. Check this box to enable additional
 checks.</p>") +
 
     /* Password dialog help 4a/8 */
-    _("<p><b>Password Encryption Method:</b><br>")_ +
+    _("<p><b>Password Encryption Method:</b></p>") +
 
     /* Password dialog help 4b/8 */
 _("<p><b>des</b>, the Linux default method, works in all network environments,

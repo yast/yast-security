@@ -12,6 +12,7 @@
 textdomain "security";
 
 import "Label";
+import "Popup";
 import "Wizard";
 
 include "security/helps.ycp";

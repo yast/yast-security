@@ -11,6 +11,7 @@
 
 textdomain "security";
 
+import "Progress";
 import "Security";
 import "Summary";
 
