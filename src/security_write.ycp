@@ -1,0 +1,28 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description:
+ *   Only writing client
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
+ *
+ * $Id$
+ */
+
+{
+
+textdomain "security";
+include "security_io.ycp";
+
+list args = Args();
+if(size(Args)>0) {
+  y2debug("Only writing... (%1)",Args(0));
+  list ret = SecurityWrite(Args(0));
+  SecurityFinish();
+  return ret;
+}
+
+return false;
+
+} /* EOF */
