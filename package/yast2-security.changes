@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Mar  3 11:25:24 CET 2003 - msvec@suse.de
+
+- autoinstallation fixes by nashif
+- 2.7.8
+
+-------------------------------------------------------------------
 Sun Feb 16 04:08:54 CET 2003 - nashif@suse.de
 
 - Set modified true when importing
