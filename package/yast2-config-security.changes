@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 11 16:58:42 CET 2002 - mvidner@suse.cz
+
+- Fixed login.defs agent to handle quoted values.
+- Fixed test suite.
+- 2.5.8
+
+-------------------------------------------------------------------
 Tue Feb  5 18:14:17 CET 2002 - kukuk@suse.de
 
 - Add support for global pam_unix2 and pam_pwcheck config files
