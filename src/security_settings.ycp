@@ -111,7 +111,7 @@ return [
       /* Adduser */
       "GID_MIN"			: "101",
       "GID_MAX"			: "60000",
-      "UID_MIN"			: "100",
+      "UID_MIN"			: "500",
       "UID_MAX"			: "60000",
       "PASS_MIN_DAYS"		: "0",
       "PASS_MAX_DAYS"		: "99999",
@@ -145,7 +145,7 @@ return [
        /* Adduser */
       "GID_MIN"			: "101",
       "GID_MAX"			: "60000",
-      "UID_MIN"			: "100",
+      "UID_MIN"			: "500",
       "UID_MAX"			: "60000",
       "PASS_MIN_DAYS"		: "1",
       "PASS_MAX_DAYS"		: "99999",
@@ -179,7 +179,7 @@ return [
       /* Adduser */
       "GID_MIN"			: "101",
       "GID_MAX"			: "60000",
-      "UID_MIN"			: "100",
+      "UID_MIN"			: "500",
       "UID_MAX"			: "60000",
       "PASS_MIN_DAYS"		: "1",
       "PASS_MAX_DAYS"		: "99999",
