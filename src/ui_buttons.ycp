@@ -42,7 +42,11 @@ return $[
   // push button
   `details : UI(_("&Details")),
   // push button
-  `expert : UI(_("&Expert"))
+  `expert : UI(_("&Expert")),
+  // push button
+  `yes : UI(_("&Yes")),
+  // push button
+  `no : UI(_("&No"))
 ];
 
 } /* YaST2: Local security configuration EOF */
