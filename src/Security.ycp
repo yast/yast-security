@@ -482,7 +482,7 @@ global define boolean Import(map settings) ``{
 	else
 	    tmpSettings[k] = settings[k]:"";
     });
-    Settings = eval(tmpSettings);
+    Settings = (map) eval(tmpSettings);
     return true;
 }
 
@@ -492,7 +492,7 @@ global define boolean Import(map settings) ``{
  * @return map Dumped settings (later acceptable by Import ())
  */
 global define map Export() ``{
-    return eval(Settings);
+    return (map) eval(Settings);
 }
 
 /**
