@@ -1,8 +1,4 @@
-#
-# Makefile.am for y2c_sec/doc/autodocs
-#
-# $Id$
-#
+# Makefile.am for .../doc/autodocs
 
 docdir = @DOCDIR@
 htmldir = $(docdir)/autodocs

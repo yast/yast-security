@@ -6,7 +6,7 @@
 # please send bugfixes or comments to @MAINTAINER@
 #
 
-# neededforbuild  autoconf automake ycpdoc yast2-testsuite dejagnu expect tcl yast2-base libycp liby2 libyui libscr yast2-core-wfm yast2-core-scr yast2-agent-system yast2-agent-rcconfig yast2-lib-wizard
+# neededforbuild  autoconf automake ycpdoc yast2-testsuite dejagnu expect tcl yast2-base libycp libycp-devel liby2 libyui libscr yast2-core-wfm yast2-core-scr yast2-agent-system
 
 Vendor:		SuSE GmbH, Nuernberg, Germany
 Distribution:	SuSE Linux 6.4 (i386)
@@ -47,5 +47,4 @@ make check
 @YAST2DIR@/clients/ui_helps.ycp
 @YAST2DIR@/clients/ui_widgets.ycp
 @YAST2DIR@/include/security/*
-%dir @DOCDIR@
-@DOCDIR@/*
+%doc @DOCDIR@

@@ -35,4 +35,5 @@ AC_OUTPUT(Makefile
 	src/Makefile
 	doc/Makefile
 	doc/autodocs/Makefile
-	testsuite/Makefile)
+	testsuite/Makefile
+	)

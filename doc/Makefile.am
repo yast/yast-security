@@ -1,8 +1,4 @@
-#
-# Makefile.am for y2c_sec/doc
-#
-# $Id$
-#
+# Makefile.am for .../doc
 
 SUBDIRS = autodocs
 
