@@ -8,6 +8,11 @@ Mon Jul 30 11:34:24 CEST 2001 - msvec@suse.cz
 - version 2.4.1
 
 -------------------------------------------------------------------
+Tue Jul 10 01:35:53 CEST 2001 - ro@suse.de
+
+- removed yast2-core-translator from neededforbuild 
+
+-------------------------------------------------------------------
 Tue Jul  3 13:08:02 CEST 2001 - msvec@suse.cz
 
 - adapted to the system agent split
