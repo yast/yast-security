@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 22 12:55:30 CEST 2003 - msvec@suse.cz
+
+- routines cleanup
+- 2.9.1
+
+-------------------------------------------------------------------
 Fri Sep 26 13:04:30 CEST 2003 - jsuchome@suse.cz
 
 - read new settings from /etc/login.defs (SYSTEM_UID_MAX, USERADD_CMD etc.)

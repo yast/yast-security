@@ -188,36 +188,5 @@ global define boolean ReallyAbort() ``{
     return !Security::Modified() || Popup::ReallyAbort(true);
 }
 
-/**
- * Return all keys from the map
- * @param m the map
- * @return a list of all keys from the map
- */
-global define list mapkeys(map m) ``{
-    if(m==$[]) return [];
-    return maplist(`var, `val, m, ``(var));
-}
-
-/**
- * Return all values from the map
- * @param m the map
- * @return a list of all values from the map
- */
-global define list mapvalues(map m) ``{
-    if(m==$[]) return [];
-    return maplist(`var, `val, m, ``(val));
-}
-
-/**
- * Return value from a map for the given key, nil if not found
- * @param m the map
- * @param k the key
- * @return the found value
- */
-global define any mapvalue(map m, any k) ``{
-    if(m==$[]) return nil;
-    return lookup(m, k, nil);
-}
-
 /* EOF */
 }

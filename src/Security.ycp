@@ -15,8 +15,8 @@ textdomain "security";
 import "Pam";
 import "PamSettings";
 import "Progress";
+
 include "security/levels.ycp";
-include "security/routines.ycp";
 
 /**
  * All security settings
@@ -158,7 +158,7 @@ global boolean write_only = false;
  * @return true if modified
  */
 global define boolean Modified() ``{
-    y2debug("modified=%1",modified);
+    y2debug("modified=%1", modified);
     return modified;
 }
 
@@ -219,7 +219,7 @@ global define boolean Read() ``{
 	    if(val == nil) val = "";
 	    Settings[var] = val;
 	});
-	return [0,0];
+	return [0, 0];
     });
     y2debug("Settings=%1", Settings);
 
@@ -263,25 +263,23 @@ global define boolean Read() ``{
 	if(method == "" && ci_support) method = ci;
     });
     if(method == "") method = "des";
-    change(Settings,"PASSWD_ENCRYPTION", method);
+    change(Settings, "PASSWD_ENCRYPTION", method);
 
     /* obscure checks */
     boolean obscure = !contains (pam_check_settings, "no_obscure_checks");
-    change(Settings,"OBSCURE_CHECKS_ENAB", obscure? "yes":"no");
-
+    change(Settings, "OBSCURE_CHECKS_ENAB", obscure? "yes":"no");
 
     /* other pam_pwcheck settings */
     Settings ["PASS_MIN_LEN"] = "5";
     Settings ["PASS_MAX_LEN"] = "8";
     Settings ["PASSWD_USE_CRACKLIB"] = "no";
-    foreach (`val, pam_check_settings, ``{
+    foreach (string val, pam_check_settings, ``{
 	if (issubstring (val, "minlen"))
 	    Settings ["PASS_MIN_LEN"] = select (splitstring (val, "="), 1, "5");
 	if (issubstring (val, "maxlen"))
 	    Settings ["PASS_MAX_LEN"] = select (splitstring (val, "="), 1, "8");
 	/* use cracklib? */
-	if (issubstring (val, "cracklib"))
-	{
+	if (issubstring (val, "cracklib")) {
 	    Settings ["CRACKLIB_DICT_PATH"] = select (splitstring (val, "="), 1,
 		"/usr/lib/cracklib_dict");
 	    Settings ["PASSWD_USE_CRACKLIB"] = "yes";
@@ -367,7 +365,7 @@ global define boolean Write() ``{
 		commitlist = union(commitlist, [ file ]);
 	    }
 	});
-	return [0,0];
+	return [0, 0];
     });
 
     maplist(string file, commitlist, ``{
@@ -406,7 +404,7 @@ global define boolean Write() ``{
 	    /* Remove old config options */
 	    PamSettings::RemoveValue ("pam_unix2", "password", ci);
 	    PamSettings::RemoveValue ("pam_pwcheck", "password", ci);
-	    foreach (`file, [ "login", "passwd", "sshd", "rlogin" ], ``{
+	    foreach (string file, [ "login", "passwd", "sshd", "rlogin" ], ``{
 		Pam::RemoveValue (file, "password", "pam_unix", ci);
 		Pam::RemoveValue (file, "password", "pam_pwcheck", ci);
 	    });
@@ -415,8 +413,7 @@ global define boolean Write() ``{
 
     /* use cracklib? */
     PamSettings::RemoveValue ("pam_pwcheck", "password", "cracklib");
-    if (Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes")
-    {
+    if(Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes") {
 	string crack = "cracklib";
 	string pth = Settings["CRACKLIB_DICT_PATH"]:"/usr/lib/cracklib_dict";
 	if (pth != "/usr/lib/cracklib_dict")
@@ -426,18 +423,18 @@ global define boolean Write() ``{
 
     /* save obscure checks when not defualt*/
     PamSettings::RemoveValue ("pam_pwcheck", "password", "no_obscure_checks");
-    if (Settings["OBSCURE_CHECKS_ENAB"]:"yes" != "yes")
+    if(Settings["OBSCURE_CHECKS_ENAB"]:"yes" != "yes")
 	PamSettings::AddValue ("pam_pwcheck", "password", "no_obscure_checks");
 
     /* save max pass length when not default */
     PamSettings::RemoveValue ("pam_pwcheck", "password", "maxlen");
-    if (Settings["PASS_MAX_LEN"]:"8" != "8")
+    if(Settings["PASS_MAX_LEN"]:"8" != "8")
 	PamSettings::AddValue ("pam_pwcheck", "password",
 	    sformat ("maxlen=%1", Settings["PASS_MAX_LEN"]:"8"));
 
     /* save min pass length when not default */
     PamSettings::RemoveValue ("pam_pwcheck", "password", "minlen");
-    if (Settings["PASS_MIN_LEN"]:"5" != "5")
+    if(Settings["PASS_MIN_LEN"]:"5" != "5")
 	PamSettings::AddValue ("pam_pwcheck", "password",
 	    sformat ("minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
 
@@ -475,18 +472,18 @@ global define boolean Write() ``{
  * @return boolean True on success
  */
 global define boolean Import(map settings) ``{
-	if (settings == $[])
-		return true;
-	modified = true;
-	map tmpSettings = $[];
-	foreach(string k, string v, Settings, ``{
-		if (!haskey(settings, k))
-			tmpSettings[k] = v;
-		else
-			tmpSettings[k] = settings[k]:"";
-	});
+    if(settings == $[]) return true;
+
+    modified = true;
+    map tmpSettings = $[];
+    foreach(string k, string v, Settings, ``{
+	if (!haskey(settings, k))
+	    tmpSettings[k] = v;
+	else
+	    tmpSettings[k] = settings[k]:"";
+    });
     Settings = eval(tmpSettings);
-	return true;
+    return true;
 }
 
 /**
