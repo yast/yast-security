@@ -2,8 +2,10 @@
 # Makefile.am for y2c_sec/doc
 #
 
+SUBDIRS = autodocs
+
 docdir = @DOCDIR@
-htmldir = $(docdir)/y2c_sec
+htmldir = $(docdir)/security
 
 html_DATA =		\
 	security.txt	\

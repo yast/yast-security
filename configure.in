@@ -34,4 +34,5 @@ AC_OUTPUT(Makefile
 	package/y2c_sec.spec:y2c_sec.spec.in
 	src/Makefile
 	doc/Makefile
+	doc/autodocs/Makefile
 	testsuite/Makefile)
