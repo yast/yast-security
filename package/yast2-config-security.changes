@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Nov 21 17:40:17 CET 2001 - msvec@suse.cz
+
+- added DISPLAYMANAGER_REMOTE_ACCESS setting (#10824)
+- updated testsuite
+- 2.5.1
+
+-------------------------------------------------------------------
 Mon Nov 19 14:18:52 CET 2001 - msvec@suse.cz
 
 - fixed lookup 3rd parameters

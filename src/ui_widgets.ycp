@@ -232,6 +232,13 @@ return $[
     "Value" : "7"
   ],
 
+  "DISPLAYMANAGER_REMOTE_ACCESS" : $[
+    "Widget" : "CheckBox",
+    // checkbox label (please, stick to 50 characters per line)
+    "Label" : _("Allow remote &graphical login"),
+    "Value" : "no"
+  ],
+
   "MD5_SUPPORT" : $[
     "Widget" : "CheckBox",
     // checkbox label (please, stick to 50 characters per line)

@@ -33,7 +33,7 @@ textdomain "security";
  * Return all security module help texts and captions
  * @return map a map of texts
  */
- 
+
 global define UI_STRINGS() ``{ return $[
 
   "Main" : $[
@@ -66,13 +66,13 @@ _("<p>Use <b>Custom settings</b> if you want your own configuration.</p>")
     "caption" : _("Boot settings"),
     // help for "boot settings"
     "help" :
-_("<p>In this dialog, change various boot settings.</p>") + 
+_("<p>In this dialog, change various boot settings.</p>") +
 _("<p><b>How to interpret Ctrl + Alt + Del</b><br>
 When someone at the console has pressed the CTRL + ALT + DEL key
-combination, the system usually reboots. Sometimes it is
-desirable to ignore this event, for example, when the system
-serves as both workstation and server.</p>
-") + 
+combination, the system usually reboots. Sometimes it is desirable
+to ignore this event, for example, when the system serves as both
+workstation and server.</p>
+") +
 _("<p><b>Shutdown behavior of KDM</b><br>
 With KDM, control who is allowed to shut down the machine from KDM.</p>
 ")
@@ -88,9 +88,9 @@ settings are mainly stored in the '/etc/login.defs' file.</p>
 ") +
 _("<p><b>Seconds to wait after an incorrect login attempt</b><br>
 It is advisable to wait some time after an incorrect login attempt
-to prevent password guessing. On the other hand, make the
-time small enough that if a password is mistyped, you do not need
-to wait to retry. A sensible value is '3' seconds.</p>
+to prevent password guessing. On the other hand, make the time small
+enough that if a password is mistyped, you do not need to wait to
+retry. A sensible value is '3' seconds.</p>
 ") +
 _("<p><b>Record failed login attempts</b><br>
 It is useful to know if somebody is trying to log in and failed.
@@ -100,8 +100,13 @@ will be logged in the system log file.</p>
 ") +
 _("<p><b>Record successful login attempts</b><br>
 Logging succesful login attempts is useful.  It can help to warn
- you of unauthorized access to the sysem (for
-example, a user logging in from a different location than usual).</p>
+you of unauthorized access to the sysem (for example, a user logging
+in from a different location than usual).</p>
+") +
+_("<p><b>Allow remote graphical login</b><br>
+By checking this on you get a graphical login screen for this machine
+via network. You should know that remote access to your machine via
+xdm might be a security hole.</p>
 ")
   ],
 

@@ -715,7 +715,9 @@ XFrame(2.0,0.9,_("Login"),`VBox(
     `VSpacing(0.5),
     map2widget("FAILLOG_ENAB"),
     VSeparator(),
-    map2widget("LASTLOG_ENAB")
+    map2widget("LASTLOG_ENAB"),
+    VSeparator(),
+    map2widget("DISPLAYMANAGER_REMOTE_ACCESS")
     //VSeparator()
 ))
 //,`VSpacing(1.7)

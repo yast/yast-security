@@ -29,6 +29,7 @@ map m = $[
 	"GID_MIN"		:	"l4",
 	"LASTLOG_ENAB"		:	"l5",
 	"MD5_SUPPORT"		:	"yes",
+	"DISPLAYMANAGER_REMOTE_ACCESS" : "yes",
 	"OBSCURE_CHECKS_ENAB"	:	"l7",
 	"PASS_MAX_DAYS"		:	"l8",
 	"PASS_MAX_LEN"		:	"l9",

@@ -61,6 +61,7 @@ $[
     "OBSCURE_CHECKS_ENAB"	: "no",
     "PASS_WARN_AGE"		: "7",
     "MD5_SUPPORT"		: "no",
+    "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
     /* "Perms" */
     "PERMISSION_SECURITY"	: "easy local",
     /* "Other" */
@@ -95,6 +96,7 @@ $[
     "OBSCURE_CHECKS_ENAB"	: "no",
     "PASS_WARN_AGE"		: "14",
     "MD5_SUPPORT"		: "no",
+    "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
      /* "Perms" */
     "PERMISSION_SECURITY"	: "easy local",
     /* "Other" */
@@ -130,6 +132,7 @@ $[
     "OBSCURE_CHECKS_ENAB"	: "no",
     "PASS_WARN_AGE"		: "14",
     "MD5_SUPPORT"		: "no",
+    "DISPLAYMANAGER_REMOTE_ACCESS" : "no",
     /* "Perms" */
     "PERMISSION_SECURITY"	: "secure local",
     /* "Other" */
