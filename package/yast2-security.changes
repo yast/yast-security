@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 21 15:27:47 CET 2005 - jsuchome@suse.cz
+
+- handle both "cracklib" and "use_cracklib" values in pam_pwcheck.conf
+  (#49621) 
+- 2.11.2
+
+-------------------------------------------------------------------
 Fri Dec 17 14:40:18 CET 2004 - jsuchome@suse.cz
 
 - removed select's and lookup's

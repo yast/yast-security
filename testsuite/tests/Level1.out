@@ -67,6 +67,10 @@ Write	.etc.security.v."pam_pwcheck"."password" "" true
 Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
 Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
 Write	.etc.security.v."pam_pwcheck"."password" "no_obscure_checks" true
 Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
