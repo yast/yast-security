@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
-Thu Apr 10 12:16:03 CEST 2003 - msvec@suse.de
+Sun May 11 00:04:54 CEST 2003 - msvec@suse.de
 
 - maximum password length is related to encryption method
 - support for enabling of SysRq keys
+- improved documentation
 - better help texts
 - 2.8.0
 

@@ -4,5 +4,9 @@ SUBDIRS = autodocs
 
 htmldir = @docdir@
 
-html_DATA = # security.txt TODO.txt
+CLEANFILES = $(wildcard *.png)
+%.png: %.dia
+	dia -n -e $@ $<
+
+html_DATA = index.html $(wildcard *.html) workflow.png Todo.txt
 EXTRA_DIST = $(html_DATA)

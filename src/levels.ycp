@@ -28,6 +28,9 @@
 
 textdomain "security";
 
+/**
+ * Level names definitions
+ */
 global map LevelsNames = $[
     /* RadioButton label */
     "Level1" : _("Level &1 (Home Workstation)"),
@@ -37,6 +40,9 @@ global map LevelsNames = $[
     "Level3" : _("Level &3 (Network Server)"),
 ];
 
+/**
+ * Levels definitions
+ */
 global map Levels = $[
 
     "Level1" : $[

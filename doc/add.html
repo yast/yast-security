@@ -1,0 +1,97 @@
+<html><head>
+<title>Security: further development</title>
+</head><body bgcolor=#ffffff>
+<!-- Author: Michal Svec <msvec@suse.cz> -->
+<!-- $Id$ -->
+<a name="top"><p>
+<h1><a href="index.html">Security</a>: further development</h1>
+<hr>
+
+<p>
+This document describes how further features could be added
+to the security configuration.
+
+<p>
+Author: Michal Svec &lt;<a href="mailto:msvec@suse.czi">msvec@suse.cz</a>&gt;.
+
+<p>
+<h3>Contents:</h3>
+<ul>
+<li><a href="#element">Adding a New Dialog Element</a>
+<li><a href="#cipher">Adding a New Encryption Cipher</a>
+<li><a href="#level">Adding a New Security Level</a>
+<li><a href="#widget">Adding a New Widget Type</a>
+</ul>
+
+<p><a name="element"><h2>Adding a New Dialog Element</h2>
+
+<h3><a href="autodocs/Security.html">Security.ycp</a>:</h3>
+<ul>
+<li>update <a href="autodocs/Security.html#Settings">map Settings</a>
+<li>update <a href="autodocs/Security.html#Locations">map Locations</a>
+<li>implement custom parts in functions <a href="autodocs/Security.html#Read">Read</a>
+and <a href="autodocs/Security.html#Write">Write</a> if required
+</ul>
+
+<h3><a href="autodocs/levels.html">levels.ycp</a>:</h3>
+<ul>
+<li>update default values in all security levels in <a href="autodocs/levels.html#Levels">map Levels</a>
+</ul>
+
+<h3><a href="autodocs/widgets.html">widgets.ycp</a>:</h3>
+<ul>
+<li>add a widget definition to <a href="autodocs/widgets.html#WIDGETS">map WIDGETS</a>
+</ul>
+
+<h3><a href="autodocs/dialogs.html">dialogs.ycp</a>:</h3>
+<ul>
+<li>place widget into the correct dialog (function <a href="autodocs/routines.html#settings2widget">settings2widget</a>)
+<li>get a dialog result value (function <a href="autodocs/routines.html#widget2settings">widget2settings</a>)
+</ul>
+
+<h3><a href="autodocs/helps.html">helps.ycp</a>:</h3>
+<ul>
+<li>add a help text to the correct dialog to <a href="autodocs/helps.html#HELPS">map HELPS</a>
+</ul>
+
+<h3>Update testsuite:</h3>
+<ul>
+<li>testsuite/*.ycp
+<li>make check
+</ul>
+
+<p><a name="cipher"><h2>Adding a New Encryption Cipher</h2>
+
+<h3><a href="autodocs/Security.html">Security.ycp</a>:</h3>
+<ul>
+<li>add (pam) idetifier to <a href="autodocs/Security.html#Ciphers">list Ciphers</a>
+<li>add cipher maximum password length to <a href="autodocs/Security.html#PasswordMaxLengths">list PasswordMaxLengths</a>
+</ul>
+
+<h3><a href="autodocs/widgets.html">widgets.ycp</a>:</h3>
+<ul>
+<li>update list of ciphers in <a href="autodocs/widgets.html#WIDGETS">map WIDGETS</a>["PASSWORD_ENCRYPTION", "Options"]
+</ul>
+
+<h3><a href="autodocs/helps.html">helps.ycp</a>:</h3>
+<ul>
+<li>update help text in <a href="autodocs/helps.html#HELPS">map HELPS</a>["password"], parts 4/8 and 5/8
+</ul>
+
+<p><a name="level"><h2>Adding a New Security Level</h2>
+
+<h3><a href="autodocs/levels.html">levels.ycp</a>:</h3>
+<ul>
+<li>add a level identifier to <a href="autodocs/levels.html#LevelsNames">map LevelsNames</a>
+<li>add default values of all variables for the new level to <a href="autodocs/levels.html#Levels">map Levels</a>
+</ul>
+
+<p><a name="widget"><h2>Adding a New Widget Type</h2>
+
+<h3><a href="autodocs/routines.html">routines.ycp</a>:</h3>
+<ul>
+<li>add new widget creation to function <a href="autodocs/routines.html#settings2widget">settings2widget</a>
+<li>if required, add return type conversion to function <a href="autodocs/routines.html#widget2settings">widget2settings</a>
+</ul>
+
+</body></html>

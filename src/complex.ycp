@@ -125,6 +125,7 @@ global define symbol MainDialog() ``{
 	    if(cur != `custom) {
 		UI::ChangeWidget(`id(`details), `Enabled, false);
 		Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default), NextButtonLabel()));
+		UI::SetFocus(`id(`next));
 	    }
 	    continue;
 	}
@@ -136,6 +137,7 @@ global define symbol MainDialog() ``{
 	    if(cur == `custom) {
 		UI::ChangeWidget(`id(`details), `Enabled, true);
 		Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default), FinishButtonLabel()));
+		UI::SetFocus(`id(`next));
 	    }
 	    continue;
 	}

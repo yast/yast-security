@@ -1,0 +1,74 @@
+<html><head>
+<title>Security: implementation structure</title>
+</head><body bgcolor=#ffffff>
+<!-- Author: Michal Svec <msvec@suse.cz> -->
+<!-- $Id$ -->
+<a name="top"><p>
+<h1><a href="index.html">Security</a>: implementation structure</h1>
+<hr>
+
+<p>
+This document describes a basic implementation structure
+of the security module.
+
+<p>
+Author: Michal Svec &lt;<a href="mailto:msvec@suse.czi">msvec@suse.cz</a>&gt;.
+
+<p>
+Contents:
+<ul>
+<li><a href="#clients">Clients</a>
+<li><a href="#modules">Modules</a>
+<li><a href="#includes">Includes</a>
+<li><a href="#config">Config</a>
+</ul>
+
+<p><a name="clients">
+<h3>Clients</h3>
+<ul>
+<li><a href="autodocs/security.html">security.ycp</a>
+	<dd>Main dialog client. Called from the control center (menu)
+<li><a href="autodocs/security_auto.html">security_auto.ycp</a>
+	<dd>Auto-installation client
+<li><a href="autodocs/security_summary.html">security_summary.ycp</a>
+	<dd>Summary only client
+<li><a href="autodocs/security_write.html">security_write.ycp</a>
+	<dd>Write only client
+</ul>
+
+<p><a name="modules">
+<h3>Modules</h3>
+<ul>
+<li><a href="autodocs/Security.html">Security.ycp</a>
+	<dd>Security data, read and write functions.
+</ul>
+
+<p><a name="includes">
+<h3>Includes</h3>
+<ul>
+<li><a href="autodocs/levels.html">levels.ycp</a>		
+	<dd>Security levels
+<li><a href="autodocs/wizards.html">wizards.ycp</a>	
+	<dd>Workflow
+<li><a href="autodocs/widgets.html">widgets.ycp</a>	
+	<dd>Dialogs widgets
+<li><a href="autodocs/helps.html">helps.ycp</a>		
+	<dd>Dialog help texts
+<li><a href="autodocs/complex.html">complex.ycp</a>		
+	<dd>Main dialog
+<li><a href="autodocs/users.html">users.ycp</a>	
+	<dd>Users dialogs
+<li><a href="autodocs/dialogs.html">dialogs.ycp</a>	
+	<dd>Remaining dialogs
+<li><a href="autodocs/routines.html">routines.ycp</a>		
+	<dd>Miscellaneous routines
+</ul>
+
+<p><a name="config">
+<h3>Config</h3>
+<ul>
+<li><a href="autodocs/security.y2cc.html">security.y2cc</a>
+	<dd>Configuration file
+</ul>
+
+</body></html>

@@ -1,6 +1,7 @@
-;
-; Menuentry file used by
-;  YaST2 Control Center
+; File:		config/security.y2cc
+; Package:	Security configuration
+; Summary:	Config file
+; Authors:	Michal Svec <msvec@suse.cz>
 ;
 ; $Id$
 ;

@@ -11,14 +11,14 @@ client_DATA =			\
 	security_write.ycp
 
 ynclude_DATA =			\
-	users.ycp		\
 	complex.ycp		\
 	dialogs.ycp		\
-	wizards.ycp		\
-	widgets.ycp		\
-	routines.ycp		\
+	helps.ycp		\
 	levels.ycp		\
-	helps.ycp
+	routines.ycp		\
+	users.ycp		\
+	widgets.ycp		\
+	wizards.ycp
 
 module_DATA = Security.ycp
 
