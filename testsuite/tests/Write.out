@@ -114,10 +114,7 @@ Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
 Dir	.etc.security.section: []
 Write	.etc.security.v."pam_pwcheck"."password" "minlen=l10" true
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck" nil true
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_unix2" nil true
+Write	.etc.security nil true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
 Execute	.target.bash "/sbin/SuSEconfig --module xdm" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0

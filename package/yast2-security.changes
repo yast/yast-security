@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar 17 16:35:19 CET 2004 - jsuchome@suse.cz
+
+- fixed testsuite (forced by change of PamSettings::Write)
+- 2.9.12
+
+-------------------------------------------------------------------
 Fri Mar 12 15:11:12 CET 2004 - jsuchome@suse.cz
 
 - flush changes of pam configuration (#35721)
