@@ -199,11 +199,11 @@ UI(_("<p>\"yes\": the dot (\".\") is attached to the end of the search
 UI(_("<p>\"no\": the user root always has to launch programs in the
   current directory prefixed with a \"./\". Example: \"./configure\".
 </p>")) +
-UI(_("<p><b>Disable telnet for user root</b><br>
+UI(_("<p><b>Enable telnet for user root</b><br>
 It is not very wise to allow telnet for the user root. During
 the telnet session the passwords are sent in the plain form,
 so they can be stolen by the third-party. Check this box to
-disable telnet for root.
+enable telnet for root.
 </p>"))
 
   ]
