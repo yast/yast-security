@@ -135,7 +135,7 @@ Set the minimum and maximum password length.</p>") +
 maximum time for warning that the password must be changed.</p>") +
 
     /* Password dialog help 6/6 */
-    _("<p><b>Days before Password Expiry Warning</b><br> This entry sets the
+    _("<p><b>Days before Password Expiration Warning</b><br> This entry sets the
 number of days users are warned before their passwords expire. The longer the
 time, the less likely it is that a user can guess passwords.</p>"),
 
