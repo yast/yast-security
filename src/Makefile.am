@@ -11,7 +11,8 @@ modules_DATA =			\
 	security.ycp		\
 	security_helps.ycp	\
 	security_settings.ycp	\
-	security_widgets.ycp
+	security_widgets.ycp    \
+	security_write.ycp
 
 include_DATA =			\
 	general.ycp		\
