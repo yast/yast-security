@@ -1,0 +1,40 @@
+/**
+ * File:
+ *   /etc/inittab
+ * Summary:
+ *   SCR Agent for reading/writing /etc/inittab
+ * Access:
+ *   read/write
+ * Authors:
+ *   Petr Blahos <pblahos@suse.cz>
+ * See:
+ *   yast2-agent-ini/ini.html
+ *   libscr
+ *   man inittab
+ * Example:
+ *   Dir(.etc.inittab)
+ *   (["id", "si", "l0", "l1", "l2", "~~" ... ])
+ **
+ *   Read(.etc.inittab.id)
+ *   ("5:initdefault:")
+ **
+ *   Write(.etc.inittab.id, "3:initdefault:")
+ *   (true)
+ *
+ * $Id$
+ */
+.etc.inittab
+
+`ag_ini(
+  IniAgent(
+    "/etc/inittab",
+    $[ "options" : [ "global_values", "flat" ],
+       "comments" : [ "^#.*", "^[ \t]*$" ],
+       "params" : [
+         $[ "match" : [
+		"([^:]+):(.*[^ \t])[ \t]*$", "%s:%s"
+	      ]
+	 ]
+       ]
+    ]))
+
