@@ -74,7 +74,7 @@ global map WIDGETS = $[
     "CONSOLE_SHUTDOWN" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("Interpretation of Ctrl + Alt + Del:"),
+	"Label" : _("&Interpretation of Ctrl + Alt + Del:"),
 	"Options" : [
 	    /* ComboBox value */
 	    ["ignore", _("Ignore")],
