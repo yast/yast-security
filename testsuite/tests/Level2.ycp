@@ -43,6 +43,6 @@ map DATA = $[
       "PASS_MAX_LEN"		: "8"
 ];
 
-TEST(`security_write(DATA),$[]);
+TEST(`security_write(DATA),$[],false);
 
 }
