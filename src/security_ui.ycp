@@ -661,6 +661,14 @@ define SecurityMiscDialog() ``{
 
 /* Password security settings dialog */
 
+define checkMinMax(string minID, string maxID) ``{
+  any min = UI(`QueryWidget(`id(minID),`Value));
+  any max = UI(`QueryWidget(`id(maxID),`Value));
+  if(is(min,integer|float) && is(max,integer|float) && min<=max)
+    return true;
+  return false;
+}
+
 define SecurityPasswdDialog() ``{
   SuSEDialogUP("Password", [], `VBox(
     //VSeparator(),
@@ -691,7 +699,21 @@ define SecurityPasswdDialog() ``{
     map2widget("PASS_WARN_AGE"),
     `VSpacing(0.5)
   ));
-  any ret = processInput();
+  any ret = nil;
+  while(true) {
+    ret = processInput();
+    if(ret == `ok || ret ==`next) {
+      if(checkMinMax("PASS_MIN_LEN","PASS_MAX_LEN")!=true) {
+        PopupOK(UI(_("The minimum password length cannot be larger than maximum")));
+        continue;
+      }
+      if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS")!=true) {
+        PopupOK(UI(_("The minimum number of days cannot be larger than maximum")));
+        continue;
+      }
+    }
+    break;
+  }
   if(ret == `ok || ret ==`next) {
     updateWidget("PASS_MIN_DAYS");
     updateWidget("PASS_MAX_DAYS");
@@ -725,7 +747,21 @@ define SecurityAdduserDialog() ``{
     //VSeparator()
     //,`HSpacing(1)
   ));
-  any ret = processInput();
+  any ret = nil;
+  while(true) {
+    ret = processInput();
+    if(ret == `ok || ret ==`next) {
+      if(checkMinMax("UID_MIN","UID_MAX")!=true) {
+        PopupOK(UI(_("The minimum user ID cannot be larger than maximum")));
+        continue;
+      }
+      if(checkMinMax("GID_MIN","GID_MAX")!=true) {
+        PopupOK(UI(_("The minimum group IDs cannot be larger than maximum")));
+        continue;
+      }
+    }
+    break;
+  }
   if(ret == `ok || ret ==`next) {
     updateWidget("GID_MIN");
     updateWidget("GID_MAX");
