@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 12 15:11:12 CET 2004 - jsuchome@suse.cz
+
+- flush changes of pam configuration (#35721)
+- 2.9.11
+
+-------------------------------------------------------------------
 Thu Mar 11 11:31:07 CET 2004 - msvec@suse.cz
 
 - enabled the testsuite again

@@ -438,6 +438,8 @@ global define boolean Write() {
 	PamSettings::AddValue ("pam_pwcheck", "password",
 	    sformat ("minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
 
+    PamSettings::Write (["pam_pwcheck", "pam_unix2"]);
+
     /* enable sysrq? */
     boolean sysrq = Settings["ENABLE_SYSRQ"]:"no" == "yes";
     if(sysrq)
