@@ -33,4 +33,5 @@ AM_CONDITIONAL(ISPPC, test `uname -m` = ppc)
 AC_OUTPUT(Makefile
 	package/y2c_sec.spec:y2c_sec.spec.in
 	src/Makefile
-	doc/Makefile)
+	doc/Makefile
+	testsuite/Makefile)
