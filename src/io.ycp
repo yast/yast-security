@@ -198,7 +198,7 @@ global define SecurityFinish() ``{
     list ret = [];
     ret = add(ret,SCR(`Write(.etc.login_defs,nil)));
     ret = add(ret,SCR(`Write(.rc.system,nil)));
-    ret = add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig -quick --nonewpackage")));
+    ret = add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig --nonewpackage")));
     return ret;
 };
 
