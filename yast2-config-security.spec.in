@@ -14,7 +14,7 @@ Name:		@RPMNAME@
 Release:	1
 Copyright:	(c) 2000 SuSE GmbH
 Group:		System Environment/YaST
-Requires:	yast2 yast2-trans-security yast2-lib-wizard yast2-agent-rcconfig yast2-agent-pam
+Requires:	yast2 yast2-trans-security yast2-lib-wizard yast2-agent-ini yast2-agent-pam
 Provides:	y2c_sec
 Obsoletes:	y2c_sec
 BuildArchitectures: noarch
