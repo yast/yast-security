@@ -84,7 +84,7 @@
 		summary = Summary::AddHeader(summary, _("Security Settings"));
 		if (size(settings)>0)
 		{
-			summary = Summary::AddLine(summary, _("This resource is configured. To view the settings, please go through the configuration 
+			summary = Summary::AddLine(summary, _("This resource is configured. To view the settings, go through the configuration 
 dialogs by running this module."));
 		}
 		else

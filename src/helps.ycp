@@ -170,7 +170,7 @@ be searched by the program \"locate\".
 _("<p>By setting this entry, you can select the user to run this
 command:
 </p>") +
-_("<p>\"nobody\": only files which the user \"nobody\" can access
+_("<p>\"nobody\": only files that the user \"nobody\" can access
 are added into the database. All users can choose if the
 file will be in the database or not.
 </p>") +
