@@ -156,7 +156,7 @@ define symbol MainDialog() ``{
 	if(cur != `custom) {
 	    if(current != cur) {
 		y2debug("Level modified (%1)", cur);
-		Security::Settings = Levels[cur]:$[];
+		Security::Settings = Levels[(string) cur]:$[];
 		Security::modified = true;
 	    }
 	    if(ret == `next) ret = `finish;

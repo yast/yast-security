@@ -31,7 +31,7 @@ textdomain "security";
 /**
  * Level names definitions
  */
-map LevelsNames = $[
+map<string,string> LevelsNames = $[
     /* RadioButton label */
     "Level1" : _("Level &1 (Home Workstation)"),
     /* RadioButton label */
@@ -43,7 +43,7 @@ map LevelsNames = $[
 /**
  * Levels definitions
  */
-map Levels = $[
+map<string,map<string,string> > Levels = $[
 
     "Level1" : $[
 	"CONSOLE_SHUTDOWN"		: "reboot",

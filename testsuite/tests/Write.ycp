@@ -16,7 +16,7 @@ include "testsuite.ycp";
 
 import "Security";
 
-map m = $[
+map<string,string> m = $[
     "CONSOLE_SHUTDOWN"		:	"reboot",
     "CWD_IN_ROOT_PATH"		:	"r2",
     "CWD_IN_USER_PATH"		:	"r2s",

@@ -63,7 +63,7 @@ else if(func == "Import") {
     /* Compat */
     if(haskey(param, "encryption"))
 	param["passwd_encryption"] =  param["encryption"]:"des";
-    ret = Security::Import(Map::KeysToUpper(param));
+    ret = Security::Import((map) Map::KeysToUpper((map<string,any>) param));
 }
 /* Return required packages */
 else if (func == "Packages") {
@@ -71,7 +71,7 @@ else if (func == "Packages") {
 }
 /* Return actual state */
 else if (func == "Export") {
-    ret = Map::KeysToLower(Security::Export());
+    ret = Map::KeysToLower((map<string,any>) Security::Export());
 }
 /* Read current state */
 else if (func == "Read") {

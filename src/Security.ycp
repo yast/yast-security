@@ -21,7 +21,7 @@ include "security/levels.ycp";
 /**
  * All security settings
  */
-global map Settings = $[
+global map<string,string> Settings = $[
     "CONSOLE_SHUTDOWN"			: "reboot",
     "CRACKLIB_DICT_PATH"		: "/usr/lib/cracklib_dict",
     "CWD_IN_ROOT_PATH"			: "yes",
@@ -58,7 +58,7 @@ global map Settings = $[
 /**
  * Security settings locations
  */
-map Locations = $[
+map<string,list<string> > Locations = $[
     ".etc.login_defs" : [
 	"FAILLOG_ENAB",
 	"FAIL_DELAY",
@@ -115,7 +115,7 @@ global map PasswordMaxLengths = $[
 /**
  * List of supported password encryption ciphers
  */
-list Ciphers = [
+list<string> Ciphers = [
     // "des",
     "md5",
     "blowfish",
@@ -131,7 +131,7 @@ global block<boolean> AbortFunction = nil;
  * Check for pending Abort press
  * @return true if pending abort
  */
-global define boolean PollAbort() ``{
+global define boolean PollAbort() {
     return UI::PollInput() == `abort;
 }
 
@@ -139,7 +139,7 @@ global define boolean PollAbort() ``{
  * Abort function
  * @return blah blah lahjk
  */
-global define boolean Abort() ``{
+global define boolean Abort() {
     if(AbortFunction != nil)
 	return eval(AbortFunction) == true;
     return false;
@@ -157,7 +157,7 @@ global boolean write_only = false;
  * Data was modified?
  * @return true if modified
  */
-global define boolean Modified() ``{
+global define boolean Modified() {
     y2debug("modified=%1", modified);
     return modified;
 }
@@ -166,7 +166,7 @@ global define boolean Modified() ``{
  * Read all security settings
  * @return true on success
  */
-global define boolean Read() ``{
+global define boolean Read() {
 
     /* Security read dialog caption */
     string caption = _("Initializing Security Configuration");
@@ -202,8 +202,8 @@ global define boolean Read() ``{
     if(Abort()) return false;
     Progress::NextStage();
 
-    mapmap(string file, list vars, Locations, ``{
-	maplist(string var, vars, ``{
+    mapmap(string file, list<string> vars, Locations, {
+	maplist(string var, vars, {
 	    string val = "";
 
 	    string filename = nil;
@@ -253,12 +253,12 @@ global define boolean Read() ``{
     Progress::NextStage();
 
     /* pam stuff */
-    list pam_unix_settings = PamSettings::GetValues ("pam_unix2", "password");
-    list pam_check_settings = PamSettings::GetValues("pam_pwcheck", "password");
+    list<string> pam_unix_settings = PamSettings::GetValues ("pam_unix2", "password");
+    list<string> pam_check_settings = PamSettings::GetValues("pam_pwcheck", "password");
 
     /* md5 & blowfish support */
     string method = "";
-    maplist(string ci, Ciphers, ``{
+    maplist(string ci, Ciphers, {
 	boolean ci_support = contains (pam_unix_settings, ci);
 	if(method == "" && ci_support) method = ci;
     });
@@ -273,7 +273,7 @@ global define boolean Read() ``{
     Settings ["PASS_MIN_LEN"] = "5";
     Settings ["PASS_MAX_LEN"] = "8";
     Settings ["PASSWD_USE_CRACKLIB"] = "no";
-    foreach (string val, pam_check_settings, ``{
+    foreach (string val, pam_check_settings, {
 	if (issubstring (val, "minlen"))
 	    Settings ["PASS_MIN_LEN"] = select (splitstring (val, "="), 1, "5");
 	if (issubstring (val, "maxlen"))
@@ -311,7 +311,7 @@ global define boolean Read() ``{
  * Write all security settings
  * @return true on success
  */
-global define boolean Write() ``{
+global define boolean Write() {
 
     if(!modified) return true;
     y2milestone("Writing configuration");
@@ -355,20 +355,20 @@ global define boolean Write() ``{
     y2debug("Settings=%1", Settings);
     Settings["PERMISSION_SECURITY"] = Settings["PERMISSION_SECURITY"]:"" + " local";
 
-    list commitlist = [];
-    mapmap(string file, list vars, Locations, ``{
-	maplist(string var, vars, ``{
+    list<string> commitlist = [];
+    mapmap(string file, list<string> vars, Locations, {
+	maplist(string var, vars, {
 	    string val = Settings[var]:"";
 	    if(val == nil) val = "";
 	    if(val != SCR::Read(topath(file + "." + var))) {
 		SCR::Write(topath(file + "." + var), val);
-		commitlist = union(commitlist, [ file ]);
+		commitlist = (list<string>) union(commitlist, [ file ]);
 	    }
 	});
 	return $[0: 0];
     });
 
-    maplist(string file, commitlist, ``{
+    maplist(string file, commitlist, {
 	SCR::Write(topath(file), nil);
     });
 
@@ -394,7 +394,7 @@ global define boolean Write() ``{
     /* pam stuff */
     string encr = Settings["PASSWD_ENCRYPTION"]:"des";
 
-    maplist(string ci, Ciphers, ``{
+    maplist(string ci, Ciphers, {
 
 	if(encr == ci) {
 	   PamSettings::AddValue ("pam_unix2", "password", ci);
@@ -404,7 +404,7 @@ global define boolean Write() ``{
 	    /* Remove old config options */
 	    PamSettings::RemoveValue ("pam_unix2", "password", ci);
 	    PamSettings::RemoveValue ("pam_pwcheck", "password", ci);
-	    foreach (string file, [ "login", "passwd", "sshd", "rlogin" ], ``{
+	    foreach (string file, [ "login", "passwd", "sshd", "rlogin" ], {
 		Pam::RemoveValue (file, "password", "pam_unix", ci);
 		Pam::RemoveValue (file, "password", "pam_pwcheck", ci);
 	    });
@@ -472,18 +472,18 @@ global define boolean Write() ``{
  * @param settings The YCP structure to be imported.
  * @return boolean True on success
  */
-global define boolean Import(map settings) ``{
+global define boolean Import(map settings) {
     if(settings == $[]) return true;
 
     modified = true;
     map tmpSettings = $[];
-    foreach(string k, string v, Settings, ``{
+    foreach(string k, string v, Settings, {
 	if (!haskey(settings, k))
 	    tmpSettings[k] = v;
 	else
 	    tmpSettings[k] = settings[k]:"";
     });
-    Settings = (map) eval(tmpSettings);
+    Settings = (map<string,string>) eval(tmpSettings);
     return true;
 }
 
@@ -492,7 +492,7 @@ global define boolean Import(map settings) ``{
  * (For use by autoinstallation.)
  * @return map Dumped settings (later acceptable by Import ())
  */
-global define map Export() ``{
+global define map Export() {
     return (map) eval(Settings);
 }
 
@@ -500,11 +500,11 @@ global define map Export() ``{
  * Create a textual summary and a list of unconfigured cards
  * @return summary of the current configuration
  */
-global define list Summary() ``{
+global define list Summary() {
 
     /* Determine current settings */
     any current = `custom;
-    maplist(string key, map level, Levels, ``{
+    maplist(string key, map level, Levels, {
 	y2debug("%1=%2", key, level);
 	if(level == Settings)
 	    current = key;
@@ -515,7 +515,7 @@ global define list Summary() ``{
     string summary = _("Current Security Level: Custom settings");
     if(current != `custom)
 	/* Summary text */
-	summary = sformat(_("Current Security Level: %1"), LevelsNames[current]:"");
+	summary = sformat(_("Current Security Level: %1"), LevelsNames[(string) current]:"");
 
     return [ summary, [] ];
 }
@@ -524,7 +524,7 @@ global define list Summary() ``{
  * Create an overview table with all configured cards
  * @return table items
  */
-global define list Overview() ``{
+global define list Overview() {
     return [];
 }
 
