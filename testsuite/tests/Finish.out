@@ -1,0 +1,4 @@
+Write	.etc.login_defs nil true
+Write	.rc.system nil true
+Execute	.target.bash "/sbin/SuSEconfig --nonewpackage" 0
+Return	[true, true, 0]
