@@ -17,7 +17,7 @@ Write	.etc.login_defs.PASS_WARN_AGE "7" true
 Read	.etc.login_defs.UID_MAX nil
 Write	.etc.login_defs.UID_MAX "60000" true
 Read	.etc.login_defs.UID_MIN nil
-Write	.etc.login_defs.UID_MIN "500" true
+Write	.etc.login_defs.UID_MIN "1000" true
 Read	.etc.login_defs.SYSTEM_UID_MAX nil
 Write	.etc.login_defs.SYSTEM_UID_MAX "499" true
 Read	.etc.login_defs.SYSTEM_UID_MIN nil
