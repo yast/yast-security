@@ -42,10 +42,10 @@ UI(_("<p>In this dialog you can change various boot settings.</p>")) +
 UI(_("<p><b>How to interpret Ctrl-Alt-Del</b><br>
 When someone at the console has pressed the CTRL-ALT-DEL key
 combination, the system usually reboots. Sometimes it is
-desired to ignore this event, for example when the system
+desirable to ignore this event, for example when the system
 serves as both workstation and server.</p>")) + 
 UI(_("<p><b>Shutdown behaviour of KDM</b><br>
-With KDM you may decide who is allowed to shutdown the machine from KDM.
+With KDM you can control who is allowed to shutdown the machine from KDM.
 "))
   ],
 
@@ -55,18 +55,19 @@ With KDM you may decide who is allowed to shutdown the machine from KDM.
 UI(_("<p>In this dialog you can change various login settings. These
 settings are mainly stored in the '/etc/login.defs' file.</p>")) +
 UI(_("<p><b>Seconds to wait after an incorrect login attempt</b><br>
-It is useful to wait some time after an incorrect login attempt
-to prevent the passwords guessing. On the other hand, make the
-time so small that if you mistype the password, you don't need
-to wait to long. The sensible value is '3'.</p>")) +
+It is advisable to wait some time after an incorrect login attempt
+to prevent password guessing. On the other hand, make the
+time so small that if a password is mistyped, you do not need
+to wait to retry. A sensible value is '3' seconds.</p>")) +
 UI(_("<p><b>Record failed login attempts</b><br>
 It is useful to know if somebody is trying to log in and failed.
-For example if someone is guessing password of other users.
+For example if someone is trying to guess the password of other users.
 By checking this option, you control if the failed login attempts
-will be logged into the system logfile.</p>")) +
+will be logged in the system logfile.</p>")) +
 UI(_("<p><b>Record successful login attempts</b><br>
-Even the successful login attempts logging can be useful. It can
-show if somebody is using someone else's account.</p>"))
+Logging succesful login attempts is useful.  It can help to warn
+ you of unauthorised access to the sysem (for
+example, a user logging in from a different location than usual).</p>"))
   ],
 
   "Password" : $[
@@ -75,12 +76,12 @@ show if somebody is using someone else's account.</p>"))
 UI(_("<p>In this dialog you can change various password settings. These
 settings are mainly stored in the \"/etc/login.defs\" file.</p>")) +
 UI(_("<b>Checks for new passwords</b><br>
-It is wise to choose password not to be very dictionary words, usual
-names or other simple things. By checking the box you set some checking
-for password to not contain simple words which can be easily guessed.</p>")) +
-UI(_("<p><b>Plausibility test for password</b><br>
-Sometimes it is even needed that password are enough strange words
-that guessing is more hard. Check this box to enable additional
+It is wise to choose a password that cannot be found in a dictionary,
+names or other simple, common words. By checking the box you enforce password checking
+with regards to the above rules.</p>")) +
+UI(_("<p><b>Plausibility test for passwords</b><br>
+Sometimes it is required that passwords are constructed using a mixture of characters. This makes 
+the guessing of passwords very difficult. Check this box to enable additional
 checks.</p>")) +
 UI(_("<p><b>Password length</b><br>
 Set the minimum and maximum password length.</p>")) +
@@ -88,8 +89,8 @@ UI(_("<p><b>Days of password change warning</b><br>
 Set the minimum and maximum time for warning if the password must
 be changed.</p>")) +
 UI(_("<p><b>Days before password expiry warning?</b><br>
-This entry sets the number of days the user is warned before his password
-expiry. The longer time, the harder for the user guessing passwords.</p>"))
+This entry sets the number of days the user is warned before their password
+ expiry. The longer the time, the less likely it is that a user can guess passwords.</p>"))
 //+ ""
   ],
 
@@ -113,11 +114,11 @@ according to the data in /etc/permissions.secure or
 /etc/permissions.easy. Which file is used depends upon this
 selection. Launching SuSEconfig sets these permissions
 according to /etc/permissions.*. This fixes files with
-incorrect permissions whether this occured accidentally or
+incorrect permissions, whether this occured accidentally or
 by intruders.
 </p><p>
-\"easy\": For most of the system files that are only readable
-  for root (via secure) are modified so that other users can
+\"easy\": Most of the system files that are only readable
+  by root (via secure) are modified so that other users can
   also read these files.
 </p><p>
 \"secure\": Certain system files (e.g. /var/log/messages) can
@@ -125,7 +126,7 @@ by intruders.
   launched by root or by daemons, not by an ordinary user.
 </p><p>
 \"paranoid\":  If you are really paranoid, use this setting.
-  You must after that decide, which users will be able to
+  You must decide which users will be able to
   run X applications and set-uid programs.
 </p>")) +
 UI(_("<p><b>User launching updatedb</b><br>
@@ -134,7 +135,7 @@ your whole filesystem and creates a database (locatedb)
 where the location of EVERY file is stored. The database can
 be searched by the program \"locate\".
 </p><p>
-By setting this entry, you select the user to run this
+By setting this entry, you can select the user to run this
 command:
 </p><p>
 \"nobody\": only files which the user \"nobody\" can access
