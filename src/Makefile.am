@@ -21,11 +21,9 @@ ynclude_DATA =			\
 
 module_DATA = Security.ycp
 
-config_DATA = security.y2cc
-
 desktop_DATA = security.desktop
 
-EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
+EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
 
 security:
 	ln -sf . security

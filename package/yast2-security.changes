@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb  6 14:33:48 CET 2004 - msvec@suse.cz
+
+- use Sequencer module
+- drop y2cc config file
+- 2.9.4
+
+-------------------------------------------------------------------
 Mon Jan 26 15:38:33 CET 2004 - msvec@suse.cz
 
 - updates for the new interpreter
