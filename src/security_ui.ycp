@@ -1,0 +1,376 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: UI functions
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: security_ui.ycp
+ *
+ * $Id$
+ */
+
+/*
+ * Use:
+ *   Include(`security_ui());
+ *   map BUTTONS = CallFunction(`buttons());
+ *   map STRINGS = CallFunction(`your_helps());
+ *   map WIDGETS = CallFunction(`your_widgets());
+ */
+
+{
+
+Include(`general());
+Include(`general_ui());
+
+/* Menuentry for the YaST2 menu */
+
+define YaST2MenuEntry(map m) ``{
+  string mpath = lookup(m,"path");
+  string mmenu = lookup(m,"menu");
+  string mhelp = lookup(m,"help");
+  return [ mpath, $[
+    `menuentry    : mmenu,
+    `arguments    : [ ],
+    `widget       : `RichText(mhelp),
+    `codefragment : nil
+  ]];
+};
+
+/* map2widget -- see security_maps.ycp */
+
+define map2widget(string ID /*, map m*/) ``{
+  /* string ID = lookup(m,"ID"); */
+  map m = lookup(SECURITY_OPTIONS,ID);
+  string label = lookup(m,"Label");
+  string value = lookup(m,"Value");
+  string widget = lookup(m,"Widget");
+
+  /* "Widget" == "CheckBox" */
+
+  if(widget == "CheckBox") {
+    boolean enabled = false;
+    if(value == "yes")
+      enabled = true;
+    return `VBox(
+      //VSeparator(),
+      `Left(`CheckBox(`id(ID),label,enabled)),
+      VSeparator()
+    );
+  }
+
+  /* "Widget" == "TextEntry" */
+
+  if(widget == "TextEntry") {
+    return `VBox(
+      //VSeparator(),
+      `Left(`TextEntry(`id(ID),label,value)),
+      VSeparator()
+    );
+  }
+
+  /* "Widget" == "???" */
+
+  if(widget != "ComboBox") {
+    _debug("Unknown widget: ", widget);
+    return VSeparator();
+  }
+
+  /* "Widget" == "ComboBox" */
+
+  list li = lookup(m,"Options");
+  list combo = [];
+  integer i = 0;
+
+  while(i < size(li)) {
+    string|list it = select(li,i);
+    string id_t = "";
+    string id_s = "";
+    if(is(it,string)) {
+      id_t = it;
+      id_s = it;
+    }
+    else {
+      id_t = select(it,0);
+      id_s = select(it,1);
+    }
+    if(value == id_t)
+      combo = add(combo,`item(`id(id_t),id_s,true));
+    else
+      combo = add(combo,`item(`id(id_t),id_s));
+    i=i+1;
+  }
+
+  return `VBox(
+    `Left(`ComboBox(`id(ID),label,combo)),
+    VSeparator()
+  );
+};
+
+/* Query the widget with `id(ID) for its `Value */
+
+define widget2value(string ID) ``{
+  any ret = UI(`QueryWidget(`id(ID),`Value));
+  if(is(ret,boolean))
+    if(ret==true)
+      ret = "yes";
+    else
+      ret = "no";
+
+  return ret;
+};
+
+/* Process the UI input and return `ok or nil */
+
+define processInput() ``{
+  any ret = nil;
+
+  ret = UI(`UserInput());
+  if(ret == `next || ret == `ok)
+    return `ok;
+  if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
+    return nil;
+
+  return ret;
+};
+
+/* Vertical separator */
+
+define VSeparator() ``{
+  return `VSpacing(`opt(`vstretch),0.1);
+};
+
+/* Horizontal separator */
+
+define HSeparator() ``{
+  return `HSpacing(`opt(`hstretch),0.1);
+};
+
+/* str2term */
+
+define str2term(symbol B) ``{
+  string|void button = lookup(BUTTONS,B);
+  if(button==nil)
+    return nil;
+
+  term|void Button = nil;
+
+  if(B==`ok || B==`finish)
+    Button = `PushButton(`id(B), `opt(`default), button);
+  else
+    Button = `PushButton(`id(B), button);
+
+  return Button;
+
+  term BackButton = `PushButton(`id(`back), _("&Back"));
+  term OKButton = `PushButton(`id(`ok), `opt(`default), _("&OK"));
+  term FinishButton = `PushButton(`id(`ok), `opt(`default), _("&Finish"));
+  term CancelButton = `PushButton(`id(`cancel), _("&Cancel"));
+
+  if(B=="B") return BackButton;
+  if(B=="O") return OKButton;
+  if(B=="F") return FinishButton;
+  if(B=="C") return CancelButton;
+  return OKButton;
+}
+
+/* Bottom buttons -- [Back] and [OK] */
+
+define BottomButtons(list buttons) ``{
+  symbol|void B1 = nil;
+  symbol|void B2 = nil;
+
+  if(size(buttons)>1) {
+    B1 = select(buttons,0);
+    B2 = select(buttons,1);
+  }
+
+  if(B1==nil) B1=`back;
+  if(B2==nil) B2=`ok;
+
+  return `HBox( 
+    str2term(B1),
+    `HStretch(),
+    str2term(B2)
+  );
+};
+
+/* The main dialog widget */
+
+define SuSEDialog(string ID, list buttons, term T) ``{
+  //map dmap = lookup(STRINGS(),ID);
+  map dmap = lookup(STRINGS,ID);
+  string help_text = lookup(dmap,"help");
+  string caption = lookup(dmap,"caption");
+
+  UI(`OpenDialog( `opt(`defaultsize),
+    `VBox(`Image(`suseheader, "SuSE"), `HBox(
+      `HWeight(30, `RichText(`id(`help), help_text)),
+      `HWeight(70,
+	`HVCenter( `VBox(
+	  `Top(`Left(`Heading(`id(`title), caption))),
+          VSeparator(),
+          `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
+          //`HVCenter(`Frame(caption,T)),
+          VSeparator(),
+          BottomButtons(buttons)
+        )))
+  ))));
+};
+
+/* Update one value in the WIDGETS map from the widget value */
+
+define updateWidget(string ID) ``{
+  any val = widget2value(ID);
+  SECURITY_OPTIONS = updateValue(SECURITY_OPTIONS,ID,val);
+};
+
+
+/* One security item */
+
+define SecurityItem(any ID, string str) ``{
+  term T=`VWeight( 15,
+    `PushButton ( `id( ID ), `opt( `hstretch ), str )//)//)
+  );
+  return T;
+};
+
+/* Main security settings dialog */
+
+define SecurityMainDialog() ``{
+  SuSEDialog("Main", [`back,`finish], `VBox(
+    VSeparator(), SecurityItem(`login,"Login and password settings"),
+    VSeparator(), SecurityItem(`boot, "Boot settings"),
+    //VSeparator(), SecurityItem(`perms,"Files permissions"),
+    VSeparator(), SecurityItem(`other,"Other security settings"),
+    VSeparator()
+  ));
+
+  any ret = nil;
+  any subret = nil;
+  boolean changed = false;
+
+  while(true) {
+    ret = processInput();
+    if(ret == `ok)
+      break;
+    if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
+      break;
+    else if(ret == `boot)  subret = SecurityBootDialog();
+    else if(ret == `login) subret = SecurityLoginDialog();
+    //else if(ret == `perms) subret = SecurityPermsDialog();
+    else if(ret == `other) subret = SecurityOtherDialog();
+    else _debug(["SecurityMainDialog","Huh?",ret]);
+    if(subret == `ok) changed = true;
+  }
+
+  UI(`CloseDialog());
+
+  /* return `ok only if something changed */
+  if(ret == `ok && changed == true)
+    return `ok;
+
+  return nil;
+};
+
+/* Boot settings dialog */
+
+define SecurityBootDialog() ``{
+  SuSEDialog("Boot", [], `VBox(
+`Frame("",`HBox(`HSpacing(1),`VBox(`VSpacing(-0.1),
+    VSeparator(),
+    map2widget("CONSOLE_SHUTDOWN"),
+    VSeparator(),
+    map2widget("KDM_SHUTDOWN"),
+    VSeparator()
+,`VSpacing(0.3)),`HSpacing(1.5)))
+  ));
+  any ret = processInput();
+  if(ret == `ok) {
+    updateWidget("CONSOLE_SHUTDOWN");
+    updateWidget("KDM_SHUTDOWN");
+  }
+  UI(`CloseDialog());
+  return ret;
+};
+
+/* Login and password settings dialog */
+
+define SecurityLoginDialog() ``{
+  SuSEDialog("Login", [], `VBox(
+//`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
+`Frame("Login",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
+    VSeparator(),
+    map2widget("ROOT_LOGIN_REMOTE"),
+    VSeparator(),
+    map2widget("FAILLOG_ENAB"),
+    VSeparator(),
+    map2widget("FAIL_DELAY"),
+    VSeparator(),
+`VSpacing(0.3)),`HSpacing(1))),
+`VSpacing(1),
+`Frame("Password",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
+    /* Next Frame */
+    map2widget("PASSWD_USE_CRACKLIB"),
+    VSeparator(),
+    map2widget("OBSCURE_CHECKS_ENAB"),
+    VSeparator(),
+    map2widget("PASS_WARN_AGE"),
+    VSeparator()
+),`HSpacing(1)))
+  ));
+  any ret = processInput();
+  if(ret == `ok) {
+    updateWidget("ROOT_LOGIN_REMOTE");
+    updateWidget("FAILLOG_ENAB");
+    updateWidget("FAIL_DELAY");
+    updateWidget("PASSWD_USE_CRACKLIB");
+    updateWidget("OBSCURE_CHECKS_ENAB");
+    updateWidget("PASS_WARN_AGE");
+  }
+  UI(`CloseDialog());
+  return ret;
+};
+
+/* Files permissions dialog */
+
+define SecurityPermsDialog() ``{
+  SuSEDialog("Perms", [], `VBox(
+    VSeparator(),
+    map2widget("PERMISSION_SECURITY"),
+    VSeparator()
+  ));
+  any ret = processInput();
+  if(ret == `ok) {
+    updateWidget("PERMISSION_SECURITY");
+  }
+  UI(`CloseDialog());
+  return ret;
+};
+
+/* Other security settings dialog */
+
+define SecurityOtherDialog() ``{
+  SuSEDialog("Other", [], `VBox(
+    VSeparator(),
+`Frame("Permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
+    map2widget("PERMISSION_SECURITY"), /* See the SecurityPermsDialog */
+`VSpacing(0.3)),`HSpacing(1))),
+`VSpacing(1),
+`Frame("Password",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
+    VSeparator(),
+    map2widget("CWD_IN_ROOT_PATH"),
+    VSeparator(),
+    map2widget("RUN_UPDATEDB_AS"),
+    VSeparator()
+),`HSpacing(1)))
+  ));
+  any ret = processInput();
+  if(ret == `ok) {
+    updateWidget("PERMISSION_SECURITY");
+    updateWidget("CWD_IN_ROOT_PATH");
+    updateWidget("RUN_UPDATEDB_AS");
+  }
+  UI(`CloseDialog());
+  return ret;
+};
+
+} /* YaST2: Local security configuration EOF */

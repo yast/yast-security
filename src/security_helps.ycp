@@ -1,0 +1,39 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: Helps
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: security_helps.ycp
+ *
+ * $Id$
+ */
+
+{
+
+define STRINGS() ``{ return $[
+  "Main" : $[
+    "caption" : UI(_("Local security configuration")),
+    "help" : UI(_("Main help ...")) + UI(_("XX"))
+  ],
+  "Boot" : $[
+    "caption" : UI(_("Boot settings")),
+    "help" : UI(_("Boot help ..."))
+  ],
+  "Login" : $[
+    "caption" : UI(_("Login and password settings")),
+    "help" : UI(_("Login help ..."))
+  ],
+  "Perms" : $[
+    "caption" : UI(_("Files permissions")),
+    "help" : UI(_("Perms help ..."))
+  ],
+  "Other" : $[
+    "caption" : UI(_("Other security settings")),
+    "help" : UI(_("Other help ..."))
+  ]
+];
+};
+
+return STRINGS();
+
+} /* EOF */

@@ -1,0 +1,1 @@
+CallModule("security", [ "get_menuentry" ])

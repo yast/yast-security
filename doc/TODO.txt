@@ -1,0 +1,29 @@
+Security Module TODO file
+-------------------------
+$Id$
+
+Urgent:
+- call SuSEconfig
+- helps: Roland Haidl <rhaidl@suse.de>
+- permissions: local (replace or add?) -- maybe "Add local perms" [X]
+
+Documentation:
+- enhance user documentation (security.txt + draft.txt)
+- implementation documentation
+
+IO:
+- updateValue checking val and bounds
+- map2widget checking the Value
+- error handling (no .etc.rc.system, ...)
+
+UI:
+- simplify the SubDialogs updateValues(ret,list), SuSEDialog(list IDs), ...
+- BottomButtons(list buttons)
+- enhance layout of SuSEDialog, ...
+- use Notebook widget (not ready yet)
+
+Future:
+- add other settings (draft.txt, login_defs.txt)
+- easy/advanced (Server|Workstation|NetStation|...)
+
+EOF

@@ -1,0 +1,78 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: General UI functions
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: general_ui.ycp
+ *
+ * $Id$
+ */
+
+{
+
+/* Message box */
+
+define Message(any message) ``{
+  UI(`OpenDialog(
+        `opt(`decorated),
+        `HBox(
+          `HSpacing(1),
+          `VBox(
+            `VSpacing(0.2),
+            `Label(sformat("%1",message)),
+            `PushButton(`opt(`default), _("&OK")),
+            `VSpacing(0.2)
+          ),
+          `HSpacing(1)
+        )
+    )
+  );
+  UI(`UserInput());
+  UI(`CloseDialog());
+};
+
+/* Debug box */
+
+define Debug(any message) ``{
+  Message(message);
+};
+
+/* Browse the map */
+
+define BrowseMap(map m) ``{
+  list choose = mapkeys(m);
+  string|void var = Choose(choose);
+  while(var != nil) {
+    Message(lookup(m,var));
+    choose = maplist(`var,`val,m,``(var));
+    var = Choose(choose);
+  }
+}
+
+/* Choose from the list of strings */
+
+define Choose(list sel) ``{
+  string|void item = nil;
+
+  UI(`OpenDialog(
+    `VBox(`SelectionBox(`id(`sel), _("&Please choose"), sel),
+      `HBox(`PushButton(`id(`ok), _("&OK")),
+        `PushButton(`id(`cancel), _("&Cancel")))
+    )));
+
+  any ret = nil;
+  do {
+    ret = UI(`UserInput());
+  } while (ret != `cancel && ret != `ok && ret != nil);
+
+  if ((ret == `ok) && (sel != []))
+    item = UI(`QueryWidget(`id(`sel), `CurrentItem));
+
+  UI(`CloseDialog());
+
+  return item;
+};
+
+}
+
+/* EOF */

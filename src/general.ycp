@@ -1,0 +1,100 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: General functions
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: general.ycp
+ *
+ * $Id$
+ */
+
+{
+
+/* update one value in the WIDGETS map */
+
+define updateValue(map opts, string ID, string val) ``{
+  map item = lookup(opts,ID);
+  item = add(item,"Value",val);
+  opts = add(opts,ID,item);
+  return opts;
+};
+
+/* Convert security definitions (io) to the UI options map */
+
+define defs2options(map opts, map defs) ``{
+  map o = opts;
+  o = foreach(`key, `value, defs, ``{
+    o = updateValue(o,key,value);
+    return o;
+  });
+  return o;
+};
+
+/* Convert security definitions (io) to the UI options map */
+
+define options2defs(map default, map opts) ``{
+  map defs = default;
+  map de = mapmap(`key,`value, opts,``{
+    return [ key, lookup(value,"Value") ];
+  });
+  //_debug("OE1: ",defs);
+  //_debug("OE2: ",de);
+
+  defs = foreach(`key,`value, de, ``{
+    defs = add(defs,key,value);
+    return defs;
+  });
+  //_debug("OE3: ",opts);
+  //_debug("OE4: ",defs);
+  return defs;
+};
+
+/*
+ * Convert list of the form:
+ *   [$["value":"3", "variable":"FAIL_DELAY"], ... ]
+ * to this map:
+ *   $["FAIL_DELAY":"3"]
+ */
+
+define list2map(list|void l) ``{
+  map m = $[];
+  if(l==nil)
+    return m;
+  m = foreach(`item, l, ``{
+    m = add(m, lookup(item, "variable"), lookup(item, "value"));
+    return m;
+  });
+  return m;
+}
+
+/* Complement to the previous function */
+
+define map2list(map|void m) ``{
+  list l = [];
+  if(m==nil)
+    return l;
+  l = foreach(`key, `value, m, ``{
+    map mm = add($[], "value", value);
+    mm = add(mm, "variable", key);
+    l = add(l, mm);
+    return l;
+  });
+  return l;
+}
+
+/* Return all keys from the map */
+
+define mapkeys(map|void m) ``{
+  if(m==nil) return [];
+  return maplist(`var, `val, m, ``(var));
+}
+
+/* Return value for the given key */
+
+define mapvalue(map m, any k) ``{
+  if(m==nil)
+    return nil;
+  return lookup(m, k);
+}
+
+} /* YaST2: Local security configuration EOF */

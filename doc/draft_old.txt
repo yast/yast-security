@@ -1,0 +1,149 @@
+YaST2: Local security configuration
+===================================
+
+Configure all local security settings.
+
+1. Otherview
+============
+
+This module is used to configure all local security settings.
+
+Note: It is analogical to the "System administration/Security settings"
+  in the YaST1.
+
+The security configuration is divided into two separate modules -- the local
+security and the network security.
+
+The network security module configures all network related stuff. It is
+configuration of running services (inetd), network servers (sendmail, apache,
+...) and firewall setup.
+
+The local security module configures all other things, not related to the
+network. This document is about this one.
+
+2. Current status and suggestions
+=================================
+
+As the current yast1 local security settings interface is not arranged
+very well, I will propose a new organization.
+
+Current YaST1 interface:
+
+  1. [login.defs]
+  2. updatedb: root/nobody
+     PATH root .
+     Permissions
+     Telnet for root
+     CtrlAltDel
+     Passwords checking
+
+The things which probably also belong to this category:
+
+  lilo password
+  cron/at/lpr deny/allow
+  securetty
+  /etc/security/*
+  kdm Halt/Reboot
+  umask, ulimit
+  sudoers?
+  (maybe) floppy, cdrom, sound, dosemu
+  inetd?
+  ... any other?
+
+But first of all we have to reach the YaST1 functionality.
+
+3. Interface
+============
+
+This is the YaST2 Local Security Settings Interface Proposal.
+
+In this chapter the configuration modules are described. Each module will
+have screens and each screen configure some items. The items have a number
+denoting its importance and thus its implementation priority. Lower number
+means higher priority (1==now).
+
+3.1 Login settings
+------------------
+As the first item (login.defs) consist of many subitems, rearrangement
+to screens is needed.
+
+- login.defs [1]
+- securetty [1]
+- remote (telnet/rsh/ssh) login for root [1]
+- passwords checking [1]
+- md5 passwords [3]
+- access.conf [3]
+
+3.2 Boot settings
+-----------------
+- kdm [1]
+- CtrlAltDel [1]
+- [xg]dm [2]
+- lilo password [2]
+
+3.3 Files' premissions
+----------------------
+Specify, how to select which permission files will be used
+(because there is a possibility of using more of them at 
+the same time)
+
+- /etc/permissions [1]
+- umask [2]
+
+3.4 General security settings
+-----------------------------
+There will be in this module probably all settings which
+don't be classified otherwise.
+
+Q: use SecureLocate
+
+- "." in root's PATH [1]
+- updatedb as root/nobody [1]
+
+3.5 Limits
+----------
+- limits.conf [3]
+- ulimit [3]
+
+3.6 Services
+------------
+- cron, at, lpd
+
+3.7 Devices
+-----------
+- floppy, cdrom, sound, scanner, printer?, ppp?, ...
+
+3.8 Software
+------------
+- dosemu, sudo, emulators, ppp?, ...
+
+4. Implementation
+=================
+
+4.x
+---
+  securetty, pam.d/*, security/access.conf, ssh/sshd_config
+  cron.allow, cron.deny, ...
+  security/limits.conf
+  lilo.conf
+
+Never (well, for the Security modules...):
+------------------------------------------
+Sure? Currently SuSEconfig is used for both of this, but is this desired?
+
+  inittab
+  kdmrc
+ 
+5. Comments
+===========
+
+YaST1.2) switches are in the /etc/rc.config => use .rc.system for Read/Write
+(e.g. .rc.system.CONSOLE_SHUTDOWN for c-a-d
+   or .rc.system.PERMISSION_SECURITY)
+(and a SuSEconfig run, of course...)
+
+Other files seem to be simple enough to be read/wrote using anyagents.
+Such files have usually their path similar to the real place on the disk
+(e.g. .etc.login_defs)
+
+TODO: check SuSEconfig, some things in it are suspicious ;-)

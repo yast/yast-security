@@ -1,0 +1,23 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: Buttons definitions
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: buttons.ycp
+ *
+ * $Id$
+ */
+
+{
+
+return $[
+  `ok : UI(_("OK")),
+  `back : UI(_("Back")),
+  `next : UI(_("Next")),
+  `help : UI(_("Help")),
+  `abort : UI(_("Abort")),
+  `finish : UI(_("Finish")),
+  `cancel : UI(_("Cancel"))
+];
+
+} /* YaST2: Local security configuration EOF */

@@ -1,0 +1,189 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: I/O functions
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: security_io.ycp
+ *
+ * $Id$
+ */
+
+{
+
+Include(`general());
+
+map SECURITY_default = CallFunction(`security_settings());
+
+Include(`general_ui()); /* rcagent */
+map login_defs = $[]; /* rcagent */
+
+/*
+ * Init the login.defs (.etc.login_defs)
+ * FIXME: Not needed when login.defs is handled by rcagent
+ */
+
+define SecurityInit() ``{
+
+  list|void login_file = SCR(`Read(.etc.login_defs));
+  if(login_file == nil) {
+    Debug("Failed to read login.defs");
+    return;
+  }
+
+  map login_defs = list2map(login_file);
+  return login_defs;
+}
+
+/* -> login_defs MUST be defined! */
+
+/* Test the login.defs:
+map final_defs = add(login_defs,"FAIL_DELAY","4");
+list final_file = map2list(final_defs);
+_debug(SCR(`Write(.etc.login_defs,final_file)));
+*/
+
+define SecurityFinish(map m) ``{
+  list ret = [];
+  list final_file = map2list(m);
+  add(ret,SCR(`Write(.etc.login_defs,final_file)));
+  /* add(ret,SCR(`Write(.etc.login_defs,nil))); */
+  add(ret,SCR(`Write(.rc.system,nil)));
+  return ret;
+};
+
+
+/* Read one SCR item and return default if the item is not present */
+
+define ReadLoginDefs(string item) ``{
+  //string pth = ".etc.login_defs." + item;
+  //string|void ret = SCR(`Read(topath(pth)));
+  string|void ret = mapvalue(login_defs,item);
+  if(ret == nil)
+    ret = lookup(SECURITY_default,item);
+  return ret;
+};
+
+define ReadRcConfig(string item) ``{
+  string pth = ".rc.system." + item;
+  string|void ret = SCR(`Read(topath(pth)));
+  if(ret == nil)
+    ret = lookup(SECURITY_default,item);
+  return ret;
+};
+
+/* Write one SCR item */
+
+define WriteLoginDefs(map m, string item) ``{
+  string|void ret = lookup(m,item);
+  if(ret == nil)
+    return nil;
+  login_defs = add(login_defs,item,ret);
+  return true;
+};
+
+define WriteRcConfig(map m, string item) ``{
+  string pth = ".rc.system." + item;
+  string|void ret = lookup(m,item);
+  if(ret == nil)
+    return nil;
+  return SCR(`Write(topath(pth),ret));
+};
+
+//list RcConfig_settings = [
+define RcConfig_settings() ``{
+return [
+  "CONSOLE_SHUTDOWN",
+  "KDM_SHUTDOWN",
+  "PERMISSION_SECURITY",
+  "CWD_IN_ROOT_PATH",
+  "RUN_UPDATEDB_AS",
+  "ROOT_LOGIN_REMOTE",
+  "PASSWD_USE_CRACKLIB"
+];
+};
+
+//list LoginDefs_settings = [
+define LoginDefs_settings() ``{
+return [
+  "FAILLOG_ENAB",
+  "LASTLOG_ENAB",
+  "FAIL_DELAY",
+  "PASS_WARN_AGE",
+  "OBSCURE_CHECKS_ENAB"
+];
+};
+
+define ApplyRead(term t, list l, map m) ``{
+  m = foreach(`i, l, ``{
+    term tt = add(t,i);
+    m = add(m,i,eval(tt));
+    return m;
+  });
+  return m;
+};
+
+define ApplyWrite(term t, list l, map m) ``{
+  list ret = [];
+  ret = foreach(`i, l, ``{
+    term tt = add(add(t,m),i);
+    ret = add(ret,eval(tt));
+    return ret;
+  });
+  return ret;
+};
+
+define SecurityRead() ``{
+  map m = $[];
+  m = ApplyRead(``ReadLoginDefs(),LoginDefs_settings(),m);
+  m = ApplyRead(``ReadRcConfig(),RcConfig_settings(),m);
+  return m;
+};
+
+define SecurityWrite(map m) ``{
+  list l1 = ApplyWrite(``WriteLoginDefs(),LoginDefs_settings(),m);
+  list l2 = ApplyWrite(``WriteRcConfig(),RcConfig_settings(),m);
+  return flatten([l1,l2]);
+};
+
+
+/* Testing the IO */
+
+if(false) {
+  map security_defs = SecurityRead();
+  _debug(security_defs);
+  _debug(login_defs);
+  security_defs = add(security_defs,"KDM_SHUTDOWN","44");
+  security_defs = add(security_defs,"FAIL_DELAY","4");
+  _debug(security_defs);
+  _debug(SecurityWrite(security_defs));
+  _debug(SCR(`Read(.rc.system.KDM_SHUTDOWN)));
+  _debug(lookup(login_defs,"FAIL_DELAY"));
+  _debug(login_defs);
+
+  list final_file = map2list(login_defs);
+  _debug(final_file);
+  _debug(SCR(`Write(.etc.login_defs,final_file)));
+  _debug(SCR(`Write(.rc.system,nil)));
+
+  return true;
+}
+
+/*
+ * main()
+ * Only for automatic instalation
+ * Args(0) = map $[ "FAILLOG_ENAB" : "7", ... ];
+ */
+
+list args = Args();
+if(size(args) > 0) {
+  _debug("Security: only writing ...", Args(0));
+  login_defs = SecurityInit(); /* rcagent */
+  map security_defs = SecurityRead();
+  list ret = SecurityWrite(Args(0));
+  SecurityFinish(login_defs); /* rcagent */
+  return ret;
+}
+
+return true;
+
+} /* YaST2: Local security configuration EOF */

@@ -1,0 +1,58 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: Security settings
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: security_settings.ycp
+ *
+ * $Id$
+ */
+
+{
+
+return $[
+
+  /* Secure settings */
+  "secure" : $[
+
+    /* "Boot" */
+    "CONSOLE_SHUTDOWN"    :	"ignore",
+    "KDM_SHUTDOWN"        :	"root",
+    /* "Login" */
+    "FAILLOG_ENAB"        :	"yes",
+    "LASTLOG_ENAB"        :	"yes",
+    "FAIL_DELAY"          :	"3",
+    "ROOT_LOGIN_REMOTE"   :	"yes",
+    "PASSWD_USE_CRACKLIB" :	"yes",
+    "OBSCURE_CHECKS_ENAB" :	"yes",
+    "PASS_WARN_AGE"       :	"7",
+    /* "Perms" */
+    "PERMISSION_SECURITY" :	"secure",
+    /* "Other" */
+    "CWD_IN_ROOT_PATH"    :	"no",
+    "RUN_UPDATEDB_AS"     :	"nobody"
+  ],
+
+  "easy" : $[
+
+    /* "Boot" */
+    "CONSOLE_SHUTDOWN"    :	"reboot",
+    "KDM_SHUTDOWN"        :	"all",
+    /* "Login" */
+    "FAILLOG_ENAB"        :	"yes",
+    "LASTLOG_ENAB"        :	"yes",
+    "FAIL_DELAY"          :	"3",
+    "ROOT_LOGIN_REMOTE"   :	"yes",
+    "PASSWD_USE_CRACKLIB" :	"yes",
+    "OBSCURE_CHECKS_ENAB" :	"no",
+    "PASS_WARN_AGE"       :	"7",
+    /* "Perms" */
+    "PERMISSION_SECURITY" :	"easy",
+    /* "Other" */
+    "CWD_IN_ROOT_PATH"    :       "yes",
+    "RUN_UPDATEDB_AS"     :       "root"
+  ]
+
+];
+
+} /* YaST2: Local security configuration EOF */

@@ -1,0 +1,185 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: Options definitions
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: security_widgets.ycp
+ *
+ * $Id$
+ */
+
+/*
+
+Format proposition:
+-------------------
+
+map SECURITY_OPTIONS = $[
+  "Item unique ID" : $[
+    "Widget" : "ComboBox",
+    "Label" : "Item label",
+    "Options" : [ "option1", "option2", ... ],
+    "Value" : "option2"
+  ],
+  ...
+];
+
+The "Value" is the current value of this option and one from "Options".
+
+Particular "Options" can be either <string> or [ <string>, <string> ]. In the
+latter case, the first string is used as ID and the second is displayed. For
+example: [ "option1", ["option2",UI(_("Option2 translation"))], ... ].
+
+Possible "Widget" values so far: "ComboBox, CheckBox, TextEntry".
+
+Implementation:
+---------------
+
+map2widget("ID")
+- look up the "ID" in the "SECURITY_OPTIONS" map
+- create the widget
+
+NOTE: something must change (fill) the "Value"s!
+
+updatevalue("ID","val")
+- updates the SECURITY_OPTIONS map
+- look up the "ID" and change its "Value" to the "val"
+- must check if the value is in "Options"!
+- called after start and after each subdialog [OK]
+
+processinput()
+- return true (OK) or false (abort, back, nil, help!, ...)
+
+if(OK)
+  updatevalue("ID",queryvalue("ID"));
+  ...
+
+TODO:
+- helps
+- easy/advanced mode
+- rework the Security*Dialog
+- finish the MainDialog
+
+Process:
+  SecurityRead;
+  updatevalue(*);
+  SecurityDialog;
+    SecurityBootDialog;
+    processinput;
+      updatevalue(...);
+    ...
+  SecurityWrite;
+
+*/
+
+{
+
+define SECURITY_OPTIONS() ``{ return $[
+
+  /* Boot options */
+
+  "CONSOLE_SHUTDOWN" : $[
+    "Widget" : "ComboBox",
+    "Label" : UI(_("How to interpret Ctrl-Alt-Del:")),
+    "Options" : [["ignore",UI(_("Ignore"))],["reboot",UI(_("Reboot"))],["halt",UI(_("Halt"))]],
+    "Value" : "reboot"
+  ],
+
+  "KDM_SHUTDOWN" : $[
+    "Widget" : "ComboBox",
+    "Label" : UI(_("Shutdown behaviour of KDM:")),
+    "Options" : [["root",UI(_("Only root"))],["all",UI(_("All users"))],["none",UI(_("Nobody"))],["local",UI(_("Local users"))]],
+    "Value" : "all"
+  ],
+
+  /* Login options */
+
+  "FAILLOG_ENAB" : $[
+    "Widget" : "CheckBox",
+    "Label" : UI(_("Record failed login attempts")),
+    "Value" : "yes"
+  ],
+
+  "FAIL_DELAY" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Seconds to wait after an incorrect login attempt:")),
+    "Value" : "3"
+  ],
+
+  "LASTLOG_ENAB" : $[
+    "Widget" : "CheckBox",
+    "Label" : UI(_("Record successful login attempts")),
+    "Value" : "yes"
+  ],
+
+  "ROOT_LOGIN_REMOTE" : $[
+    "Widget" : "CheckBox",
+    "Label" : UI(_("Disable telnet login for user root")),
+    "Value" : "yes"
+  ],
+
+  "PASSWD_USE_CRACKLIB" : $[
+    "Widget" : "CheckBox",
+    "Label" : UI(_("Do some checks for new passwords")),
+    "Value" : "yes"
+  ],
+
+  "OBSCURE_CHECKS_ENAB" : $[
+    "Widget" : "CheckBox",
+    "Label" : UI(_("Plausibility test for password")),
+    "Value" : "yes"
+  ],
+
+  "PASS_WARN_AGE" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Days before password expiry warning:")),
+    "Value" : "7"
+  ],
+
+  /* Perms options */
+
+  "PERMISSION_SECURITY" : $[
+    "Widget" : "ComboBox",
+    "Label" : UI(_("Files permissions:")),
+    "Options" : [["easy",UI(_("Easy"))],["secure",UI(_("Secure"))],["paranoid",UI(_("Paranoid"))]],
+    "Value" : "secure"
+  ],
+
+  /* Other options */
+
+  "CWD_IN_ROOT_PATH" : $[
+    "Widget" : "CheckBox",
+    "Label" : UI(_("Omit current directory from the path of user root")),
+    "Value" : "yes"
+  ],
+
+  "RUN_UPDATEDB_AS" : $[
+    "Widget" : "ComboBox",
+    "Label" : UI(_("User launching updatedb:")),
+    "Options" : [ "nobody", "root" ],
+    "Value" : "nobody"
+  ] /* No \, ! */
+
+/*
+  "" : $[
+    "Widget" : "",
+    "Label" : UI(_("")),
+    "Options" : [["",UI(_(""))]],
+    "Value" : ""
+  ],
+*/
+
+/*
+map SecurityOptions = $[
+  "Boot" : Boot_options,
+  "Login" : Login_options,
+  "Perms" : Perms_options,
+  "Other" : Other_options
+];
+*/
+
+];
+};
+
+return SECURITY_OPTIONS();
+
+} /* YaST2: Local security configuration EOF */

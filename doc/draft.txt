@@ -1,0 +1,254 @@
+YaST2: Local security configuration
+===================================
+
+TODO: complete T.1
+FIXME: 2
+
+[X] CheckBox
+[...|...] ComboBox
+[NUM] TextEntry(number)
+
+Note: I think that the best widget for this interface would be a "notebook".
+Unfortunately YCP-UI doesn't have this type of widget, so I had to solve that
+otherwise. Now the main dialog consists of buttons calling the screens (see
+bottom).
+
+INTERFACE:
+==========
+Screen1 Login and passwords settings
+  Frame1.1 Login
+    - Record failed login attempts [X]
+    - How many seconds to wait after an incorrect login attempt :3
+    - Record successful login attempts [X]
+    - Disable telnet for user root [X]
+  Frame1.2 Passwords
+    - Do some checks for new passwords [X]
+    - Plausibility test for Password active [X]
+    - How many days before password expiry should user be warned? :7
+Screen2 Boot settings
+  - CtrlAltDel [reboot|halt|ignore]
+  - kdm [root|all|none|local]
+Screen3 Files permissions
+  - Files permissions [easy|secure|paranoid]
+Screen4 Other security settings
+  - Current directory in path of user root [X]
+  - User launching updatedb [nobody|root]
+
+DETAILED INTERFACE DESCRIPTION
+==============================
+
+T.1 Login and passwords settings
+--------------------------------
+
+In this dialog you can change various login and password settings. These
+settings are mainly stored in the "/etc/login.defs" file.
+
+T.1.1 Login
+Various login settings.
+
+T.1.1.A Record failed login attempts [X]
+Values: "yes", "no".
+
+It is useful to know if somebody is trying to log in and failed.
+For example if someone is guessing password of other users.
+By checking this option, you control if the failed login attempts
+will be logged into the system logfile.
+
+The secure setting is "yes".
+This box sets the variable FAILLOG_ENAB in /etc/login.defs.
+
+T.1.1.B How many seconds to wait after an incorrect login attempt [NUM]
+Values: number <0,inf)
+
+It is useful to wait some time after an incorrect login attempt
+to prevent the passwords guessing. On the other hand, make the
+time so small that if you mistype the password, you don't need
+to wait to long. The sensible value is "3".
+
+The secure setting is "3".
+This box sets the variable FAIL_DELAY in /etc/login.defs.
+
+T.1.1.C Record successful login attempts [X]
+Values: "yes", "no".
+
+Even the successful login attempts logging can be useful. It can
+show if somebody is using someone else's account.
+
+The secure setting is "yes".
+This box sets the variable LASTLOG_ENAB in /etc/login.defs.
+
+T.1.1.D Disable telnet for user root [X]
+Values: "yes", "no".
+
+It is not very wise to allow telnet for the user root. During
+the telnet session the passwords are sent in the plain form,
+so they can be stolen by the third-party. Check this box to
+disable telnet for root.
+
+The secure setting is "yes".
+This box sets the variable ROOT_LOGIN_REMOTE in /etc/rc.config.
+
+T.1.2 Passwords
+Various password settings.
+
+T.1.2.A Do some checks for new passwords [X]
+Values: "yes", "no".
+
+It is wise to choose password not to be very dictionary words, usual
+names or other simple things. By checking the box you set some checking
+for password to not contain simple words which can be easily guessed.
+
+The secure setting is "yes".
+This box sets the variable PASSWD_USE_CRACKLIB in /etc/rc.config.
+
+T.1.2.B Plausibility test for Password active [X]
+Values: "yes", "no".
+
+Sometimes it is even needed that password are enough strange words
+that guessing is more hard. Check this box to enable additional
+checks.
+
+The secure setting is "yes".
+This box sets the variable OBSCURE_CHECKS_ENAB in /etc/login.defs.
+
+T.1.2.C How many days before password expiry should user be warned? :7
+
+This entry sets the number of days the user is warned before his password
+expiry. The longer time, the harder for the user guessing passwords.
+
+The secure setting is "7".
+This box sets the variable PASS_WARN_AGE in /etc/login.defs.
+
+
+T.2 Boot settings
+-----------------
+
+T.2.1 CtrlAltDel
+Values: "ignore", "reboot", "halt".
+
+When someone at the console has pressed the CTRL-ALT-DEL key
+combination, the system usually reboots. Sometimes it is
+desired to ignore this event, for example when the system
+serves as both workstation and server.
+
+The secure setting is "ignore".
+
+This box sets the variable CONSOLE_SHUTDOW in /etc/rc.config.
+
+T.2.1 kdm
+Values: "root", "all", "none", "local".
+
+With KDM you may decide who is allowed to shutdown the machine from KDM.
+Here you may enter either "root", "all", "none", or "local" (only if the
+user is locally logged in).
+
+The secure setting is "root".
+
+This box sets the variable KDM_SHUTDOWN in /etc/rc.config. There are more
+variables for KDM in /etc/rc.config. See [??].
+
+T.3 Files' premissions
+----------------------
+Values: "easy", "secure", "paranoid".
+
+Settings for the permissions of certain system files are set
+according to the data in /etc/permissions.secure or
+/etc/permissions.easy. Which file is used depends upon this
+selection. Launching SuSEconfig sets these permissions
+according to /etc/permissions.*. This fixes files with
+incorrect permissions whether this occured accidentally or
+by intruders.
+
+FIXME: local replace or add? 1 or 2?
+  1. You can also add your local files permissions into the file
+    "/etc/permissions.local".
+  2. "local": local settings (/etc/permissions.local).
+
+FIXME: it contains "easy local" !!?
+
+"easy": For most of the system files that are only readable
+  for root (via secure) are modified so that other users can
+  also read these files.
+
+"secure": Certain system files (e.g. /var/log/messages) can
+  only be viewed by the user root. Some programs can only be
+  launched by root or by daemons, not by an ordinary user.
+
+"paranoid":  If you are really paranoid, use this setting.
+  You must after that decide, which users will be able to
+  run X applications and set-uid programs.
+
+The secure setting is "secure".
+
+This box sets the variable PERMISSION_SECURITY in /etc/rc.config.
+
+T.4 Other security settings
+-----------------------------
+
+T.4.1 Omit current directory from the path of user root
+Values: "yes", "no".
+
+On a DOS system, executable files (programs), are first
+searched for in the current directory, and in the current
+path variable afterwards. In contrast, on a UNIX system they
+are exclusively searched for via the search path (variable
+PATH).
+
+Some systems set up a 'workaround' by adding the dot (".")
+to the search path, thus enabling files in the current path
+to be found and executed. This is highly dangerous since you
+may accidentally launch unknown programs in the current
+directory instead of the usual system-wide files. As a
+result, creating 'Trojan Horses' which exploit this weakness
+and intrude your system is rather easy if you set this
+option.
+
+"yes": the user root always has to launch programs in the
+  current directory prefixed with a "./". Example: "./configure".
+
+"no": the dot (".") is attached to the end of the search
+  path of root, making it the last to be searched.
+
+The secure setting is "yes".
+
+This box sets the variable CWD_IN_ROOT_PATH in /etc/rc.config.
+
+T.4.2 User launching updatedb
+Values: "nobody", "root".
+
+The program updatedb runs regularly, once a day. It scans
+your whole filesystem and creates a database (locatedb)
+where the location of EVERY file is stored. The database can
+be searched by the program "locate".
+
+By setting this entry, you select the user to run this
+command:
+
+"nobody": only files which the user "nobody" can access
+  are added into the database. All users can choose if the
+  file will be in the database or not.
+
+"root": all files in the system are added into the
+  database
+
+The secure setting is "nobody".
+
+This box sets the variable RUN_UPDATEDB_AS in /etc/rc.config.
+
+------------------------------------------------------------------------
+
+T.1.X Adduser - Does this belong here? It affects only newly added users.
+Minimum user ID :100
+Maximum user ID :60000
+Minimum group ID :100
+Maximum group ID :60000
+Minimum length of password :5
+Maximum length of password :8
+Minimum number of days between two changes in a password :0
+Maximum number of days between two changes in a password :99999
+- maybe only last two to T.1.2, but change that for ALL users with password
+
+
+T.1.Y Additional checks from login.defs
+- MD5_CRYPT_ENAB
+- also update the man page

@@ -1,0 +1,290 @@
+LOGIN.DEFS
+==========
+
+ITEMS TYPES:
+------------
+string|boolean|number|long number
+boolean: yes|no
+numbers: decimal|octal:0*|hex:0x*
+
+ITEMS INDEX:
+------------
+CHFN_AUTH (boolean)
+CHFN_RESTRICT (string)
+CRACKLIB_DICTPATH (string)
+DEFAULT_HOME (boolean)
+ENV_PATH (string)
+ENV_ROOTPATH (string)
+FAILLOG_ENAB (boolean)
+FAIL_DELAY (number)
+GID_MAX (number)
+GID_MIN (number)
+HUSHLOGIN_FILE (string)
+LASTLOG_ENAB (boolean)
+OBSCURE_CHECKS_ENAB (boolean)
+PASS_ALWAYS_WARN (boolean)
+PASS_CHANGE_TRIES (number)
+LOGIN_RETRIES (number)
+LOGIN_TIMEOUT (number)
+LOG_UNKFAIL_ENAB (boolean)
+MOTD_FILE (string)
+PASS_MIN_DAYS (number)
+PASS_MIN_LEN (number)
+PASS_MAX_DAYS (number)
+PASS_MAX_LEN (number)
+PASS_WARN_AGE (number)
+TTYGROUP (string or number)
+TTYPERM (number)
+TTYTYPE_FILE (string)
+UID_MAX (number)
+UID_MIN (number)
+
+ITEMS DESCRIPTIONS:
+-------------------
+CHFN_AUTH (boolean)
+	If  _y_e_s,  the  cchhffnn  and cchhsshh programs will ask for
+	password before making any changes, unless  run  by
+	the superuser.
+
+CHFN_RESTRICT (string)
+	This  parameter specifies which values in the _g_e_c_o_s
+	field of the _p_a_s_s_w_d file may be changed by  regular
+	users using the cchhffnn program.  It can be any combi-
+	nation of letters _f, _r, _w, _h, for Full  name,  Room
+	number,  Work  phone, and Home phone, respectively.
+	If not specified, only the superuser can  make  any
+	changes.
+
+CRACKLIB_DICTPATH (string)
+	This  parameter  contains  the path to the cracklib
+	dictionaries.
+
+DEFAULT_HOME (boolean)
+	If the home directory of a user is  not  reachable,
+	should the use be allowed to login ?
+
+ENV_PATH (string)
+	This  parameter  must be defined as the search path
+	for regular users.  When a  login  with  UID  other
+	than zero occurs, the PATH environment parameter is
+	initialized to this value.
+
+ENV_ROOTPATH (string)
+	This parameter must be defined as the  search  path
+	for root.
+
+FAILLOG_ENAB (boolean)
+	If  _y_e_s  then login failures will be accumulated in
+	_/_v_a_r_/_l_o_g_/_f_a_i_l_l_o_g in a ffaaiilllloogg(8) format.
+
+FAIL_DELAY (number)
+	Delay time  in  seconds  after  each  failed  login
+	attempt.
+
+GID_MAX (number)
+
+GID_MIN (number)
+	Range  of group IDs to choose from for the ggrroouuppaadddd
+	program.
+
+HUSHLOGIN_FILE (string)
+	This parameter is used to  establish  ``hushlogin''
+	conditions.   There are two possible ways to estab-
+	lish these conditions.  First, if the value of this
+	parameter is a filename and that file exists in the
+	user's home directory then ``hushlogin'' conditions
+	will  be  in effect.  The contents of this file are
+	ignored; its mere presence  triggers  ``hushlogin''
+	conditions.  Second, if the value of this parameter
+	is a full pathname and either the user's login name
+	or  the  user's  shell  is found in this file, then
+	``hushlogin'' conditions will  be  in  effect.   In
+	this  case,  the file should be in a format similar
+	to:
+
+	   _d_e_m_o
+	   _/_u_s_r_/_l_i_b_/_u_u_c_p_/_u_u_c_i_c_o
+	     _.
+	     _.
+	     _.
+
+	If this parameter is not  defined,  then  ``hushlo-
+	gin''  conditions will never occur.  When ``hushlo-
+	gin'' conditions are established,  the  message  of
+	the  day,  last  successful  and unsuccessful login
+	display, mail status display,  and  password  aging
+	checks  are suppressed.  Note that allowing hushlo-
+	gin files in user home directories allows the  user
+	to  disable  password aging checks.  See MOTD_FILE,
+	FAILLOG_ENAB and LASTLOG_ENAB for related  informa-
+	tion.  Futures  enabled through PAM modules are not
+	affected by this. pam_mail will show  if  there  is
+	new mail or not.
+
+LASTLOG_ENAB (boolean)
+	If  _y_e_s,  and  if the _/_v_a_r_/_l_o_g_/_l_a_s_t_l_o_g file exists,
+	then a successful user login will  be  recorded  to
+	this  file.  Furthermore, if this option is enabled
+	then the times of the most  recent  successful  and
+	unsuccessful  logins  will be displayed to the user
+	upon login.  The unsuccessful login display will be
+	suppressed  if  FAILLOG_ENAB  is  not  enabled.  If
+	``hushlogin'' conditions are in effect,  then  both
+	the  successful  and unsuccessful login information
+	will be suppressed.
+
+OBSCURE_CHECKS_ENAB (boolean)
+	If _y_e_s, the ppaasssswwdd program will perform  additional
+	checks  before  accepting  a  password change.  The
+	checks performed are fairly simple, and  their  use
+	is   recommended.    These   obscurity  checks  are
+	bypassed  if  ppaasssswwdd   is   run   by   _r_o_o_t.    See
+	PASS_MIN_LEN for related information.
+
+PASS_ALWAYS_WARN (boolean)
+	Warn about weak passwords (but still allow them) if
+	you are root.
+
+PASS_CHANGE_TRIES (number)
+	Maximum number of attempts to  change  password  if
+	rejected (too easy).
+
+LOGIN_RETRIES (number)
+	Number  of  login attempts allowed before the llooggiinn
+	program exits.
+
+LOGIN_TIMEOUT (number)
+	Time in seconds after the llooggiinn  program  exits  if
+	the user doesn't type his password.
+
+LOG_UNKFAIL_ENAB (boolean)
+	If _y_e_s then unknown usernames will be included when
+	a login failure is recorded.  Note that this  is  a
+	potential  security  risk;  a  common login failure
+	mode is transposition of the user  name  and  pass-
+	word,  thus this mode will often cause passwords to
+	accumulate in the failure logs.  If this option  is
+	disabled  then unknown usernames will be suppressed
+	in login failure messages.
+
+MOTD_FILE (string)
+	This parameter specifies a colon-delimited list  of
+	pathnames  to  ``message  of the day'' files.  If a
+	specified file exists, then its contents  are  dis-
+	played  to  the user upon login.  If this parameter
+	is not defined or  ``hushlogin''  login  conditions
+	are in effect, this information will be suppressed.
+
+PASS_MIN_DAYS (number)
+	The minimum number of days allowed between password
+	changes.   Any  password  changes  attempted sooner
+	than this will be rejected.  If  not  specified,  a
+	zero value will be assumed.
+
+PASS_MIN_LEN (number)
+	The  minimum  number of characters in an acceptable
+	password.  An attempt to  assign  a  password  with
+	fewer  characters  will  be rejected.  A zero value
+	suppresses this check.  If not  specified,  a  zero
+	value will be assumed.
+
+PASS_MAX_DAYS (number)
+	The  maximum number of days a password may be used.
+	If the  password  is  older  than  this,  then  the
+	account  will be locked.  If not specified, a large
+	value will be assumed.
+
+PASS_MAX_LEN (number)
+	Number of significant characters  in  the  password
+	for  crypt().   Default  is  8, don't change unless
+	your crypt() is better.  This option is  gnored  if
+	the  "md5"  option is given to the pam_pwcheck mod-
+	ule.
+
+PASS_WARN_AGE (number)
+	The number of days warning given before a  password
+	expires.   A  zero means warning is given only upon
+	the day of expiration, a negative  value  means  no
+	warning  is  given.   If  not specified, no warning
+	will be provided.
+
+TTYGROUP (string or number)
+	The group ownership of the terminal is  initialized
+	to this group name or number.  One well-known secu-
+	rity  attack  involves  forcing  terminal   control
+	sequences  upon another user's terminal line.  This
+	problem can be  averted  by  disabling  permissions
+	which  allow  other  users  to  access the terminal
+	line, but this unfortunately prevents programs such
+	as  wwrriittee  from  operating.  Another solution is to
+	use a version of the wwrriittee  program  which  filters
+	out potentially dangerous character sequences, make
+	this program ``setgid'' to a special group,  assign
+	group  ownership  of the terminal line to this spe-
+	cial group, and assign permissions of _0_6_2_0  to  the
+	terminal  line.   The  TTYGROUP definition has been
+	provided for just this situation.  If this item  is
+	not defined, then the group ownership of the termi-
+	nal is initialized to the user's group number.  See
+	TTYPERMS for related information.
+
+TTYPERM (number)
+	The  login  terminal permissions are initialized to
+	this value.  Typical values will be _0_6_2_2 to  permit
+	others  write  access to the line or _0_6_0_0 to secure
+	the line from other users.  If not  specified,  the
+	terminal  permissions  will be initialized to _0_6_2_2.
+	See TTYGROUP for related information.
+
+TTYTYPE_FILE (string)
+	This parameter specifies the  full  pathname  to  a
+	file  which  maps terminal lines to terminal types.
+	Each line of the file contains a terminal type  and
+	a terminal line, seperated by whitespace, for exam-
+	ple:
+
+	   _v_t_1_0_0     _t_t_y_0_1
+	   _w_y_s_e_6_0    _t_t_y_0_2
+	     _.         _.
+	     _.         _.
+	     _.         _.
+
+	This information is used  to  initialize  the  TERM
+	environment  parameter.   A  line  starting  with a
+	``#'' pound sign will be treated as a comment.   If
+	this  paramter  is not specified, the file does not
+	exist, or the terminal line is  not  found  in  the
+	file,  then the TERM environment parameter will not
+	be set.
+
+UID_MAX (number)
+	Max user ID value for automatic  uid  selection  in
+	useradd
+
+UID_MIN (number)
+	Min  user  ID  value for automatic uid selection in
+	useradd
+
+CROSS REFERENCE:
+----------------
+The following cross reference shows which programs in  the
+shadow login suite use which parameters.
+
+login   DEFAULT_HOME ENV_PATH ENV_ROOTPATH FAIL-
+	LOG_ENAB FAIL_DELAY FTMP_FILE HUSHLOGIN_FILE
+	LASTLOG_ENAB LOG_UNKFAIL_ENAB LOGIN_RETRIES
+	LOGIN_TIMEOUT MOTD_FILE TTYPERM TTYTYPE_FILE
+
+newusers PASS_MAX_DAYS PASS_MIN_DAYS PASS_WARN_AGE
+	UMASK
+
+passwd  OBSCURE_CHECKS_ENAB PASS_MAX_LEN PASS_MIN_LEN
+	PASS_ALWAYS_WARN CRACKLIB_DICTPATH
+	PASS_CHANGE_TRIES
+
+pwconv  PASS_MAX_DAYS PASS_MIN_DAYS PASS_WARN_AGE
+
+BUGS:
+-----
+Some  of  the  supported  configuration parameters are not
+documented in the manual page.

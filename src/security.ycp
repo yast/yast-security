@@ -1,0 +1,72 @@
+/*
+ * YaST2: Local security configuration
+ *
+ * Description: main()
+ * Author: Michal Svec <msvec@suse.cz>
+ * File: security.ycp
+ *
+ * $Id$
+ */
+
+{
+
+_debug("-----------------------------------------------");
+
+Include(`security_io());
+Include(`security_ui());
+
+map BUTTONS = CallFunction(`buttons());
+map STRINGS = CallFunction(`security_helps());
+map WIDGETS = CallFunction(`security_widgets());
+map SECURITY_default = lookup(CallFunction(`security_settings()),"secure");
+
+/* Automatic write testing -> use security_io.ycp *//*
+map mm = $[ "FAIL_DELAY" : "77" ];
+_debug(Include(`security_io(mm)));
+return;
+*/
+
+/* Menuentry for the YaST2 menu */
+
+map YaST2SecurityModule = $[
+  "path" : "security",
+  "menu" : UI(_("Security")),
+  "help" : UI(_( "Configure all local security settings.
+<p>You <b>DON'T</b> need to be logged in as <i>root</i>
+in order to do this.</p>"
+  ))
+];
+
+/* Menuentry for the YaST2 menu */
+
+if (Args() == [ "get_menuentry" ]) 
+  return YaST2MenuEntry(YaST2SecurityModule);
+
+/* The main() */
+
+_debug("Security Module started");
+map login_defs = SecurityInit(); /* rcagent */
+
+map security_defs = SecurityRead();
+_debug(security_defs);
+
+map SECURITY_OPTIONS = defs2options(WIDGETS,security_defs);
+
+any ret = SecurityMainDialog();
+_debug(SECURITY_OPTIONS);
+_debug("SD1:",security_defs);
+security_defs = options2defs(SECURITY_default, SECURITY_OPTIONS);
+_debug("SD2:",security_defs);
+_debug(ret);
+
+if(ret == `ok) {
+  _debug(SecurityWrite(security_defs));
+  _debug(SecurityFinish(login_defs));
+}
+
+_debug("Security Module finished");
+
+/* return; */
+}
+
+} /* YaST2: Local security configuration EOF */
