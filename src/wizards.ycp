@@ -12,9 +12,9 @@
 textdomain "security";
 
 import "Label";
+import "Sequencer";
 import "Wizard";
 
-include "wizard/sequencer.ycp";
 include "security/complex.ycp";
 include "security/dialogs.ycp";
 include "security/users.ycp";
@@ -63,7 +63,7 @@ define any MainSequence() ``{
 	],
     ];
 
-    any ret = WizardSequencer(aliases, sequence);
+    any ret = Sequencer::Run(aliases, sequence);
 
     return ret;
 }
@@ -97,7 +97,7 @@ define any SecuritySequence() ``{
     ];
 
     Wizard::CreateDialog();
-    any ret = WizardSequencer(aliases, sequence);
+    any ret = Sequencer::Run(aliases, sequence);
 
     UI::CloseDialog();
     return ret;
