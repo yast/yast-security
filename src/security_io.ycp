@@ -1,9 +1,11 @@
 /*
  * YaST2: Local security configuration
  *
- * Description: I/O functions
- * Author: Michal Svec <msvec@suse.cz>
- * File: security_io.ycp
+ * Description:
+ *   Input and output functions.
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */
@@ -78,7 +80,15 @@ return [
   "LASTLOG_ENAB",
   "FAIL_DELAY",
   "PASS_WARN_AGE",
-  "OBSCURE_CHECKS_ENAB"
+  "OBSCURE_CHECKS_ENAB",
+  "GID_MIN",
+  "GID_MAX",
+  "UID_MIN",
+  "UID_MAX",
+  "PASS_MIN_DAYS",
+  "PASS_MAX_DAYS",
+  "PASS_MIN_LEN",
+  "PASS_MAX_LEN"
 ];
 };
 

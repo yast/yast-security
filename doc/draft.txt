@@ -248,6 +248,15 @@ Minimum number of days between two changes in a password :0
 Maximum number of days between two changes in a password :99999
 - maybe only last two to T.1.2, but change that for ALL users with password
 
+This box sets the variable GID_MIN in /etc/login.defs.
+This box sets the variable GID_MAX in /etc/login.defs.
+This box sets the variable UID_MIN in /etc/login.defs.
+This box sets the variable UID_MAX in /etc/login.defs.
+This box sets the variable PASS_MIN_DAYS in /etc/login.defs.
+This box sets the variable PASS_MAX_DAYS in /etc/login.defs.
+This box sets the variable PASS_MIN_LEN in /etc/login.defs.
+This box sets the variable PASS_MAX_LEN in /etc/login.defs.
+
 
 T.1.Y Additional checks from login.defs
 - MD5_CRYPT_ENAB

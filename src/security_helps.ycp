@@ -1,9 +1,11 @@
 /*
  * YaST2: Local security configuration
  *
- * Description: Helps
- * Author: Michal Svec <msvec@suse.cz>
- * File: security_helps.ycp
+ * Description:
+ *   Helps definition.
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */
@@ -26,6 +28,10 @@ define STRINGS() ``{ return $[
   "Perms" : $[
     "caption" : UI(_("Files permissions")),
     "help" : UI(_("Perms help ..."))
+  ],
+  "Adduser" : $[
+    "caption" : UI(_("Adduser settings")),
+    "help" : UI(_("Adduser help ..."))
   ],
   "Other" : $[
     "caption" : UI(_("Files permissions and other settings")),

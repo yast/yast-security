@@ -1,9 +1,11 @@
 /*
  * YaST2: Local security configuration
  *
- * Description: General UI functions
- * Author: Michal Svec <msvec@suse.cz>
- * File: general_ui.ycp
+ * Description:
+ *   General user interface functions.
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */

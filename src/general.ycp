@@ -1,9 +1,11 @@
 /*
  * YaST2: Local security configuration
  *
- * Description: General functions
- * Author: Michal Svec <msvec@suse.cz>
- * File: general.ycp
+ * Description:
+ *   General functions.
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */

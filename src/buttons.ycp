@@ -1,9 +1,11 @@
 /*
  * YaST2: Local security configuration
  *
- * Description: Buttons definitions
- * Author: Michal Svec <msvec@suse.cz>
- * File: buttons.ycp
+ * Description:
+ *   Buttons definitions.
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */

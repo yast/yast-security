@@ -1,19 +1,21 @@
 /*
  * YaST2: Local security configuration
  *
- * Description: Options definitions
- * Author: Michal Svec <msvec@suse.cz>
- * File: security_widgets.ycp
+ * Description:
+ *   Security widgets definitions.
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */
 
 /*
 
-Format proposition:
+The WIDGETS format:
 -------------------
 
-map SECURITY_OPTIONS = $[
+map WIDGETS = $[
   "Item unique ID" : $[
     "Widget" : "ComboBox",
     "Label" : "Item label",
@@ -35,39 +37,21 @@ Implementation:
 ---------------
 
 map2widget("ID")
-- look up the "ID" in the "SECURITY_OPTIONS" map
+- look up the "ID" in the "WIDGETS" map
 - create the widget
 
-NOTE: something must change (fill) the "Value"s!
+widget2value("ID")
+- query UI for the widget with `id(ID)
+- return its current value
 
-updatevalue("ID","val")
-- updates the SECURITY_OPTIONS map
+updatewidget("ID")
 - look up the "ID" and change its "Value" to the "val"
-- must check if the value is in "Options"!
+- updates the SECURITY_OPTIONS map
 - called after start and after each subdialog [OK]
+- must check if the value is in "Options"! (TODO)
 
 processinput()
 - return true (OK) or false (abort, back, nil, help!, ...)
-
-if(OK)
-  updatevalue("ID",queryvalue("ID"));
-  ...
-
-TODO:
-- helps
-- easy/advanced mode
-- rework the Security*Dialog
-- finish the MainDialog
-
-Process:
-  SecurityRead;
-  updatevalue(*);
-  SecurityDialog;
-    SecurityBootDialog;
-    processinput;
-      updatevalue(...);
-    ...
-  SecurityWrite;
 
 */
 
@@ -157,6 +141,56 @@ define SECURITY_OPTIONS() ``{ return $[
     "Label" : UI(_("User launching updatedb:")),
     "Options" : [ "nobody", "root" ],
     "Value" : "nobody"
+  ],
+
+  /* Adduser settings */
+
+  "GID_MIN" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Minimum group ID")),
+    "Value" : ""
+  ],
+
+  "GID_MAX" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Maximum group ID")),
+    "Value" : ""
+  ],
+
+  "UID_MIN" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Minimum user ID")),
+    "Value" : ""
+  ],
+
+  "UID_MAX" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Maximum user ID")),
+    "Value" : ""
+  ],
+
+  "PASS_MIN_DAYS" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Minimum number of days between two password changes")),
+    "Value" : ""
+  ],
+
+  "PASS_MAX_DAYS" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Maximum number of days between two password changes")),
+    "Value" : ""
+  ],
+
+  "PASS_MIN_LEN" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Minimum length of password")),
+    "Value" : ""
+  ],
+
+  "PASS_MAX_LEN" : $[
+    "Widget" : "TextEntry",
+    "Label" : UI(_("Maximum length of password")),
+    "Value" : ""
   ] /* No \, ! */
 
 /*

@@ -1,15 +1,17 @@
 /*
  * YaST2: Local security configuration
  *
- * Description: UI functions
- * Author: Michal Svec <msvec@suse.cz>
- * File: security_ui.ycp
+ * Description:
+ *   User interface functions.
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */
 
 /*
- * Use:
+ * Usage:
  *   Include(`security_ui());
  *   map BUTTONS = CallFunction(`buttons());
  *   map STRINGS = CallFunction(`your_helps());
@@ -241,6 +243,7 @@ define SecurityMainDialog() ``{
     VSeparator(), SecurityItem(`boot, "Boot settings"),
     //VSeparator(), SecurityItem(`perms,"Files permissions"),
     //VSeparator(), SecurityItem(`other,"Other security settings"),
+    VSeparator(), SecurityItem(`adduser,"Adduser settings"),
     VSeparator(), SecurityItem(`other,"Files permissions and other settings"),
     VSeparator(),`VSpacing(2)
   ));
@@ -259,6 +262,7 @@ define SecurityMainDialog() ``{
     else if(ret == `login) subret = SecurityLoginDialog();
     //else if(ret == `perms) subret = SecurityPermsDialog();
     else if(ret == `other) subret = SecurityOtherDialog();
+    else if(ret == `adduser) subret = SecurityAdduserDialog();
     else _debug(["SecurityMainDialog","Huh?",ret]);
     if(subret == `ok) changed = true;
   }
@@ -369,6 +373,44 @@ define SecurityOtherDialog() ``{
     updateWidget("PERMISSION_SECURITY");
     updateWidget("CWD_IN_ROOT_PATH");
     updateWidget("RUN_UPDATEDB_AS");
+  }
+  UI(`CloseDialog());
+  return ret;
+};
+
+/* Adduser security settings dialog */
+
+define SecurityAdduserDialog() ``{
+  SuSEDialog("Adduser", [], `VBox(
+    VSeparator(),
+    map2widget("GID_MIN"),
+    VSeparator(),
+    map2widget("GID_MAX"),
+    VSeparator(),
+    map2widget("UID_MIN"),
+    VSeparator(),
+    map2widget("UID_MAX"),
+    VSeparator(),
+    map2widget("PASS_MIN_DAYS"),
+    VSeparator(),
+    map2widget("PASS_MAX_DAYS"),
+    VSeparator(),
+    map2widget("PASS_MIN_LEN"),
+    VSeparator(),
+    map2widget("PASS_MAX_LEN"),
+    VSeparator()
+    //,`HSpacing(1)
+  ));
+  any ret = processInput();
+  if(ret == `ok) {
+    updateWidget("GID_MIN");
+    updateWidget("GID_MAX");
+    updateWidget("UID_MIN");
+    updateWidget("UID_MAX");
+    updateWidget("PASS_MIN_DAYS");
+    updateWidget("PASS_MAX_DAYS");
+    updateWidget("PASS_MIN_LEN");
+    updateWidget("PASS_MAX_LEN");
   }
   UI(`CloseDialog());
   return ret;

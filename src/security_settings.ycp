@@ -1,9 +1,11 @@
 /*
  * YaST2: Local security configuration
  *
- * Description: Security settings
- * Author: Michal Svec <msvec@suse.cz>
- * File: security_settings.ycp
+ * Description:
+ *   Security settings definition.
+ *
+ * Authors:
+ *   Michal Svec <msvec@suse.cz>
  *
  * $Id$
  */
