@@ -43,9 +43,6 @@ in order to do this.</p>"))
 
 /* Menuentry for the YaST2 menu */
 
-if (Args() == [ "get_menuentry" ]) 
-  return YaST2MenuEntry(YaST2SecurityModule);
-
 /* The main() */
 
 y2debug("Security Module started");
