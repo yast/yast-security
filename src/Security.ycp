@@ -12,6 +12,8 @@
 module "Security";
 textdomain "security";
 
+import "Pam";
+import "PamSettings";
 import "Progress";
 include "security/levels.ycp";
 include "security/routines.ycp";
@@ -21,6 +23,7 @@ include "security/routines.ycp";
  */
 global map Settings = $[
     "CONSOLE_SHUTDOWN"			: "reboot",
+    "CRACKLIB_DICT_PATH"		: "/usr/lib/cracklib_dict",
     "CWD_IN_ROOT_PATH"			: "yes",
     "CWD_IN_USER_PATH"			: "yes",
     "DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
@@ -55,11 +58,8 @@ map Locations = $[
 	"GID_MAX",
 	"GID_MIN",
 	"LASTLOG_ENAB",
-	"OBSCURE_CHECKS_ENAB",
 	"PASS_MAX_DAYS",
-	"PASS_MAX_LEN",
 	"PASS_MIN_DAYS",
-	"PASS_MIN_LEN",
 	"PASS_WARN_AGE",
 	"UID_MAX",
 	"UID_MIN",
@@ -87,7 +87,6 @@ map Locations = $[
  * Remaining settings:
  * - CONSOLE_SHUTDOWN (/etc/inittab)
  * - PASSWD_ENCRYPTION (/etc/pam?)
- * - PASSWD_USE_CRACKLIB (/etc/pam?)
  */
 
 /**
@@ -240,28 +239,41 @@ global define boolean Read() ``{
     Progress::NextStage();
 
     /* pam stuff */
-    map pam_unix_map = $[];
-    list pam_list = SCR::Read(.pam.all.password.pam_unix2);
-    if(pam_list != [] && pam_list != nil)
-	pam_unix_map = select(pam_list,0,$[]);
-
-    map pam_check_map = $[];
-    pam_list = SCR::Read(.pam.all.password.pam_pwcheck);
-    if(pam_list != [] && pam_list != nil)
-	pam_check_map = select(pam_list,0,$[]);
+    list pam_unix_settings = PamSettings::GetValues ("pam_unix2", "password");
+    list pam_check_settings = PamSettings::GetValues("pam_pwcheck", "password");
 
     /* md5 & blowfish support */
     string method = "";
     maplist(string ci, Ciphers, ``{
-	boolean ci_support = contains(splitstring(lookup(pam_unix_map , "arguments", ""), " "), ci);
+	boolean ci_support = contains (pam_unix_settings, ci);
 	if(method == "" && ci_support) method = ci;
     });
     if(method == "") method = "des";
     change(Settings,"PASSWD_ENCRYPTION", method);
 
-    /* use cracklib? */
-    boolean pam_support = contains(splitstring(lookup(pam_check_map , "arguments", ""), " "), "use_cracklib");
-    change(Settings,"PASSWD_USE_CRACKLIB", pam_support?"yes":"no");
+    /* obscure checks */
+    boolean obscure = !contains (pam_check_settings, "no_obscure_checks");
+    change(Settings,"OBSCURE_CHECKS_ENAB", obscure? "yes":"no");
+
+
+    /* other pam_pwcheck settings */
+    Settings ["PASS_MIN_LEN"] = "5";
+    Settings ["PASS_MAX_LEN"] = "8";
+    Settings ["PASSWD_USE_CRACKLIB"] = "no";
+    foreach (`val, pam_check_settings, ``{
+	if (issubstring (val, "minlen"))
+	    Settings ["PASS_MIN_LEN"] = select (splitstring (val, "="), 1, "5");
+	if (issubstring (val, "maxlen"))
+	    Settings ["PASS_MAX_LEN"] = select (splitstring (val, "="), 1, "8");
+	/* use cracklib? */
+	if (issubstring (val, "cracklib"))
+	{
+	    Settings ["CRACKLIB_DICTPATH"] = select (splitstring (val, "="), 1,
+		"/usr/lib/cracklib_dict");
+	    Settings ["PASSWD_USE_CRACKLIB"] = "yes";
+	}
+    });
+
     y2debug("Settings=%1", Settings);
 
     /* Local permissions hack */
@@ -367,35 +379,49 @@ global define boolean Write() ``{
     string encr = Settings["PASSWD_ENCRYPTION"]:"des";
 
     maplist(string ci, Ciphers, ``{
-	string minusci = "-" + ci;
-
-	if(encr != ci) {
-	    SCR::Write(.pam.all.password.pam_unix2, minusci);
-	    SCR::Write(.pam.all.password.pam_pwcheck, minusci);
-	    /* Remove old config options */
-	    SCR::Write(.pam.login.password.pam_pwcheck, minusci);
-	    SCR::Write(.pam.login.password.pam_unix, minusci);
-	    SCR::Write(.pam.passwd.password.pam_pwcheck, minusci);
-	    SCR::Write(.pam.passwd.password.pam_unix, minusci);
-	    SCR::Write(.pam.sshd.password.pam_pwcheck, minusci);
-	    SCR::Write(.pam.sshd.password.pam_unix, minusci);
-	    SCR::Write(.pam.rlogin.password.pam_pwcheck, minusci);
-	    SCR::Write(.pam.rlogin.password.pam_unix, minusci);
-	}
-    });
-
-    maplist(string ci, Ciphers, ``{
-	string plusci = "+" + ci;
 
 	if(encr == ci) {
-	   SCR::Write(.pam.all.password.pam_unix2, plusci);
-	   SCR::Write(.pam.all.password.pam_pwcheck, plusci);
+	   PamSettings::AddValue ("pam_unix2", "password", ci);
+	   PamSettings::AddValue ("pam_pwcheck", "password", ci);
+	}
+	else {
+	    /* Remove old config options */
+	    PamSettings::RemoveValue ("pam_unix2", "password", ci);
+	    PamSettings::RemoveValue ("pam_pwcheck", "password", ci);
+	    foreach (`file, [ "login", "passwd", "sshd", "rlogin" ], ``{
+		Pam::RemoveValue (file, "password", "pam_unix", ci);
+		Pam::RemoveValue (file, "password", "pam_pwcheck", ci);
+	    });
 	}
     });
 
     /* use cracklib? */
-    string pam_string = (Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes") ? "+use_cracklib" : "-use_cracklib";
-    SCR::Write(.pam.all.password.pam_pwcheck, pam_string);
+    PamSettings::RemoveValue ("pam_pwcheck", "password", "cracklib");
+    if (Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes")
+    {
+	string crack = "cracklib";
+	string pth = Settings["CRACKLIB_DICT_PATH"]:"/usr/lib/cracklib_dict";
+	if (pth != "/usr/lib/cracklib_dict")
+	    crack = crack + "=" + pth;
+	PamSettings::AddValue ("pam_pwcheck", "password", crack);
+    }
+
+    /* save obscure checks when not defualt*/
+    PamSettings::RemoveValue ("pam_pwcheck", "password", "no_obscure_checks");
+    if (Settings["OBSCURE_CHECKS_ENAB"]:"yes" != "yes")
+	PamSettings::AddValue ("pam_pwcheck", "password", "no_obscure_checks");
+
+    /* save max pass length when not default */
+    PamSettings::RemoveValue ("pam_pwcheck", "password", "maxlen");
+    if (Settings["PASS_MAX_LEN"]:"8" != "8")
+	PamSettings::AddValue ("pam_pwcheck", "password",
+	    sformat ("maxlen=%1", Settings["PASS_MAX_LEN"]:"8"));
+
+    /* save min pass length when not default */
+    PamSettings::RemoveValue ("pam_pwcheck", "password", "minlen");
+    if (Settings["PASS_MIN_LEN"]:"5" != "5")
+	PamSettings::AddValue ("pam_pwcheck", "password",
+	    sformat ("minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
 
     /* enable sysrq? */
     boolean sysrq = Settings["ENABLE_SYSRQ"]:"no" == "yes";

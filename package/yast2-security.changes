@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jul 16 15:09:03 CEST 2003 - jsuchome@suse.de
+
+- updated to new Pam/PamSettings interface
+
+-------------------------------------------------------------------
 Sun May 11 00:04:54 CEST 2003 - msvec@suse.de
 
 - maximum password length is related to encryption method (#13291)
