@@ -19,8 +19,20 @@ define STRINGS() ``{ return $[
   "Main" : $[
     "caption" : UI(_("Local security configuration")),
     "help" :
-UI(_("X
-"))
+UI(_("<p>With this module you can change the local security settings.</p>")) +
+UI(_("<p>The local security settings consists of the boot configuration, login
+settings, password settings, some user adding settings, file permissions
+and some other settings.</p>")) +
+UI(_("<p>All particular settings are described in the respective dialogs.</p>")) +
+UI(_("<p>You can choose one of the preset configurations or you can make your
+own settings.</p>")) +
+UI(_("<p>Use <b>Home workstation</b> for the computer at home, not connected
+to any type of a network.</p>")) +
+UI(_("<p>Use <b>Networked workstation</b> for the computer at home, connected
+to any type of a network or internet.</p>")) +
+UI(_("<p>Use <b>Network server</b> for the computer which will be serving
+any kind of service, either network or any other.</p>"))+
+UI(_("<p>Or use <b>Custom settings</b> if you want your own configuration.</p>"))
   ],
 
   "Boot" : $[
@@ -78,7 +90,7 @@ be changed.</p>")) +
 UI(_("<p><b>Days before password expiry warning?</b><br>
 This entry sets the number of days the user is warned before his password
 expiry. The longer time, the harder for the user guessing passwords.</p>"))
-+ UI(_("Ahoj"))
+//+ ""
   ],
 
   "Adduser" : $[
