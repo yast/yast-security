@@ -1,23 +1,24 @@
-Write .etc.login_defs.FAILLOG_ENAB "yes"
-Write .etc.login_defs.LASTLOG_ENAB "yes"
-Write .etc.login_defs.FAIL_DELAY "1"
-Write .etc.login_defs.PASS_WARN_AGE "7"
-Write .etc.login_defs.OBSCURE_CHECKS_ENAB "no"
-Write .etc.login_defs.GID_MIN "101"
-Write .etc.login_defs.GID_MAX "60000"
-Write .etc.login_defs.UID_MIN "100"
-Write .etc.login_defs.UID_MAX "60000"
-Write .etc.login_defs.PASS_MIN_DAYS "0"
-Write .etc.login_defs.PASS_MAX_DAYS "99999"
-Write .etc.login_defs.PASS_MIN_LEN "5"
-Write .etc.login_defs.PASS_MAX_LEN "8"
-Write .rc.system.CONSOLE_SHUTDOWN "reboot"
-Write .rc.system.KDM_SHUTDOWN "all"
-Write .rc.system.PERMISSION_SECURITY "easy"
-Write .rc.system.CWD_IN_ROOT_PATH "yes"
-Write .rc.system.RUN_UPDATEDB_AS "root"
-Write .rc.system.ROOT_LOGIN_REMOTE "no"
-Write .rc.system.PASSWD_USE_CRACKLIB "no"
-Write .etc.login_defs nil
-Write .rc.system nil
-Execute .target.bash "/sbin/SuSEconfig -quick --nonewpackage"
+Write	.etc.login_defs.FAILLOG_ENAB "yes" true
+Write	.etc.login_defs.LASTLOG_ENAB "yes" true
+Write	.etc.login_defs.FAIL_DELAY "1" true
+Write	.etc.login_defs.PASS_WARN_AGE "7" true
+Write	.etc.login_defs.OBSCURE_CHECKS_ENAB "no" true
+Write	.etc.login_defs.GID_MIN "101" true
+Write	.etc.login_defs.GID_MAX "60000" true
+Write	.etc.login_defs.UID_MIN "100" true
+Write	.etc.login_defs.UID_MAX "60000" true
+Write	.etc.login_defs.PASS_MIN_DAYS "0" true
+Write	.etc.login_defs.PASS_MAX_DAYS "99999" true
+Write	.etc.login_defs.PASS_MIN_LEN "5" true
+Write	.etc.login_defs.PASS_MAX_LEN "8" true
+Write	.rc.system.CONSOLE_SHUTDOWN "reboot" true
+Write	.rc.system.KDM_SHUTDOWN "all" true
+Write	.rc.system.PERMISSION_SECURITY "easy" true
+Write	.rc.system.CWD_IN_ROOT_PATH "yes" true
+Write	.rc.system.RUN_UPDATEDB_AS "root" true
+Write	.rc.system.ROOT_LOGIN_REMOTE "no" true
+Write	.rc.system.PASSWD_USE_CRACKLIB "no" true
+Write	.etc.login_defs nil true
+Write	.rc.system nil true
+Execute	.target.bash "/sbin/SuSEconfig -quick --nonewpackage" 0
+Return	[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true]
