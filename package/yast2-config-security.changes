@@ -1,3 +1,6 @@
+-------------------------------------------------------------------
+Mon Apr 23 12:39:43 CEST 2001 - msvec@suse.cz
+
 - removed isnils
 - no more quick SuSEconfig
 - help fix (#6912)
