@@ -80,7 +80,7 @@ return $[
   "CONSOLE_SHUTDOWN" : $[
     "Widget" : "ComboBox",
     //  Boot options combo box caption
-    "Label" : UI(_("How to interpret Ctrl-Alt-Del:")),
+    "Label" : UI(_("&How to interpret Ctrl-Alt-Del:")),
     //  Boot options combo box options
     "Options" : [["ignore",UI(_("Ignore"))],["reboot",UI(_("Reboot"))],["halt",UI(_("Halt"))]],
     "Value" : "reboot"
@@ -89,7 +89,7 @@ return $[
   "KDM_SHUTDOWN" : $[
     "Widget" : "ComboBox",
     //  Boot options combo box caption
-    "Label" : UI(_("Shutdown behaviour of KDM:")),
+    "Label" : UI(_("&Shutdown behaviour of KDM:")),
     //  Boot options combo box options
     "Options" : [["root",UI(_("Only root"))],["all",UI(_("All users"))],["none",UI(_("Nobody"))],["local",UI(_("Local users"))],["auto",UI(_("Automatic"))]],
     "Value" : "all"
@@ -100,49 +100,49 @@ return $[
   "FAILLOG_ENAB" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)
-    "Label" : UI(_("Record failed login attempts")),
+    "Label" : UI(_("Record &failed login attempts")),
     "Value" : "yes"
   ],
 
   "FAIL_DELAY" : $[
     "Widget" : "IntField",
      // login options (please, stick to 50 characters per line)
-    "Label" : UI(_("Seconds to wait after an incorrect login attempt:")),
+    "Label" : UI(_("&Seconds to wait after an incorrect login attempt:")),
     "Value" : "3"
   ],
 
   "LASTLOG_ENAB" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)
-    "Label" : UI(_("Record successful login attempts")),
+    "Label" : UI(_("&Record successful login attempts")),
     "Value" : "yes"
   ],
 
   "ROOT_LOGIN_REMOTE" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)
-    "Label" : UI(_("Enable telnet login for user root")),
+    "Label" : UI(_("&Enable telnet login for user root")),
     "Value" : "no"
   ],
 
   "PASSWD_USE_CRACKLIB" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)
-    "Label" : UI(_("Checks for new passwords")),
+    "Label" : UI(_("&Checks for new passwords")),
     "Value" : "yes"
   ],
 
   "OBSCURE_CHECKS_ENAB" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)
-    "Label" : UI(_("Plausibility test for password")),
+    "Label" : UI(_("&Plausibility test for password")),
     "Value" : "yes"
   ],
 
   "PASS_WARN_AGE" : $[
     "Widget" : "IntField",
      // login options (please, stick to 50 characters per line)
-    "Label" : UI(_("Days before password expires warning:")),
+    "Label" : UI(_("&Days before password expires warning:")),
     "Value" : "7"
   ],
 
@@ -151,7 +151,7 @@ return $[
   "PERMISSION_SECURITY" : $[
     "Widget" : "ComboBox",
     // perms options combo box caption
-    "Label" : UI(_("Setting of file permissions:")),
+    "Label" : UI(_("&Setting of file permissions:")),
     // perms options combo box options
     "Options" : [["easy",UI(_("Easy"))],["secure",UI(_("Secure"))],["paranoid",UI(_("Paranoid"))]],
     "Value" : "secure"
@@ -162,14 +162,14 @@ return $[
   "CWD_IN_ROOT_PATH" : $[
     "Widget" : "CheckBox",
     // Other options (please, stick to 50 characters per line)
-    "Label" : UI(_("Include current directory in the path of user root")),
+    "Label" : UI(_("&Include current directory in the path of user root")),
     "Value" : "yes"
   ],
 
   "RUN_UPDATEDB_AS" : $[
     "Widget" : "ComboBox",
     // label for updatedb (please, stick to 50 characters per line)
-    "Label" : UI(_("User launching updatedb:")),
+    "Label" : UI(_("&User launching updatedb:")),
     "Options" : [ "nobody", "root" ],
     "Value" : "nobody"
   ],
@@ -179,56 +179,56 @@ return $[
   "GID_MIN" : $[
     "Widget" : "IntField",
     // minimum field label (please, stick to 50 characters per line)
-    "Label" : UI(_("Minimum")),
+    "Label" : UI(_("M&inimum")),
     "Value" : "101"
   ],
 
   "GID_MAX" : $[
     "Widget" : "IntField",
     // maximum field label (please, stick to 50 characters per line)
-    "Label" : UI(_("Maximum")),
+    "Label" : UI(_("Maxim&um")),
     "Value" : "60000"
   ],
 
   "UID_MIN" : $[
     "Widget" : "IntField",
     // minimum field label (please, stick to 50 characters per line)
-    "Label" : UI(_("Minimum")),
+    "Label" : UI(_("&Minimum")),
     "Value" : "100"
   ],
 
   "UID_MAX" : $[
     "Widget" : "IntField",
     // maximum field label (please, stick to 50 characters per line)
-    "Label" : UI(_("Maximum")),
+    "Label" : UI(_("Ma&ximum")),
     "Value" : "60000"
   ],
 
   "PASS_MIN_DAYS" : $[
     "Widget" : "IntField",
     // minimum field label
-    "Label" : UI(_("Minimum")),// number of days between two password changes")),
+    "Label" : UI(_("M&inimum")),// number of days between two password changes")),
     "Value" : "0"
   ],
 
   "PASS_MAX_DAYS" : $[
     "Widget" : "IntField",
     // maximum field label
-    "Label" : UI(_("Maximum")),// number of days between two password changes")),
+    "Label" : UI(_("Maxim&um")),// number of days between two password changes")),
     "Value" : "99999"
   ],
 
   "PASS_MIN_LEN" : $[
     "Widget" : "IntField",
     // minimum field label
-    "Label" : UI(_("Minimum")),// length of password")),
+    "Label" : UI(_("&Minimum")),// length of password")),
     "Value" : "5"
   ],
 
   "PASS_MAX_LEN" : $[
     "Widget" : "IntField",
     // maximum field label
-    "Label" : UI(_("Maximum")),// length of password")),
+    "Label" : UI(_("Ma&ximum")),// length of password")),
     "Value" : "7"
   ] /* No \, ! */
 
