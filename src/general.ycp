@@ -12,6 +12,7 @@
 
 {
 
+textdomain "security";
 /* update one value in the WIDGETS map */
 
 define updateValue(map opts, string ID, string val) ``{

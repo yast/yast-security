@@ -12,6 +12,8 @@
 
 {
 
+textdomain "security";
+
 define STRINGS() ``{ return $[
   "Main" : $[
     "caption" : UI(_("Local security configuration")),

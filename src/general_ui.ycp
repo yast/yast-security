@@ -12,6 +12,8 @@
 
 {
 
+textdomain "security";
+
 /* Popup box */
 
 define Popup(string message) ``{

@@ -12,6 +12,7 @@
 
 {
 
+textdomain "security";
 include "general.ycp";
 
 /* Lookup default settings */

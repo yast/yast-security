@@ -20,6 +20,7 @@
 
 {
 
+textdomain "security";
 include "general.ycp";
 include "general_ui.ycp";
 

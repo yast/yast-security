@@ -57,6 +57,8 @@ processinput()
 
 {
 
+textdomain "security";
+
 return $[
 
   /* Boot options */

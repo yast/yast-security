@@ -14,6 +14,7 @@
 
 y2debug("-----------------------------------------------");
 
+textdomain "security";
 include "security_io.ycp";
 include "security_ui.ycp";
 

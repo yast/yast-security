@@ -12,6 +12,8 @@
 
 {
 
+textdomain "security";
+
 return $[
   `ok : UI(_("OK")),
   `back : UI(_("Back")),
