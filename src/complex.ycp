@@ -90,7 +90,7 @@ global define symbol MainDialog() ``{
 	    ),
 	    `VSpacing(0.6),
 	    /* PushButton label */
-	    `HVCenter(`PushButton(`id(`details), _("&Details ..."))),
+	    `HVCenter(`PushButton(`id(`details), _("&Details..."))),
 	    `VSpacing(0.6)
 	)
     );

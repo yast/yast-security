@@ -30,11 +30,11 @@ textdomain "security";
 
 global map LevelsNames = $[
     /* RadioButton label */
-    "Level1" : _("Level &1 (Home workstation)"),
+    "Level1" : _("Level &1 (Home Workstation)"),
     /* RadioButton label */
-    "Level2" : _("Level &2 (Networked workstation)"),
+    "Level2" : _("Level &2 (Networked Workstation)"),
     /* RadioButton label */
-    "Level3" : _("Level &3 (Network server)"),
+    "Level3" : _("Level &3 (Network Server)"),
 ];
 
 global map Levels = $[

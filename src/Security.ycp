@@ -134,27 +134,27 @@ global define boolean Modified() ``{
 global define boolean Read() ``{
 
     /* Security read dialog caption */
-    string caption = _("Initializing security configuration");
+    string caption = _("Initializing Security Configuration");
     integer steps = 3;
 
     integer sl = 0*1000;
     sleep(sl);
 
     Progress::New( caption, " ", steps, [
-	    /* Progress step 1/3 */
+	    /* Progress stage 1/3 */
 	    _("Read security settings"),
-	    /* Progress step 2/3 */
+	    /* Progress stage 2/3 */
 	    _("Read inittab settings"),
-	    /* Progress step 3/3 */
+	    /* Progress stage 3/3 */
 	    _("Read PAM settings"),
 	], [
-	    /* Progress stage 1/4 */
-	    _("Reading security settings"),
-	    /* Progress stage 2/4 */
-	    _("Reading inittab settings"),
-	    /* Progress stage 3/4 */
-	    _("Reading PAM settings"),
-	    /* Progress stage 4/4 */
+	    /* Progress step 1/4 */
+	    _("Reading security settings..."),
+	    /* Progress step 2/4 */
+	    _("Reading inittab settings..."),
+	    /* Progress step 3/4 */
+	    _("Reading PAM settings..."),
+	    /* Progress step 4/4 */
 	    _("Finished")
 	],
 	""
@@ -274,31 +274,31 @@ global define boolean Write() ``{
     y2milestone("Writing configuration");
 
     /* Security read dialog caption */
-    string caption = _("Saving security configuration");
+    string caption = _("Saving Security Configuration");
     integer steps = 4;
 
     integer sl = 0*1000;
     sleep(sl);
 
     Progress::New( caption, " ", steps, [
-	    /* Progress step 1/4 */
-	    _("Write security settings"),
-	    /* Progress step 2/4 */
-	    _("Write inittab settings"),
-	    /* Progress step 3/4 */
-	    _("Write PAM settings"),
-	    /* Progress step 4/4 */
+	    /* Progress stage 1/4 */
+	    _("Writ security settings"),
+	    /* Progress stage 2/4 */
+	    _("Writ inittab settings"),
+	    /* Progress stage 3/4 */
+	    _("Writ PAM settings"),
+	    /* Progress stage 4/4 */
 	    _("Run SuSEconfig"),
 	], [
-	    /* Progress stage 1/5 */
-	    _("Writing security settings"),
-	    /* Progress stage 2/5 */
-	    _("Writing inittab settings"),
-	    /* Progress stage 3/5 */
-	    _("Writing PAM settings"),
-	    /* Progress stage 4/5 */
+	    /* Progress step 1/5 */
+	    _("Writing security settings..."),
+	    /* Progress step 2/5 */
+	    _("Writing inittab settings..."),
+	    /* Progress step 3/5 */
+	    _("Writing PAM settings..."),
+	    /* Progress step 4/5 */
 	    _("Running SuSEconfig"),
-	    /* Progress stage 5/5 */
+	    /* Progress step 5/5 */
 	    _("Finished")
 	],
 	""
@@ -444,10 +444,10 @@ global define list Summary() ``{
     y2debug("%1=%2", "curren", Settings);
 
     /* Summary text */
-    string summary = _("Current security level: Custom settings");
+    string summary = _("Current Security Level: Custom settings");
     if(current != `custom)
 	/* Summary text */
-	summary = sformat(_("Current security level: %1"), LevelsNames[current]:"");
+	summary = sformat(_("Current Security Level: %1"), LevelsNames[current]:"");
 
     return [ summary, [] ];
 }

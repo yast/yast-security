@@ -68,15 +68,15 @@ permissions.</p>") +
 own settings.</p>") +
 
     /* Main dialog help 5/8 */
-    _("<p>Use <b>Home workstation</b> for a home computer not connected to
+    _("<p>Use <b>Home Workstation</b> for a home computer not connected to
 any type of a network.</p>") +
 
     /* Main dialog help 6/8 */
-    _("<p>Use <b>Networked workstation</b> for a computer connected
+    _("<p>Use <b>Networked Workstation</b> for a computer connected
 to any type of a network or the Internet.</p>") +
 
     /* Main dialog help 7/8 */
-    _("<p>Use <b>Network server</b> for a computer that will be providing
+    _("<p>Use <b>Network Server</b> for a computer that will be providing
 any type of service, network or any other.</p>") +
 
     /* Main dialog help 8/8 */
@@ -88,25 +88,25 @@ any type of service, network or any other.</p>") +
 settings are mainly stored in the '/etc/login.defs' file.</p>") +
 
     /* Login dialog help 1/5 */
-    _("<p><b>Seconds to wait after an incorrect login attempt</b><br>
+    _("<p><b>Delay after Incorrect Login Attempt</b><br>
 It is advisable to wait some time after an incorrect login attempt to prevent
 password guessing. Make the time small enough so users do not need to wait to
 retry if a password is mistyped. A sensible value is '3' seconds.</p>") +
 
     /* Login dialog help 1/5 */
-    _("<p><b>Record failed login attempts</b><br> It is useful to know if
+    _("<p><b>Record Failed Login Attempts</b><br> It is useful to know if
 somebody is trying to log in and failed. For example, if someone is trying
 to guess the passwords of other users. Check this option to specify whether
 failed login attempts should be logged in the system log file.</p>") +
 
     /* Login dialog help 1/5 */
-    _("<p><b>Record successful login attempts</b><br> Logging succesful login
+    _("<p><b>Record Successful Login Attempts</b><br> Logging succesful login
 attempts is useful.  It can help to warn you of unauthorized access to the
 system (for example, a user logging in from a different location than usual).
 </p>") +
 
     /* Login dialog help 1/5 */
-    _("<p><b>Allow remote graphical login</b><br> Checking this allows access
+    _("<p><b>Allow Remote Graphical Login</b><br> Checking this allows access
 to a graphical login screen for this machine over the network. Remote access
 to your machine via xdm might be a security risk.</p>"),
 
@@ -116,13 +116,13 @@ to your machine via xdm might be a security risk.</p>"),
 These settings are mainly stored in the \"/etc/login.defs\" file.</p>") +
 
     /* Password dialog help 2/6 */
-    _("<p><b>Checking new passwords</b><br>It is wise to choose a password that
+    _("<p><b>Checking New Passwords</b><br>It is wise to choose a password that
 cannot be found in a dictionary and is not a name or other simple, common word.
 By checking the box, enforce password checking in regard to these rules.</p>") +
 
     /* Password dialog help 3/6 */
-    _("<p><b>Plausibility test for passwords</b><br> Sometimes it is required
-that passwords are constructed using a mixture of characters. This makes the
+    _("<p><b>Plausibility Test for Passwords</b><br> 
+Passwords should be constructed using a mixture of characters. This makes the
 guessing of passwords very difficult. Check this box to enable additional
 checks.</p>") +
 
@@ -131,13 +131,13 @@ checks.</p>") +
 Set the minimum and maximum password length.</p>") +
 
     /* Password dialog help 5/6 */
-    _("<p><b>Days before password change warning</b><br>Set the minimum and
+    _("<p><b>Days before Password Change Warning</b><br>Set the minimum and
 maximum time for warning that the password must be changed.</p>") +
 
     /* Password dialog help 6/6 */
-    _("<p><b>Days before password expiry warning</b><br> This entry sets the
+    _("<p><b>Days before Password Expiry Warning</b><br> This entry sets the
 number of days users are warned before their passwords expire. The longer the
-time, the less likely it is that a user can guess passwords.</p>\n"),
+time, the less likely it is that a user can guess passwords.</p>"),
 
 
     /* Adduser dialog help 1/2 */
@@ -148,7 +148,7 @@ time, the less likely it is that a user can guess passwords.</p>\n"),
 Set the minimum and maximum possible user ID.</p>") +
 
     /* Adduser dialog help 3/3 */
-    _("<p><b>Group ID limitations</b><br>
+    _("<p><b>Group ID Limitations</b><br>
 Set the minimum and maximum possible group ID.</p>"),
 
 
@@ -156,12 +156,12 @@ Set the minimum and maximum possible group ID.</p>"),
     "misc" : _("<p>In this dialog, change miscellaneous settings.</p>") +
 
     /* Misc dialog help 2/14 */
-    _("<p><b>Setting of file permissions</b><br> Settings for the permissions
+    _("<p><b>Setting File Permissions</b><br> Settings for the permissions
 of certain system files are set according to the data in /etc/permissions.secure
 or /etc/permissions.easy. Which file is used depends on this selection.
 Launching SuSEconfig sets these permissions according to /etc/permissions.*.
 This fixes files with incorrect permissions, whether this occurred accidentally
-or by intruders.</p>\n") +
+or by intruders.</p>") +
 
     /* Misc dialog help 3/14 */
     _("<p>\"easy\": Most of the system files that are only readable by root
@@ -177,7 +177,7 @@ daemons, not by an ordinary user.</p>") +
 decide which users will be able to run X applications and setuid programs.</p>") +
 
     /* Misc dialog help 6/14 */
-    _("<p><b>User launching updatedb</b><br> The program updatedb runs regularly,
+    _("<p><b>User Launching updatedb</b><br> The program updatedb runs regularly,
 once a day. It scans your whole file system and creates a database (locatedb)
 where the location of EVERY file is stored. The database can be searched by the
 program \"locate\".</p>") +
@@ -195,16 +195,15 @@ not.</p>") +
     _("<p>\"root\": all files in the system are added into the database</p>") +
 
     /* Misc dialog help 10/14 */
-    _("<p><b>Current directory in the root's path</b><br> On a DOS system,
-executable files (programs) are first searched for in the current directory
-and in the current path variable afterwards. In contrast, on a UNIX system they
-are exclusively searched for via the search path (variable PATH).</p>") +
+    _("<p><b>Current Directory in  root's Path</b><br> On a DOS system,
+the system first searched for executable files (programs) in the current directory then in the current path variable. In contrast, a UNIX system searches
+for them  exclusively via the search path (variable PATH).</p>") +
 
     /* Misc dialog help 11/14 */
-    _("<p><b>Current directory in the path of regular users</b><br> On a DOS
-system, executable files (programs) are first searched for in the current
-directory and in the current path variable afterwards. In contrast, on a UNIX
-system they are exclusively searched for via the search path (variable PATH).
+    _("<p><b>Current Directory in the Path of Regular Users</b><br> A DOS
+system first searches for executable files (programs) in the current
+directory then in the current path variable. In contrast, a UNIX
+system searches for them exclusively via the search path (variable PATH).
 </p>") +
 
     /* Misc dialog help 12/14 */
@@ -220,7 +219,7 @@ is rather easy if you set this option.</p>") +
 path of root, making it the last to be searched.</p>") +
 
     /* Misc dialog help 14/14 */
-    _("<p>\"no\": the user root always has to launch programs in the
+    _("<p>\"no\": the user root always must launch programs in the
 current directory prefixed with a \"./\". Example: \"./configure\".</p>"),
 
 ];

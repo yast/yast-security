@@ -96,7 +96,7 @@ global map WIDGETS = $[
     "CWD_IN_USER_PATH" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("Curr&ent directory in path of regular users"),
+	"Label" : _("Curr&ent Directory in Path of Regular Users"),
 	"Value" : "yes"
     ],
 
@@ -117,7 +117,7 @@ global map WIDGETS = $[
     "FAIL_DELAY" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Delay after an incorrect login attempt:"),
+	"Label" : _("&Delay after Incorrect Login Attempt:"),
 	"Value" : "3"
     ],
 
