@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 31 00:53:45 CEST 2004 - nashif@suse.de
+
+- use modified flag (#43904) in auto clients
+- 2.10.5
+
+-------------------------------------------------------------------
 Thu Aug 19 10:47:37 CEST 2004 - jsuchome@suse.cz
 
 - commandline function: "set"

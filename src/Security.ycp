@@ -155,6 +155,25 @@ global boolean modified = false;
 global boolean proposal_valid = false;
 global boolean write_only = false;
 
+
+/**
+ * Function which returns if the settings were modified
+ * @return boolean  settings were modified
+ */
+global define boolean GetModified () {
+    return modified;
+}
+/**
+ * Function sets internal variable, which indicates, that any
+ * settings were modified, to "true"
+ */
+
+
+global define void SetModified () {
+    modified = true;
+}
+
+
 /**
  * Data was modified?
  * @return true if modified

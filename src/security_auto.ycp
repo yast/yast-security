@@ -88,6 +88,12 @@ else if (func == "Write") {
     ret = Security::Write();
     Progress::on();
 }
+else if (func == "SetModified") {
+    ret = Security::SetModified ();
+}
+else if (func == "GetModified") {
+    ret = Security::GetModified ();
+}
 /* Unknown function */
 else {
     y2error("Unknown function: %1", func);
