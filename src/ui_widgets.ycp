@@ -162,7 +162,7 @@ return $[
   "CWD_IN_ROOT_PATH" : $[
     "Widget" : "CheckBox",
     // Other options (please, stick to 50 characters per line)
-    "Label" : UI(_("Omit current directory from the path of user root")),
+    "Label" : UI(_("Include current directory in the path of user root")),
     "Value" : "yes"
   ],
 

@@ -61,7 +61,7 @@ $[
     "OBSCURE_CHECKS_ENAB"	:   "no",
     "PASS_WARN_AGE"		:   "7",
     /* "Perms" */
-    "PERMISSION_SECURITY"	: "easy",
+    "PERMISSION_SECURITY"	: "easy local",
     /* "Other" */
     "CWD_IN_ROOT_PATH"		: "yes",
     "RUN_UPDATEDB_AS"		: "root",
@@ -94,7 +94,7 @@ $[
     "OBSCURE_CHECKS_ENAB"	: "no",
     "PASS_WARN_AGE"		: "14",
      /* "Perms" */
-    "PERMISSION_SECURITY"	: "easy",
+    "PERMISSION_SECURITY"	: "easy local",
     /* "Other" */
     "CWD_IN_ROOT_PATH"		: "no",
     "RUN_UPDATEDB_AS"		: "nobody",
@@ -128,7 +128,7 @@ $[
     "OBSCURE_CHECKS_ENAB"	: "no",
     "PASS_WARN_AGE"		: "14",
     /* "Perms" */
-    "PERMISSION_SECURITY"	: "secure",
+    "PERMISSION_SECURITY"	: "secure local",
     /* "Other" */
     "CWD_IN_ROOT_PATH"		: "no",
     "RUN_UPDATEDB_AS"		: "nobody",

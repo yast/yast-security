@@ -177,7 +177,7 @@ UI(_("<p>\"nobody\": only files which the user \"nobody\" can access
 UI(_("<p>\"root\": all files in the system are added into the
   database
 </p>")) +
-UI(_("<p><b>Omit current directory from the path of user root</b><br>
+UI(_("<p><b>Include current directory in the path of user root</b><br>
 On a DOS system, executable files (programs), are first
 searched for in the current directory, and in the current
 path variable afterwards. In contrast, on a UNIX system they
@@ -193,11 +193,11 @@ result, creating 'Trojan Horses' which exploit this weakness
 and intrude your system is rather easy if you set this
 option.
 </p>")) +
-UI(_("<p>\"yes\": the user root always has to launch programs in the
-  current directory prefixed with a \"./\". Example: \"./configure\".
-</p>")) +
-UI(_("<p>\"no\": the dot (\".\") is attached to the end of the search
+UI(_("<p>\"yes\": the dot (\".\") is attached to the end of the search
   path of root, making it the last to be searched.
+</p>")) +
+UI(_("<p>\"no\": the user root always has to launch programs in the
+  current directory prefixed with a \"./\". Example: \"./configure\".
 </p>")) +
 UI(_("<p><b>Disable telnet for user root</b><br>
 It is not very wise to allow telnet for the user root. During
