@@ -209,9 +209,9 @@ system searches for them exclusively via the search path (variable PATH).
     /* Misc dialog help 12/14 */
     _("<p>Some systems set up a 'workaround' by adding the dot (\".\") to the
 search path, thus enabling files in the current path to be found and executed.
-This is highly dangerous since you may accidentally launch unknown programs in
+This is highly dangerous because you may accidentally launch unknown programs in
 the current directory instead of the usual system-wide files. As a result,
-creating 'Trojan Horses' which exploit this weakness and intrude your system
+executing 'Trojan Horses', which exploit this weakness and intrude your system,
 is rather easy if you set this option.</p>") +
 
     /* Misc dialog help 13/14 */
