@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Tue Aug 27 20:00:00 CEST 2002 - jsuchome@suse.cz
 
-- provide/obsolete old translation packages
+- provide/obsolete old translation packages (bug #18691)
 
 -------------------------------------------------------------------
 Wed Aug 14 12:42:47 CEST 2002 - mvidner@suse.cz
@@ -33,7 +33,6 @@ Mon Jul 15 18:08:02 EDT 2002 - nashif@suse.de
 
 - adapted for use with the autoinstallation configuration system
 - security_auto now exports lower case values
- 
 
 -------------------------------------------------------------------
 Fri Jul 12 15:03:59 CEST 2002 - arvin@suse.de
