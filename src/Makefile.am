@@ -7,8 +7,7 @@ yncludedir = @yncludedir@/security
 client_DATA =			\
 	security.ycp		\
 	security_auto.ycp	\
-	security_summary.ycp	\
-	security_write.ycp
+	security_summary.ycp
 
 ynclude_DATA =			\
 	complex.ycp		\

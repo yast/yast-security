@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 11 06:50:45 CEST 2003 - nashif@suse.de
+
+- #30291: return list of required packages for autoinstallation
+
+-------------------------------------------------------------------
 Tue Sep  9 16:57:43 CEST 2003 - msvec@suse.cz
 
 - show correctly the current level (#30320)
