@@ -62,12 +62,17 @@ map scr_info = $[
 	],
 	"inittab" : $[
 	    "ca"			:	":ctrlaltdel:/sbin/shutdown -r -t 4 now"
-	]
+	],
+	"default" : $[
+	    "passwd" : $[
+		"crypt"			:	"md5"
+	    ],
+	],
     ],
     "target" : $[ "size" : 1 ],
     "pam" : $[ "passwd" : $[ "password" : $[
 	"pam_unix" : [
-	    $[ "arguments" : "nullok use_first_pass md5 use_authtok" ]
+	    $[ "arguments" : "nullok use_first_pass use_authtok" ]
 	]
     ]]]
 ];

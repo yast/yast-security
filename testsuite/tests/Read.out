@@ -32,7 +32,6 @@ Read	.sysconfig.sysctl.ENABLE_SYSRQ "r8"
 Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
 Dir	.etc.security.section: []
-Read	.etc.security.v."pam_unix2"."password" nil
-Dir	.etc.security.section: []
 Read	.etc.security.v."pam_pwcheck"."password" nil
+Read	.etc.default.passwd.crypt "md5"
 Return	true

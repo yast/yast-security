@@ -253,16 +253,12 @@ global define boolean Read() {
     Progress::NextStage();
 
     /* pam stuff */
-    list<string> pam_unix_settings = PamSettings::GetValues ("pam_unix2", "password");
     list<string> pam_check_settings = PamSettings::GetValues("pam_pwcheck", "password");
 
     /* md5 & blowfish support */
-    string method = "";
-    maplist(string ci, Ciphers, {
-	boolean ci_support = contains (pam_unix_settings, ci);
-	if(method == "" && ci_support) method = ci;
-    });
-    if(method == "") method = "des";
+    string method = PamSettings::GetHashMethod ();
+    if (method == "" || !contains (["des","md5","blowfish"],method))
+	method = "des";
     Settings["PASSWD_ENCRYPTION"] = method;
 
     /* obscure checks */
@@ -393,23 +389,7 @@ global define boolean Write() {
 
     /* pam stuff */
     string encr = Settings["PASSWD_ENCRYPTION"]:"des";
-
-    maplist(string ci, Ciphers, {
-
-	if(encr == ci) {
-	   PamSettings::AddValue ("pam_unix2", "password", ci);
-	   PamSettings::AddValue ("pam_pwcheck", "password", ci);
-	}
-	else {
-	    /* Remove old config options */
-	    PamSettings::RemoveValue ("pam_unix2", "password", ci);
-	    PamSettings::RemoveValue ("pam_pwcheck", "password", ci);
-	    foreach (string file, [ "login", "passwd", "sshd", "rlogin" ], {
-		Pam::RemoveValue (file, "password", "pam_unix", ci);
-		Pam::RemoveValue (file, "password", "pam_pwcheck", ci);
-	    });
-	}
-    });
+    PamSettings::SetHashMethod (encr);
 
     /* use cracklib? */
     PamSettings::RemoveValue ("pam_pwcheck", "password", "cracklib");
@@ -438,7 +418,7 @@ global define boolean Write() {
 	PamSettings::AddValue ("pam_pwcheck", "password",
 	    sformat ("minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
 
-    PamSettings::Write (["pam_pwcheck", "pam_unix2"]);
+    PamSettings::Write (false);
 
     /* enable sysrq? */
     boolean sysrq = Settings["ENABLE_SYSRQ"]:"no" == "yes";

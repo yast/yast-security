@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 28 15:07:42 CEST 2004 - jsuchome@suse.cz
+
+- updated to current yast2-pam usage
+  (/etc/default/passwd used for storing password encryption)
+- 2.10.1
+
+-------------------------------------------------------------------
 Tue Jun 15 15:06:28 CEST 2004 - msvec@suse.cz
 
 - updated testsuite
