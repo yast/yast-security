@@ -151,7 +151,7 @@ global map WIDGETS = $[
   "CWD_IN_ROOT_PATH" : $[
     "Widget" : "CheckBox",
     // Other options (please, stick to 50 characters per line)
-    "Label" : _("&Current directory in the root's path"),
+    "Label" : _("&Current directory in root's path"),
     "Value" : "yes"
   ],
 
