@@ -26,7 +26,9 @@ textdomain "security";
 y2milestone("----------------------------------------");
 y2milestone("Security auto started");
 
+import "Map";
 import "Security";
+
 include "security/routines.ycp";
 include "security/wizards.ycp";
 
@@ -43,15 +45,8 @@ if(size(Args()) > 0 && is(Args(0), string)) {
 y2debug("func=%1", func);
 y2debug("param=%1", param);
 
-/* Import Data*/
-if(func == "Import") {
-    /* Compat */
-    if(haskey(param, "encryption"))
-	param["passwd_encryption"] =  param["encryption"]:"des";
-    ret = Security::Import(switch2upper(param));
-}
 /* Create a  summary*/
-else if(func == "Summary") {
+if(func == "Summary") {
     ret = select(Security::Summary(), 0, "");
 }
 /* Reset configuration */
@@ -63,9 +58,16 @@ else if (func == "Reset") {
 else if (func == "Change") {
     ret = SecurityAutoSequence();
 }
+/* Import Data*/
+else if(func == "Import") {
+    /* Compat */
+    if(haskey(param, "encryption"))
+	param["passwd_encryption"] =  param["encryption"]:"des";
+    ret = Security::Import(Map::KeysToUpper(param));
+}
 /* Return actual state */
 else if (func == "Export") {
-    ret = switch2lower(Security::Export());
+    ret = Map::KeysToLower(Security::Export());
 }
 /* Read current state */
 else if (func == "Read") {

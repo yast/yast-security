@@ -219,23 +219,5 @@ global define any mapvalue(map m, any k) ``{
     return lookup(m, k, nil);
 }
 
-/**
- * Switch map keys to lower case
- * @param m input map
- * @return map with keys converted to lower case
- */
-global define map switch2lower(map m) ``{
-    return mapmap(string k, string v, m, ``([tolower(k), v]));
-}
-
-/**
- * Switch map keys to upper case
- * @param m input map
- * @return map with keys converted to lower case
- */
-global define map switch2upper(map m) ``{
-    return mapmap(string k, string v, m, ``([toupper(k), v]));
-}
-
 /* EOF */
 }

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jul 22 14:38:30 CEST 2003 - msvec@suse.cz
+
+- simplify autoinstallation client
+- 2.8.1
+
+-------------------------------------------------------------------
 Wed Jul 16 15:09:03 CEST 2003 - jsuchome@suse.de
 
 - updated to new Pam/PamSettings interface
