@@ -39,7 +39,11 @@ if(!is(WFM::Args(0), map)) {
     return false;
 }
 
-map settings = select(args,0,$[]);
+// convert imported data to upper case
+map settings = mapmap(`k,`v, select(args,0,$[]), ``{
+            return([toupper(k),v]);
+        });
+
 y2milestone("Only writing... (%1)", settings);
 
 /*

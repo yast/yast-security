@@ -20,62 +20,131 @@
 
 {
 
-textdomain "security";
+	textdomain "security";
+	import "Summary";
 
-y2milestone("----------------------------------------");
-y2milestone("Security auto started");
+	y2milestone("----------------------------------------");
+	y2milestone("Security auto started");
 
-include "security/io.ycp";
-include "security/ui.ycp";
+	include "security/io.ycp";
+	include "security/ui.ycp";
 
-include "security/widgets.ycp";
-// map WIDGETS = CallFunction(`widgets());
+	include "security/widgets.ycp";
+	// map WIDGETS = CallFunction(`widgets());
 
-/* Security
-import "Security";
-include "network/security/wizards.ycp";
-*/
+	/* Security
+	   import "Security";
+	   include "network/security/wizards.ycp";
+	 */
 
-list args = WFM::Args();
-if(size(args) <= 0) {
-    y2error("Did not get the settings, probably some mistake...");
-    return false;
+	list args = WFM::Args();
+	if(size(args) <= 0) {
+		y2error("Did not get the settings, probably some mistake...");
+		return false;
+	}
+	if(!is(WFM::Args(0), map)) {
+		y2error("Bad argument for security_auto: %1", WFM::Args(0));
+		return false;
+	}
+
+	define  switch2Lower(map s) ``{
+		map new_s = mapmap(`k,`v, s, ``{
+			return([tolower(k),v]);
+		});
+		return new_s;
+	}
+
+	define  switch2Upper(map s) ``{
+		map new_s = mapmap(`k,`v, s, ``{
+			return([toupper(k),v]);
+		});
+		return new_s;
+	}
+
+
+	/* The settings are in the first argument */
+	map settings = switch2Upper(select(args, 0, $[]));
+	y2debug("Imported: %1", settings);
+
+	/* Security
+	   Security::Import(settings);
+	   symbol ret = SecurityAutoSequence();
+	   y2debug("ret=%1", ret);
+
+	   y2milestone("Security auto finished");
+	   if(ret == `next)
+	   return Security::Export();
+
+	   return $[];
+	 */
+
+
+	define Summary() ``{
+		string summary = "";
+		summary = Summary::AddHeader(summary, _("Security Settings"));
+		if (size(settings)>0)
+		{
+			summary = Summary::AddLine(summary, _("This resource is configured. To view the settings, please go through the configuration 
+dialogs by running this module."));
+		}
+		else
+		{
+			summary = Summary::AddLine(summary, Summary::NotConfigured());
+		}
+		return summary;
+	}
+
+
+	define set_contents()
+		``{
+			string caption = _("Configure &Security Options");
+			term contents =
+				`VBox(
+						`VSpacing(1),
+						`RichText( `id(`summary), Summary()),
+						`VSpacing(0.5),
+						`HBox(
+							`PushButton(`id(`configure), caption),
+							`HStretch(),
+							`PushButton(`id(`reset), _("R&eset Configuration"))
+							),
+						`VSpacing(1)
+					 );
+			Wizard::SetContents(_("Security Options"),
+					contents, "", true, true);
+		}
+
+	set_contents();
+	any result = nil;
+	any ret = nil;
+	repeat {
+		ret = UI::UserInput();
+		if (ret == `configure)
+		{
+
+			Wizard::CreateDialog ();
+			y2debug("WIDGETS: %1",WIDGETS);
+			WIDGETS = settings2widgets(WIDGETS,settings);
+			y2debug("WIDGETS: %1",WIDGETS);
+			any ret = SecurityMainDialog(settings);
+			y2debug("WIDGETS: %1",WIDGETS);
+			// UI::CloseDialog ();
+			if(ret == `ok) {
+				settings = widgets2settings(LookupDefault(nil), WIDGETS);
+			}
+
+			set_contents();
+		}
+		else if ( ret == `reset)
+		{
+			settings = $[];
+			set_contents();
+		}
+	} until (ret == `back || ret == `next || ret ==`key  || ret == `abort);
+	y2milestone("Security auto finished");
+	y2milestone("----------------------------------------");
+
+	return [ret, switch2Lower(settings)];
 }
-if(!is(WFM::Args(0), map)) {
-    y2error("Bad argument for security_auto: %1", WFM::Args(0));
-    return false;
-}
-
-/* The settings are in the first argument */
-map settings = select(args, 0, $[]);
-y2debug("Imported: %1", settings);
-
-/* Security
-Security::Import(settings);
-symbol ret = SecurityAutoSequence();
-y2debug("ret=%1", ret);
-
-y2milestone("Security auto finished");
-if(ret == `next)
-    return Security::Export();
-
-return $[];
-*/
-
-y2debug("WIDGETS: %1",WIDGETS);
-WIDGETS = settings2widgets(WIDGETS,settings);
-y2debug("WIDGETS: %1",WIDGETS);
-any ret = SecurityMainDialog(settings);
-y2debug("WIDGETS: %1",WIDGETS);
-if(ret == `ok) {
-    settings = widgets2settings(LookupDefault(nil), WIDGETS);
-    return settings;
-}
-
-y2milestone("Security auto finished");
-y2milestone("----------------------------------------");
-
-return $[];
 
 /* EOF */
-}

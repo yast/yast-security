@@ -36,9 +36,6 @@ SortKey =
 Textdomain = security
 
 ; Autoinstall features
-Autoinst =
-
-; Resource in control file
-AutoinstResource = security
+Autoinst = all
 
 ; vim:syntax=dosini
