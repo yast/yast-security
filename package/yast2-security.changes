@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sat Feb 15 16:54:06 CET 2003 - nashif@suse.de
+
+- convert case when importing/exporting in autoinst mode
+- _auto.ycp Result ->Export
+- 2.7.6
+
+-------------------------------------------------------------------
 Mon Feb 10 13:29:14 CET 2003 - msvec@suse.de
 
 - proofread texts
