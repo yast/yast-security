@@ -2,9 +2,18 @@ Security Module TODO file
 -------------------------
 $Id$
 
+DOC:
+../src/ui.ycp
+
 Urgent:
+- grep FIXME *.ycp
 - ROOT_LOGIN_REMOTE "yes"|"No" hack!
 - helps: useradd -- adduser
+- STRINGS -> HELPS();
+- settings.ycp -> items.ycp?
+- RcConfig_settings -> Settings_RcConfig
+- rename includes
+- reorder functions (see impl.txt)
 - permissions: local (replace or add?) -- maybe "Add local perms" [X]
 
 IO:
