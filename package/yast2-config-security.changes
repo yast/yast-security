@@ -2,7 +2,7 @@
 Tue Jul  3 13:08:02 CEST 2001 - msvec@suse.cz
 
 - adapted to the system agent split
-- added missing shortcuts
+- added missing shortcuts (#9017)
 - version 2.4.0
 
 -------------------------------------------------------------------
