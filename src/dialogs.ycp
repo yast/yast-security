@@ -29,6 +29,7 @@ global define symbol ReadDialog() ``{
 _("<p><b><big>Aborting the initialization:</big></b><br>
 Safely abort the configuration utility by pressing <b>Abort</b> now.</p>");
 
+    Wizard::RestoreHelp(help);
     Security::AbortFunction = ``{return PollAbort();};
     boolean ret = Security::Read();
     return ret ? `next : `abort;
@@ -48,6 +49,7 @@ global define symbol WriteDialog() ``{
 _("<p><b><big>Aborting saving:</big></b><br>
 Abort saving by pressing <b>Abort</b>.</p>");
 
+    Wizard::RestoreHelp(help);
     Security::AbortFunction = ``{return PollAbort();};
     boolean ret = Security::Write();
     return ret ? `next : `abort;

@@ -2,6 +2,8 @@
 
 Bugs:
 - proper "local" permissions support
+- different passwords: des|md5|blowfish (#12758)
+- length check (#13291)
 - grep FIXME *.ycp
 
 Rewrite:
@@ -11,6 +13,7 @@ Rewrite:
 - security_auto, ...
 
 Enhancements:
+- better testsuite
 - other settings from login.defs
 - settings from useradd/defaults (#14129)
 - /proc settings (sysrq, ...)
