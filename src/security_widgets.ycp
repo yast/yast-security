@@ -115,7 +115,7 @@ return $[
 
   "PASS_WARN_AGE" : $[
     "Widget" : "IntField",
-    "Label" : UI(_("Days before password expiry warning:")),
+    "Label" : UI(_("Days before password expires warning:")),
     "Value" : "7"
   ],
 
@@ -123,7 +123,7 @@ return $[
 
   "PERMISSION_SECURITY" : $[
     "Widget" : "ComboBox",
-    "Label" : UI(_("Setting of files permissions:")),
+    "Label" : UI(_("Setting of file permissions:")),
     "Options" : [["easy",UI(_("Easy"))],["secure",UI(_("Secure"))],["paranoid",UI(_("Paranoid"))]],
     "Value" : "secure"
   ],

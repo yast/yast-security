@@ -35,10 +35,9 @@ map WIDGETS = CallFunction(`security_widgets());
 map YaST2SecurityModule = $[
   "path" : "security",
   "menu" : UI(_("Security")),
-  "help" : UI(_( "Configure all local security settings.
+  "help" : UI(_("Configure all local security settings.
 <p>You <b>DON'T</b> need to be logged in as <i>root</i>
-in order to do this.</p>"
-  ))
+in order to do this.</p>"))
 ];
 
 /* Menuentry for the YaST2 menu */
