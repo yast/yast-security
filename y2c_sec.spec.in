@@ -14,12 +14,12 @@ Name:         @RPMNAME@
 Release:      1
 Copyright:    (c) 2000 SuSE GmbH
 Group:        unsorted
-Requires:	y2t_sec
+Requires:     y2t_sec
 BuildArchitectures: noarch
 
 Packager:     @MAINTAINER@
 
-Summary:      YaST2 Modules for installation
+Summary:      YaST2 Security Configuration Module
 Version:      @VERSION@
 Source0:      @RPMNAME@-@VERSION@.tar.gz
 
@@ -44,7 +44,15 @@ make install
 %files
 
 %dir @YAST2DIR@/clients
+%dir @YAST2DIR@/include
 %dir @YAST2DIR@/menuentries
-@YAST2DIR@/menuentries/menuentry_sec.ycp
-@YAST2DIR@/clients/sec_step1.ycp
-@YAST2DIR@/clients/sec.ycp
+@YAST2DIR@/menuentries/menuentry_security.ycp
+@YAST2DIR@/clients/buttons.ycp
+@YAST2DIR@/clients/security.ycp
+@YAST2DIR@/clients/security_helps.ycp
+@YAST2DIR@/clients/security_settings.ycp
+@YAST2DIR@/clients/security_widgets.ycp
+@YAST2DIR@/include/general.ycp
+@YAST2DIR@/include/general_ui.ycp
+@YAST2DIR@/include/security_io.ycp
+@YAST2DIR@/include/security_ui.ycp

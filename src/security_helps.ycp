@@ -43,3 +43,6 @@ define STRINGS() ``{ return $[
 return STRINGS();
 
 } /* EOF */
+rn STRINGS();
+
+} /* EOF */

@@ -217,3 +217,13 @@ map SecurityOptions = $[
 return SECURITY_OPTIONS();
 
 } /* YaST2: Local security configuration EOF */
+: Other_options
+];
+*/
+
+];
+};
+
+return SECURITY_OPTIONS();
+
+} /* YaST2: Local security configuration EOF */

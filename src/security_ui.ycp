@@ -417,3 +417,23 @@ define SecurityAdduserDialog() ``{
 };
 
 } /* YaST2: Local security configuration EOF */
+("PASS_MAX_LEN"))),
+    `VSpacing(0.3)
+    //,`HSpacing(1)
+  ));
+  any ret = processInput();
+  if(ret == `ok) {
+    updateWidget("GID_MIN");
+    updateWidget("GID_MAX");
+    updateWidget("UID_MIN");
+    updateWidget("UID_MAX");
+    updateWidget("PASS_MIN_DAYS");
+    updateWidget("PASS_MAX_DAYS");
+    updateWidget("PASS_MIN_LEN");
+    updateWidget("PASS_MAX_LEN");
+  }
+  UI(`CloseDialog());
+  return ret;
+};
+
+} /* YaST2: Local security configuration EOF */
