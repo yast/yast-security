@@ -34,7 +34,7 @@ define SecurityFinish() ``{
   list ret = [];
   add(ret,SCR(`Write(.etc.login_defs,nil)));
   add(ret,SCR(`Write(.rc.system,nil)));
-  add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig -quick --nonewpackage"))
+  add(ret,SCR(`Execute(.target.bash, "/sbin/SuSEconfig -quick --nonewpackage")));
   return ret;
 };
 

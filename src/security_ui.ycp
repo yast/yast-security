@@ -321,7 +321,7 @@ define SecuritySettings(list settings, map defs) ``{
   if(current==nil) enab=true;
 
   term T = `VBox();
-  T = add(T,`VSpacing(0.3));
+  T = add(T,`VSpacing(0.5));
 
   T = foreach(`item,settings,``{
     string key = lookup(item,"name");
@@ -336,13 +336,14 @@ define SecuritySettings(list settings, map defs) ``{
     R = add(R,key);
     if(key == current) R = add(R,true);
     T = add(T, `Left(R));
+    T = add(T, `VSpacing(0.03));
     return T;
   });
 
-  T = add(T,`VSpacing(0.5));
+  T = add(T,`VSpacing(0.6));
   T = add(T,`Left(`RadioButton(`id(`custom),`opt(`notify),"&Custom settings",enab)));
     /* T = add(T,`Left(`HBox(`RadioButton(`id(`custom),"&Custom settings",enab),`Right(`PushButton(`id(`details),"&Change..."))))); */
-  T = add(T,`VSpacing(0.3));
+  T = add(T,`VSpacing(0.5));
   y2debug("T: %1",T);
   return T;
 };
@@ -367,10 +368,13 @@ define SecurityMainDialog(map defs) ``{
     `VBox(
     `HVSquash(
     `Frame( "Current security settings:",
-      `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs))
+      `HBox(`HSpacing(0.8),
+      `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
+      `HSpacing(0.8))
     )),
-    `VSpacing(0.3),
-    `HVCenter(`PushButton(`id(`details),"&Details..."))
+    `VSpacing(0.6),
+    `HVCenter(`PushButton(`id(`details),"&Details...")),
+    `VSpacing(0.6)
     )
   ));
 
@@ -388,8 +392,12 @@ define SecurityMainDialog(map defs) ``{
     ret = processInput();
     y2debug("rettt: %1",ret);
 
-    if(ret == `ok)			/* Save the settings */
+    if(ret == `ok) {			/* Save the settings */
+      string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+      map current_sets = FindSettings(settings,current_defs);
+      WIDGETS = defs2options(WIDGETS,current_sets);
       break;
+    }
     else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
       break;				/* Don't save the settings */
     else if(ret == `details || ret ==`next)  {
@@ -423,8 +431,10 @@ define SecurityMainDialog(map defs) ``{
 
   UI(`CloseDialog());
 
+
   /* [Finish]ed */
   if(ret == `ok && old_WIDGETS!=WIDGETS) {
+    y2debug("YES");
     string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
     y2debug("current_defs: %1",current_defs);
     map current_sets = FindSettings(settings,current_defs);
@@ -506,17 +516,24 @@ define SecurityDetailsDialog() ``{
   return nil;
 };
 
+/* Frame with spacings */
+
+define XFrame(float f1, float f2, string S, term T) ``{
+  return `Frame(S,`HBox(`HSpacing(f1),`VBox(`VSpacing(f2),T,`VSpacing(f2)),`HSpacing(f1)));
+};
+
 /* Boot settings dialog */
 
 define SecurityBootDialog() ``{
   SuSEDialog("Boot", [], `VBox(
-`Frame("Boot permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(-0.1),
+XFrame(0.8,0.5,"Boot permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(-0.1),
     VSeparator(),
     map2widget("CONSOLE_SHUTDOWN"),
-    VSeparator(),
+    `VSpacing(0.4),
     map2widget("KDM_SHUTDOWN"),
     VSeparator()
 ,`VSpacing(0.3)),`HSpacing(1.5)))
+,`VSpacing(2.5)
   ));
   any ret = processInput();
   if(ret == `ok) {
@@ -532,15 +549,17 @@ define SecurityBootDialog() ``{
 define SecurityLoginDialog() ``{
   SuSEDialog("Login", [], `VBox(
 //`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
-`Frame("Login",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
-    VSeparator(),
+XFrame(2.0,0.9,"Login",`VBox(
+    //VSeparator(),
     map2widget("FAIL_DELAY"),
-    VSeparator(),
+    //VSeparator(),
+    `VSpacing(0.5),
     map2widget("FAILLOG_ENAB"),
     VSeparator(),
-    map2widget("LASTLOG_ENAB"),
-    VSeparator(),
-`VSpacing(0.3)),`HSpacing(1)))
+    map2widget("LASTLOG_ENAB")
+    //VSeparator()
+)),
+`VSpacing(1.7)
 ));
   any ret = processInput();
   if(ret == `ok) {
@@ -580,12 +599,13 @@ define SecurityMiscDialog() ``{
 //`Frame("Other settings",`HBox(`HSpacing(1),`VBox(`VSpacing(0.3),
     VSeparator(),
     map2widget("RUN_UPDATEDB_AS"),
-    VSeparator(),
+    `VSpacing(1.0),
     map2widget("CWD_IN_ROOT_PATH"),
     VSeparator(),
     map2widget("ROOT_LOGIN_REMOTE"),
-    VSeparator()
+    //VSeparator()
 //),`HSpacing(1)))
+    `VSpacing(1.8)
   ));
   any ret = processInput();
   if(ret == `ok) {
@@ -602,29 +622,33 @@ define SecurityMiscDialog() ``{
 
 define SecurityPasswdDialog() ``{
   SuSEDialog("Password", [], `VBox(
-    VSeparator(),
-    `Frame("Checks",`VBox(
+    //VSeparator(),
+    `VSpacing(-0.2),
+    XFrame(0.3,0.2,"Checks",`VBox(
     map2widget("PASSWD_USE_CRACKLIB"),
     VSeparator(),
     map2widget("OBSCURE_CHECKS_ENAB"),
     VSeparator()
     )),
+    `VSpacing(0.4),
     `Frame("Password length",`HBox(
+    `HSpacing(0.5),
     map2widget("PASS_MIN_LEN"),
-    VSeparator(),
+    `HSpacing(0.5),
     map2widget("PASS_MAX_LEN"),
-    VSeparator()
+    `HSpacing(0.5)
     )),
+    `VSpacing(0.4),
     `Frame("Days of password change warning",`HBox(
+    `HSpacing(0.5),
     map2widget("PASS_MIN_DAYS"),
-    VSeparator(),
+    `HSpacing(0.5),
     map2widget("PASS_MAX_DAYS"),
-    VSeparator()
+    `HSpacing(0.5)
     )),
-    VSeparator(),
+    `VSpacing(0.4),
     map2widget("PASS_WARN_AGE"),
-    VSeparator()
-    //,`HSpacing(1)
+    `VSpacing(0.8)
   ));
   any ret = processInput();
   if(ret == `ok) {
@@ -645,18 +669,19 @@ define SecurityPasswdDialog() ``{
 define SecurityAdduserDialog() ``{
   SuSEDialog("Adduser", [], `VBox(
     VSeparator(),
-    `Frame("User ID limitations",`HBox(
+    XFrame(1.8,0.5,"User ID limitations",`HBox(
     map2widget("UID_MIN"),
-    VSeparator(),
+    `HSpacing(1.5),
     map2widget("UID_MAX")
     )),
-    VSeparator(),
-    `Frame("Group ID limitations",`HBox(
+    `VSpacing(0.7),
+    XFrame(1.8,0.5,"Group ID limitations",`HBox(
     map2widget("GID_MIN"),
-    VSeparator(),
+    `HSpacing(1.5),
     map2widget("GID_MAX")
     )),
-    VSeparator()
+    `VSpacing(1.7)
+    //VSeparator()
     //,`HSpacing(1)
   ));
   any ret = processInput();

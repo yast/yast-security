@@ -64,8 +64,10 @@ y2debug("security_defs: %1:",security_defs);
 y2debug("ret: %1",ret);
 
 if(ret == `ok) {
+  Info(UI(_("Please wait while updating configuration files.")));
   y2debug("Write: %1",SecurityWrite(security_defs));
   y2debug("Finish: %1",SecurityFinish());
+  InfoClose();
 }
 
 y2debug("Security Module finished");

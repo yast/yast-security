@@ -14,9 +14,34 @@
 
 textdomain "security";
 
+/* Info box */
+
+define Info(string message) ``{
+  any ret = UI(`OpenDialog(
+        `opt(`decorated),
+        `HBox(
+          `HSpacing(1),
+          `VBox(
+            `VSpacing(0.2),
+            `Left(`Label(message)),
+            `VSpacing(0.2)
+          ),
+          `HSpacing(1)
+        )
+    )
+  );
+  return ret;
+};
+
+define InfoClose() ``{
+  any ret = UI(`CloseDialog());
+  return ret;
+};
+
 /* Popup box */
 
 define Popup(string message) ``{
+  map BUTTONS = CallFunction(`buttons());
   UI(`OpenDialog(
         `opt(`decorated),
         `HBox(
@@ -25,8 +50,8 @@ define Popup(string message) ``{
             `VSpacing(0.2),
             `Left(`Label(message)),
 	    `HBox(
-              `PushButton(`id(`ok),`opt(`default), _("&OK")),
-	      `PushButton(`id(`cancel),_("&Cancel"))
+              `PushButton(`id(`ok),`opt(`default), lookup(BUTTONS,`ok)),
+	      `PushButton(`id(`cancel),lookup(BUTTONS,`cancel))
 	    ),
             `VSpacing(0.2)
           ),
@@ -42,6 +67,7 @@ define Popup(string message) ``{
 /* Message box */
 
 define Message(any message) ``{
+  map BUTTONS = CallFunction(`buttons());
   UI(`OpenDialog(
         `opt(`decorated),
         `HBox(
@@ -49,7 +75,7 @@ define Message(any message) ``{
           `VBox(
             `VSpacing(0.2),
             `Label(sformat("%1",message)),
-            `PushButton(`opt(`default), _("&OK")),
+            `PushButton(`opt(`default), lookup(BUTTONS,`ok)),
             `VSpacing(0.2)
           ),
           `HSpacing(1)
@@ -82,11 +108,12 @@ define BrowseMap(map m) ``{
 
 define Choose(list sel) ``{
   string|void item = nil;
+  map BUTTONS = CallFunction(`buttons());
 
   UI(`OpenDialog(
-    `VBox(`SelectionBox(`id(`sel), _("&Please choose"), sel),
-      `HBox(`PushButton(`id(`ok), _("&OK")),
-        `PushButton(`id(`cancel), _("&Cancel")))
+    `VBox(`SelectionBox(`id(`sel), "&Please choose", sel),
+      `HBox(`PushButton(`id(`ok), lookup(BUTTONS,`ok)),
+        `PushButton(`id(`cancel), lookup(BUTTONS,`cancel)))
     )));
 
   any ret = nil;
