@@ -1,5 +1,5 @@
 #
-# Makefile.am for module
+# Makefile.am
 #
 
 SUBDIRS = src doc testsuite
