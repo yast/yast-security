@@ -28,7 +28,5 @@ Summary:	Configuration of security
 @yncludedir@/security/*
 @configdir@/security.y2cc
 @clientdir@/security*.ycp
-@clientdir@/ui_helps.ycp
-@clientdir@/ui_widgets.ycp
 @scrconfdir@/*.scr
 %doc @docdir@
