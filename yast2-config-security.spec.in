@@ -6,7 +6,7 @@
 # please send bugfixes or comments to @MAINTAINER@
 #
 
-# neededforbuild  autoconf automake ycpdoc yast2-testsuite dejagnu expect
+# neededforbuild  autoconf automake ycpdoc yast2-testsuite dejagnu expect tcl yast2-base libycp liby2 libyui libscr yast2-core-wfm yast2-core-scr yast2-core-translator
 
 Vendor:		SuSE GmbH, Nuernberg, Germany
 Distribution:	SuSE Linux 6.4 (i386)
@@ -34,7 +34,7 @@ Source0:	@RPMNAME@-@VERSION@.tar.bz2
 %build
 ./configure
 make
-#make check
+make check
 
 %install
 make install
