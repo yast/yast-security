@@ -17,5 +17,5 @@ Read	.sysconfig.security.DISPLAYMANAGER_REMOTE_ACCESS nil
 Read	.sysconfig.security.KDM_SHUTDOWN nil
 Read	.sysconfig.security.PERMISSION_SECURITY nil
 Read	.sysconfig.security.RUN_UPDATEDB_AS nil
-Read	.pam.passwd.password.pam_pwcheck nil
+Read	.pam.all.password.pam_unix2 nil
 Return	$["CONSOLE_SHUTDOWN":"ignore", "CWD_IN_ROOT_PATH":"no", "DISPLAYMANAGER_REMOTE_ACCESS":"no", "FAILLOG_ENAB":"l1", "FAIL_DELAY":"l2", "GID_MAX":"l3", "GID_MIN":"l4", "KDM_SHUTDOWN":"root", "LASTLOG_ENAB":"l5", "OBSCURE_CHECKS_ENAB":"l6", "PASS_MAX_DAYS":"l7", "PASS_MAX_LEN":"l8", "PASS_MIN_DAYS":"l9", "PASS_MIN_LEN":"l10", "PASS_WARN_AGE":"l11", "PERMISSION_SECURITY":"secure local", "RUN_UPDATEDB_AS":"nobody", "UID_MAX":"l12", "UID_MIN":"l13"]

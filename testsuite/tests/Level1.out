@@ -19,25 +19,16 @@ Write	.sysconfig.security.PERMISSION_SECURITY "easy" true
 Write	.sysconfig.security.RUN_UPDATEDB_AS "root" true
 Write	.etc.login_defs nil true
 Write	.sysconfig.security nil true
+Write	.pam.all.password.pam_unix2 "-md5" true
+Write	.pam.all.password.pam_pwcheck "-md5" true
 Write	.pam.login.password.pam_pwcheck "-md5" true
 Write	.pam.login.password.pam_unix "-md5" true
-Write	.pam.login.password.pam_unix2 "-md5" true
 Write	.pam.passwd.password.pam_pwcheck "-md5" true
 Write	.pam.passwd.password.pam_unix "-md5" true
-Write	.pam.passwd.password.pam_unix2 "-md5" true
 Write	.pam.sshd.password.pam_pwcheck "-md5" true
 Write	.pam.sshd.password.pam_unix "-md5" true
-Write	.pam.sshd.password.pam_unix2 "-md5" true
 Write	.pam.rlogin.password.pam_pwcheck "-md5" true
 Write	.pam.rlogin.password.pam_unix "-md5" true
-Write	.pam.rlogin.password.pam_unix2 "-md5" true
-Write	.pam.gdm.password.pam_pwcheck "-md5" true
-Write	.pam.gdm.password.pam_unix "-md5" true
-Write	.pam.gdm.password.pam_unix2 "-md5" true
-Write	.pam.login.password.pam_pwcheck "-use_cracklib" true
-Write	.pam.passwd.password.pam_pwcheck "-use_cracklib" true
-Write	.pam.sshd.password.pam_pwcheck "-use_cracklib" true
-Write	.pam.rlogin.password.pam_pwcheck "-use_cracklib" true
-Write	.pam.gdm.password.pam_pwcheck "-use_cracklib" true
+Write	.pam.all.password.pam_pwcheck "-use_cracklib" true
 Execute	.target.bash "/sbin/SuSEconfig --nonewpackage" 0
-Return	[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, 0]
+Return	[true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, true, 0]
