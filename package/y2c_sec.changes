@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Jan  5 11:13:55 CET 2001 - kkaempf@suse.de
+
+- mark strings as translatable
+
+-------------------------------------------------------------------
 Fri Dec 15 13:26:24 CET 2000 - msvec@suse.cz
 
 - help text for the main screen added (#4619)
