@@ -5,7 +5,6 @@
 menudir = $(YAST2DIR)/menuentries
 modulesdir = $(YAST2DIR)/clients
 clientsdir = $(YAST2DIR)/clients
-#clientsdir = $(YAST2DIR)/clients/security
 includedir = $(YAST2DIR)/include/security
 
 modules_DATA =			\
@@ -13,7 +12,6 @@ modules_DATA =			\
 	security_write.ycp
 
 clients_DATA =			\
-	ui_buttons.ycp		\
 	ui_helps.ycp		\
 	ui_widgets.ycp
 

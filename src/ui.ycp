@@ -18,7 +18,6 @@
  * <pre>
  * Usage:
  *   include "security/ui.ycp";
- *   map BUTTONS = CallFunction(`ui_buttons());
  *   map STRINGS = CallFunction(`your_helps());
  *   map WIDGETS = CallFunction(`your_widgets());
  * </pre>
@@ -31,6 +30,8 @@ textdomain "security";
 include "security/routines.ycp";
 include "security/settings.ycp";
 include "security/functions_ui.ycp";
+
+include "ui/common_messages.ycp";
 
 /**
  * Return a widget from the WIDGETS map created acording to the ID.
@@ -203,9 +204,24 @@ global define HSeparator() ``{
  * If the button is OK, Finish or Next, it is defined as Replace Point `rp.
  * @param button the button symbol
  * @return term the button
- * @see <a href="ui_buttons.html">ui_buttons.ycp</a>
  */
 global define Button(symbol button) ``{
+    //map BUTTONS = CallFunction(`ui_buttons());
+    map BUTTONS = $[
+	`ok : OKButtonLabel(),
+	`back : BackButtonLabel(),
+	`next : NextButtonLabel(),
+	`help : HelpButtonLabel(),
+	`abort : AbortButtonLabel(),
+	`finish : FinishButtonLabel(),
+	`cancel : CancelButtonLabel(),
+	// pushbutton label
+	`details : _("&Details"),
+	// pushbutton label
+	`expert : _("&Expert"),
+	`yes : YesButtonLabel(),
+	`no : NoButtonLabel()
+    ];
     string text = lookup(BUTTONS,button);
     if (text == "")
         return nil;
@@ -467,7 +483,7 @@ global define SecurityMainDialog(map defs) ``{
   if( curr == `custom) {
     UI(`ChangeWidget(`id(`details),`Enabled,false));
     // push button
-    UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
+    UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel())));
   }
 
   any ret = nil;
@@ -521,7 +537,7 @@ global define SecurityMainDialog(map defs) ``{
           any curr2 = UI(`QueryWidget(`id(`rb),`CurrentButton));
           if( curr2 == `custom) {
             UI(`ChangeWidget(`id(`details),`Enabled,false));
-            UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
+            UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel())));
           }
           /* FIXME: update the current RB? Probably not*/
 
@@ -537,13 +553,13 @@ global define SecurityMainDialog(map defs) ``{
       y2debug("custom radio button");
       UI(`ChangeWidget(`id(`details),`Enabled,false));
       // push button
-      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
+      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),NextButtonLabel())));
     }
     else {                                /* Other radio button */
       y2debug("SecurityMainDialog: Huh? %1",ret);
       UI(`ChangeWidget(`id(`details),`Enabled,true));
       // push button
-      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),_("&Finish"))));
+      UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),FinishButtonLabel())));
       if(ret == UI(_("Level &3 (Network/Server)")))
         // popup if level 3 is choosen
         PopupOK(UI(_("You have chosen 'Level 3'. This setup

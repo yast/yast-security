@@ -2,9 +2,6 @@ Security Module TODO file
 -------------------------
 $Id$
 
-7.2:
-- Test ROOT_LOGIN_REMOTE hack!
-
 7.3:
 - wizard sequencer and library
 - files permissions

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Aug  9 16:44:14 CEST 2001 - msvec@suse.cz
+
+- use common_messages for button labels
+- version 2.4.2
+
+-------------------------------------------------------------------
 Mon Jul 30 11:34:24 CEST 2001 - msvec@suse.cz
 
 - new libycp fixes
