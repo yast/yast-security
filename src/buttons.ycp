@@ -15,12 +15,19 @@
 textdomain "security";
 
 return $[
+  // push button
   `ok : UI(_("&OK")),
+  // push button
   `back : UI(_("&Back")),
+  // push button
   `next : UI(_("&Next")),
+  // push button
   `help : UI(_("&Help")),
+  // push button
   `abort : UI(_("&Abort")),
+  // push button
   `finish : UI(_("&Finish")),
+  // push button
   `cancel : UI(_("&Cancel"))
 ];
 

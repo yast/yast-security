@@ -35,7 +35,9 @@ map WIDGETS = CallFunction(`security_widgets());
 
 map YaST2SecurityModule = $[
   "path" : "security",
+  // ycc menu caption
   "menu" : UI(_("Security")),
+  // ycc menu help
   "help" : UI(_("Configure all local security settings.
 <p>You need to be logged in as <i>root</i>
 in order to do this.</p>"))
@@ -61,6 +63,7 @@ y2debug("security_defs: %1:",security_defs);
 y2debug("ret: %1",ret);
 
 if(ret == `ok) {
+  // info text show at end of module
   Info(UI(_("Please wait while updating configuration files.")));
   y2debug("Write: %1",SecurityWrite(security_defs));
   y2debug("Finish: %1",SecurityFinish());

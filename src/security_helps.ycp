@@ -17,7 +17,9 @@ textdomain "security";
 define STRINGS() ``{ return $[
 
   "Main" : $[
+    // main screen caption
     "caption" : UI(_("Local security configuration")),
+    // main screen help
     "help" :
 UI(_("<p>With this module you can change the local security settings.</p>")) +
 UI(_("<p>The local security settings consists of the boot configuration, login
@@ -36,7 +38,9 @@ UI(_("<p>Or use <b>Custom settings</b> if you want your own configuration.</p>")
   ],
 
   "Boot" : $[
+    // caption for screen
     "caption" : UI(_("Boot settings")),
+    // help for "boot settings"
     "help" :
 UI(_("<p>In this dialog you can change various boot settings.</p>")) + 
 UI(_("<p><b>How to interpret Ctrl-Alt-Del</b><br>
@@ -50,7 +54,9 @@ With KDM you can control who is allowed to shutdown the machine from KDM.
   ],
 
   "Login" : $[
+    // caption for screen
     "caption" : UI(_("Login settings")),
+    // help for "Login settings"
     "help" :
 UI(_("<p>In this dialog you can change various login settings. These
 settings are mainly stored in the '/etc/login.defs' file.</p>")) +
@@ -71,7 +77,9 @@ example, a user logging in from a different location than usual).</p>"))
   ],
 
   "Password" : $[
+    // caption for screen
     "caption" : UI(_("Password settings")),
+    // help for "Password settings"
     "help" :
 UI(_("<p>In this dialog you can change various password settings. These
 settings are mainly stored in the \"/etc/login.defs\" file.</p>")) +
@@ -95,7 +103,9 @@ This entry sets the number of days the user is warned before their password
   ],
 
   "Adduser" : $[
+    // caption for screen
     "caption" : UI(_("Adduser settings")),
+    // help for "Adduser settings"
     "help" :
 UI(_("<p>In this dialog you can change various adduser settings.</p>")) +
 UI(_("<p><b>User ID limitations</b><br>
@@ -105,7 +115,9 @@ Set the minimum and maximum possible Group ID.</p>"))
   ],
 
   "Misc" : $[
+    // caption for screen
     "caption" : UI(_("Miscellaneous settings")),
+    // help for "Miscellaneous settings"
     "help" :
 UI(_("<p>In this dialog you can change miscellaneous settings.</p>")) +
 UI(_("<p><b>Setting of files premissions</b><br>

@@ -142,6 +142,7 @@ define processInput() ``{
     ret = UI(`UserInput());
     if(ret != `abort)
       break;
+    // popup message
     any re = Popup(UI(_("Do you really want to abort the security configuration?
 All changes you made will be lost.")));
     if(re==`ok)
@@ -184,11 +185,17 @@ define str2term(symbol B) ``{
 
   return Button;
 
+  // pushbutton label
   term AbortButton = `PushButton(`id(`back), _("&Abort"));
+  // pushbutton label
   term BackButton = `PushButton(`id(`back), _("&Back"));
+  // pushbutton label
   term OKButton = `ReplacePoint(`id(`rp),`PushButton(`id(`ok), `opt(`default), _("&OK")));
+  // pushbutton label
   term FinishButton = `ReplacePoint(`id(`rp),`PushButton(`id(`finish), `opt(`default), _("&Finish")));
+  // pushbutton label
   term NextButton = `ReplacePoint(`id(`rp),`PushButton(`id(`next), `opt(`default), _("&Next")));
+  // pushbutton label
   term CancelButton = `PushButton(`id(`cancel), _("&Cancel"));
 
   if(B=="B") return BackButton;
@@ -382,12 +389,14 @@ define SecurityMainDialog(map defs) ``{
     `HVCenter(
     `VBox(
     `HVSquash(
+    // frame caption
     `Frame( _("Current security settings:"),
       `HBox(`HSpacing(0.8),
       `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
       `HSpacing(0.8))
     )),
     `VSpacing(0.6),
+    // push button on main screen
     `HVCenter(`PushButton(`id(`details),_("&Details..."))),
     `VSpacing(0.6)
     )
@@ -396,6 +405,7 @@ define SecurityMainDialog(map defs) ``{
   any curr = UI(`QueryWidget(`id(`rb),`CurrentButton));
   if( curr == `custom) {
     UI(`ChangeWidget(`id(`details),`Enabled,false));
+    // push button
     UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
   }
 
@@ -431,13 +441,15 @@ define SecurityMainDialog(map defs) ``{
             `HVCenter(
             `VBox(
             `HVSquash(
+	    // frame caption
             `Frame( _("Current security settings:"),
               `HBox(`HSpacing(0.8),
               `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
               `HSpacing(0.8))
             )),
             `VSpacing(0.6),
-            `HVCenter(`PushButton(`id(`details),"&Details...")),
+	    // push button
+            `HVCenter(`PushButton(`id(`details),_("&Details..."))),
             `VSpacing(0.6)
             )
           ));
@@ -461,13 +473,16 @@ define SecurityMainDialog(map defs) ``{
     else if(ret == `custom) {		/* Change the [Finish] to [Next] */
       y2debug("custom radio button");
       UI(`ChangeWidget(`id(`details),`Enabled,false));
+      // push button
       UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
     }
     else {				/* Other radio button */
       y2error("SecurityMainDialog: Huh? %1",ret);
       UI(`ChangeWidget(`id(`details),`Enabled,true));
+      // push button
       UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),_("&Finish"))));
-      if(ret == UI(_("Level 3 (Network server)")))
+      if(ret == UI(_("Level 3 (Network/Server)")))
+	// popup if level 3 is choosen
 	PopupOK(UI(_("You have chosen 'Level 3'. This setup
 provides a basic configuration for network servers
 but not a completed 'full security' setting.
@@ -530,6 +545,7 @@ define SecurityWizzard() ``{
 
 define SecurityDetailsDialog() ``{
   SuSEDialog("Main", [`back,`finish], `VBox(
+    // security item captions
     VSeparator(), SecurityItem(`passwd,_("Password settings")),
     VSeparator(), SecurityItem(`boot,  _("Boot settings")),
     VSeparator(), SecurityItem(`login, _("Login settings")),
@@ -576,6 +592,7 @@ define XFrame(float f1, float f2, locale S, term T) ``{
 
 define SecurityBootDialog() ``{
   SuSEDialogUP("Boot", [], `VBox(
+  // SecurityBootDialog caption
 XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
     VSeparator(),
     map2widget("CONSOLE_SHUTDOWN"),
@@ -600,6 +617,7 @@ XFrame(0.8,0.5,_("Boot permissions"),`HBox(`HSpacing(1),`VBox(//`VSpacing(-0.1),
 define SecurityLoginDialog() ``{
   SuSEDialogUP("Login", [], `VBox(
 //`HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),T,`VSpacing(2)),`HSpacing(5)))),
+  // SecurityLoginDialog caption
 XFrame(2.0,0.9,_("Login"),`VBox(
     //VSeparator(),
     map2widget("FAIL_DELAY"),
@@ -683,6 +701,7 @@ define SecurityPasswdDialog() ``{
   SuSEDialogUP("Password", [], `VBox(
     //VSeparator(),
     //`VSpacing(-0.2),
+    // SecurityPasswdDialog caption
     XFrame(0.3,0.15,_("Checks"),`VBox(
     map2widget("PASSWD_USE_CRACKLIB"),
     VSeparator(),
@@ -690,6 +709,7 @@ define SecurityPasswdDialog() ``{
     VSeparator()
     )),
     `VSpacing(0.15),
+    // SecurityPasswdDialog
     `Frame(_("Password length"),`HBox(
     `HSpacing(0.4),
     map2widget("PASS_MIN_LEN"),
@@ -698,6 +718,7 @@ define SecurityPasswdDialog() ``{
     `HSpacing(0.4)
     )),
     `VSpacing(0.1),
+    // SecurityPasswdDialog
     `Frame(_("Days of password change warning"),`HBox(
     `HSpacing(0.4),
     map2widget("PASS_MIN_DAYS"),
@@ -714,10 +735,12 @@ define SecurityPasswdDialog() ``{
     ret = processInput();
     if(ret == `ok || ret ==`next) {
       if(checkMinMax("PASS_MIN_LEN","PASS_MAX_LEN")!=true) {
+	// bad password data
         PopupOK(UI(_("The minimum password length cannot be larger than maximum")));
         continue;
       }
       if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS")!=true) {
+	// bad password data
         PopupOK(UI(_("The minimum number of days cannot be larger than maximum")));
         continue;
       }
@@ -742,12 +765,14 @@ define SecurityPasswdDialog() ``{
 define SecurityAdduserDialog() ``{
   SuSEDialogUP("Adduser", [], `VBox(
     VSeparator(),
+    // SecurityAdduserDialog caption
     XFrame(1.8,0.5,_("User ID limitations"),`HBox(
     map2widget("UID_MIN"),
     `HSpacing(1.5),
     map2widget("UID_MAX")
     )),
     `VSpacing(0.7),
+    // SecurityAdduserDialog caption
     XFrame(1.8,0.5,_("Group ID limitations"),`HBox(
     map2widget("GID_MIN"),
     `HSpacing(1.5),
@@ -762,10 +787,12 @@ define SecurityAdduserDialog() ``{
     ret = processInput();
     if(ret == `ok || ret ==`next) {
       if(checkMinMax("UID_MIN","UID_MAX")!=true) {
+	// SecurityAdduserDialog error
         PopupOK(UI(_("The minimum user ID cannot be larger than maximum")));
         continue;
       }
       if(checkMinMax("GID_MIN","GID_MAX")!=true) {
+	// SecurityAdduserDialog error
         PopupOK(UI(_("The minimum group IDs cannot be larger than maximum")));
         continue;
       }
