@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jan 12 04:48:40 CET 2001 - msvec@suse.de
+
+- root telnet enabled means disabled and vice versa
+- minor gui update
+- saving fixed
+
+-------------------------------------------------------------------
 Wed Jan 10 23:47:20 CET 2001 - msvec@suse.de
 
 - Translatable strings bugfix

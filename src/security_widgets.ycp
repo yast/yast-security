@@ -108,7 +108,7 @@ return $[
     "Widget" : "CheckBox",
     // login options
     "Label" : UI(_("Disable telnet login for user root")),
-    "Value" : "yes"
+    "Value" : "no"
   ],
 
   "PASSWD_USE_CRACKLIB" : $[

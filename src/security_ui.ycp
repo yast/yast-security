@@ -384,6 +384,7 @@ define updateWIDGETS(any curr) ``{
 define SecurityMainDialog(map defs) ``{
 
   list settings = CallFunction(`security_settings());
+  boolean RBgroup = true;
 
   SuSEDialog("Main",[`back,`finish], 
     `HVCenter(
@@ -426,6 +427,7 @@ define SecurityMainDialog(map defs) ``{
     else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
       break;				/* Don't save the settings */
     else if(ret == `details || ret ==`next)  {
+      RBgroup=false;
       y2debug("Running wizzard: %1",ret); /* Run the wizzard */
       any current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
       if(current_defs!=`custom) {
@@ -437,6 +439,7 @@ define SecurityMainDialog(map defs) ``{
 	subret = SecurityWizzard();
 	//y2debug("subret=%1",subret);
 	if(subret == `back) {
+          RBgroup=true;
           SuSEDialogUP("Main",[`back,`finish], 
             `HVCenter(
             `VBox(
@@ -477,7 +480,7 @@ define SecurityMainDialog(map defs) ``{
       UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`next),`opt(`default),_("&Next"))));
     }
     else {				/* Other radio button */
-      y2error("SecurityMainDialog: Huh? %1",ret);
+      y2debug("SecurityMainDialog: Huh? %1",ret);
       UI(`ChangeWidget(`id(`details),`Enabled,true));
       // push button
       UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),_("&Finish"))));
@@ -497,10 +500,14 @@ network server secure.")));
   /* [Finish]ed */
   if(ret == `ok && old_WIDGETS!=WIDGETS) {
     y2debug("YES");
-    string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
-    y2debug("current_defs: %1",current_defs);
-    map current_sets = FindSettings(settings,current_defs);
-    WIDGETS = defs2options(WIDGETS,current_sets);
+    if(RBgroup==true) {
+      string|void current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+      if(current_defs!=nil) {
+        y2debug("current_defs: %1",current_defs);
+        map current_sets = FindSettings(settings,current_defs);
+        WIDGETS = defs2options(WIDGETS,current_sets);
+      }
+    }
     UI(`CloseDialog());
     return `ok;
   }
@@ -568,7 +575,7 @@ define SecurityDetailsDialog() ``{
     else if(ret == `passwd) subret = SecurityPasswdDialog();
     else if(ret == `misc) subret = SecurityMiscDialog();
     else if(ret == `uid) subret = SecurityAdduserDialog();
-    else y2error("SecurityDetailsDialog: Huh? %1",ret);
+    else y2debug("SecurityDetailsDialog: Huh? %1",ret);
     if(subret == `ok) changed = true;
   }
 

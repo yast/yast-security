@@ -53,6 +53,10 @@ define ReadRcConfig(string item) ``{
   string|void ret = SCR(`Read(topath(pth)));
   if(ret == nil)
     ret = LookupDefault(item);
+  if(item=="ROOT_LOGIN_REMOTE") {
+    if(ret=="yes") ret="no";
+    else ret="yes";
+  }
   return ret;
 };
 
@@ -71,6 +75,10 @@ define WriteRcConfig(map m, string item) ``{
   string|void ret = lookup(m,item);
   if(ret == nil)
     return nil;
+  if(item=="ROOT_LOGIN_REMOTE") {
+    if(ret=="no") ret="yes";
+    else ret="no";
+  }
   return SCR(`Write(topath(pth),ret));
 };
 
