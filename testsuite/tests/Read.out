@@ -3,11 +3,8 @@ Read	.etc.login_defs.FAIL_DELAY "l2"
 Read	.etc.login_defs.GID_MAX "l3"
 Read	.etc.login_defs.GID_MIN "l4"
 Read	.etc.login_defs.LASTLOG_ENAB "l5"
-Read	.etc.login_defs.OBSCURE_CHECKS_ENAB "l6"
 Read	.etc.login_defs.PASS_MAX_DAYS "l7"
-Read	.etc.login_defs.PASS_MAX_LEN "l8"
 Read	.etc.login_defs.PASS_MIN_DAYS "l9"
-Read	.etc.login_defs.PASS_MIN_LEN "l10"
 Read	.etc.login_defs.PASS_WARN_AGE "l11"
 Read	.etc.login_defs.UID_MAX "l12"
 Read	.etc.login_defs.UID_MIN "l13"
@@ -27,6 +24,8 @@ Read	.target.size "/etc/sysconfig/sysctl" 1
 Read	.sysconfig.sysctl.ENABLE_SYSRQ "r8"
 Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
-Read	.pam.all.password.pam_unix2 nil
-Read	.pam.all.password.pam_pwcheck nil
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_unix2"."password" nil
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
 Return	true

@@ -3,11 +3,8 @@ Write	.etc.login_defs.FAIL_DELAY "l2" true
 Write	.etc.login_defs.GID_MAX "l3" true
 Write	.etc.login_defs.GID_MIN "l4" true
 Write	.etc.login_defs.LASTLOG_ENAB "l5" true
-Write	.etc.login_defs.OBSCURE_CHECKS_ENAB "l7" true
 Write	.etc.login_defs.PASS_MAX_DAYS "l8" true
-Write	.etc.login_defs.PASS_MAX_LEN "l9" true
 Write	.etc.login_defs.PASS_MIN_DAYS "l10" true
-Write	.etc.login_defs.PASS_MIN_LEN "l11" true
 Write	.etc.login_defs.PASS_WARN_AGE "l12" true
 Write	.etc.login_defs.UID_MAX "l13" true
 Write	.etc.login_defs.UID_MIN "l14" true
@@ -26,27 +23,66 @@ Write	.sysconfig.suseconfig nil true
 Write	.sysconfig.sysctl nil true
 Write	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now" true
 Write	.etc.inittab nil true
-Write	.pam.all.password.pam_unix2 "-md5" true
-Write	.pam.all.password.pam_pwcheck "-md5" true
-Write	.pam.login.password.pam_pwcheck "-md5" true
-Write	.pam.login.password.pam_unix "-md5" true
-Write	.pam.passwd.password.pam_pwcheck "-md5" true
-Write	.pam.passwd.password.pam_unix "-md5" true
-Write	.pam.sshd.password.pam_pwcheck "-md5" true
-Write	.pam.sshd.password.pam_unix "-md5" true
-Write	.pam.rlogin.password.pam_pwcheck "-md5" true
-Write	.pam.rlogin.password.pam_unix "-md5" true
-Write	.pam.all.password.pam_unix2 "-blowfish" true
-Write	.pam.all.password.pam_pwcheck "-blowfish" true
-Write	.pam.login.password.pam_pwcheck "-blowfish" true
-Write	.pam.login.password.pam_unix "-blowfish" true
-Write	.pam.passwd.password.pam_pwcheck "-blowfish" true
-Write	.pam.passwd.password.pam_unix "-blowfish" true
-Write	.pam.sshd.password.pam_pwcheck "-blowfish" true
-Write	.pam.sshd.password.pam_unix "-blowfish" true
-Write	.pam.rlogin.password.pam_pwcheck "-blowfish" true
-Write	.pam.rlogin.password.pam_unix "-blowfish" true
-Write	.pam.all.password.pam_pwcheck "-use_cracklib" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_unix2"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_unix2"."password" "" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "" true
+Write	.pam."login"."password"."pam_unix" "-md5" true
+Write	.pam."login"."password"."pam_pwcheck" "-md5" true
+Write	.pam."passwd"."password"."pam_unix" "-md5" true
+Write	.pam."passwd"."password"."pam_pwcheck" "-md5" true
+Write	.pam."sshd"."password"."pam_unix" "-md5" true
+Write	.pam."sshd"."password"."pam_pwcheck" "-md5" true
+Write	.pam."rlogin"."password"."pam_unix" "-md5" true
+Write	.pam."rlogin"."password"."pam_pwcheck" "-md5" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_unix2"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_unix2"."password" "" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "" true
+Write	.pam."login"."password"."pam_unix" "-blowfish" true
+Write	.pam."login"."password"."pam_pwcheck" "-blowfish" true
+Write	.pam."passwd"."password"."pam_unix" "-blowfish" true
+Write	.pam."passwd"."password"."pam_pwcheck" "-blowfish" true
+Write	.pam."sshd"."password"."pam_unix" "-blowfish" true
+Write	.pam."sshd"."password"."pam_pwcheck" "-blowfish" true
+Write	.pam."rlogin"."password"."pam_unix" "-blowfish" true
+Write	.pam."rlogin"."password"."pam_pwcheck" "-blowfish" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "no_obscure_checks" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "maxlen=l9" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "" true
+Dir	.etc.security.section: []
+Read	.etc.security.v."pam_pwcheck"."password" nil
+Dir	.etc.security.section: []
+Write	.etc.security.v."pam_pwcheck"."password" "minlen=l11" true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
 Execute	.target.bash "/sbin/SuSEconfig --module xdm" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0

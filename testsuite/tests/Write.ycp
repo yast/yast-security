@@ -45,6 +45,6 @@ map m = $[
 
 Security::Settings = m;
 Security::modified = true;
-TEST(``(Security::Write()),[],false);
+TEST(``(Security::Write()),[],nil);
 
 }
