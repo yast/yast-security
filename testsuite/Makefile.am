@@ -1,6 +1,5 @@
 #
 # Makefile.am for .../testsuite
-# $Id$
 #
 
 AUTOMAKE_OPTIONS = dejagnu
