@@ -11,10 +11,9 @@
 
 textdomain "security";
 
+import "Label";
 import "Security";
 import "Wizard";
-
-include "ui/common_messages.ycp";
 
 include "security/helps.ycp";
 include "security/levels.ycp";
@@ -97,7 +96,7 @@ global define symbol MainDialog() ``{
 
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
     Wizard::SetContentsButtons(caption, contents, help,
-            BackButtonLabel(), current == `custom ? NextButtonLabel() : FinishButtonLabel());
+            Label::BackButton(), current == `custom ? Label::NextButton() : Label::FinishButton());
 
     if(current == `custom)
 	UI::ChangeWidget(`id(`details), `Enabled, false);
@@ -124,7 +123,7 @@ global define symbol MainDialog() ``{
 	else if(ret == `custom) {
 	    if(cur != `custom) {
 		UI::ChangeWidget(`id(`details), `Enabled, false);
-		Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default), NextButtonLabel()));
+		Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default), Label::NextButton()));
 		UI::SetFocus(`id(`next));
 	    }
 	    continue;
@@ -136,7 +135,7 @@ global define symbol MainDialog() ``{
 	    }
 	    if(cur == `custom) {
 		UI::ChangeWidget(`id(`details), `Enabled, true);
-		Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default), FinishButtonLabel()));
+		Wizard::ReplaceNextButton(`PushButton(`id(`next), `opt(`default), Label::FinishButton()));
 		UI::SetFocus(`id(`next));
 	    }
 	    continue;

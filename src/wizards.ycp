@@ -11,6 +11,7 @@
 
 textdomain "security";
 
+import "Label";
 import "Wizard";
 
 include "wizard/sequencer.ycp";
@@ -53,7 +54,7 @@ global define any SecuritySequence() ``{
 
     Wizard::CreateDialog();
     Wizard::SetContentsButtons(caption, contents, "",
-	    BackButtonLabel(), NextButtonLabel());
+	    Label::BackButton(), Label::NextButton());
 
     any ret = WizardSequencer(aliases, sequence);
 
@@ -75,7 +76,7 @@ global define any SecurityAutoSequence() ``{
 
     Wizard::CreateDialog();
     Wizard::SetContentsButtons(caption, contents, "",
-	    BackButtonLabel(), NextButtonLabel());
+	    Label::BackButton(), Label::NextButton());
 
     /* Run the main configuration workflow */
     any ret = MainSequence();

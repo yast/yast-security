@@ -11,9 +11,8 @@
 
 textdomain "security";
 
+import "Label";
 import "Wizard";
-
-include "ui/common_messages.ycp";
 
 include "security/helps.ycp";
 include "security/routines.ycp";
@@ -64,7 +63,7 @@ global define symbol BootDialog() ``{
     )));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
+	    Label::BackButton(), Label::NextButton());
 
     any ret = nil;
     while(true) {
@@ -119,7 +118,7 @@ global define symbol MiscDialog() ``{
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), FinishButtonLabel());
+	    Label::BackButton(), Label::FinishButton());
 
     any ret = nil;
     while(true) {
@@ -195,7 +194,7 @@ global define symbol PassDialog() ``{
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
+	    Label::BackButton(), Label::NextButton());
 
     string enc = UI::QueryWidget(`id("PASSWD_ENCRYPTION"), `Value);
     UI::ChangeWidget(`id("PASS_MAX_LEN"), `Enabled, enc == "des");
@@ -222,12 +221,12 @@ global define symbol PassDialog() ``{
 	    /* check_* */
 	    if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS") != true) {
 		/* Popup text */
-		UI::ErrorPopup(_("The minimum number of days cannot be larger than maximum"));
+		Popup::Error(_("The minimum number of days cannot be larger than maximum"));
 		continue;
 	    }
 	    if(checkMinMax("PASS_MIN_LEN","PASS_MAX_LEN") != true) {
 		/* Popup text */
-		UI::ErrorPopup(_("The minimum password length cannot be larger than maximum"));
+		Popup::Error(_("The minimum password length cannot be larger than maximum"));
 		continue;
 	    }
 	    break;
@@ -282,7 +281,7 @@ global define symbol LoginDialog() ``{
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
+	    Label::BackButton(), Label::NextButton());
 
     any ret = nil;
     while(true) {

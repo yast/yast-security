@@ -11,6 +11,7 @@
 
 textdomain "security";
 
+import "Label";
 import "Wizard";
 
 include "security/helps.ycp";
@@ -47,7 +48,7 @@ global define symbol AdduserDialog() ``{
 
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
     Wizard::SetContentsButtons(caption, contents, help,
-	    BackButtonLabel(), NextButtonLabel());
+	    Label::BackButton(), Label::NextButton());
 
     any ret = nil;
     while(true) {
@@ -66,12 +67,12 @@ global define symbol AdduserDialog() ``{
 	else if(ret == `next) {
 	    if(checkMinMax("UID_MIN","UID_MAX") != true) {
 		/* Popup text */
-		UI::ErrorPopup(_("The minimum user ID cannot be larger than maximum"));
+		Popup::Error(_("The minimum user ID cannot be larger than maximum"));
 		continue;
 	    }
 	    if(checkMinMax("GID_MIN","GID_MAX") != true) {
 		/* Popup text */
-		UI::ErrorPopup(_("The minimum group IDs cannot be larger than maximum"));
+		Popup::Error(_("The minimum group IDs cannot be larger than maximum"));
 		continue;
 	    }
 	    break;

@@ -19,7 +19,9 @@
 
 textdomain "security";
 
+import "Popup";
 import "Security";
+
 include "security/widgets.ycp";
 
 /**
@@ -183,7 +185,7 @@ global define boolean checkMinMax(string minID, string maxID) ``{
  * @return true if abort is confirmed
  */
 global define boolean ReallyAbort() ``{
-    return !Security::Modified() || UI::ReallyAbortPopup(true);
+    return !Security::Modified() || Popup::ReallyAbort(true);
 }
 
 /**
