@@ -27,9 +27,9 @@ desktop_DATA = security.desktop
 
 EXTRA_DIST = $(client_DATA) $(config_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
 
-symlinks:
-	test -L security || ln -sf . security
+security:
+	ln -sf . security
 
-ycpchook = symlinks
+ycpchook = security
 
 include $(top_srcdir)/Makefile.am.common
