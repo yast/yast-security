@@ -1,10 +1,8 @@
 @HEADER-COMMENT@
-
-# neededforbuild  yast2-devel-packages
+# neededforbuild yast2-devel-packages
 
 @HEADER@
-Requires:	yast2
-Requires:	yast2-pam
+Requires:	yast2 yast2-pam
 
 Provides:	y2c_sec yast2-config-security
 Obsoletes:	y2c_sec yast2-config-security
