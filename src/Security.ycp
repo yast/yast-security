@@ -416,6 +416,7 @@ global define boolean Write() ``{
  * @return boolean True on success
  */
 global define boolean Import(map settings) ``{
+	modified = true;
     Settings = eval(settings);
 }
 
