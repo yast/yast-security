@@ -42,7 +42,7 @@ global define AllSecuritySettings() ``{
 $[
     "name" : "Default",
     // radio button label
-    "settings" : _("Level &3 (Network/Server)")
+    "settings" : _("Level &3 (Network Server)")
 ],
 
 $[
@@ -115,7 +115,7 @@ $[
 
 $[
 // radio button label
-"name" : _("Level &3 (Network/Server)"),
+"name" : _("Level &3 (Network Server)"),
 "settings" : $[
 
     /* "Boot" */

@@ -41,20 +41,24 @@ global define UI_STRINGS() ``{ return $[
     "caption" : _("Local security configuration"),
     // main screen help
     "help" :
-_("<p>With this module you can change the local security settings.</p>") +
-_("<p>The local security settings consists of the boot configuration, login
-settings, password settings, some user adding settings, file permissions
-and some other settings.</p>") +
+_("<p>With this module, change the local security settings.</p>") +
+_("<p>The local security settings consist of the boot configuration, login
+settings, password settings, some user creation settings, file permissions,
+and some other settings.</p>
+") +
 _("<p>All particular settings are described in the respective dialogs.</p>") +
 _("<p>You can choose one of the preset configurations or you can make your
 own settings.</p>") +
-_("<p>Use <b>Home workstation</b> for the computer at home, not connected
-to any type of a network.</p>") +
-_("<p>Use <b>Networked workstation</b> for the computer at home, connected
-to any type of a network or internet.</p>") +
-_("<p>Use <b>Network server</b> for the computer which will be serving
-any kind of service, either network or any other.</p>") +
-_("<p>Or use <b>Custom settings</b> if you want your own configuration.</p>")
+_("<p>Use <b>Home workstation</b> for a computer at home, not connected
+to any type of a network.</p>
+") +
+_("<p>Use <b>Networked workstation</b> for a computer at home, connected
+to any type of a network or the Internet.</p>
+") +
+_("<p>Use <b>Network server</b> for a computer that will be serving
+any kind of service, either network or any other.</p>
+") +
+_("<p>Use <b>Custom settings</b> if you want your own configuration.</p>")
   ],
 
   "Boot" : $[
@@ -62,14 +66,15 @@ _("<p>Or use <b>Custom settings</b> if you want your own configuration.</p>")
     "caption" : _("Boot settings"),
     // help for "boot settings"
     "help" :
-_("<p>In this dialog you can change various boot settings.</p>") + 
-_("<p><b>How to interpret Ctrl-Alt-Del</b><br>
-When someone at the console has pressed the CTRL-ALT-DEL key
+_("<p>In this dialog, change various boot settings.</p>") + 
+_("<p><b>How to interpret Ctrl + Alt + Del</b><br>
+When someone at the console has pressed the CTRL + ALT + DEL key
 combination, the system usually reboots. Sometimes it is
-desirable to ignore this event, for example when the system
-serves as both workstation and server.</p>") + 
-_("<p><b>Shutdown behaviour of KDM</b><br>
-With KDM you can control who is allowed to shutdown the machine from KDM.</p>
+desirable to ignore this event, for example, when the system
+serves as both workstation and server.</p>
+") + 
+_("<p><b>Shutdown behavior of KDM</b><br>
+With KDM, control who is allowed to shut down the machine from KDM.</p>
 ")
   ],
 
@@ -78,22 +83,26 @@ With KDM you can control who is allowed to shutdown the machine from KDM.</p>
     "caption" : _("Login settings"),
     // help for "Login settings"
     "help" :
-_("<p>In this dialog you can change various login settings. These
-settings are mainly stored in the '/etc/login.defs' file.</p>") +
+_("<p>In this dialog, change various login settings. These
+settings are mainly stored in the '/etc/login.defs' file.</p>
+") +
 _("<p><b>Seconds to wait after an incorrect login attempt</b><br>
 It is advisable to wait some time after an incorrect login attempt
 to prevent password guessing. On the other hand, make the
-time so small that if a password is mistyped, you do not need
-to wait to retry. A sensible value is '3' seconds.</p>") +
+time small enough that if a password is mistyped, you do not need
+to wait to retry. A sensible value is '3' seconds.</p>
+") +
 _("<p><b>Record failed login attempts</b><br>
 It is useful to know if somebody is trying to log in and failed.
-For example if someone is trying to guess the password of other users.
+For example, if someone is trying to guess the password of other users.
 By checking this option, you control if the failed login attempts
-will be logged in the system logfile.</p>") +
+will be logged in the system log file.</p>
+") +
 _("<p><b>Record successful login attempts</b><br>
 Logging succesful login attempts is useful.  It can help to warn
- you of unauthorised access to the sysem (for
-example, a user logging in from a different location than usual).</p>")
+ you of unauthorized access to the sysem (for
+example, a user logging in from a different location than usual).</p>
+")
   ],
 
   "Password" : $[
@@ -101,38 +110,43 @@ example, a user logging in from a different location than usual).</p>")
     "caption" : _("Password settings"),
     // help for "Password settings"
     "help" :
-_("<p>In this dialog you can change various password settings. These
-settings are mainly stored in the \"/etc/login.defs\" file.</p>") +
-_("<p><b>Checks for new passwords</b><br>
+_("<p>In this dialog, change various password settings. These
+settings are mainly stored in the \"/etc/login.defs\" file.</p>
+") +
+_("<p><b>Checking new passwords</b><br>
 It is wise to choose a password that cannot be found in a dictionary,
-names or other simple, common words. By checking the box you enforce
-password checking with regards to the above rules.</p>") +
+and is not a name or other simple, common word. By checking the box, enforce
+password checking in regard to these rules.</p>
+") +
 _("<p><b>Plausibility test for passwords</b><br>
 Sometimes it is required that passwords are constructed using a mixture
 of characters. This makes the guessing of passwords very difficult.
 Check this box to enable additional checks.</p>") +
 _("<p><b>Password length</b><br>
 Set the minimum and maximum password length.</p>") +
-_("<p><b>Days of password change warning</b><br>
+_("<p><b>Days before password change warning</b><br>
 Set the minimum and maximum time for warning if the password must
-be changed.</p>") +
-_("<p><b>Days before password expiry warning?</b><br>
+be changed.</p>
+") +
+_("<p><b>Days before password expiry warning</b><br>
 This entry sets the number of days the user is warned before their password
-expiry. The longer the time, the less likely it is that a user can guess
-passwords.</p>")
+expires. The longer the time, the less likely it is that a user can guess
+passwords.</p>
+")
 + "<p></p>"
   ],
 
   "Adduser" : $[
     // caption for screen
-    "caption" : _("Adduser settings"),
+    "caption" : _("Add user settings"),
     // help for "Adduser settings"
     "help" :
-_("<p>In this dialog you can change various useradd settings.</p>") +
+_("<p>In this dialog, change various useradd settings.</p>") +
 _("<p><b>User ID limitations</b><br>
 Set the minimum and maximum possible user ID.</p>") +
 _("<p><b>Group ID limitations</b><br>
-Set the minimum and maximum possible Group ID.</p>")
+Set the minimum and maximum possible group ID.</p>
+")
   ],
 
   "Misc" : $[
@@ -140,34 +154,39 @@ Set the minimum and maximum possible Group ID.</p>")
     "caption" : _("Miscellaneous settings"),
     // help for "Miscellaneous settings"
     "help" :
-_("<p>In this dialog you can change miscellaneous settings.</p>") +
-_("<p><b>Setting of files premissions</b><br>
+_("<p>In this dialog, change miscellaneous settings.</p>") +
+_("<p><b>Setting of file premissions</b><br>
 Settings for the permissions of certain system files are set
 according to the data in /etc/permissions.secure or
-/etc/permissions.easy. Which file is used depends upon this
+/etc/permissions.easy. Which file is used depends on this
 selection. Launching SuSEconfig sets these permissions
 according to /etc/permissions.*. This fixes files with
-incorrect permissions, whether this occured accidentally or
+incorrect permissions, whether this occurred accidentally or
 by intruders.
-</p>") +
+</p>
+") +
 _("<p>\"easy\": Most of the system files that are only readable
-  by root (via secure) are modified so that other users can
+  by root (via secure) are modified so other users can
   also read these files.
-</p>") +
-_("<p>\"secure\": Certain system files (e.g. /var/log/messages) can
+</p>
+") +
+_("<p>\"secure\": Certain system files (e.g., /var/log/messages) can
   only be viewed by the user root. Some programs can only be
   launched by root or by daemons, not by an ordinary user.
-</p>") +
+</p>
+") +
 _("<p>\"paranoid\":  If you are really paranoid, use this setting.
   You must decide which users will be able to
-  run X applications and set-uid programs.
-</p>") +
+  run X applications and setuid programs.
+</p>
+") +
 _("<p><b>User launching updatedb</b><br>
 The program updatedb runs regularly, once a day. It scans
-your whole filesystem and creates a database (locatedb)
+your whole file system and creates a database (locatedb)
 where the location of EVERY file is stored. The database can
 be searched by the program \"locate\".
-</p>") +
+</p>
+") +
 _("<p>By setting this entry, you can select the user to run this
 command:
 </p>") +
@@ -179,12 +198,13 @@ _("<p>\"root\": all files in the system are added into the
   database
 </p>") +
 _("<p><b>Include current directory in the path of user root</b><br>
-On a DOS system, executable files (programs), are first
-searched for in the current directory, and in the current
+On a DOS system, executable files (programs) are first
+searched for in the current directory and in the current
 path variable afterwards. In contrast, on a UNIX system they
 are exclusively searched for via the search path (variable
 PATH).
-</p>") +
+</p>
+") +
 _("<p>Some systems set up a 'workaround' by adding the dot (\".\")
 to the search path, thus enabling files in the current path
 to be found and executed. This is highly dangerous since you
@@ -202,10 +222,11 @@ _("<p>\"no\": the user root always has to launch programs in the
 </p>") +
 _("<p><b>Enable telnet for user root</b><br>
 It is not very wise to allow telnet for the user root. During
-the telnet session the passwords are sent in the plain form,
-so they can be stolen by the third-party. Check this box to
+the telnet session, passwords are sent in the plain form,
+so they can be stolen by a third party. Check this box to
 enable telnet for root.
-</p>")
+</p>
+")
 
   ]
 ];

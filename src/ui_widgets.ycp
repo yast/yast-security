@@ -80,7 +80,7 @@ return $[
   "CONSOLE_SHUTDOWN" : $[
     "Widget" : "ComboBox",
     //  Boot options combo box caption
-    "Label" : _("&How to interpret Ctrl-Alt-Del:"),
+    "Label" : _("&How to interpret Ctrl + Alt + Del:"),
     //  Boot options combo box options
     "Options" : [["ignore",_("Ignore")],["reboot",_("Reboot")],["halt",_("Halt")]],
     "Value" : "reboot"
@@ -89,7 +89,7 @@ return $[
   "KDM_SHUTDOWN" : $[
     "Widget" : "ComboBox",
     //  Boot options combo box caption
-    "Label" : _("&Shutdown behaviour of KDM:"),
+    "Label" : _("&Shutdown behavior of KDM:"),
     //  Boot options combo box options
     "Options" : [["root",_("Only root")],["all",_("All users")],["none",_("Nobody")],["local",_("Local users")],["auto",_("Automatic")]],
     "Value" : "all"
@@ -128,7 +128,7 @@ return $[
   "PASSWD_USE_CRACKLIB" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)
-    "Label" : _("&Checks for new passwords"),
+    "Label" : _("&Checking new passwords"),
     "Value" : "yes"
   ],
 
