@@ -49,7 +49,7 @@ y2debug("ret: %1",ret);
 
 if(ret == `ok) {
     // info text shown at the end of module
-    Info(_("Please wait while configuration files update."));
+    Info(_("Wait while configuration files are updated."));
     y2debug("Write: %1",SecurityWrite(settings));
     InfoClose();
 }

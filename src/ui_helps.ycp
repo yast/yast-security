@@ -42,23 +42,23 @@ global define UI_STRINGS() ``{ return $[
     // main screen help
     "help" :
 _("<p>With this module, change the local security settings.</p>") +
-_("<p>The local security settings consist of the boot configuration, login
-settings, password settings, some user creation settings, file permissions,
-and some other settings.</p>
+_("<p>The local security settings include the boot configuration, login
+settings, password settings, some user creation settings, and file  
+permissions.</p>
 ") +
 _("<p>All particular settings are described in the respective dialogs.</p>") +
 _("<p>You can choose one of the preset configurations or you can make your
 own settings.</p>") +
-_("<p>Use <b>Home workstation</b> for a computer at home, not connected
+_("<p>Use <b>Home workstation</b> for a home computer not connected
 to any type of a network.</p>
 ") +
-_("<p>Use <b>Networked workstation</b> for a computer at home, connected
+_("<p>Use <b>Networked workstation</b> for a computer connected
 to any type of a network or the Internet.</p>
 ") +
-_("<p>Use <b>Network server</b> for a computer that will be serving
-any kind of service, either network or any other.</p>
+_("<p>Use <b>Network server</b> for a computer that will be providing
+any type of service, network or any other.</p>
 ") +
-_("<p>Use <b>Custom settings</b> if you want your own configuration.</p>")
+_("<p>Use <b>Custom settings</b> to create your own configuration.</p>")
   ],
 
   "Boot" : $[
@@ -74,7 +74,7 @@ to ignore this event, for example, when the system serves as both
 workstation and server.</p>
 ") +
 _("<p><b>Shutdown behavior of KDM</b><br>
-With KDM, control who is allowed to shut down the machine from KDM.</p>
+Set who is allowed to shut down the machine from KDM.</p>
 ")
   ],
 
@@ -88,15 +88,15 @@ settings are mainly stored in the '/etc/login.defs' file.</p>
 ") +
 _("<p><b>Seconds to wait after an incorrect login attempt</b><br>
 It is advisable to wait some time after an incorrect login attempt
-to prevent password guessing. On the other hand, make the time small
-enough that if a password is mistyped, you do not need to wait to
-retry. A sensible value is '3' seconds.</p>
+to prevent password guessing. Make the time small
+enough so users do not need to wait to retry
+if a password is mistyped. A sensible value is '3' seconds.</p>
 ") +
 _("<p><b>Record failed login attempts</b><br>
 It is useful to know if somebody is trying to log in and failed.
-For example, if someone is trying to guess the password of other users.
-By checking this option, you control if the failed login attempts
-will be logged in the system log file.</p>
+For example, if someone is trying to guess the passwords of other users.
+Check this option to specify whether failed login attempts
+should be logged in the system log file.</p>
 ") +
 _("<p><b>Record successful login attempts</b><br>
 Logging succesful login attempts is useful.  It can help to warn
@@ -104,9 +104,9 @@ you of unauthorized access to the sysem (for example, a user logging
 in from a different location than usual).</p>
 ") +
 _("<p><b>Allow remote graphical login</b><br>
-By checking this on you get a graphical login screen for this machine
-via network. You should know that remote access to your machine via
-xdm might be a security hole.</p>
+Checking this allows access to a graphical login screen for this machine
+over the network. Remote access to your machine via
+xdm might be a security risk.</p>
 ")
   ],
 
@@ -119,7 +119,7 @@ _("<p>In this dialog, change various password settings. These
 settings are mainly stored in the \"/etc/login.defs\" file.</p>
 ") +
 _("<p><b>Checking new passwords</b><br>
-It is wise to choose a password that cannot be found in a dictionary,
+It is wise to choose a password that cannot be found in a dictionary
 and is not a name or other simple, common word. By checking the box, enforce
 password checking in regard to these rules.</p>
 ") +
@@ -130,14 +130,13 @@ Check this box to enable additional checks.</p>") +
 _("<p><b>Password length</b><br>
 Set the minimum and maximum password length.</p>") +
 _("<p><b>Days before password change warning</b><br>
-Set the minimum and maximum time for warning if the password must
+Set the minimum and maximum time for warning that the password must
 be changed.</p>
 ") +
 _("<p><b>Days before password expiry warning</b><br>
-This entry sets the number of days the user is warned before their password
-expires. The longer the time, the less likely it is that a user can guess
-passwords.</p>
-")
+This entry sets the number of days users are warned before their passwords
+expire. The longer the time, the less likely it is that a user can guess
+passwords.</p>\n")
 + "<p></p>"
   ],
 
