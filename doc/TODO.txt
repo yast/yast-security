@@ -3,7 +3,7 @@ Security Module TODO file
 $Id$
 
 Urgent:
-- helps: Roland Haidl <rhaidl@suse.de>
+- helps: Roland Haidl <rhaidl@suse.de> -- not done!
 - permissions: local (replace or add?) -- maybe "Add local perms" [X]
 
 Documentation:

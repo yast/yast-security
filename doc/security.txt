@@ -39,18 +39,7 @@ settings are mainly stored in the "/etc/login.defs" file.
 T.1.1 Login
 Various login settings.
 
-T.1.1.A Record failed login attempts [X]
-Values: "yes", "no".
-
-It is useful to know if somebody is trying to log in and failed.
-For example if someone is guessing password of other users.
-By checking this option, you control if the failed login attempts
-will be logged into the system logfile.
-
-The secure setting is "yes".
-This box sets the variable FAILLOG_ENAB in /etc/login.defs.
-
-T.1.1.B How many seconds to wait after an incorrect login attempt [NUM]
+T.1.1.A Seconds to wait after an incorrect login attempt [NUM]
 Values: number <0,inf)
 
 It is useful to wait some time after an incorrect login attempt
@@ -61,6 +50,17 @@ to wait to long. The sensible value is "3".
 The secure setting is "3".
 This box sets the variable FAIL_DELAY in /etc/login.defs.
 
+T.1.1.B Record failed login attempts [X]
+Values: "yes", "no".
+
+It is useful to know if somebody is trying to log in and failed.
+For example if someone is guessing password of other users.
+By checking this option, you control if the failed login attempts
+will be logged into the system logfile.
+
+The secure setting is "yes".
+This box sets the variable FAILLOG_ENAB in /etc/login.defs.
+
 T.1.1.C Record successful login attempts [X]
 Values: "yes", "no".
 
@@ -70,21 +70,10 @@ show if somebody is using someone else's account.
 The secure setting is "yes".
 This box sets the variable LASTLOG_ENAB in /etc/login.defs.
 
-T.1.1.D Disable telnet for user root [X]
-Values: "yes", "no".
-
-It is not very wise to allow telnet for the user root. During
-the telnet session the passwords are sent in the plain form,
-so they can be stolen by the third-party. Check this box to
-disable telnet for root.
-
-The secure setting is "yes".
-This box sets the variable ROOT_LOGIN_REMOTE in /etc/rc.config.
-
 T.1.2 Passwords
 Various password settings.
 
-T.1.2.A Do some checks for new passwords [X]
+T.1.2.A Checks for new passwords [X]
 Values: "yes", "no".
 
 It is wise to choose password not to be very dictionary words, usual
@@ -94,7 +83,7 @@ for password to not contain simple words which can be easily guessed.
 The secure setting is "yes".
 This box sets the variable PASSWD_USE_CRACKLIB in /etc/rc.config.
 
-T.1.2.B Plausibility test for Password active [X]
+T.1.2.B Plausibility test for password [X]
 Values: "yes", "no".
 
 Sometimes it is even needed that password are enough strange words
@@ -104,7 +93,18 @@ checks.
 The secure setting is "yes".
 This box sets the variable OBSCURE_CHECKS_ENAB in /etc/login.defs.
 
-T.1.2.C How many days before password expiry should user be warned? :7
+T.1.2.C Password length
+Set the minimum and maximum password length.
+This box sets the variable PASS_MIN_LEN in /etc/login.defs.
+This box sets the variable PASS_MAX_LEN in /etc/login.defs.
+
+T.1.2.D Days of password change warning
+Set the minimum and maximum time for warning if the password must
+be changed.
+This box sets the variable PASS_MIN_DAYS in /etc/login.defs.
+This box sets the variable PASS_MAX_DAYS in /etc/login.defs.
+
+T.1.2.E Days before password expiry warning? :7
 
 This entry sets the number of days the user is warned before his password
 expiry. The longer time, the harder for the user guessing passwords.
@@ -116,7 +116,7 @@ This box sets the variable PASS_WARN_AGE in /etc/login.defs.
 T.2 Boot settings
 -----------------
 
-T.2.1 CtrlAltDel
+T.2.1 How to interpret Ctrl-Alt-Del
 Values: "ignore", "reboot", "halt".
 
 When someone at the console has pressed the CTRL-ALT-DEL key
@@ -128,7 +128,7 @@ The secure setting is "ignore".
 
 This box sets the variable CONSOLE_SHUTDOW in /etc/rc.config.
 
-T.2.1 kdm
+T.2.1 Shutdown behaviour of KDM
 Values: "root", "all", "none", "local".
 
 With KDM you may decide who is allowed to shutdown the machine from KDM.
@@ -140,10 +140,10 @@ The secure setting is "root".
 This box sets the variable KDM_SHUTDOWN in /etc/rc.config. There are more
 variables for KDM in /etc/rc.config. See [??].
 
-T.3 Files premissions
-----------------------
+T.3 Miscellaneous settings
+--------------------------
 
-T.3.1 Files premissions
+T.3.1 Setting of files premissions
 Values: "easy", "secure", "paranoid".
 
 Settings for the permissions of certain system files are set
@@ -170,10 +170,29 @@ The secure setting is "secure".
 
 This box sets the variable PERMISSION_SECURITY in /etc/rc.config.
 
-T.3.2 Other security settings
-Security settings which don't fit anythere else.
+T.3.2 User launching updatedb
+Values: "nobody", "root".
 
-T.3.2.A Omit current directory from the path of user root
+The program updatedb runs regularly, once a day. It scans
+your whole filesystem and creates a database (locatedb)
+where the location of EVERY file is stored. The database can
+be searched by the program "locate".
+
+By setting this entry, you select the user to run this
+command:
+
+"nobody": only files which the user "nobody" can access
+  are added into the database. All users can choose if the
+  file will be in the database or not.
+
+"root": all files in the system are added into the
+  database
+
+The secure setting is "nobody".
+
+This box sets the variable RUN_UPDATEDB_AS in /etc/rc.config.
+
+T.3.3 Omit current directory from the path of user root
 Values: "yes", "no".
 
 On a DOS system, executable files (programs), are first
@@ -201,24 +220,26 @@ The secure setting is "yes".
 
 This box sets the variable CWD_IN_ROOT_PATH in /etc/rc.config.
 
-T.3.2.B User launching updatedb
-Values: "nobody", "root".
+T.3.4 Disable telnet for user root [X]
+Values: "yes", "no".
 
-The program updatedb runs regularly, once a day. It scans
-your whole filesystem and creates a database (locatedb)
-where the location of EVERY file is stored. The database can
-be searched by the program "locate".
+It is not very wise to allow telnet for the user root. During
+the telnet session the passwords are sent in the plain form,
+so they can be stolen by the third-party. Check this box to
+disable telnet for root.
 
-By setting this entry, you select the user to run this
-command:
+The secure setting is "yes".
+This box sets the variable ROOT_LOGIN_REMOTE in /etc/rc.config.
 
-"nobody": only files which the user "nobody" can access
-  are added into the database. All users can choose if the
-  file will be in the database or not.
+T.4 Adduser settings
+--------------------
 
-"root": all files in the system are added into the
-  database
+T.4.1 User ID limitations
+Set the minimum and maximum possible user ID.
+This box sets the variable UID_MIN in /etc/login.defs.
+This box sets the variable UID_MAX in /etc/login.defs.
 
-The secure setting is "nobody".
-
-This box sets the variable RUN_UPDATEDB_AS in /etc/rc.config.
+T.4.2 Group ID limitations
+Set the minimum and maximum possible Group ID.
+This box sets the variable GID_MIN in /etc/login.defs.
+This box sets the variable GID_MAX in /etc/login.defs.

@@ -8,37 +8,33 @@
 
 # neededforbuild  autoconf automake ydoc
 
-Vendor:       SuSE GmbH, Nuernberg, Germany
-Distribution: SuSE Linux 6.4 (i386)
-Name:         @RPMNAME@
-Release:      1
-Copyright:    (c) 2000 SuSE GmbH
-Group:        System Environment/YaST
-Requires:     y2t_sec
+Vendor:		SuSE GmbH, Nuernberg, Germany
+Distribution:	SuSE Linux 6.4 (i386)
+Name:		@RPMNAME@
+Release:	1
+Copyright:	(c) 2000 SuSE GmbH
+Group:		System Environment/YaST
+Requires:	y2t_sec
 BuildArchitectures: noarch
 
-Packager:     @MAINTAINER@
+Packager:	@MAINTAINER@
 
-Summary:      YaST2 Security Configuration Module
-Version:      @VERSION@
-Source0:      @RPMNAME@-@VERSION@.tar.bz2
+Summary:	YaST2 Security Configuration Module
+Version:	@VERSION@
+Source0:	@RPMNAME@-@VERSION@.tar.bz2
 
 %description
 -
 
 %prep
-
 %setup -n @RPMNAME@-@VERSION@
 
 %build
-
 ./configure
 make
 
 %install
-
 make install
-
 %{?suse_check}
 
 %files
