@@ -37,7 +37,7 @@ make
 
 %install
 make install
-#make check
+make check
 %{?suse_check}
 
 %files
