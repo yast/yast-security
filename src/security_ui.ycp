@@ -402,16 +402,34 @@ define SecurityMainDialog(map defs) ``{
     else if(ret == `abort || ret == `back || ret == `cancel || ret == nil)
       break;				/* Don't save the settings */
     else if(ret == `details || ret ==`next)  {
-      y2debug("Running wizzard: %1",ret);
-      if(ret!=`custom) {
-        string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+      y2debug("Running wizzard: %1",ret); /* Run the wizzard */
+      any current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
+      if(current_defs!=`custom) {
+        //string current_defs = UI(`QueryWidget(`id(`rb),`CurrentButton));
         map current_sets = FindSettings(settings,current_defs);
         WIDGETS = defs2options(WIDGETS,current_sets);
       }
+        UI(`CloseDialog());
 	subret = SecurityWizzard();
-	y2debug("subret=%1",subret);
-	if(subret == `back) continue; /* FIXME: update the current RB? */
-	if(subret == `abort || subret == `cancel || subret == nil)
+	//y2debug("subret=%1",subret);
+	if(subret == `back) {
+          SuSEDialog("Main",[`back,`finish], 
+            `HVCenter(
+            `VBox(
+            `HVSquash(
+            `Frame( "Current security settings:",
+              `HBox(`HSpacing(0.8),
+              `RadioButtonGroup(`id(`rb), SecuritySettings(settings,defs)),
+              `HSpacing(0.8))
+            )),
+            `VSpacing(0.6),
+            `HVCenter(`PushButton(`id(`details),"&Details...")),
+            `VSpacing(0.6)
+            )
+          ));
+          continue; /* FIXME: update the current RB? */
+	}
+	else if(subret == `abort || subret == `cancel || subret == nil)
 	  ret = nil;
 	else
 	  ret = `ok;
@@ -545,7 +563,7 @@ XFrame(0.8,0.5,"Boot permissions",`HBox(`HSpacing(1),`VBox(`VSpacing(-0.1),
 ,`VSpacing(2.5)
   ));
   any ret = processInput();
-  if(ret == `ok) {
+  if(ret == `ok || ret ==`next) {
     updateWidget("CONSOLE_SHUTDOWN");
     updateWidget("KDM_SHUTDOWN");
   }
@@ -571,7 +589,7 @@ XFrame(2.0,0.9,"Login",`VBox(
 `VSpacing(1.7)
 ));
   any ret = processInput();
-  if(ret == `ok) {
+  if(ret == `ok || ret ==`next) {
     updateWidget("FAILLOG_ENAB");
     updateWidget("LASTLOG_ENAB");
     updateWidget("FAIL_DELAY");
@@ -589,7 +607,7 @@ define SecurityPermsDialog() ``{
     VSeparator()
   ));
   any ret = processInput();
-  if(ret == `ok) {
+  if(ret == `ok || ret ==`next) {
     updateWidget("PERMISSION_SECURITY");
   }
   UI(`CloseDialog());
@@ -617,7 +635,7 @@ define SecurityMiscDialog() ``{
     `VSpacing(1.8)
   ));
   any ret = processInput();
-  if(ret == `ok) {
+  if(ret == `ok || ret ==`next) {
     updateWidget("ROOT_LOGIN_REMOTE");
     updateWidget("PERMISSION_SECURITY");
     updateWidget("CWD_IN_ROOT_PATH");
@@ -660,7 +678,7 @@ define SecurityPasswdDialog() ``{
     `VSpacing(0.8)
   ));
   any ret = processInput();
-  if(ret == `ok) {
+  if(ret == `ok || ret ==`next) {
     updateWidget("PASS_MIN_DAYS");
     updateWidget("PASS_MAX_DAYS");
     updateWidget("PASS_MIN_LEN");
@@ -694,7 +712,7 @@ define SecurityAdduserDialog() ``{
     //,`HSpacing(1)
   ));
   any ret = processInput();
-  if(ret == `ok) {
+  if(ret == `ok || ret ==`next) {
     updateWidget("GID_MIN");
     updateWidget("GID_MAX");
     updateWidget("UID_MIN");
