@@ -1,9 +1,4 @@
 -------------------------------------------------------------------
-Wed Aug 22 18:02:58 CEST 2001 - msvec@suse.cz
-
-- 
-
--------------------------------------------------------------------
 Wed Aug 22 17:54:00 CEST 2001 - msvec@suse.cz
 
 - added requires (rcconfig and pam agents, wizard library)
