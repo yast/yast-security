@@ -142,16 +142,18 @@ define SecurityWrite(map m) ``{
  * main()
  * Only for automatic instalation
  * Args(0) = map $[ "FAILLOG_ENAB" : "7", ... ];
- */
+ *
+ * Moved to security_write.ycp
 
 list args = Args();
 if(size(args) > 0) {
   y2debug("Security: only writing ... (%1)", Args(0));
-  /* Not needed? map security_defs = SecurityRead(); */
   list ret = SecurityWrite(Args(0));
-  SecurityFinish(); /* rcagent */
+  SecurityFinish();
   return ret;
 }
+
+ */
 
 return true;
 
