@@ -1,3 +1,7 @@
+-------------------------------------------------------------------
+Tue Aug 28 16:55:36 CEST 2001 - msvec@suse.cz
+
+- enlarge max uid to 32 bit (#9871)
 - parseycp during check
 - version 2.4.5
 

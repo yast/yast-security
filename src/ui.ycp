@@ -72,7 +72,7 @@ global define map2widget(string ID) ``{
     if(widget == "IntField") {
         return `VBox(
             //VSeparator(),
-            `Left(`IntField(`id(ID),label,0,65000,tointeger(value))),
+            `Left(`IntField(`id(ID),label,0,2147483647,tointeger(value))),
             VSeparator()
         );
     }
