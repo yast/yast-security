@@ -1,7 +1,12 @@
 -------------------------------------------------------------------
-Wed Jan 16 16:51:59 CET 2002 - pblahos@suse.cz
+Wed Jan 16 20:24:11 CET 2002 - msvec@suse.cz
 
-- login_defs.scr now uses ini agent instead of rc-config agent
+- added pam_unix2 and rlogin|gdm to MD5 settings (md5 is #9543)
+- use_cracklib is now via pam (PASSWD_USE_CRACKLIB)
+- drop telnet for root checkbox (ROOT_LOGIN_REMOTE)
+- added /etc/login.defs agent (using ini agent right now)
+- added /etc/sysconfig/security agent
+- updated testsuite
 - 2.5.4
 
 -------------------------------------------------------------------

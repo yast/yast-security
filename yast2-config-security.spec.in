@@ -41,6 +41,7 @@ make check
 %{?suse_check}
 
 %files
+%defattr(-,root,root)
 %dir @YAST2DIR@/include/security
 @YAST2DIR@/menuentries/menuentry_security.y2cc
 @YAST2DIR@/clients/security*.ycp

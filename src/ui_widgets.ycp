@@ -118,13 +118,6 @@ return $[
     "Value" : "yes"
   ],
 
-  "ROOT_LOGIN_REMOTE" : $[
-    "Widget" : "CheckBox",
-     // login options (please, stick to 50 characters per line)
-    "Label" : _("&Enable telnet login for user root"),
-    "Value" : "no"
-  ],
-
   "PASSWD_USE_CRACKLIB" : $[
     "Widget" : "CheckBox",
      // login options (please, stick to 50 characters per line)

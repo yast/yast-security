@@ -50,22 +50,23 @@ global define LookupDefault(string item) ``{
 global define ReadLoginDefs(string item) ``{
     string pth = ".etc.login_defs." + item;
     string ret = SCR::Read(topath(pth));
-    if(ret == "")
+    if(ret == nil || ret == "")
         ret = LookupDefault(item);
     return ret;
 };
 
 /**
- * Read one setting from the SCR -- rc.config
+ * Read one setting from the SCR -- /etc/sysconfig/security
  * @param item value to be written
  * @return string the item value
  */
-global define ReadRcConfig(string item) ``{
-    string pth = ".rc.system." + item;
+global define ReadSysConfig(string item) ``{
+    string pth = ".sysconfig.security." + item;
     string ret = SCR::Read(topath(pth));
-    ret = tolower(ret);
-    if(ret=="")
-        ret = LookupDefault(item);
+    if(ret == nil || ret == "")
+	ret = LookupDefault(item);
+    else
+	ret = tolower(ret);
     return ret;
 };
 
@@ -84,13 +85,13 @@ global define WriteLoginDefs(map m, string item) ``{
 };
 
 /**
- * Write one setting into the SCR -- rc.config
+ * Write one setting into the SCR -- /etc/sysconfig/security
  * @param m map with all security settings
  * @param item value to be written
  * @return boolean success
  */
-global define WriteRcConfig(map m, string item) ``{
-    string pth = ".rc.system." + item;
+global define WriteSysConfig(map m, string item) ``{
+    string pth = ".sysconfig.security." + item;
     string ret = lookup(m,item,"");
     if(ret=="")
         return nil;
@@ -101,16 +102,14 @@ global define WriteRcConfig(map m, string item) ``{
  * Return all settings which are in rc.config
  * @return list rc.config settings
  */
-global define SettingsRcConfig() ``{
+global define SettingsSysConfig() ``{
     return [
         "CONSOLE_SHUTDOWN",
         "CWD_IN_ROOT_PATH",
 	"DISPLAYMANAGER_REMOTE_ACCESS",
         "KDM_SHUTDOWN",
-        "PASSWD_USE_CRACKLIB",
         "PERMISSION_SECURITY",
-        "ROOT_LOGIN_REMOTE",
-        "RUN_UPDATEDB_AS"
+        "RUN_UPDATEDB_AS",
     ];
 };
 
@@ -175,15 +174,23 @@ global define ApplyWrite(term t, list l, map m) ``{
  */
 global define SecurityRead() ``{
     map m = $[];
+
     /* rc.config and login.defs */
     m = ApplyRead(``(ReadLoginDefs()),SettingsLoginDefs(),m);
-    m = ApplyRead(``(ReadRcConfig()),SettingsRcConfig(),m);
-    /* md5 support */
-    list pam_list = SCR::Read(.pam.passwd.password.pam_unix);
+    m = ApplyRead(``(ReadSysConfig()),SettingsSysConfig(),m);
+
+    list pam_list = SCR::Read(.pam.passwd.password.pam_pwcheck);
     if(pam_list == [] || pam_list == nil) return m;
     map pam_map = select(pam_list,0,$[]);
+
+    /* md5 support */
     boolean pam_support = contains(splitstring(lookup(pam_map , "arguments", ""), " "), "md5");
     m = add(m,"MD5_SUPPORT", pam_support?"yes":"no");
+
+    /* use cracklib? */
+    pam_support = contains(splitstring(lookup(pam_map , "arguments", ""), " "), "use_cracklib");
+    m = add(m,"PASSWD_USE_CRACKLIB", pam_support?"yes":"no");
+
     return m;
 };
 
@@ -197,19 +204,36 @@ global define SecurityWrite(map m) ``{
 
     /* rc.config and login.defs */
     list l1 = ApplyWrite(``(WriteLoginDefs()),SettingsLoginDefs(),m);
-    list l2 = ApplyWrite(``(WriteRcConfig()),SettingsRcConfig(),m);
+    list l2 = ApplyWrite(``(WriteSysConfig()),SettingsSysConfig(),m);
     list ret = flatten([l1,l2]);
     ret = add(ret,SCR::Write(.etc.login_defs,nil));
-    ret = add(ret,SCR::Write(.rc.system,nil));
+    ret = add(ret,SCR::Write(.sysconfig.security,nil));
 
     /* md5 support */
     string pam_string = (lookup(m,"MD5_SUPPORT","no")=="yes")?"+md5":"-md5";
     ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, pam_string));
     ret = add(ret,SCR::Write(.pam.login.password.pam_unix, pam_string));
+    ret = add(ret,SCR::Write(.pam.login.password.pam_unix2, pam_string));
     ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, pam_string));
     ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix, pam_string));
+    ret = add(ret,SCR::Write(.pam.passwd.password.pam_unix2, pam_string));
     ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, pam_string));
     ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix, pam_string));
+    ret = add(ret,SCR::Write(.pam.sshd.password.pam_unix2, pam_string));
+    ret = add(ret,SCR::Write(.pam.rlogin.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.rlogin.password.pam_unix, pam_string));
+    ret = add(ret,SCR::Write(.pam.rlogin.password.pam_unix2, pam_string));
+    ret = add(ret,SCR::Write(.pam.gdm.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.gdm.password.pam_unix, pam_string));
+    ret = add(ret,SCR::Write(.pam.gdm.password.pam_unix2, pam_string));
+
+    /* use cracklib? */
+    pam_string = (lookup(m,"PASSWD_USE_CRACKLIB","no")=="yes")?"+use_cracklib":"-use_cracklib";
+    ret = add(ret,SCR::Write(.pam.login.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.passwd.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.sshd.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.rlogin.password.pam_pwcheck, pam_string));
+    ret = add(ret,SCR::Write(.pam.gdm.password.pam_pwcheck, pam_string));
 
     /* finish him */
     ret = add(ret,SCR::Execute(.target.bash, "/sbin/SuSEconfig --nonewpackage"));

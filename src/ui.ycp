@@ -92,7 +92,7 @@ global define map2widget(string ID) ``{
 
     while(i < size(li)) {
         //string|list it = select(li,i);
-        any it = select(li,i);
+        any it = select(li,i,"");
         string id_t = "";
         string id_s = "";
         if(is(it,string)) {
@@ -100,8 +100,8 @@ global define map2widget(string ID) ``{
             id_s = it;
         }
         else {
-            id_t = select(it,0);
-            id_s = select(it,1);
+            id_t = select(it,0,"");
+            id_s = select(it,1,"");
         }
         if(value == id_t)
             combo = add(combo,`item(`id(id_t),id_s,true));
@@ -764,15 +764,12 @@ global define SecurityMiscDialog() ``{
     map2widget("RUN_UPDATEDB_AS"),
     `VSpacing(1.0),
     map2widget("CWD_IN_ROOT_PATH"),
-    VSeparator(),
-    map2widget("ROOT_LOGIN_REMOTE"),
     //VSeparator()
 //),`HSpacing(1)))
     `VSpacing(1.8)
   ));
   any ret = processInput();
   if(ret == `ok || ret ==`next) {
-    updateWidget("ROOT_LOGIN_REMOTE");
     updateWidget("PERMISSION_SECURITY");
     updateWidget("CWD_IN_ROOT_PATH");
     updateWidget("RUN_UPDATEDB_AS");

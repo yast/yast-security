@@ -22,5 +22,5 @@
 .sysconfig.security
 
 `ag_ini(
-  RcFile("/etc/sysconfig/security")
+    SysConfigFile("/etc/sysconfig/security")
 )
