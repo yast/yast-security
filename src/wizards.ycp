@@ -97,6 +97,7 @@ define any SecuritySequence() ``{
     ];
 
     Wizard::CreateDialog();
+    Wizard::SetDesktopIcon("security");
     any ret = Sequencer::Run(aliases, sequence);
 
     UI::CloseDialog();
@@ -116,6 +117,7 @@ define any SecurityAutoSequence() ``{
     term contents = `Label(_("Initializing ..."));
 
     Wizard::CreateDialog();
+    Wizard::SetDesktopIcon("security");
     Wizard::SetContentsButtons(caption, contents, "",
 	    Label::BackButton(), Label::NextButton());
 

@@ -130,7 +130,7 @@ define symbol MainDialog() ``{
 	    continue;
 	}
 	else if(is(ret, string)) {
-	    if(!haskey(Levels, ret)) {
+	    if(!haskey(Levels, (string) ret)) {
 		y2error("Unexpected return code (key missing): %1", ret);
 		continue;
 	    }
