@@ -364,7 +364,7 @@ define SecuritySettings(list settings, map defs) ``{
 
   T = add(T,`VSpacing(0.6));
   T = add(T,`Left(`RadioButton(`id(`custom),`opt(`notify),_("&Custom settings"),enab)));
-    /* T = add(T,`Left(`HBox(`RadioButton(`id(`custom),"&Custom settings",enab),`Right(`PushButton(`id(`details),_("&Change...")))))); */
+    /* T = add(T,`Left(`HBox(`RadioButton(`id(`custom),_("&Custom settings"),enab),`Right(`PushButton(`id(`details),_("&Change...")))))); */
   T = add(T,`VSpacing(0.5));
   y2debug("T: %1",T);
   return T;
@@ -481,7 +481,7 @@ define SecurityMainDialog(map defs) ``{
       UI(`ChangeWidget(`id(`details),`Enabled,true));
       // push button
       UI(`ReplaceWidget(`id(`rp),`PushButton(`id(`finish),`opt(`default),_("&Finish"))));
-      if(ret == UI(_("Level 3 (Network/Server)")))
+      if(ret == UI(_("Level &3 (Network/Server)")))
 	// popup if level 3 is choosen
 	PopupOK(UI(_("You have chosen 'Level 3'. This setup
 provides a basic configuration for network servers
