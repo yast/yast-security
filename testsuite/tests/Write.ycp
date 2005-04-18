@@ -25,7 +25,6 @@ map<string,string> m = $[
     "DISPLAYMANAGER_REMOTE_ACCESS":	"r4",
     "ENCRYPTION"		:	"md5",
     "ENABLE_SYSRQ"		:	"yes",
-    "FAILLOG_ENAB"		:	"l1",
     "FAIL_DELAY"		:	"l2",
     "GID_MAX"			:	"l3",
     "GID_MIN"			:	"l4",

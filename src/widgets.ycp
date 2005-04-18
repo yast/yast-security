@@ -114,13 +114,6 @@ map WIDGETS = $[
 	"Value" : "no"
     ],
 
-    "FAILLOG_ENAB" : $[
-	"Widget" : "CheckBox",
-	/* CheckBox label */
-	"Label" : _("Record &Failed Login Attempts"),
-	"Value" : "yes"
-    ],
-
     "FAIL_DELAY" : $[
 	"Widget" : "IntField",
 	/* IntField label */

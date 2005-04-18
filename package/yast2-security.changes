@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Apr 18 15:44:26 CEST 2005 - jsuchome@suse.cz
+
+- removed support for FAILLOG_ENAB (feature 2669)
+- 2.12.0
+
+-------------------------------------------------------------------
 Wed Mar  2 09:19:11 CET 2005 - jsuchome@suse.cz
 
 - merged texts from proofreading

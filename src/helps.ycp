@@ -83,29 +83,23 @@ any type of service, network or any other.</p>") +
     _("<p>Use <b>Custom Settings</b> to create your own configuration.</p>"),
 
 
-    /* Login dialog help 1/5 */
+    /* Login dialog help 1/4 */
     "login" : _("<p>In this dialog, change various login settings. These
 settings are mainly stored in the '/etc/login.defs' file.</p>") +
 
-    /* Login dialog help 1/5 */
+    /* Login dialog help 2/4 */
     _("<p><b>Delay after Incorrect Login Attempt</b><br>
 It is advisable to wait some time after an incorrect login attempt to prevent
 password guessing. Make the time small enough so users do not need to wait to
 retry if a password is mistyped. A sensible value is three seconds ('3').</p>") +
 
-    /* Login dialog help 1/5 */
-    _("<p><b>Record Failed Login Attempts</b><br> It is useful to know if
-somebody is trying to log in and failed. For example, if someone is trying
-to guess the passwords of other users. Check this option to specify whether
-failed login attempts should be logged in the system log file.</p>") +
-
-    /* Login dialog help 1/5 */
+    /* Login dialog help 3/4 */
     _("<p><b>Record Successful Login Attempts</b><br> Logging succesful login
 attempts is useful.  It can help to warn you of unauthorized access to the
 system (for example, a user logging in from a different location than usual).
 </p>") +
 
-    /* Login dialog help 1/5 */
+    /* Login dialog help 4/4 */
     _("<p><b>Allow Remote Graphical Login</b><br> Checking this allows access
 to a graphical login screen for this machine over the network. Remote access
 to your machine via xdm might be a security risk.</p>"),

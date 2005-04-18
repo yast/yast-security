@@ -39,7 +39,6 @@ map scr_info = $[
     ],
     "etc" : $[
 	"login_defs" : $[
-	    "FAILLOG_ENAB"		:	"l1",
 	    "FAIL_DELAY"		:	"l2",
 	    "GID_MAX"			:	"l3",
 	    "GID_MIN"			:	"l4",

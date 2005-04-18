@@ -1,5 +1,3 @@
-Read	.etc.login_defs.FAILLOG_ENAB nil
-Write	.etc.login_defs.FAILLOG_ENAB "yes" true
 Read	.etc.login_defs.FAIL_DELAY nil
 Write	.etc.login_defs.FAIL_DELAY "3" true
 Read	.etc.login_defs.GID_MAX nil

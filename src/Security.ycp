@@ -27,7 +27,6 @@ global map<string,string> Settings = $[
     "CWD_IN_USER_PATH"			: "yes",
     "DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
     "ENABLE_SYSRQ"			: "no",
-    "FAILLOG_ENAB"			: "yes",
     "FAIL_DELAY"			: "3",
     "GID_MAX"				: "60000",
     "GID_MIN"				: "1000",
@@ -59,7 +58,6 @@ global map<string,string> Settings = $[
  */
 map<string,list<string> > Locations = $[
     ".etc.login_defs" : [
-	"FAILLOG_ENAB",
 	"FAIL_DELAY",
 	"GID_MAX",
 	"GID_MIN",

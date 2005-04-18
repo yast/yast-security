@@ -252,8 +252,6 @@ define symbol LoginDialog() ``{
 	    settings2widget("FAIL_DELAY"),
 	    //VSeparator(),
 	    `VSpacing(0.5),
-	    settings2widget("FAILLOG_ENAB"),
-	    VSeparator(),
 	    settings2widget("LASTLOG_ENAB"),
 	    VSeparator(),
 	    settings2widget("DISPLAYMANAGER_REMOTE_ACCESS")
@@ -289,7 +287,6 @@ define symbol LoginDialog() ``{
    }
 
     if(ret == `next) {
-	widget2settings("FAILLOG_ENAB");
 	widget2settings("LASTLOG_ENAB");
 	widget2settings("FAIL_DELAY");
 	widget2settings("DISPLAYMANAGER_REMOTE_ACCESS");
