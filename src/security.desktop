@@ -17,7 +17,7 @@ X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=security
 X-SuSE-YaST-AutoInstClonable=true
 
-Icon=security
+Icon=yast-security
 Exec=/sbin/yast2 security 
 
 Name=Security settings
