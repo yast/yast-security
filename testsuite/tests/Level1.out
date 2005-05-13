@@ -52,6 +52,7 @@ Write	.sysconfig.suseconfig nil true
 Write	.sysconfig.sysctl nil true
 Write	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now" true
 Write	.etc.inittab nil true
+Execute	.target.bash "/sbin/telinit q" 0
 Read	.etc.default.passwd."CRYPT_FILES" nil
 Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
 Dir	.etc.security.section: []

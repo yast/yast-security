@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri May 13 15:53:15 CEST 2005 - jsuchome@suse.cz
+
+- tell init to re-examine the /etc/inittab after modification (#83480) 
+- 2.12.1
+
+-------------------------------------------------------------------
 Mon Apr 18 15:44:26 CEST 2005 - jsuchome@suse.cz
 
 - removed support for FAILLOG_ENAB (feature 2669)

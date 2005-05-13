@@ -402,6 +402,9 @@ global define boolean Write() {
 	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/bin/true");
     SCR::Write(.etc.inittab, nil);
 
+    // re-read the modified inittab (#83480)
+    SCR::Execute (.target.bash, "/sbin/telinit q");
+
     /* Write pam settings */
     sleep(sl);
     if(Abort()) return false;
