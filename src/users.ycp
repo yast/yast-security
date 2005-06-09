@@ -25,7 +25,7 @@ include "security/routines.ycp";
 define symbol AdduserDialog() ``{
 
     /* Adduser dialog caption */
-    string caption = _("Adding User");
+    string caption = _("User Addition");
     string help = HELPS["adduser"]:"";
 
     /* Adduser dialog contents */
@@ -68,12 +68,13 @@ define symbol AdduserDialog() ``{
 	else if(ret == `next) {
 	    if(checkMinMax("UID_MIN","UID_MAX") != true) {
 		/* Popup text */
-		Popup::Error(_("The minimum user ID cannot be larger than maximum"));
+		Popup::Error(_("The minimum user ID cannot be larger than the maximum."));
 		continue;
 	    }
 	    if(checkMinMax("GID_MIN","GID_MAX") != true) {
 		/* Popup text */
-		Popup::Error(_("The minimum group IDs cannot be larger than maximum"));
+		Popup::Error(_("The minimum group ID cannot be larger than the
+maximum."));
 		continue;
 	    }
 	    break;

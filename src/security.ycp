@@ -113,7 +113,7 @@ define boolean SecuritySetHandler (map options) {
 map cmdline = $[
     "id"		: "security",
     // translators: command line help text for Securoty module
-    "help"		: _("Security configuration module."),
+    "help"		: _("Security configuration module"),
     "guihandler"	: SecuritySequence,
     "initialize"	: Security::Read,
     "finish"		: Security::Write,
@@ -121,7 +121,7 @@ map cmdline = $[
 	"summary" :$[
 	    "handler"	: SecuritySummaryHandler,
 	    // command line help text for 'summary' action
-	    "help"	: _("Security configuration summary"),
+	    "help"	: _("View summary of current configuration"),
 	],
 	"level" :$[
 	    "handler"	: SecurityLevelHandler,
@@ -131,7 +131,7 @@ map cmdline = $[
 	"set" :$[
 	    "handler"	: SecuritySetHandler,
 	    // command line help text for 'set' action
-	    "help"	: _("Set the value of specific option"),
+	    "help"	: _("Set the value of the specific option"),
 	],
     ],
     "options"		: $[
@@ -145,7 +145,7 @@ map cmdline = $[
 	],
 	"server"	: $[
 	    // command line help text for 'level server' option
-	    "help"	: _("Networked Server security level")
+	    "help"	: _("Network Server security level")
 	],
 	"passwd"	: $[
 	    // command line help text for 'set passwd' option
@@ -155,19 +155,19 @@ map cmdline = $[
 	],
 	"obscure"	: $[
 	    // command line help text for 'set obscure' option
-	    "help"	: _("Plausibility test for password"),
+	    "help"	: _("Test for complicated password"),
 	    "type"	: "enum",
 	    "typespec"	: [ "yes", "no" ],
 	],
 	"crack"	: $[
 	    // command line help text for 'set crack' option
-	    "help"	: _("Checking new passwords strength"),
+	    "help"	: _("Check new passwords"),
 	    "type"	: "enum",
 	    "typespec"	: [ "yes", "no" ],
 	],
 	"permissions" : $[
 	    // command line help text for 'set permissions' option
-	    "help"	: _("Setting of file permissions"),
+	    "help"	: _("Set file permissions to desired type"),
 	    "type"	: "enum",
 	    "typespec"	: [ "easy", "secure", "paranoid" ],
 	],

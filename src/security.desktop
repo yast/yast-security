@@ -20,7 +20,7 @@ X-SuSE-YaST-AutoInstClonable=true
 Icon=yast-security
 Exec=/sbin/yast2 security 
 
-Name=Security settings
+Name=Local Security
 GenericName=Configure local security settings
 Name[cs]=Nastavení bezpečnosti
 GenericName[cs]=Konfigurovat lokální nastavení bezpečnosti

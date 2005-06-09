@@ -20,102 +20,100 @@ textdomain "security";
 map HELPS = $[
 
     /* Read dialog help 1/2 */
-    "read" : _("<p><b><big>Initializing security configuration</big></b>
+    "read" : _("<p><b><big>Initializing Security Configuration</big></b>
 <br>Please wait...<br></p>") +
 
     /* Read dialog help 2/2 */
-    _("<p><b><big>Aborting the initialization:</big></b><br>
+    _("<p><b><big>Aborting the Initialization</big></b><br>
 Safely abort the configuration utility by pressing <b>Abort</b> now.</p>"),
 
 
     /* Write dialog help 1/2 */
-    "write" : _("<p><b><big>Saving security configuration</big></b>
+    "write" : _("<p><b><big>Saving Security Configuration</big></b>
 <br>Please wait...<br></p>") +
 
     /* Write dialog help 2/2 */
-    _("<p><b><big>Aborting saving:</big></b><br>
-Abort saving by pressing <b>Abort</b>.</p>"),
+    _("<p><b><big>Aborting Saving</big></b><br>
+Abort the save procedure by pressing <b>Abort</b>.</p>"),
 
 
     /* Boot dialog help 1/3 */
-    "boot" : _("<p>In this dialog, change various boot settings.</p>") +
+    "boot" : _("<p><b><big>Boot Security</big></b></p>
+<p>In this dialog, change various boot settings related to security.</p>") +
 
     /* Boot dialog help 2/3 */
-    _("<p><b>Interpretation of Ctrl + Alt + Del</b><br>
-When someone at the console has pressed the CTRL + ALT + DEL key
-combination, the system usually reboots. Sometimes it is desirable
+    _("<p><b>Interpretation of Ctrl + Alt + Del</b>:
+Configure what the system should do in response to
+someone at the console pressing the CTRL + ALT + DEL key
+combination. Usually the system reboots. Sometimes it is desirable
 to ignore this event, for example, when the system serves as both
 workstation and server.</p>") +
 
     /* Boot dialog help 3/3 */
-    _("<p><b>Shutdown Behavior of KDM</b><br>
+    _("<p><b>Shutdown Behavior of KDM</b>:
 Set who is allowed to shut down the machine from KDM.</p>"),
 
 
     /* Main dialog help 1/8 */
-    "main" : _("<p>With this module, change the local security settings.</p>") +
-
-    /* Main dialog help 2/8 */
-    _("<p>The local security settings include the boot configuration, login
-settings, password settings, some user creation settings, and file
-permissions.</p>") +
-
-    /* Main dialog help 3/8 */
-    _("<p>All particular settings are described in the respective dialogs.</p>") +
-
-    /* Main dialog help 4/8 */
-    _("<p>You can choose one of the preset configurations or you can make your
-own settings.</p>") +
+    "main" : _("<P><BIG><B>Configuring Local Security</B></BIG></P>
+<p>Using predefined defaults, change the local security settings, which include
+    booting, login, password, user creation, and file permissions. The default
+    settings can be modified as needed.
+</p>") +
 
     /* Main dialog help 5/8 */
-    _("<p>Use <b>Home Workstation</b> for a home computer not connected to
+    _("<p><b>Home Workstation</b>: For a home computer not connected to
 any type of a network.</p>") +
 
     /* Main dialog help 6/8 */
-    _("<p>Use <b>Networked Workstation</b> for a computer connected
-to any type of a network or the Internet.</p>") +
+    _("<p><b>Networked Workstation</b>: For a computer connected
+to any type of network including the Internet.</p>") +
 
     /* Main dialog help 7/8 */
-    _("<p>Use <b>Network Server</b> for a computer that will be providing
-any type of service, network or any other.</p>") +
+    _("<p><b>Network Server</b>: For a computer that provides
+any type of service.</p>") +
 
     /* Main dialog help 8/8 */
-    _("<p>Use <b>Custom Settings</b> to create your own configuration.</p>"),
+    _("<p><b>Custom Settings</b>: Create your own configuration.</p>
+    <p><b>Details</b>: View and modify all configuration settings for the
+    current configuration.</P>
+"),
 
 
     /* Login dialog help 1/4 */
-    "login" : _("<p>In this dialog, change various login settings. These
-settings are mainly stored in the '/etc/login.defs' file.</p>") +
+    "login" : _("<p><big><b>Login Security</b></big></p>
+<p>These login settings
+are mainly stored in the /etc/login.defs file.</p>") +
 
     /* Login dialog help 2/4 */
-    _("<p><b>Delay after Incorrect Login Attempt</b><br>
+    _("<p><b>Delay after Incorrect Login Attempt:</b>
 It is advisable to wait some time after an incorrect login attempt to prevent
-password guessing. Make the time small enough so users do not need to wait to
-retry if a password is mistyped. A sensible value is three seconds ('3').</p>") +
+password guessing. Make the time small enough that users do not need to wait to
+retry if a password is mistyped. A sensible value is three seconds (<tt>3</tt>).</p>") +
 
     /* Login dialog help 3/4 */
-    _("<p><b>Record Successful Login Attempts</b><br> Logging succesful login
+    _("<p><b>Record Successful Login Attempts:</b> Logging succesful login
 attempts is useful.  It can help to warn you of unauthorized access to the
 system (for example, a user logging in from a different location than usual).
 </p>") +
 
     /* Login dialog help 4/4 */
-    _("<p><b>Allow Remote Graphical Login</b><br> Checking this allows access
+    _("<p><b>Allow Remote Graphical Login:</b> Checking this allows access
 to a graphical login screen for this machine over the network. Remote access
-to your machine via xdm might be a security risk.</p>"),
+to your machine using a display manager might be a security risk.</p>"),
 
 
     /* Password dialog help 1/8 */
-    "password" : _("<p>In this dialog, change various password settings.
-These settings are mainly stored in the \"/etc/login.defs\" file.</p>") +
+    "password" : _("<p>These password settings
+are mainly stored in the /etc/login.defs file.</p>") +
 
     /* Password dialog help 2/8 */
-    _("<p><b>Checking New Passwords</b><br>It is wise to choose a password that
+    _("<p><b>Check New Passwords</b>: It is wise to choose a password that
 cannot be found in a dictionary and is not a name or other simple, common word.
 By checking the box, enforce password checking in regard to these rules.</p>") +
 
     /* Password dialog help 3/8 */
-    _("<p><b>Plausibility Test for Passwords</b><br> 
+    _("<p><b>Test for Complicated Passwords</b>: 
 Passwords should be constructed using a mixture of characters. This makes the
 guessing of passwords very difficult. Check this box to enable additional
 checks.</p>") +
@@ -129,87 +127,74 @@ but it restricts you to passwords no longer than eight characters. If you need
 compatibility with other systems, use this method.</p>") +
 
     /* Password dialog help 4c/8 */
-_("<p><b>md5</b> allows longer passwords and is supported by all current Linux 
+_("<p><b>MD5</b> allows longer passwords and is supported by all current Linux 
 distributions, but not by other systems or old software.</p>") +
 
     /* Password dialog help 4d/8 */
-_("<p><b>blowfish</b> is similar to md5, but uses a different algorithm
+_("<p><b>Blowfish</b> is similar to MD5, but uses a different algorithm
 to encrypt passwords. A lot of CPU power is needed to calculate the hash,
 which makes it difficult to crack passwords with the help of a dictionary.</p>")
     +
 
     /* Password dialog help 5/7 */
-    _("<p><b>Minimum Acceptable Password Length</b><br>
-The minimum number of characters in an acceptable password. An attempt to
-assign a password with fewer characters will be rejected. A zero value
+    _("<p><b>Minimum Acceptable Password Length:</b>
+The minimum number of characters in an acceptable password. Attempts to
+assign passwords with fewer characters are rejected. A zero value
 suppresses this check.</p>") +
 
     /* Password dialog help 6/7 */
-    _("<p><b>Days to Password Change Warning</b><br>Set the minimum and
+    _("<p><b>Days to Password Change Warning:</b> Set the minimum and
 maximum time for warning that the password must be changed.</p>") +
 
+//rwalter need better clarification of distinction between this and previous
     /* Password dialog help 7/7 */
-    _("<p><b>Days before Password Expires Warning</b><br> This entry sets the
+    _("<p><b>Days before Password Expires Warning</b>: This entry sets the
 number of days users are warned before their passwords expire. The longer the
-time, the less likely it is that a user can guess passwords.</p>"),
+time, the less likely it is that someone can guess passwords.</p>"),
 
 
     /* Adduser dialog help 1/2 */
-    "adduser" : _("<p>In this dialog, change various useradd settings.</p>") +
+    "adduser" : _("<p><big><b>User Security</b></big></P>
+<p>In this dialog, change various settings used to create users.</p>") +
 
     /* Adduser dialog help 2/3 */
-    _("<p><b>User ID Limitations</b><br>
+    _("<p><b>User ID Limitations:</b>
 Set the minimum and maximum possible user ID.</p>") +
 
     /* Adduser dialog help 3/3 */
-    _("<p><b>Group ID Limitations</b><br>
+    _("<p><b>Group ID Limitations</b>:
 Set the minimum and maximum possible group ID.</p>"),
 
 
     /* Misc dialog help 1/14 */
-    "misc" : _("<p>In this dialog, change miscellaneous settings.</p>") +
+    "misc" : _("<p><big><b>Other Security Settings</b></big></P>
+<p>In this dialog, change miscellaneous settings related to local security.</p>") +
 
     /* Misc dialog help 2/14 */
-    _("<p><b>Setting of File Permissions</b><br> Settings for the permissions
+    _("<p><b>File Permissions</b>: Settings for the permissions
 of certain system files are set according to the data in /etc/permissions.secure
 or /etc/permissions.easy. Which file is used depends on this selection.
 Launching SuSEconfig sets these permissions according to /etc/permissions.*.
 This fixes files with incorrect permissions, whether this occurred accidentally
-or by intruders.</p>") +
-
-    /* Misc dialog help 3/14 */
-    _("<p>\"Easy\": Most of the system files that are only readable by root
-(via secure) are modified so other users can also read these files.</p>") +
-
-    /* Misc dialog help 4/14 */
-    _("<p>\"Secure\": Certain system files (e.g., /var/log/messages) can only
+or by intruders.</p><p>
+With <b>Easy</b>, most of the system files that are only readable by root
+in Secure are modified so other users can also read these files.
+Using <b>Secure</b>, certain system files, such as /var/log/messages, can only
 be viewed by the user root. Some programs can only be launched by root or by
-daemons, not by an ordinary user.</p>") +
-
-    /* Misc dialog help 5/14 */
-    _("<p>\"Paranoid\": For an extremely secure system, use this setting. You must
-decide which users are able to run X applications and setuid programs.</p>") +
+daemons, not by ordinary users.
+The most secure setting is <b>Paranoid</B>. With it, you must
+decide which users are able to run X applications and setuid programs.</p>
+") +
 
     /* Misc dialog help 6/14 */
-    _("<p><b>User Launching updatedb</b><br> The program updatedb runs regularly,
-once a day. It scans your whole file system and creates a database (locatedb)
-where the location of EVERY file is stored. The database can be searched by the
-program \"locate\".</p>") +
-
-    /* Misc dialog help 7/14 */
-    _("<p>By setting this entry, you can select the user to run this command:
-</p>") +
-
-    /* Misc dialog help 8/14 */
-    _("<p>\"nobody\": only files that the user \"nobody\" can access are added
-into the database. All users can choose if the file will be in the database or
-not.</p>") +
-
-    /* Misc dialog help 9/14 */
-    _("<p>\"root\": all files in the system are added into the database</p>") +
+    _("<p><b>User Launching updatedb</b>: The program updatedb runs 
+once a day. It scans your entire file system and creates a database (locatedb)
+that stores the location of every file. The database can be searched by the
+program \"locate\".  Here, set the user that runs this command: <b>nobody</b>
+    (few files) or <b>root</b> (all files).</p>") +
 
     /* Misc dialog help 10/14 */
-    _("<p><b>Current Directory in  root's Path</b><br> On a DOS system,
+    _("<p><b>Current Directory in root's Path</b> On a DOS system,
 the system first searches for executable files (programs) in the current
 directory then in the current path variable. In contrast, a UNIX-like system
 searches for them exclusively via the search path (variable PATH).</p>") +
@@ -221,11 +206,11 @@ then in the current path variable. In contrast, a UNIX-like system searches
 for them exclusively via the search path (variable PATH).</p>") +
 
     /* Misc dialog help 12/14 */
-    _("<p>Some systems set up a 'workaround' by adding the dot (\".\") to the
-search path, thus enabling files in the current path to be found and executed.
+    _("<p>Some systems set up a work-around by adding the dot (\".\") to the
+search path, enabling files in the current path to be found and executed.
 This is highly dangerous because you may accidentally launch unknown programs in
-the current directory instead of the usual system-wide files. As a result,
-executing 'Trojan Horses', which exploit this weakness and intrude your system,
+the current directory instead of the usual systemwide files. As a result,
+executing <i>Trojan Horses</i>, which exploit this weakness and invade your system,
 is rather easy if you set this option.</p>") +
 
     /* Misc dialog help 13/14 */
@@ -238,8 +223,8 @@ current directory prefixed with a \"./\". Example: \"./configure\".</p>") +
 
     /* Misc dialog help 14/14 */
     _("<p><b>Enable Magic SysRq Keys</b><br> If you check this option, you
-will have some control over the system even if it crashes (e.g., during kernel
-debugging). For details, see <i>/usr/src/linux/Documentation/sysrq.txt</i></p>"),
+will have some control over the system even if it crashes (for example, during kernel
+debugging). For details, see /usr/src/linux/Documentation/sysrq.txt</p>"),
 
 ];
 

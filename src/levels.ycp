@@ -33,20 +33,20 @@ textdomain "security";
  */
 map<string,string> LevelsNames = $[
     // level name
-    "Level1" : _("Level 1 (Home Workstation)"),
+    "Level1" : _("Home Workstation"),
     // level name
-    "Level2" : _("Level 2 (Networked Workstation)"),
+    "Level2" : _("Networked Workstation"),
     // level name
-    "Level3" : _("Level 3 (Network Server)"),
+    "Level3" : _("Network Server"),
 ];
 
 map<string,string> LevelsLabels = $[
     /* RadioButton label */
-    "Level1" : _("Level &1 (Home Workstation)"),
+    "Level1" : _("&Home Workstation"),
     /* RadioButton label */
-    "Level2" : _("Level &2 (Networked Workstation)"),
+    "Level2" : _("&Networked Workstation"),
     /* RadioButton label */
-    "Level3" : _("Level &3 (Network Server)"),
+    "Level3" : _("Network &Server"),
 ];
 
 /**

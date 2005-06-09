@@ -74,7 +74,7 @@ map WIDGETS = $[
     "CONSOLE_SHUTDOWN" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&Interpretation of Ctrl + Alt + Del:"),
+	"Label" : _("&Interpretation of Ctrl + Alt + Del"),
 	"Options" : [
 	    /* ComboBox value */
 	    ["ignore", _("Ignore")],
@@ -117,7 +117,7 @@ map WIDGETS = $[
     "FAIL_DELAY" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Delay after Incorrect Login Attempt:"),
+	"Label" : _("&Delay after Incorrect Login Attempt"),
 	"Value" : "3"
     ],
 
@@ -143,11 +143,11 @@ map WIDGETS = $[
 	    /* ComboBox value */
 	    ["root",_("Only root")],
 	    /* ComboBox value */
-	    ["all",_("All users")],
+	    ["all",_("All Users")],
 	    /* ComboBox value */
 	    ["none",_("Nobody")],
 	    /* ComboBox value */
-	    ["local",_("Local users")],
+	    ["local",_("Local Users")],
 	    /* ComboBox value */
 	    ["auto",_("Automatic")],
 	],
@@ -164,7 +164,7 @@ map WIDGETS = $[
     "OBSCURE_CHECKS_ENAB" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("&Plausibility Test for Password"),
+	"Label" : _("&Test for Complicated Passwords"),
 	"Value" : "yes"
     ],
 
@@ -181,7 +181,7 @@ map WIDGETS = $[
     "PASSWD_USE_CRACKLIB" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
-	"Label" : _("&Checking New Passwords"),
+	"Label" : _("&Check New Passwords"),
 	"Value" : "yes"
     ],
 
@@ -209,14 +209,14 @@ map WIDGETS = $[
     "PASS_WARN_AGE" : $[
 	"Widget" : "IntField",
 	/* IntField label */
-	"Label" : _("&Days before Password Expires Warning:"),
+	"Label" : _("&Days before Password Expires Warning"),
 	"Value" : "7"
     ],
 
     "PERMISSION_SECURITY" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&Setting of File Permissions:"),
+	"Label" : _("&File Permissions"),
 	"Options" : [
 	    /* ComboBox value */
 	    ["easy",_("Easy")],
@@ -231,7 +231,7 @@ map WIDGETS = $[
     "RUN_UPDATEDB_AS" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&User Launching updatedb:"),
+	"Label" : _("&User Launching updatedb"),
 	"Options" : [ "nobody", "root" ],
 	"Value" : "nobody"
     ],

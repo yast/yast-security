@@ -199,7 +199,8 @@ define symbol PassDialog() ``{
 	    /* check_* */
 	    if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS") != true) {
 		/* Popup text */
-		Popup::Error(_("The minimum number of days cannot be larger than maximum"));
+		Popup::Error(_("The minimum number of days cannot be larger
+than the maximum."));
 		continue;
 	    }
 	    string enc	=

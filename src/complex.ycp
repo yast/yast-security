@@ -82,7 +82,7 @@ define symbol MainDialog() ``{
 	`VBox(
 	    `HVSquash(
 		/* Frame caption */
-		`Frame( _("Current Security Settings"),
+		`Frame( _("Security Settings"),
 		    `HBox(`HSpacing(0.8),
 		    `RadioButtonGroup(`id(`rb), RB),
 		    `HSpacing(0.8))

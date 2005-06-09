@@ -112,9 +112,9 @@ define any SecuritySequence() ``{
 define any SecurityAutoSequence() ``{
 
     /* Dialog caption */
-    string caption = _("Security configuration");
+    string caption = _("Security Configuration");
     /* Label */
-    term contents = `Label(_("Initializing ..."));
+    term contents = `Label(_("Initializing..."));
 
     Wizard::CreateDialog();
     Wizard::SetDesktopIcon("security");
