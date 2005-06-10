@@ -143,10 +143,9 @@ assign passwords with fewer characters are rejected. A zero value
 suppresses this check.</p>") +
 
     /* Password dialog help 6/7 */
-    _("<p><b>Days to Password Change Warning:</b> Set the minimum and
-maximum time for warning that the password must be changed.</p>") +
+    _("<p><b>Password Age:</b> Set the minimum and
+maximum number of days a password may be used.</p>") +
 
-//rwalter need better clarification of distinction between this and previous
     /* Password dialog help 7/7 */
     _("<p><b>Days before Password Expires Warning</b>: This entry sets the
 number of days users are warned before their passwords expire. The longer the
