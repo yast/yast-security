@@ -52,6 +52,8 @@ define term settings2widget(string ID) ``{
     string label = m["Label"]:"";
     string widget = m["Widget"]:"";
     string value = Security::Settings[ID]:"";
+    integer minval	= m["MinValue"]:0;
+    integer maxval	= m["MaxValue"]:2147483647;
 
     /* "Widget" == "CheckBox" */
     if(widget == "CheckBox") {
@@ -75,7 +77,7 @@ define term settings2widget(string ID) ``{
     /* "Widget" == "IntField" */
     if(widget == "IntField") {
         return `VBox(
-            `Left(`IntField(`id(ID), label, 0, 2147483647, tointeger(value))),
+            `Left(`IntField(`id(ID), label, minval, maxval, tointeger(value))),
             VSeparator()
         );
     }

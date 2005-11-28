@@ -192,6 +192,14 @@ map WIDGETS = $[
 	"Value" : "99999"
     ],
 
+    "PASSWD_REMEMBER_HISTORY" : $[
+	"Widget" : "IntField",
+	/* IntField label */
+	"Label" : _("Numb&er of Passwords to Remember"),
+	"MinValue" : 0,
+	"MaxValue" : 400,
+    ],
+
     "PASS_MIN_DAYS" : $[
 	"Widget" : "IntField",
 	/* IntField label */

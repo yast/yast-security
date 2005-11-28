@@ -159,6 +159,8 @@ define symbol PassDialog() ``{
 	    settings2widget("PASSWD_USE_CRACKLIB"),
 	    VSeparator(),
 	    settings2widget("OBSCURE_CHECKS_ENAB"),
+	    VSeparator(),
+	    settings2widget("PASSWD_REMEMBER_HISTORY"),
 	    VSeparator()
 	)),
 	`VSpacing(1.0),
@@ -230,6 +232,7 @@ The maximum password length for the selected encryption method is %1."),
 	widget2settings("OBSCURE_CHECKS_ENAB");
 	widget2settings("PASS_WARN_AGE");
 	widget2settings("PASSWD_ENCRYPTION");
+	widget2settings("PASSWD_REMEMBER_HISTORY");
     }
 
     return (symbol) ret;

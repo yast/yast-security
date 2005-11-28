@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Nov 23 13:28:20 CET 2005 - jsuchome@suse.cz
+
+- added option to store user password history (F300154)
+- 2.13.0
+
+-------------------------------------------------------------------
 Thu Jun  9 10:28:34 CEST 2005 - jsuchome@suse.cz
 
 - text fixes from proofreader
