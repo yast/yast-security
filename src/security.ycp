@@ -112,7 +112,7 @@ define boolean SecuritySetHandler (map options) {
 	if (to_remember == nil || to_remember < 0 || to_remember > 400)
 	{
 	    // error message
-	    Report::Error (_("Number of passwords to remember must be between 0 an 400."));
+	    Report::Error (_("The number of passwords to remember must be between 0 an 400."));
 	    return false;
 	}
 	Security::Settings["PASSWD_REMEMBER_HISTORY"] = options["remember"]:"0";
