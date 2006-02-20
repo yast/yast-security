@@ -1,7 +1,7 @@
 @HEADER-COMMENT@
 
 @HEADER@
-BuildRequires:	yast2-devel-packages yast2-pam
+BuildRequires:	doxygen pkg-config perl-XML-Writer update-desktop-files yast2-devtools yast2-pam yast2-testsuite
 Requires:	yast2 yast2-pam
 
 Provides:	y2c_sec yast2-config-security
