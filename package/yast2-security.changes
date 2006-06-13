@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jun 13 08:57:19 CEST 2006 - jsuchome@suse.cz
+
+- use DISPLAYMANAGER_SHUTDOWN instead of KDM_SHUTDOWN (#183844)
+- 2.13.4
+
+-------------------------------------------------------------------
 Mon Jun 12 11:36:34 CEST 2006 - mvidner@suse.cz
 
 - Moved cfg_security.scr from yast2-security.rpm to yast2.rpm

@@ -28,7 +28,7 @@ map<string,string> m = $[
     "FAIL_DELAY"		:	"l2",
     "GID_MAX"			:	"l3",
     "GID_MIN"			:	"l4",
-    "KDM_SHUTDOWN"		:	"r3",
+    "DISPLAYMANAGER_SHUTDOWN"	:	"r3",
     "LASTLOG_ENAB"		:	"l5",
     "OBSCURE_CHECKS_ENAB"	:	"l6",
     "PASS_MAX_DAYS"		:	"l7",

@@ -27,7 +27,7 @@ map scr_info = $[
 	    "CWD_IN_USER_PATH"		:	"r3",
 	],
 	"displaymanager" : $[
-	    "KDM_SHUTDOWN"		:	"r3",
+	    "DISPLAYMANAGER_SHUTDOWN"		:	"r3",
 	    "DISPLAYMANAGER_REMOTE_ACCESS" :	"r9",
 	],
 	"locate" : $[

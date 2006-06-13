@@ -30,7 +30,7 @@ global map<string,string> Settings = $[
     "FAIL_DELAY"			: "3",
     "GID_MAX"				: "60000",
     "GID_MIN"				: "1000",
-    "KDM_SHUTDOWN"			: "all",
+    "DISPLAYMANAGER_SHUTDOWN"		: "all",
     "LASTLOG_ENAB"			: "yes",
     "OBSCURE_CHECKS_ENAB"		: "yes",
     "PASSWD_ENCRYPTION"			: "blowfish",
@@ -82,7 +82,7 @@ map<string,list<string> > Locations = $[
     ],
     ".sysconfig.displaymanager" : [
 	"DISPLAYMANAGER_REMOTE_ACCESS",
-	"KDM_SHUTDOWN",
+	"DISPLAYMANAGER_SHUTDOWN",
     ],
     ".sysconfig.security" : [
 	"PERMISSION_SECURITY",

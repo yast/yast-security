@@ -41,7 +41,7 @@ define symbol BootDialog() ``{
 		    `VSpacing(1),
 		    settings2widget("CONSOLE_SHUTDOWN"),
 		    `VSpacing(1.0),
-		    settings2widget("KDM_SHUTDOWN"),
+		    settings2widget("DISPLAYMANAGER_SHUTDOWN"),
 		    `VSpacing(1)
 		),
 		`HSpacing(3)
@@ -74,7 +74,7 @@ define symbol BootDialog() ``{
 
     if(ret == `next) {
 	widget2settings("CONSOLE_SHUTDOWN");
-	widget2settings("KDM_SHUTDOWN");
+	widget2settings("DISPLAYMANAGER_SHUTDOWN");
     }
 
     return (symbol) ret;

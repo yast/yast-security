@@ -135,7 +135,7 @@ map WIDGETS = $[
 	"Value" : "101"
     ],
 
-    "KDM_SHUTDOWN" : $[
+    "DISPLAYMANAGER_SHUTDOWN" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
 	"Label" : _("&Shutdown Behavior of KDM:"),
@@ -147,7 +147,7 @@ map WIDGETS = $[
 	    /* ComboBox value */
 	    ["none",_("Nobody")],
 	    /* ComboBox value */
-	    ["local",_("Local Users")],
+//	    ["local",_("Local Users")],
 	    /* ComboBox value */
 	    ["auto",_("Automatic")],
 	],

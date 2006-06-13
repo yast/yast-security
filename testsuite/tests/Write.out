@@ -32,8 +32,8 @@ Read	.etc.login_defs.USERDEL_POSTCMD nil
 Write	.etc.login_defs.USERDEL_POSTCMD "l20" true
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS nil
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r4" true
-Read	.sysconfig.displaymanager.KDM_SHUTDOWN nil
-Write	.sysconfig.displaymanager.KDM_SHUTDOWN "r3" true
+Read	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN nil
+Write	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN "r3" true
 Read	.sysconfig.locate.RUN_UPDATEDB_AS nil
 Write	.sysconfig.locate.RUN_UPDATEDB_AS "r7" true
 Read	.sysconfig.security.PERMISSION_SECURITY nil

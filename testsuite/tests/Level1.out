@@ -32,8 +32,8 @@ Read	.etc.login_defs.USERDEL_POSTCMD nil
 Write	.etc.login_defs.USERDEL_POSTCMD "/usr/sbin/userdel-post.local" true
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS nil
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "no" true
-Read	.sysconfig.displaymanager.KDM_SHUTDOWN nil
-Write	.sysconfig.displaymanager.KDM_SHUTDOWN "all" true
+Read	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN nil
+Write	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN "all" true
 Read	.sysconfig.locate.RUN_UPDATEDB_AS nil
 Write	.sysconfig.locate.RUN_UPDATEDB_AS "root" true
 Read	.sysconfig.security.PERMISSION_SECURITY nil
