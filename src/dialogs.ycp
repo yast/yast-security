@@ -163,11 +163,11 @@ define symbol PassDialog() ``{
 	    settings2widget("PASSWD_REMEMBER_HISTORY"),
 	    VSeparator()
 	)),
-	`VSpacing(1.0),
+	`VSpacing(0.4),
 	settings2widget("PASSWD_ENCRYPTION"),
-	`VSpacing(1.0),
+	`VSpacing(0.4),
 	settings2widget("PASS_MIN_LEN"),
-	`VSpacing(1.0),
+	`VSpacing(0.4),
 	/* Frame label */
 	`Frame(_("Password Age"),`HBox(
 	    `HSpacing(0.4),

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 21 12:45:46 CEST 2006 - jsuchome@suse.cz
+
+- adapted layout to fit in 80x40 xterm (#200382)
+- 2.13.5
+
+-------------------------------------------------------------------
 Tue Jun 13 08:57:19 CEST 2006 - jsuchome@suse.cz
 
 - use DISPLAYMANAGER_SHUTDOWN instead of KDM_SHUTDOWN (#183844)
