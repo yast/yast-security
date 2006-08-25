@@ -12,6 +12,7 @@
 module "Security";
 textdomain "security";
 
+import "Pam";
 import "PamSettings";
 import "Progress";
 
@@ -271,7 +272,8 @@ global define boolean Read() {
     Progress::NextStage();
 
     /* pam stuff */
-    list<string> pam_check_settings = PamSettings::GetValues("pam_pwcheck", "password");
+    map pwcheck	= Pam::Query ("pwcheck");
+    list<string> pam_check_settings = pwcheck["password"]:[];
 
     /* read the password hash settings */
     string method = PamSettings::GetDefaultValue ("CRYPT_FILES");
@@ -418,33 +420,35 @@ global define boolean Write() {
     string encr = Settings["PASSWD_ENCRYPTION"]:"blowfish";
     PamSettings::SetDefaultValue ("CRYPT_FILES", encr);
 
-    /* use cracklib? */
-    PamSettings::RemoveValue ("pam_pwcheck", "password", "use_cracklib");
-    PamSettings::RemoveValue ("pam_pwcheck", "password", "cracklib");
+    // use cracklib?
     if(Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes") {
-	string crack = "cracklib";
+	string crack = "pwcheck-cracklib";
 	string pth = Settings["CRACKLIB_DICT_PATH"]:"/usr/lib/cracklib_dict";
 	if (pth != "/usr/lib/cracklib_dict")
-	    crack = crack + "=" + pth;
-	PamSettings::AddValue ("pam_pwcheck", "password", crack);
+	    crack = "pwcheck-cracklib-path=" + pth;
+	Pam::Add (crack);
     }
+    else
+	Pam::Remove ("pwcheck-cracklib");
 
-    /* save obscure checks when not defualt*/
-    PamSettings::RemoveValue ("pam_pwcheck", "password", "no_obscure_checks");
-    if(Settings["OBSCURE_CHECKS_ENAB"]:"yes" != "yes")
-	PamSettings::AddValue ("pam_pwcheck", "password", "no_obscure_checks");
+    // save obscure checks
+    Pam::Set ("pwcheck-no_obscure_checks",
+	Settings["OBSCURE_CHECKS_ENAB"]:"yes" != "yes");
 
-    /* save min pass length when not default */
-    PamSettings::RemoveValue ("pam_pwcheck", "password", "minlen");
-    if(Settings["PASS_MIN_LEN"]:"5" != "5")
-	PamSettings::AddValue ("pam_pwcheck", "password",
-	    sformat ("minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
+    // save min pass length
+    if (Settings["PASS_MIN_LEN"]:"5" != "5")
+	Pam::Add (sformat ("pwcheck-minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
+    else
+	Pam::Remove ("pwcheck-minlen=");
 
     // save "remember" value (number of old user passwords to not allow)
-    PamSettings::RemoveValue ("pam_pwcheck", "password", "remember");
     if (Settings["PASSWD_REMEMBER_HISTORY"]:"0" != "0")
-	PamSettings::AddValue ("pam_pwcheck", "password",
-	    sformat ("remember=%1", Settings["PASSWD_REMEMBER_HISTORY"]:"0"));
+    {
+	Pam::Add (sformat ("pwcheck-remember=%1",
+	    Settings["PASSWD_REMEMBER_HISTORY"]:"0"));
+    }
+    else
+	Pam::Remove ("pwcheck-remember=");
 
     PamSettings::Write (false);
 

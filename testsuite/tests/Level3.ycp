@@ -19,8 +19,14 @@ include "testsuite.ycp";
 import "Security";
 include "security/levels.ycp";
 
+map E	= $[
+    "target" : $[
+	"bash_output" : $[]
+    ]
+];
+
 Security::Settings = Levels["Level3"]:$[];
 Security::modified = true;
-TEST(``(Security::Write()),[],nil);
+TEST(``(Security::Write()),[$[],$[],E],nil);
 
 }

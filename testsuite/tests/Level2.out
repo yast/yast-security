@@ -55,35 +55,10 @@ Write	.etc.inittab nil true
 Execute	.target.bash "/sbin/telinit q" 0
 Read	.etc.default.passwd."CRYPT_FILES" nil
 Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
-Dir	.etc.security.section: []
-Read	.etc.security.v."pam_pwcheck"."password" nil
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "" true
-Dir	.etc.security.section: []
-Read	.etc.security.v."pam_pwcheck"."password" nil
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "" true
-Dir	.etc.security.section: []
-Read	.etc.security.v."pam_pwcheck"."password" nil
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "cracklib" true
-Dir	.etc.security.section: []
-Read	.etc.security.v."pam_pwcheck"."password" nil
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "" true
-Dir	.etc.security.section: []
-Read	.etc.security.v."pam_pwcheck"."password" nil
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "no_obscure_checks" true
-Dir	.etc.security.section: []
-Read	.etc.security.v."pam_pwcheck"."password" nil
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "" true
-Dir	.etc.security.section: []
-Read	.etc.security.v."pam_pwcheck"."password" nil
-Dir	.etc.security.section: []
-Write	.etc.security.v."pam_pwcheck"."password" "" true
-Write	.etc.security nil true
+Execute	.target.bash_output "pam-config -a --pwcheck-cracklib" $[]
+Execute	.target.bash_output "pam-config -a --pwcheck-no_obscure_checks" $[]
+Execute	.target.bash_output "pam-config -d --pwcheck-minlen=" $[]
+Execute	.target.bash_output "pam-config -d --pwcheck-remember=" $[]
 Write	.etc.default.passwd nil true
 Execute	.target.bash "echo 0 > /proc/sys/kernel/sysrq" 0
 Execute	.target.bash "/sbin/SuSEconfig --module xdm" 0

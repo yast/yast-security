@@ -2,7 +2,9 @@
 
 @HEADER@
 BuildRequires:	doxygen pkg-config perl-XML-Writer update-desktop-files yast2-devtools yast2-pam yast2-testsuite
-Requires:	yast2 yast2-pam
+
+# new Pam.ycp API
+Requires:	yast2 yast2-pam >= 2.14.0
 
 Provides:	y2c_sec yast2-config-security
 Obsoletes:	y2c_sec yast2-config-security

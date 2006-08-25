@@ -76,6 +76,12 @@ map scr_info = $[
     ]]]
 ];
 
-TEST(``(Security::Read()),[scr_info],nil);
+map E	= $[
+    "target" : $[
+	"bash_output" : $[]
+    ]
+];
+
+TEST(``(Security::Read()),[scr_info,$[],E],nil);
 
 }

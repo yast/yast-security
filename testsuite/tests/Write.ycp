@@ -49,9 +49,14 @@ map<string,string> m = $[
     "USERDEL_POSTCMD"		:	"l20",
 ];
 
+map E	= $[
+    "target" : $[
+	"bash_output" : $[]
+    ]
+];
 
 Security::Settings = m;
 Security::modified = true;
-TEST(``(Security::Write()),[],nil);
+TEST(``(Security::Write()),[$[],$[],E],nil);
 
 }

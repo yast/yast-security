@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Aug 25 13:44:55 CEST 2006 - jsuchome@suse.cz
+
+- adapted for pam-config usage (F300956)
+- API of PamSettings module is obsolete
+- 2.14.0
+
+-------------------------------------------------------------------
 Mon Aug 21 12:45:46 CEST 2006 - jsuchome@suse.cz
 
 - adapted layout to fit in 80x40 xterm (#200382)
