@@ -61,7 +61,7 @@ Execute	.target.bash_output "pam-config -d --pwcheck-minlen=" $[]
 Execute	.target.bash_output "pam-config -d --pwcheck-remember=" $[]
 Write	.etc.default.passwd nil true
 Execute	.target.bash "echo 0 > /proc/sys/kernel/sysrq" 0
-Execute	.target.bash "/sbin/SuSEconfig --module xdm" 0
+Read	.sysconfig.displaymanager.DISPLAYMANAGER ""
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kdm3" 0
 Execute	.target.bash "/sbin/SuSEconfig --module permissions" 0

@@ -54,9 +54,16 @@ map E	= $[
 	"bash_output" : $[]
     ]
 ];
+map R = $[
+    "sysconfig" : $[
+        "displaymanager" : $[
+	    "DISPLAYMANAGER"    :       "",
+	]
+    ]
+];
 
 Security::Settings = m;
 Security::modified = true;
-TEST(``(Security::Write()),[$[],$[],E],nil);
+TEST(``(Security::Write()),[R,$[],E],nil);
 
 }
