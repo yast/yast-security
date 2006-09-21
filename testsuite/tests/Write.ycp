@@ -52,6 +52,14 @@ map<string,string> m = $[
 
 Security::Settings = m;
 Security::modified = true;
-TEST(``(Security::Write()),[],nil);
+
+map R = $[
+    "sysconfig" : $[
+	"displaymanager" : $[
+	    "DISPLAYMANAGER"	:	"",
+	]
+    ]
+];
+TEST(``(Security::Write()),[R],nil);
 
 }

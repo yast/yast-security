@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 18 17:01:34 CEST 2006 - jsuchome@suse.cz
+
+- write correct SuSEconfig module for display manager (#205979)
+- 2.13.6
+
+-------------------------------------------------------------------
 Mon Aug 21 12:45:46 CEST 2006 - jsuchome@suse.cz
 
 - adapted layout to fit in 80x40 xterm (#200382)

@@ -340,9 +340,6 @@ global define boolean Write() {
     string caption = _("Saving Security Configuration");
     integer steps = 4;
 
-    integer sl = 0*1000;
-    sleep(sl);
-
     Progress::New( caption, " ", steps, [
 	    /* Progress stage 1/4 */
 	    _("Write security settings"),
@@ -368,7 +365,6 @@ global define boolean Write() {
     );
 
     /* Write security settings */
-    sleep(sl);
     if(Abort()) return false;
     Progress::NextStage();
 
@@ -393,7 +389,6 @@ global define boolean Write() {
     });
 
     /* Write inittab settings */
-    sleep(sl);
     if(Abort()) return false;
     Progress::NextStage();
 
@@ -410,7 +405,6 @@ global define boolean Write() {
     SCR::Execute (.target.bash, "/sbin/telinit q");
 
     /* Write pam settings */
-    sleep(sl);
     if(Abort()) return false;
     Progress::NextStage();
 
@@ -456,21 +450,20 @@ global define boolean Write() {
 	SCR::Execute(.target.bash, "echo 0 > /proc/sys/kernel/sysrq");
 
     /* Finish him: SuSEconfig */
-    sleep(sl);
     if(Abort()) return false;
     Progress::NextStage();
 
-    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module xdm");
+    string dm = (string)SCR::Read(.sysconfig.displaymanager.DISPLAYMANAGER);
+    string mod = (dm == "kdm" || dm == "") ? "kdm3" : dm;
+
     SCR::Execute(.target.bash, "/sbin/SuSEconfig --module kde3");
-    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module kdm3");
+    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module " + mod);
     SCR::Execute(.target.bash, "/sbin/SuSEconfig --module permissions");
     SCR::Execute(.target.bash, "/sbin/SuSEconfig --module profiles");
 
-    sleep(sl);
     if(Abort()) return false;
     Progress::NextStage();
 
-    sleep(sl);
     if(Abort()) return false;
     modified = false;
     return true;

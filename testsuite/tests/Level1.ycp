@@ -21,6 +21,15 @@ include "security/levels.ycp";
 
 Security::Settings = Levels["Level1"]:$[];
 Security::modified = true;
-TEST(``(Security::Write()),[],nil);
+
+map R = $[
+    "sysconfig" : $[
+	"displaymanager" : $[
+	    "DISPLAYMANAGER"	:	"",
+	]
+    ]
+];
+
+TEST(``(Security::Write()),[R],nil);
 
 }
