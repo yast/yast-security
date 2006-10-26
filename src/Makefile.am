@@ -2,6 +2,8 @@
 
 yncludedir = @yncludedir@/security
 
+rncdir =  $(schemadir)/autoyast/rnc
+
 YCPCFLAGS = -I .
 
 client_DATA =			\
@@ -23,7 +25,9 @@ module_DATA = Security.ycp
 
 desktop_DATA = security.desktop
 
-EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA)
+rnc_DATA = security.rnc
+
+EXTRA_DIST = $(client_DATA) $(ynclude_DATA) $(module_DATA) $(desktop_DATA) $(rnc_DATA)
 
 security:
 	ln -sf . security

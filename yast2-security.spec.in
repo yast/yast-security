@@ -34,4 +34,5 @@ Summary:	Security configuration
 @clientdir@/security*.ycp
 @moduledir@/Security.y*
 @scrconfdir@/*.scr
+@schemadir@/autoyast/rnc/security.rnc
 %doc @docdir@
