@@ -16,6 +16,7 @@ X-SuSE-YaST-Geometry=
 X-SuSE-YaST-SortKey=
 X-SuSE-YaST-AutoInstResource=security
 X-SuSE-YaST-AutoInstClonable=true
+X-SuSE-YaST-AutoInstSchema=security.rnc
 
 Icon=yast-security
 Exec=/sbin/yast2 security 
