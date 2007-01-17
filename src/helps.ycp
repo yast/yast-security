@@ -50,8 +50,8 @@ to ignore this event, for example, when the system serves as both
 workstation and server.</p>") +
 
     /* Boot dialog help 3/3 */
-    _("<p><b>Shutdown Behavior of KDM</b>:
-Set who is allowed to shut down the machine from KDM.</p>"),
+    _("<p><b>Shutdown Behavior of Login Manager</b>:
+Set who is allowed to shut down the machine from KDM or GDM.</p>"),
 
 
     /* Main dialog help 1/8 */
