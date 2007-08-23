@@ -1,4 +1,15 @@
 -------------------------------------------------------------------
+Thu Aug 23 15:16:42 CEST 2007 - jsuchome@suse.cz
+
+- check the output of tointeger before using it as integer (#295494) 
+- 2.15.1 
+
+-------------------------------------------------------------------
+Thu Jun 21 17:41:03 CEST 2007 - adrian@suse.de
+
+- fix changelog entry order
+
+-------------------------------------------------------------------
 Fri May 25 13:30:04 CEST 2007 - jsrain@suse.cz
 
 - removed outdated translations from .desktop-files (#271209)
@@ -649,11 +660,6 @@ Wed Jan 10 23:47:20 CET 2001 - msvec@suse.de
 - Translatable strings bugfix
 
 -------------------------------------------------------------------
-Thu Jan  2 05:31:21 CET 1997 - msvec@suse.de
-
-- bugfixes
-
--------------------------------------------------------------------
 Fri Jan  5 11:16:49 CET 2001 - kkaempf@suse.de
 
 - provide keyboard shortcuts for buttons
@@ -720,3 +726,8 @@ Wed Nov 29 13:59:15 CET 2000 - msvec@suse.cz
 Wed Oct 25 13:37:10 CEST 2000 - msvec@suse.cz
 
 - initial version
+-------------------------------------------------------------------
+Thu Jan  2 05:31:21 CET 1997 - msvec@suse.de
+
+- bugfixes
+
