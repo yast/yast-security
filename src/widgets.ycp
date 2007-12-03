@@ -138,7 +138,7 @@ map WIDGETS = $[
     "DISPLAYMANAGER_SHUTDOWN" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
-	"Label" : _("&Shutdown Behavior of Login Manager:"),
+	"Label" : _("&Shutdown Behaviour of Login Manager:"),
 	"Options" : [
 	    /* ComboBox value */
 	    ["root",_("Only root")],

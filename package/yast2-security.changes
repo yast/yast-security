@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Mon Dec  3 15:29:53 CET 2007 - jsuchome@suse.cz
+
+- merged texts from proofread 
+
+-------------------------------------------------------------------
 Thu Aug 23 15:16:42 CEST 2007 - jsuchome@suse.cz
 
 - check the output of tointeger before using it as integer (#295494) 
