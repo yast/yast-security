@@ -24,3 +24,4 @@ Exec=/sbin/yast2 security
 Name=Local Security
 GenericName=Configure local security settings
 X-KDE-SubstituteUID=true
+StartupNotify=true
