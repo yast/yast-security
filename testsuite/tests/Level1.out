@@ -35,15 +35,15 @@ Write	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "no" true
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN nil
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN "all" true
 Read	.sysconfig.locate.RUN_UPDATEDB_AS nil
-Write	.sysconfig.locate.RUN_UPDATEDB_AS "root" true
+Write	.sysconfig.locate.RUN_UPDATEDB_AS "nobody" true
 Read	.sysconfig.security.PERMISSION_SECURITY nil
 Write	.sysconfig.security.PERMISSION_SECURITY "easy local" true
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH nil
-Write	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "yes" true
+Write	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "no" true
 Read	.sysconfig.suseconfig.CWD_IN_USER_PATH nil
-Write	.sysconfig.suseconfig.CWD_IN_USER_PATH "yes" true
+Write	.sysconfig.suseconfig.CWD_IN_USER_PATH "no" true
 Read	.sysconfig.sysctl.ENABLE_SYSRQ nil
-Write	.sysconfig.sysctl.ENABLE_SYSRQ "no" true
+Write	.sysconfig.sysctl.ENABLE_SYSRQ "yes" true
 Write	.etc.login_defs nil true
 Write	.sysconfig.displaymanager nil true
 Write	.sysconfig.locate nil true
@@ -55,12 +55,12 @@ Write	.etc.inittab nil true
 Execute	.target.bash "/sbin/telinit q" 0
 Read	.etc.default.passwd."CRYPT_FILES" nil
 Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
-Execute	.target.bash_output "pam-config -d --pwcheck-cracklib" $[]
-Execute	.target.bash_output "pam-config -a --pwcheck-no_obscure_checks" $[]
+Execute	.target.bash_output "pam-config -a --pwcheck-cracklib" $[]
+Execute	.target.bash_output "pam-config -d --pwcheck-no_obscure_checks" $[]
 Execute	.target.bash_output "pam-config -d --pwcheck-minlen=" $[]
 Execute	.target.bash_output "pam-config -d --pwcheck-remember=" $[]
 Write	.etc.default.passwd nil true
-Execute	.target.bash "echo 0 > /proc/sys/kernel/sysrq" 0
+Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
 Read	.sysconfig.displaymanager.DISPLAYMANAGER ""
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kdm3" 0

@@ -1,4 +1,14 @@
 -------------------------------------------------------------------
+Wed Apr 30 13:07:33 CEST 2008 - jsuchome@suse.cz
+
+- new defaults in security levels (bnc#385159):
+    CWD_IN_ROOT_PATH, CWD_IN_USER_PATH always "no",
+    ENABLE_SYSRQ "yes" for Home Workstation
+    RUN_UPDATEDB_AS always "nobody"
+    OBSCURE_CHECKS_ENAB, PASSWD_USE_CRACKLIB always "yes"
+- 2.16.1
+
+-------------------------------------------------------------------
 Mon Apr 14 10:18:13 CEST 2008 - jsuchome@suse.cz
 
 - 2.16.0 

@@ -56,7 +56,7 @@ Execute	.target.bash "/sbin/telinit q" 0
 Read	.etc.default.passwd."CRYPT_FILES" nil
 Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
 Execute	.target.bash_output "pam-config -a --pwcheck-cracklib" $[]
-Execute	.target.bash_output "pam-config -a --pwcheck-no_obscure_checks" $[]
+Execute	.target.bash_output "pam-config -d --pwcheck-no_obscure_checks" $[]
 Execute	.target.bash_output "pam-config -d --pwcheck-minlen=" $[]
 Execute	.target.bash_output "pam-config -d --pwcheck-remember=" $[]
 Write	.etc.default.passwd nil true
