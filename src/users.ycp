@@ -22,7 +22,7 @@ include "security/routines.ycp";
  * Adduser dialog
  * @return dialog result
  */
-define symbol AdduserDialog() ``{
+define any AdduserDialog() ``{
 
     /* Adduser dialog caption */
     string caption = _("User Addition");
@@ -49,7 +49,10 @@ define symbol AdduserDialog() ``{
 
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
     Wizard::SetContentsButtons(caption, contents, help,
-	    Label::BackButton(), Label::NextButton());
+	    Label::BackButton(), Label::OKButton());
+
+    Wizard::HideBackButton();
+    Wizard::SetAbortButton( `abort, Label::CancelButton() );
 
     any ret = nil;
     while(true) {
@@ -65,7 +68,7 @@ define symbol AdduserDialog() ``{
 	    break;
 	}
 	/* next */
-	else if(ret == `next) {
+	else if(ret == `next || contains(tree_dialogs, ret)) {
 	    if(checkMinMax("UID_MIN","UID_MAX") != true) {
 		/* Popup text */
 		Popup::Error(_("The minimum user ID cannot be larger than the maximum."));
@@ -85,14 +88,14 @@ maximum."));
 	}
     }
 
-    if(ret == `next) {
+    if(ret == `next || contains(tree_dialogs, ret)) {
 	widget2settings("GID_MIN");
 	widget2settings("GID_MAX");
 	widget2settings("UID_MIN");
 	widget2settings("UID_MAX");
     }
 
-    return (symbol) ret;
+    return ret;
 }
 
 /* EOF */

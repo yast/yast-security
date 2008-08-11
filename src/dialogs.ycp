@@ -19,11 +19,13 @@ import "Wizard";
 include "security/helps.ycp";
 include "security/routines.ycp";
 
+list tree_dialogs = [ "main", "password", "boot", "login", "users", "misc" ];
+
 /**
  * Boot dialog
  * @return dialog result
  */
-define symbol BootDialog() ``{
+define any BootDialog() ``{
 
     /* Boot dialog caption */
     string caption = _("Boot Settings");
@@ -52,7 +54,10 @@ define symbol BootDialog() ``{
     )));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    Label::BackButton(), Label::NextButton());
+	    Label::BackButton(), Label::OKButton());
+
+    Wizard::HideBackButton();
+    Wizard::SetAbortButton( `abort, Label::CancelButton() );
 
     any ret = nil;
     while(true) {
@@ -63,7 +68,7 @@ define symbol BootDialog() ``{
 	    if(ReallyAbort()) break;
 	    else continue;
 	}
-	else if(ret == `back || ret == `next) {
+	else if(ret == `back || ret == `next || contains(tree_dialogs, ret)) {
 	    break;
 	}
 	else {
@@ -72,19 +77,19 @@ define symbol BootDialog() ``{
 	}
     }
 
-    if(ret == `next) {
+    if(ret == `next || contains(tree_dialogs, ret)) {
 	widget2settings("CONSOLE_SHUTDOWN");
 	widget2settings("DISPLAYMANAGER_SHUTDOWN");
     }
 
-    return (symbol) ret;
+    return ret;
 }
 
 /**
  * Misc dialog
  * @return dialog result
  */
-define symbol MiscDialog() ``{
+define any MiscDialog() ``{
 
     /* Misc dialog caption */
     string caption = _("Miscellaneous Settings");
@@ -107,7 +112,10 @@ define symbol MiscDialog() ``{
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    Label::BackButton(), Label::FinishButton());
+	    Label::BackButton(), Label::OKButton());
+
+    Wizard::HideBackButton();
+    Wizard::SetAbortButton( `abort, Label::CancelButton() );
 
     any ret = nil;
     while(true) {
@@ -121,7 +129,7 @@ define symbol MiscDialog() ``{
 	else if(ret == `back) {
 	    break;
 	}
-	else if(ret == `next) {
+	else if(ret == `next || contains(tree_dialogs, ret)) {
 	    /* check_* */
 	    break;
 	}
@@ -131,7 +139,7 @@ define symbol MiscDialog() ``{
 	}
     }
 
-    if(ret == `next) {
+    if(ret == `next || contains(tree_dialogs, ret)) {
 	widget2settings("PERMISSION_SECURITY");
 	widget2settings("CWD_IN_ROOT_PATH");
 	widget2settings("CWD_IN_USER_PATH");
@@ -139,14 +147,14 @@ define symbol MiscDialog() ``{
 	widget2settings("ENABLE_SYSRQ");
     }
 
-    return (symbol) ret;
+    return ret;
 }
 
 /**
  * Password dialog
  * @return dialog result
  */
-define symbol PassDialog() ``{
+define any PassDialog() ``{
 
     /* Password dialog caption */
     string caption = _("Password Settings");
@@ -183,7 +191,10 @@ define symbol PassDialog() ``{
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    Label::BackButton(), Label::NextButton());
+	    Label::BackButton(), Label::OKButton());
+
+    Wizard::HideBackButton();
+    Wizard::SetAbortButton( `abort, Label::CancelButton() );
 
     any ret = nil;
     while(true) {
@@ -197,7 +208,7 @@ define symbol PassDialog() ``{
 	else if(ret == `back) {
 	    break;
 	}
-	else if(ret == `next) {
+	else if(ret == `next || contains(tree_dialogs, ret)) {
 	    /* check_* */
 	    if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS") != true) {
 		/* Popup text */
@@ -224,7 +235,7 @@ The maximum password length for the selected encryption method is %1."),
 	}
     }
 
-    if(ret == `next) {
+    if(ret == `next || contains(tree_dialogs, ret)) {
 	widget2settings("PASS_MIN_DAYS");
 	widget2settings("PASS_MAX_DAYS");
 	widget2settings("PASS_MIN_LEN");
@@ -235,14 +246,14 @@ The maximum password length for the selected encryption method is %1."),
 	widget2settings("PASSWD_REMEMBER_HISTORY");
     }
 
-    return (symbol) ret;
+    return ret;
 }
 
 /**
  * Login dialog
  * @return dialog result
  */
-define symbol LoginDialog() ``{
+define any LoginDialog() ``{
 
     /* Login dialog caption */
     string caption = _("Login Settings");
@@ -266,7 +277,10 @@ define symbol LoginDialog() ``{
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
 
     Wizard::SetContentsButtons(caption, contents, help,
-	    Label::BackButton(), Label::NextButton());
+	    Label::BackButton(), Label::OKButton());
+
+    Wizard::HideBackButton();
+    Wizard::SetAbortButton( `abort, Label::CancelButton() );
 
     any ret = nil;
     while(true) {
@@ -280,7 +294,7 @@ define symbol LoginDialog() ``{
 	else if(ret == `back) {
 	    break;
 	}
-	else if(ret == `next) {
+	else if(ret == `next || contains(tree_dialogs, ret)) {
 	    /* check_* */
 	    break;
 	}
@@ -290,13 +304,13 @@ define symbol LoginDialog() ``{
 	}
    }
 
-    if(ret == `next) {
+    if(ret == `next || contains(tree_dialogs, ret)) {
 	widget2settings("LASTLOG_ENAB");
 	widget2settings("FAIL_DELAY");
 	widget2settings("DISPLAYMANAGER_REMOTE_ACCESS");
     }
 
-    return (symbol) ret;
+    return ret;
 }
 
 /* EOF */

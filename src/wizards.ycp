@@ -19,6 +19,66 @@ include "security/complex.ycp";
 include "security/dialogs.ycp";
 include "security/users.ycp";
 
+define any TreeDialog()
+{
+    Wizard::OpenTreeNextBackDialog();
+    list<map> tree = [];
+
+    // params: input tree, parent, label, id
+    tree = Wizard::AddTreeItem(tree, "", _("Predefined Security Configurations"), "main");
+    tree = Wizard::AddTreeItem(tree, "", _("Password Settings"), "password");
+    tree = Wizard::AddTreeItem(tree, "", _("Boot Settings"), "boot");
+    tree = Wizard::AddTreeItem(tree, "", _("Login Settings"), "login");
+    tree = Wizard::AddTreeItem(tree, "", _("User Addition"), "users");
+    tree = Wizard::AddTreeItem(tree, "", _("Miscellanous Settings"), "misc");
+
+    Wizard::CreateTree(tree, "Security");
+
+    any ret = MainDialog();
+
+    while(true)
+    {
+	if (ret == "main")
+	{
+	    ret = MainDialog();
+	}
+	if (ret == "password")
+	{
+	    ret = PassDialog();
+	}
+	else if (ret == "boot")
+	{
+	    ret = BootDialog();
+	}
+	else if (ret == "login")
+	{
+	    ret = LoginDialog();
+	}
+	else if (ret == "users")
+	{
+	    ret = AdduserDialog();
+	}
+	else if (ret == "misc")
+	{
+	    ret = MiscDialog();
+	}
+	else if (ret == `next || ret == `abort)
+	{
+	    break;
+	}
+	else
+	{
+	    y2error("Unknown return value %1, aborting...", ret);
+	    ret = `abort;
+	    break;
+	}
+    }
+
+    Wizard::CloseDialog();
+
+    return ret;
+}
+
 /**
  * Main workflow of the security configuration
  * @return any Returned value from WizardSequencer() call
@@ -76,7 +136,7 @@ define any SecuritySequence() ``{
 
     map aliases = $[
 	"read"	: [ ``( ReadDialog() ), true ],
-	"main"	:   ``( MainSequence() ),
+	"main"	:   ``( TreeDialog() ),
 	"write"	: [ ``( WriteDialog() ), true ]
     ];
 
@@ -122,7 +182,7 @@ define any SecurityAutoSequence() ``{
 	    Label::BackButton(), Label::NextButton());
 
     /* Run the main configuration workflow */
-    any ret = MainSequence();
+    any ret = TreeDialog();
 
     UI::CloseDialog();
     return ret;

@@ -75,10 +75,7 @@ to any type of network including the Internet.</p>") +
 any type of service.</p>") +
 
     /* Main dialog help 8/8 */
-    _("<p><b>Custom Settings</b>: Create your own configuration.</p>
-    <p><b>Details</b>: View and modify all configuration settings for the
-    current configuration.</P>
-"),
+    _("<p><b>Custom Settings</b>: Create your own configuration.</p>"),
 
 
     /* Login dialog help 1/4 */

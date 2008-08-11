@@ -18,6 +18,7 @@ import "Wizard";
 include "security/helps.ycp";
 include "security/levels.ycp";
 include "security/routines.ycp";
+include "security/dialogs.ycp";
 
 /**
  * Read settings dialog
@@ -48,7 +49,7 @@ define symbol WriteDialog() ``{
  * Main dialog
  * @return dialog result
  */
-define symbol MainDialog() ``{
+define any MainDialog() ``{
 
     /* Main dialog caption */
     string caption = _("Local Security Configuration");
@@ -88,21 +89,16 @@ define symbol MainDialog() ``{
 		    `HSpacing(0.8))
 		)
 	    ),
-	    `VSpacing(0.6),
-	    /* PushButton label */
-	    `HVCenter(`PushButton(`id(`details), _("&Details..."))),
 	    `VSpacing(0.6)
 	)
     );
 
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
     Wizard::SetContentsButtons(caption, contents, help,
-            Label::BackButton(), current == `custom ? Label::NextButton() : Label::FinishButton());
+            Label::BackButton(), Label::OKButton());
 
-    if(current == `custom)
-	UI::ChangeWidget(`id(`details), `Enabled, false);
-    else
-	UI::ChangeWidget(`id(`details), `Enabled, true);
+    Wizard::HideBackButton();
+    Wizard::SetAbortButton(`abort, Label::CancelButton());
 
     any ret = nil;
     while(true) {
@@ -117,27 +113,22 @@ define symbol MainDialog() ``{
 	else if(ret == `back) {
 	    break;
 	}
-	else if(ret == `next || ret == `details) {
+	else if(ret == `next) {
 	    /* check_* */
 	    break;
 	}
 	else if(ret == `custom) {
-	    if(cur != `custom) {
-		UI::ChangeWidget(`id(`details), `Enabled, false);
-		Wizard::RestoreNextButton();
-		Wizard::SetFocusToNextButton();
-	    }
 	    continue;
 	}
 	else if(is(ret, string)) {
+	    if (contains(tree_dialogs, ret))
+	    {
+		// switch to another dialog
+		break;
+	    }
 	    if(!haskey(Levels, (string) ret)) {
 		y2error("Unexpected return code (key missing): %1", ret);
 		continue;
-	    }
-	    if(cur == `custom) {
-		UI::ChangeWidget(`id(`details), `Enabled, true);
-		Wizard::SetNextButton(`next, Label::FinishButton() );
-		Wizard::SetFocusToNextButton();
 	    }
 	    continue;
 	}
@@ -147,7 +138,7 @@ define symbol MainDialog() ``{
 	}
     }
 
-    if(ret == `next || ret == `details) {
+    if(ret == `next || contains(tree_dialogs, ret)) {
 	any cur = UI::QueryWidget(`id(`rb), `CurrentButton);
 
 	y2debug("current=%1", current);
@@ -160,11 +151,10 @@ define symbol MainDialog() ``{
 		Security::modified = true;
 	    }
 	    if(ret == `next) ret = `finish;
-	    if(ret == `details) ret = `next;
 	}
     }
 
-    return (symbol) ret;
+    return ret;
 }
 
 /* EOF */
