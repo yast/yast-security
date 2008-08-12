@@ -25,6 +25,7 @@ define any TreeDialog()
     list<map> tree = [];
 
     // params: input tree, parent, label, id
+    tree = Wizard::AddTreeItem(tree, "", _("Security Overview"), "overview");
     tree = Wizard::AddTreeItem(tree, "", _("Predefined Security Configurations"), "main");
     tree = Wizard::AddTreeItem(tree, "", _("Password Settings"), "password");
     tree = Wizard::AddTreeItem(tree, "", _("Boot Settings"), "boot");
@@ -34,15 +35,25 @@ define any TreeDialog()
 
     Wizard::CreateTree(tree, "Security");
 
-    any ret = MainDialog();
+    any ret = OverviewDialog();
 
     while(true)
     {
+	// needed for ncurses UI
+	if (ret == `wizardTree)
+	{
+	    ret = Wizard::QueryTreeItem();
+	}
+
 	if (ret == "main")
 	{
 	    ret = MainDialog();
 	}
-	if (ret == "password")
+	else if (ret == "overview")
+	{
+	    ret = OverviewDialog();
+	}
+	else if (ret == "password")
 	{
 	    ret = PassDialog();
 	}

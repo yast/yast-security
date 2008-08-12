@@ -120,7 +120,7 @@ define any MainDialog() ``{
 	else if(ret == `custom) {
 	    continue;
 	}
-	else if(is(ret, string)) {
+	else if(is(ret, string) || ret == `wizardTree) {
 	    if (contains(tree_dialogs, ret))
 	    {
 		// switch to another dialog

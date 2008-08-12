@@ -19,7 +19,123 @@ import "Wizard";
 include "security/helps.ycp";
 include "security/routines.ycp";
 
-list tree_dialogs = [ "main", "password", "boot", "login", "users", "misc" ];
+list tree_dialogs = [ "main", "overview", "password", "boot", "login", "users", "misc", `wizardTree ];
+
+
+string SecurityStatus(string value)
+{
+    string ret = _("Configure");
+
+    if (value == "yes")
+    {
+	ret = _("Enabled");
+    }
+    else if (value == "no")
+    {
+	ret = _("Disabled");
+    }
+
+    return ret;
+}
+
+
+string OverviewText()
+{
+    // open a table
+    string ret = sformat("<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>
+<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>
+<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>
+</TR> <TR></TR>",
+    // table header
+    _("Security Setting"), _("Configured Status"), _("Security Status"));
+
+    list<map> security_mapping = [
+	$[
+	    "label" : _("Use magic SysRq keys"),
+	    "name" : "ENABLE_SYSRQ",
+	    "secure_value" : "no"
+	],
+	$[
+	    "label" : _("Use secure file permissions"),
+	    "name" : "PERMISSION_SECURITY",
+	    "secure_value" : "secure"
+	],
+	$[
+	    "label" : _("Remote access to the display manager"),
+	    "name" : "DISPLAYMANAGER_REMOTE_ACCESS",
+	    "secure_value" : "no"
+	],
+	$[
+	    "label" : _("Use current directory in root's path"),
+	    "name" : "CWD_IN_ROOT_PATH",
+	    "secure_value" : "no"
+	],
+	$[
+	    "label" : _("Use current directory in path of regular users"),
+	    "name" : "CWD_IN_USER_PATH",
+	    "secure_value" : "no"
+	],
+    /*    $[
+	    "label" : _(""),
+	    "name" : "",
+	    "secure_value" : ""
+	],*/
+    ];
+
+    foreach(map setting, security_mapping,
+	{
+	    string current_value = Security::Settings[setting["name"]:""]:"";
+
+	    // add one line for each security setting
+	    ret = ret + sformat("<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD ALIGN=center>%2</TD><TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD></TR>",
+		setting["label"]:"",
+		SecurityStatus(current_value),
+		(current_value == setting["secure_value"]:"") ?
+		    "<SUP><FONT COLOR=green SIZE=20>✔</FONT></SUP>" : "<FONT COLOR=red SIZE=20><SUP>✘</SUP></FONT>"
+	    );
+	}
+    );
+
+    // close the table
+    ret = ret + "</TABLE>";
+
+    return ret;
+}
+
+define any OverviewDialog()
+{
+    /* Boot dialog caption */
+    string caption = _("Security Settings");
+    string help = HELPS["overview"]:"";
+
+    term contents = `RichText(`id(`rtext), OverviewText());
+
+    Wizard::SetContentsButtons(caption, contents, help,
+	    Label::BackButton(), Label::OKButton());
+
+    Wizard::HideBackButton();
+    Wizard::SetAbortButton( `abort, Label::CancelButton() );
+
+    any ret = nil;
+    while(true) {
+	ret = UI::UserInput();
+
+	/* abort? */
+	if(ret == `abort || ret == `cancel) {
+	    if(ReallyAbort()) break;
+	    else continue;
+	}
+	else if(ret == `back || ret == `next || contains(tree_dialogs, ret)) {
+	    break;
+	}
+	else {
+	    y2error("Unexpected return code: %1", ret);
+	    continue;
+	}
+    }
+
+    return ret;
+}
 
 /**
  * Boot dialog
