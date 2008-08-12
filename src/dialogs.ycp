@@ -117,8 +117,8 @@ map link_config_mapping = $[
 
 define any OverviewDialog()
 {
-    /* Boot dialog caption */
-    string caption = _("Security Settings");
+    /* Overview dialog caption */
+    string caption = _("Security Overview");
     string help = HELPS["overview"]:"";
 
     term contents = `RichText(`id(`rtext), OverviewText());
@@ -128,6 +128,9 @@ define any OverviewDialog()
 
     Wizard::HideBackButton();
     Wizard::SetAbortButton( `abort, Label::CancelButton() );
+
+    // select the dialog in the tree navigation
+    Wizard::SelectTreeItem("overview");
 
     any ret = nil;
     while(true) {
@@ -155,6 +158,8 @@ define any OverviewDialog()
 	    {
 		y2milestone("New value for %1: %2", ret, new_value);
 		Security::Settings[(string)ret] = new_value;
+		// the config has been changed
+		Security::SetModified();
 
 		UI::ChangeWidget(`id(`rtext), `Value, OverviewText());
 	    }
@@ -217,6 +222,9 @@ define any BootDialog() ``{
     Wizard::HideBackButton();
     Wizard::SetAbortButton( `abort, Label::CancelButton() );
 
+    // select the dialog in the tree navigation
+    Wizard::SelectTreeItem("boot");
+
     any ret = nil;
     while(true) {
 	ret = UI::UserInput();
@@ -274,6 +282,9 @@ define any MiscDialog() ``{
 
     Wizard::HideBackButton();
     Wizard::SetAbortButton( `abort, Label::CancelButton() );
+
+    // select the dialog in the tree navigation
+    Wizard::SelectTreeItem("misc");
 
     any ret = nil;
     while(true) {
@@ -353,6 +364,9 @@ define any PassDialog() ``{
 
     Wizard::HideBackButton();
     Wizard::SetAbortButton( `abort, Label::CancelButton() );
+
+    // select the dialog in the tree navigation
+    Wizard::SelectTreeItem("password");
 
     any ret = nil;
     while(true) {
@@ -439,6 +453,9 @@ define any LoginDialog() ``{
 
     Wizard::HideBackButton();
     Wizard::SetAbortButton( `abort, Label::CancelButton() );
+
+    // select the dialog in the tree navigation
+    Wizard::SelectTreeItem("login");
 
     any ret = nil;
     while(true) {

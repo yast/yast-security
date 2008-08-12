@@ -228,6 +228,15 @@ current directory prefixed with a \"./\". Example: \"./configure\".</p>") +
 will have some control over the system even if it crashes (for example, during kernel
 debugging). For details, see /usr/src/linux/Documentation/sysrq.txt</p>"),
 
+
+    // help text: security overview dialog 1/
+    "overview" : _("<P><B>Security Overview</B><BR>This is overview of the most important security settings.</P>")
+    // help text: security overview dialog 1/
+    + _("<P>To change the current value click the link associated to the option.</P>")
+    // help text: security overview dialog 1/
+    // check mark = ✔
+    + _("<P>Check mark in the <B>Security Status</B> column means that the current value of the option is secure.</P>")
+
 ];
 
 /* EOF */

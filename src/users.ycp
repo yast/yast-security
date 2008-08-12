@@ -54,6 +54,9 @@ define any AdduserDialog() ``{
     Wizard::HideBackButton();
     Wizard::SetAbortButton( `abort, Label::CancelButton() );
 
+    // select the dialog in the tree navigation
+    Wizard::SelectTreeItem("users");
+
     any ret = nil;
     while(true) {
 	ret = UI::UserInput();
