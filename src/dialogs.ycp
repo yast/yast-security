@@ -22,9 +22,11 @@ include "security/routines.ycp";
 list tree_dialogs = [ "main", "overview", "password", "boot", "login", "users", "misc", `wizardTree ];
 
 
-string SecurityStatus(string value)
+string SecurityStatus(string option)
 {
     string ret = _("Configure");
+
+    string value = Security::Settings[option]:"";
 
     if (value == "yes")
     {
@@ -34,6 +36,8 @@ string SecurityStatus(string value)
     {
 	ret = _("Disabled");
     }
+
+    ret = sformat("<a href=\"%1\">%2</a>", option, ret);
 
     return ret;
 }
@@ -47,39 +51,35 @@ string OverviewText()
 <TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>
 </TR> <TR></TR>",
     // table header
-    _("Security Setting"), _("Configured Status"), _("Security Status"));
+    _("Security Setting"), _("Status"), _("Security Status"));
 
     list<map> security_mapping = [
 	$[
 	    "label" : _("Use magic SysRq keys"),
-	    "name" : "ENABLE_SYSRQ",
-	    "secure_value" : "no"
+	    "link" : SecurityStatus("ENABLE_SYSRQ"),
+	    "is_secure" : (Security::Settings["ENABLE_SYSRQ"]:"" == "no")
 	],
 	$[
 	    "label" : _("Use secure file permissions"),
-	    "name" : "PERMISSION_SECURITY",
-	    "secure_value" : "secure"
+	    "link" : SecurityStatus("PERMISSION_SECURITY"),
+	    "is_secure" : (Security::Settings["PERMISSION_SECURITY"]:"" == "secure"
+		|| Security::Settings["PERMISSION_SECURITY"]:"" == "paranoid")
 	],
 	$[
 	    "label" : _("Remote access to the display manager"),
-	    "name" : "DISPLAYMANAGER_REMOTE_ACCESS",
-	    "secure_value" : "no"
+	    "link" : SecurityStatus("DISPLAYMANAGER_REMOTE_ACCESS"),
+	    "is_secure" : (Security::Settings["DISPLAYMANAGER_REMOTE_ACCESS"]:"" == "no")
 	],
 	$[
 	    "label" : _("Use current directory in root's path"),
-	    "name" : "CWD_IN_ROOT_PATH",
-	    "secure_value" : "no"
+	    "link" : SecurityStatus("CWD_IN_ROOT_PATH"),
+	    "is_secure" : (Security::Settings["CWD_IN_ROOT_PATH"]:"" == "no")
 	],
 	$[
 	    "label" : _("Use current directory in path of regular users"),
-	    "name" : "CWD_IN_USER_PATH",
-	    "secure_value" : "no"
+	    "link" : SecurityStatus("CWD_IN_USER_PATH"),
+	    "is_secure" : (Security::Settings["CWD_IN_USER_PATH"]:"" == "no")
 	],
-    /*    $[
-	    "label" : _(""),
-	    "name" : "",
-	    "secure_value" : ""
-	],*/
     ];
 
     foreach(map setting, security_mapping,
@@ -89,8 +89,8 @@ string OverviewText()
 	    // add one line for each security setting
 	    ret = ret + sformat("<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD ALIGN=center>%2</TD><TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD></TR>",
 		setting["label"]:"",
-		SecurityStatus(current_value),
-		(current_value == setting["secure_value"]:"") ?
+		setting["link"]:"",
+		setting["is_secure"]:false ?
 		    "<SUP><FONT COLOR=green SIZE=20>✔</FONT></SUP>" : "<FONT COLOR=red SIZE=20><SUP>✘</SUP></FONT>"
 	    );
 	}
@@ -101,6 +101,19 @@ string OverviewText()
 
     return ret;
 }
+
+// mapping for "Enable" and "Disable" links
+// current value -> new value
+map link_value_mapping = $[
+    "yes" : "no",
+    "no"  : "yes"
+];
+
+// mapping for "Configure" links
+// config name -> dialog name
+map link_config_mapping = $[
+    "PERMISSION_SECURITY" : "misc"
+];
 
 define any OverviewDialog()
 {
@@ -127,6 +140,35 @@ define any OverviewDialog()
 	}
 	else if(ret == `back || ret == `next || contains(tree_dialogs, ret)) {
 	    break;
+	}
+	// user clicked a link in the richtext
+	else if (is(ret, string) && haskey(Security::Settings, ret))
+	{
+	    y2milestone("Clicked %1 link", ret);
+
+	    string current_value = Security::Settings[(string)ret]:"";
+
+	    string new_value = link_value_mapping[current_value]:current_value;
+
+	    // set the new value and refresh the overview
+	    if (haskey(link_value_mapping, current_value) && new_value != current_value)
+	    {
+		y2milestone("New value for %1: %2", ret, new_value);
+		Security::Settings[(string)ret] = new_value;
+
+		UI::ChangeWidget(`id(`rtext), `Value, OverviewText());
+	    }
+	    else if (haskey(link_config_mapping, ret))
+	    {
+		string new_dialog = link_config_mapping[ret]:"";
+
+		y2milestone("Switching to dialog %1", new_dialog);
+		return new_dialog;
+	    }
+	    else
+	    {
+		y2error("Unknown action for link %1", ret);
+	    }
 	}
 	else {
 	    y2error("Unexpected return code: %1", ret);
