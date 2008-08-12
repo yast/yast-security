@@ -1,8 +1,14 @@
 -------------------------------------------------------------------
+Tue Aug 12 12:12:58 CEST 2008 - lslezak@suse.cz
+
+- added security overview dialog (part of fate#303598)
+- 2.17.0
+
+-------------------------------------------------------------------
 Mon Aug 11 16:32:06 CEST 2008 - lslezak@suse.cz
 
 - display tree navigationon on the left side, display only one
-  dialog instead of the long workflow (fate#303598)
+  dialog instead of the long workflow (part of fate#303598)
 
 -------------------------------------------------------------------
 Fri May 16 16:40:22 CEST 2008 - jsrain@suse.cz
