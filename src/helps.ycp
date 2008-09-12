@@ -90,7 +90,7 @@ password guessing. Make the time small enough that users do not need to wait to
 retry if a password is mistyped. A sensible value is three seconds (<tt>3</tt>).</p>") +
 
     /* Login dialog help 3/4 */
-    _("<p><b>Record Successful Login Attempts:</b> Logging succesful login
+    _("<p><b>Record Successful Login Attempts:</b> Logging successful login
 attempts is useful.  It can help to warn you of unauthorized access to the
 system (for example, a user logging in from a different location than usual).
 </p>") +
@@ -234,7 +234,6 @@ debugging). For details, see /usr/src/linux/Documentation/sysrq.txt</p>"),
     // help text: security overview dialog 1/
     + _("<P>To change the current value click the link associated to the option.</P>")
     // help text: security overview dialog 1/
-    // check mark = ✔
     + _("<P>Check mark in the <B>Security Status</B> column means that the current value of the option is secure.</P>")
 
 ];
@@ -250,15 +249,15 @@ map<string,string> help_mapping = $[
 
     "DHCPD_RUN_AS" : _("<P>DHCP client daemon should run as the user <EM>dhcpd</EM> to minimize the possible threat if the service is found vulnerable to a weakness in its program code.</P><P>Please note that dhcpd must not run as <EM>root</EM> or with the <EM>CAP_SYS_CHROOT</EM> capability for the chroot execution confinement to be effective.</P>"),
 
-    "DISPLAYMANAGER_ROOT_LOGIN_REMOTE" : _("<P>Administrators should care to not log on as <EM>root</EM> into an X Window session to minimize the usage of the root privileges.</P><P>This option does not help against careless administrators, but shall prevent attackers to be able to log on as <EM>root</EM> through the displaymanager if they guess or otherwise acquire the password.</P>"),
+    "DISPLAYMANAGER_ROOT_LOGIN_REMOTE" : _("<P>Administrators should care to not log on as <EM>root</EM> into an X Window session to minimize the usage of the root privileges.</P><P>This option does not help against careless administrators, but shall prevent attackers to be able to log on as <EM>root</EM> through the display manager if they guess or otherwise acquire the password.</P>"),
 
     "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" : _("<P>X Window clients, e.g. programs that open a window on your display, connect to the X server that runs on the physical machine. Programs can also run on a different system and can display their content on the X server through network connections.</P><P>When enabled it makes the X server listen on a port 6000 plus the display number. Since the network traffic is transferred unencrypted and therefore subject to network sniffing, and since another port held open by a program - here the X server - opens attack options, the secure setting is to disable it.</P><P>To display X Window clients across a network, the use of secure shell (<EM>ssh</EM>) is recommended, which allows the X Window clients to connect to the X server through the encrypted ssh connection.</P>"),
 
     "SMTPD_LISTEN_REMOTE" : _("<P>The email delivery subsystem is always started. However, it does not expose itself to the outside of the system by default because it does not listen on the SMTP network port 25.</P><P>If you do not deliver emails to your system through the SMTP protocol then disable this option.</P>"),
 
-    "DISABLE_RESTART_ON_UPDATE" : _("<P>If a package containing a service that is currently running is being deinstalled, then the service is being stopped before the files of the package are being removed.</P><P>This makes sense in most cases, and it is safe to do, considering that many services neither need their binaries accessible in the filesystem, nor their configuration files. These services would just continue to run until the services are stopped, e.g. running daemons are killed.</P><P>This setting should only be changed if there is a specific reason to do so.</P>"),
+    "DISABLE_RESTART_ON_UPDATE" : _("<P>If a package containing a service that is currently running is being updated, then the service is restarted after the files of the package are installed.</P><P>This makes sense in most cases, and it is safe to do, considering that many services either need their binaries accessible in the filesystem or their configuration files. These services would just continue to run until the services are stopped, e.g. running daemons are killed.</P><P>This setting should only be changed if there is a specific reason to do so.</P>"),
 
-    "DISABLE_STOP_ON_REMOVAL" : _("<P>If a package containing a service that is currently running is being deinstalled, then the service is being stopped before the files of the package are being removed.</P><P>This makes sense in most cases, and it is safe to do, considering that many services neither need their binaries accessible in the filesystem, nor their configuration files. These services would just continue to run until the services are stopped, e.g. running daemons are killed.</P><P>This setting should only be changed if there is a specific reason to do so.</P>"),
+    "DISABLE_STOP_ON_REMOVAL" : _("<P>If a package containing a service that is currently running is being uninstalled, then the service is stopped before the files of the package are removed.</P><P>This makes sense in most cases, and it is safe to do, considering that many services either need their binaries accessible in the filesystem or their configuration files. These services would just continue to run until the services are stopped, e.g. running daemons are killed.</P><P>This setting should only be changed if there is a specific reason to do so.</P>"),
 
     "IP_TCP_SYNCOOKIES" : _("<P>A system can be overwhelmed with numerous connection attempts so that the system runs out of memory, leading to a Denial of Service (DoS) vulnerability.</P><P>The use of syncookies is a method that can help in such situations, but in configurations with a very large number of legitimate connection attempts from one source the <EM>Enabled</EM> setting can bring problems with denied TCP connections under high load.</P><P>Still, for most environments, the syncookies are the first line of defense against SYN flood DoS attacks, so the secure setting is <EM>Enabled</EM>.</P>"),
 
