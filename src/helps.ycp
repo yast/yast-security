@@ -239,5 +239,60 @@ debugging). For details, see /usr/src/linux/Documentation/sysrq.txt</p>"),
 
 ];
 
+map<string,string> help_mapping = $[
+    "DISPLAYMANAGER_REMOTE_ACCESS" : _("<P>A display manager provides for a graphical login screen and can be accessed across the network by an X server running on another system if so configured.</P><P>The windows that are being displayed would then transmit their data across the network. If that network is not fully trusted, then the network traffic can be eavesdropped by an attacker, gaining access not only to the graphical content of the display, but also to usernames and passwords that are being used.</P><P>If you don't need <EM>XDMCP</EM> for remote graphical logins then disable this option.</P>"),
+
+    "SYSTOHC" : _("<P>Upon startup, the system time is being set from the hardware clock of the computer. By consequence, setting the hardware clock before shutting down is necessary.</P><P>Consistent system time is essential for the ability of the system to create correct log messages.</P>"),
+
+    "SYSLOG_ON_NO_ERROR" : _("<P>Malfunctions in a system are usually determined by anomalies in its behaviour. Syslog messages about events that reoccur on a regular basis are important to find causes of problems, and the absence of a single record can tell more than the absence of all log record.</P><P>From this standpoint, syslog messages of system events are only useful if they are present.</P>"),
+
+    "DHCPD_RUN_CHROOTED" : _("<P>Chroot execution environments are used to constrain a process to only those files that it needs by placing them in a separate subdirectory and running the process with a changed root (chroot) set to that directory.</P>"),
+
+    "DHCPD_RUN_AS" : _("<P>DHCP client daemon should run as the user <EM>dhcpd</EM> to minimize the possible threat if the service is found vulnerable to a weakness in its program code.</P><P>Please note that dhcpd must not run as <EM>root</EM> or with the <EM>CAP_SYS_CHROOT</EM> capability for the chroot execution confinement to be effective.</P>"),
+
+    "DISPLAYMANAGER_ROOT_LOGIN_REMOTE" : _("<P>Administrators should care to not log on as <EM>root</EM> into an X Window session to minimize the usage of the root privileges.</P><P>This option does not help against careless administrators, but shall prevent attackers to be able to log on as <EM>root</EM> through the displaymanager if they guess or otherwise acquire the password.</P>"),
+
+    "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" : _("<P>X Window clients, e.g. programs that open a window on your display, connect to the X server that runs on the physical machine. Programs can also run on a different system and can display their content on the X server through network connections.</P><P>When enabled it makes the X server listen on a port 6000 plus the display number. Since the network traffic is transferred unencrypted and therefore subject to network sniffing, and since another port held open by a program - here the X server - opens attack options, the secure setting is to disable it.</P><P>To display X Window clients across a network, the use of secure shell (<EM>ssh</EM>) is recommended, which allows the X Window clients to connect to the X server through the encrypted ssh connection.</P>"),
+
+    "SMTPD_LISTEN_REMOTE" : _("<P>The email delivery subsystem is always started. However, it does not expose itself to the outside of the system by default because it does not listen on the SMTP network port 25.</P><P>If you do not deliver emails to your system through the SMTP protocol then disable this option.</P>"),
+
+    "DISABLE_RESTART_ON_UPDATE" : _("<P>If a package containing a service that is currently running is being deinstalled, then the service is being stopped before the files of the package are being removed.</P><P>This makes sense in most cases, and it is safe to do, considering that many services neither need their binaries accessible in the filesystem, nor their configuration files. These services would just continue to run until the services are stopped, e.g. running daemons are killed.</P><P>This setting should only be changed if there is a specific reason to do so.</P>"),
+
+    "DISABLE_STOP_ON_REMOVAL" : _("<P>If a package containing a service that is currently running is being deinstalled, then the service is being stopped before the files of the package are being removed.</P><P>This makes sense in most cases, and it is safe to do, considering that many services neither need their binaries accessible in the filesystem, nor their configuration files. These services would just continue to run until the services are stopped, e.g. running daemons are killed.</P><P>This setting should only be changed if there is a specific reason to do so.</P>"),
+
+    "IP_TCP_SYNCOOKIES" : _("<P>A system can be overwhelmed with numerous connection attempts so that the system runs out of memory, leading to a Denial of Service (DoS) vulnerability.</P><P>The use of syncookies is a method that can help in such situations, but in configurations with a very large number of legitimate connection attempts from one source the <EM>Enabled</EM> setting can bring problems with denied TCP connections under high load.</P><P>Still, for most environments, the syncookies are the first line of defense against SYN flood DoS attacks, so the secure setting is <EM>Enabled</EM>.</P>"),
+
+    "IP_FORWARD" : _("<P>IP forwarding means to pass on network packets that have been received, but that are not destined for one of the system's configured network interfaces, e.g. network interface addresses.</P><P>If a system forwards network traffic on ISO/OSI layer 3, it is called a router. If you do not need that routing functionality, then disable this option.</P>") + _("</P>This setting applies to <EM>IPV4</EM> only.</P>"),
+
+    "IPV6_FORWARD" : _("<P>IP forwarding means to pass on network packets that have been received, but that are not destined for one of the system's configured network interfaces, eg network interface addresses.</P><P>If a system forwards network traffic on ISO/OSI layer 3, it is called a router. If you do not need that routing functionality, then disable this option.</P>") + _("</P>This setting applies to <EM>IPV6</EM> only.</P>"),
+
+    "ENABLE_SYSRQ": _("<P>Magic SysRq Keys enable some control over the system even if it crashes (e.g. during kernel debugging) or if the system does not respond.</P>"),
+
+    "PERMISSION_SECURITY" : _("<P>There are predefined file permissions in /etc/permissions.* files. The most restrictive file permissions are defined 'secure' or 'paranoid' file.</P>"),
+
+    "CWD_IN_ROOT_PATH" : _("<P>By default the current working directory is not used when searching for executables.</P>") +
+    /* Reused from the help text (misc dialog) */
+    _("<p>Some systems set up a work-around by adding the dot (\".\") to the
+search path, enabling files in the current path to be found and executed.
+This is highly dangerous because you may accidentally launch unknown programs in
+the current directory instead of the usual systemwide files. As a result,
+executing <i>Trojan Horses</i>, which exploit this weakness and invade your system,
+is rather easy if you set this option.</p>") +
+
+    _("This setting applies for <EM>root</EM> user and system users."),
+
+    "CWD_IN_USER_PATH" : _("<P>By default the current working directory is not used when searching for executables.</P>") +
+    /* Reused from the help text (misc dialog) */
+    _("<p>Some systems set up a work-around by adding the dot (\".\") to the
+search path, enabling files in the current path to be found and executed.
+This is highly dangerous because you may accidentally launch unknown programs in
+the current directory instead of the usual systemwide files. As a result,
+executing <i>Trojan Horses</i>, which exploit this weakness and invade your system,
+is rather easy if you set this option.</p>") +
+    _("This setting applies for regular users."),
+
+];
+
+
 /* EOF */
 }
