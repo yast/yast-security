@@ -28,6 +28,9 @@ global map<string,string> Settings = $[
     "CWD_IN_USER_PATH"			: "yes",
     "DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
     "ENABLE_SYSRQ"			: "no",
+    "IP_TCP_SYNCOOKIES"			: "yes",
+    "IP_FORWARD"			: "no",
+    "IPV6_FORWARD"			: "no",
     "FAIL_DELAY"			: "3",
     "GID_MAX"				: "60000",
     "GID_MIN"				: "1000",
@@ -42,6 +45,8 @@ global map<string,string> Settings = $[
     "PASS_MIN_LEN"			: "5",
     "PASS_WARN_AGE"			: "7",
     "PERMISSION_SECURITY"		: "secure",
+    "DISABLE_RESTART_ON_UPDATE"		: "no",
+    "DISABLE_STOP_ON_REMOVAL"		: "no",
     "RUN_UPDATEDB_AS"			: "nobody",
     "UID_MAX"				: "60000",
     "UID_MIN"				: "500",
@@ -53,6 +58,11 @@ global map<string,string> Settings = $[
     "USERDEL_PRECMD"			: "/usr/sbin/userdel-pre.local",
     "USERDEL_POSTCMD"			: "/usr/sbin/userdel-post.local",
     "PASSWD_REMEMBER_HISTORY"		: "0",
+    "SYSTOHC"				: "yes",
+    "SYSLOG_ON_NO_ERROR"		: "yes",
+    "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"	: "no",
+    "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" : "no",
+    "SMTPD_LISTEN_REMOTE"		: "no",
 ];
 
 /**
@@ -83,16 +93,32 @@ map<string,list<string> > Locations = $[
     ],
     ".sysconfig.displaymanager" : [
 	"DISPLAYMANAGER_REMOTE_ACCESS",
+	"DISPLAYMANAGER_ROOT_LOGIN_REMOTE",
+	"DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN",
 	"DISPLAYMANAGER_SHUTDOWN",
     ],
     ".sysconfig.security" : [
 	"PERMISSION_SECURITY",
+	"DISABLE_RESTART_ON_UPDATE",
+	"DISABLE_STOP_ON_REMOVAL",
     ],
     ".sysconfig.locate" : [
 	"RUN_UPDATEDB_AS",
     ],
     ".sysconfig.sysctl" : [
 	"ENABLE_SYSRQ",
+	"IP_TCP_SYNCOOKIES",
+	"IP_FORWARD",
+	"IPV6_FORWARD",
+    ],
+    ".sysconfig.clock" : [
+	"SYSTOHC",
+    ],
+    ".sysconfig.cron" : [
+	"SYSLOG_ON_NO_ERROR",
+    ],
+    ".sysconfig.mail" : [
+	"SMTPD_LISTEN_REMOTE",
     ],
 ];
 

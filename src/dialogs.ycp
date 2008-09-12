@@ -49,6 +49,7 @@ string OverviewText()
     string ret = sformat("<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>
 <TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>
 <TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>
+<TD></TD>
 </TR> <TR></TR>",
     // table header
     _("Security Setting"), _("Status"), _("Security Status"));
@@ -68,7 +69,8 @@ string OverviewText()
 	$[
 	    "label" : _("Remote access to the display manager"),
 	    "link" : SecurityStatus("DISPLAYMANAGER_REMOTE_ACCESS"),
-	    "is_secure" : (Security::Settings["DISPLAYMANAGER_REMOTE_ACCESS"]:"" == "no")
+	    "is_secure" : (Security::Settings["DISPLAYMANAGER_REMOTE_ACCESS"]:"" == "no"),
+	    "help"	: _("<P>A display manager provides for a graphical login screen and can be accessed across the network by an Xserver running on another system if so configured. The windows that are being displayed would then transmit their data across the network. If that network is not fully trusted, then the network traffic can be eavesdropped by an attacker, gaining access not only to the graphical content of the display, but also to usernames and passwords that are being used. If you don't need XDMCP for remote graphical logins, then set this to \"no\".</P>")
 	],
 	$[
 	    "label" : _("Use current directory in root's path"),
@@ -79,6 +81,87 @@ string OverviewText()
 	    "label" : _("Use current directory in path of regular users"),
 	    "link" : SecurityStatus("CWD_IN_USER_PATH"),
 	    "is_secure" : (Security::Settings["CWD_IN_USER_PATH"]:"" == "no")
+	],
+	$[
+	    "label" : _("Write back system time to the hardware clock"),
+	    "link" : SecurityStatus("SYSTOHC"),
+	    "is_secure" : (Security::Settings["SYSTOHC"]:"" == "yes"),
+	    "help" : _("<P>Upon startup, the system time is being set from the hardware clock of the computer. By consequence, setting the hardware clock before shutting down is necessary. Consistent system time is essential for the ability of the system to create correct log messages.</P>")
+	],
+	$[
+	    "label" : _("Always generate syslog message for cron scripts"),
+	    "link" : SecurityStatus("SYSLOG_ON_NO_ERROR"),
+	    "activate" : "/etc/init.d/boot.clock start",
+	    "is_secure" : (Security::Settings["SYSLOG_ON_NO_ERROR"]:"" == "yes"),
+	    "help" : _("<P>Malfunctions in a system are usually determined by anomalies in its behaviour. Syslog messages about events that reoccur on a regular basis are important to find causes of problems, and the absence of a single record can tell more than the absence of all log record. From this standpoint, syslog messages of system events are only useful if they are present.</P>")
+	],
+	$[
+	    // FIXME
+	    "label" : _("DHCPD_RUN_CHROOTED"),
+	    "link" : SecurityStatus("DHCPD_RUN_CHROOTED"),
+	    "is_secure" : (Security::Settings["DHCPD_RUN_CHROOTED"]:"" == "yes"),
+	    "activate"	: "/etc/init.d/dhcpd restart",
+	    "help" : _("<P>Chroot execution environments are used to constrain a process to only those files that it needs by placing them in a separate subdirectory and running the process with a changed root (chroot) set to that directory.</P>")
+	],
+	$[
+	    // FIXME
+	    "label" : _("DHCPD_RUN_AS"),
+	    "link" : SecurityStatus("DHCPD_RUN_AS"),
+	    "is_secure" : (Security::Settings["DHCPD_RUN_AS"]:"" == "dhcp"),
+	    "help" : _("<P>DHCP client daemon should run as the user \"dhcpd\" to minimize the possible threat if the service is found vulnerable to a weakness in its program code. Please note that dhcpd must not run as root or with the CAP_SYS_CHROOT capability for the chroot execution confinement to be effective.</P>")
+	],
+	$[
+	    "label" : _("Disable root login in the display manager"),
+	    "link" : SecurityStatus("DISPLAYMANAGER_ROOT_LOGIN_REMOTE"),
+	    "is_secure" : (Security::Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]:"" == "no"),
+	    "help" : _("<P>Administrators should care to not log on as root into an Xwindows session to minimize the usage of the root privileges. This option does not help against careless administrators, but shall prevent attackers to be able to log on as root through the displaymanager if they guess or otherwise acquire the password.</P>")
+	],
+	$[
+	    "label" : _("Disable remote access to the X server"),
+	    "link" : SecurityStatus("DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"),
+	    "is_secure" : (Security::Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]:"" == "no"),
+	    "help" : _("<P>Xwindows clients, e.g. programs that open a window on your display, connect to the Xserver that runs on the physical machine. Programs can also run on a different system and can display their content on the Xserver through network connections. To enable this, this variable needs to be set to \"yes\", which makes the Xserver listen on a port 6000 plus the display number. Since the network traffic is transferred unencrypted and therefore subject to network sniffing, and since another port held open by a program - here the Xserver - opens attack options, the secure setting is \"no\". To display Xwindows clients across a network, the use of secure shell (ssh) is recommended, which allows the Xwindows client to connect to the Xserver through the encrypted ssh connection.</P>")
+	],
+	$[
+	    "label" : _("Remote access to the email delivery subsystem"),
+	    "link" : SecurityStatus("SMTPD_LISTEN_REMOTE"),
+	    "is_secure" : (Security::Settings["SMTPD_LISTEN_REMOTE"]:"" == "no"),
+	    "help" : _("<P>The email delivery subsystem is always started. However, it does not expose itself to the outside of the system by default because it does not listen on the SMTP network port 25. If you don't deliver emails to your system through the SMTP protocol, then set this to \"no\".</P>"),
+	    // FIXME
+	    "activate" : "SuSEconfig AND (/etc/init.d/sendmail OR /etc/init.d/postfix) restart"
+	],
+	$[
+	    "label" : _("Disable service restart on update"),
+	    "link" : SecurityStatus("DISABLE_RESTART_ON_UPDATE"),
+	    "is_secure" : (Security::Settings["DISABLE_RESTART_ON_UPDATE"]:"" == "no"),
+	    "help" : _("<P>Upon update of a package that contains a service that is currently running, the system will restart the service for the package changes to take effect. This may not be in line with site specific administrative rules, and it may not be practical either in your environment. However, it is safe to activate changes as soon as they are available, making \"no\" more secure.</P>"),
+	],
+	$[
+	    "label" : _("Disable service stop on removal"),
+	    "link" : SecurityStatus("DISABLE_STOP_ON_REMOVAL"),
+	    "is_secure" : (Security::Settings["DISABLE_STOP_ON_REMOVAL"]:"" == "no"),
+	    "help" : _("<P>If a package containing a service that is currently running is being deinstalled, then the service is being stopped before the files of the package are being removed. This makes sense in most cases, and it is safe to do, considering that many services neither need their binaries accessible in the filesystem, nor their configuration files. These services would just continue to run until the services are stopped, e.g. running daemons are killed. This setting should only be changed if there is a specific reason to do so.</P>"),
+	],
+	$[
+	    "label" : _("Enable TCP syncookies"),
+	    "link" : SecurityStatus("IP_TCP_SYNCOOKIES"),
+	    "is_secure" : (Security::Settings["IP_TCP_SYNCOOKIES"]:"" == "yes"),
+	    "help" : _("<P>A system can be overwhelmed with numerous connection attempts so that the system runs out of memory, leading to a Denial of Service (DoS) vulnerability. The use of syncookies is a method that can help in such situations, but in configurations with a very large number of legitimate connection attempts from one source the \"yes\" setting can bring problems with denied TCP connections under high load. Still, for most environments, the syncookies are the first line of defense against SYN flood DoS attacks, so the secure setting is \"yes\".</P>"),
+	    "activate": "/etc/init.d/boot.ipconfig start"
+	],
+	$[
+	    "label" : _("Disable IPv4 forwarding"),
+	    "link" : SecurityStatus("IP_FORWARD"),
+	    "is_secure" : (Security::Settings["IP_FORWARD"]:"" == "no"),
+	    "help" : _("<P>IP forwarding means to pass on network packets that have been received, but that are not destined for one of the system's configured network interfaces, eg network interface addresses. If a system forwards network traffic on ISO/OSI layer 3, it is called a router. If you do not need that routing functionality, then set this to \"no\", which is the secure setting.</P>") + _("</P>This setting applies to IPV4 only.</P>"),
+	    "activate": "/etc/init.d/boot.ipconfig start"
+	],
+	$[
+	    "label" : _("Disable IPv6 forwarding"),
+	    "link" : SecurityStatus("IPV6_FORWARD"),
+	    "is_secure" : (Security::Settings["IPV6_FORWARD"]:"" == "no"),
+	    "help" : _("<P>IP forwarding means to pass on network packets that have been received, but that are not destined for one of the system's configured network interfaces, eg network interface addresses. If a system forwards network traffic on ISO/OSI layer 3, it is called a router. If you do not need that routing functionality, then set this to \"no\", which is the secure setting.</P>") + _("</P>This setting applies to IPV6 only.</P>"),
+	    "activate": "/etc/init.d/boot.ipconfig start"
 	],
     ];
 
