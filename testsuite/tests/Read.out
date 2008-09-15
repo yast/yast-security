@@ -14,20 +14,40 @@ Read	.etc.login_defs.SYSTEM_GID_MIN "l17"
 Read	.etc.login_defs.USERADD_CMD "l18"
 Read	.etc.login_defs.USERDEL_PRECMD "l19"
 Read	.etc.login_defs.USERDEL_POSTCMD "l20"
+Read	.target.size "/etc/sysconfig/clock" 1
+Read	.sysconfig.clock.SYSTOHC "r12"
+Read	.target.size "/etc/sysconfig/cron" 1
+Read	.sysconfig.cron.SYSLOG_ON_NO_ERROR "r15"
 Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_REMOTE_ACCESS "r9"
+Read	.target.size "/etc/sysconfig/displaymanager" 1
+Read	.sysconfig.displaymanager.DISPLAYMANAGER_ROOT_LOGIN_REMOTE "r16"
+Read	.target.size "/etc/sysconfig/displaymanager" 1
+Read	.sysconfig.displaymanager.DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN "r17"
 Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN "r3"
 Read	.target.size "/etc/sysconfig/locate" 1
 Read	.sysconfig.locate.RUN_UPDATEDB_AS "r7"
+Read	.target.size "/etc/sysconfig/mail" 1
+Read	.sysconfig.mail.SMTPD_LISTEN_REMOTE "r18"
 Read	.target.size "/etc/sysconfig/security" 1
 Read	.sysconfig.security.PERMISSION_SECURITY "paranoid"
+Read	.target.size "/etc/sysconfig/security" 1
+Read	.sysconfig.security.DISABLE_RESTART_ON_UPDATE "r13"
+Read	.target.size "/etc/sysconfig/security" 1
+Read	.sysconfig.security.DISABLE_STOP_ON_REMOVAL "r14"
 Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
 Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_USER_PATH "r3"
 Read	.target.size "/etc/sysconfig/sysctl" 1
 Read	.sysconfig.sysctl.ENABLE_SYSRQ "r8"
+Read	.target.size "/etc/sysconfig/sysctl" 1
+Read	.sysconfig.sysctl.IP_TCP_SYNCOOKIES "r9"
+Read	.target.size "/etc/sysconfig/sysctl" 1
+Read	.sysconfig.sysctl.IP_FORWARD "r10"
+Read	.target.size "/etc/sysconfig/sysctl" 1
+Read	.sysconfig.sysctl.IPV6_FORWARD "r11"
 Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
 Execute	.target.bash_output "pam-config -q --pwcheck" $[]

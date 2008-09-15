@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Sep 15 16:13:46 CEST 2008 - lslezak@suse.cz
+
+- added new variables to the predefined security levels
+- fixed build: updated the testsuite - added new variables 
+- 2.17.2
+
+-------------------------------------------------------------------
 Mon Sep 15 14:08:16 CEST 2008 - lslezak@suse.cz
 
 - overview dialog - display a warning in the help popup when the

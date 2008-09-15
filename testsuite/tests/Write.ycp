@@ -47,6 +47,16 @@ map<string,string> m = $[
     "USERADD_CMD"		:	"l18",
     "USERDEL_PRECMD"		:	"l19",
     "USERDEL_POSTCMD"		:	"l20",
+    "DISABLE_RESTART_ON_UPDATE" :	"r13",
+    "DISABLE_STOP_ON_REMOVAL"	:	"r14",
+    "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"	: "r16",
+    "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"	: "r17",
+    "IP_TCP_SYNCOOKIES"		:	"r9",
+    "IP_FORWARD"		:	"r10",
+    "IPV6_FORWARD"		:	"r11",
+    "SYSTOHC"			:	"r12",
+    "SYSLOG_ON_NO_ERROR"	:	"r15",
+    "SMTPD_LISTEN_REMOTE"	:	"r18",
 ];
 
 map E	= $[
