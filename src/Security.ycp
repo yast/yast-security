@@ -18,6 +18,20 @@ import "Progress";
 
 include "security/levels.ycp";
 
+
+// sevices to check - these must be running
+list<string> mandatory_services = ["ntp", "syslog", "auditd", "random", "consolekit", "kbd", "sendmail", "postfix", "cron"];
+// sevices to check - these can be ignored (if they are running it's OK)
+list<string> ignored_services = [
+    "acpid", "dbus", "ealysyslog", "fbset", "framebufferset", "isdn", "microcode.ctl", "random",
+    "consolekit", "haldaemon", "network", "syslog", "auditd", "splash_early", "alsasound",
+    "irq_balancer", "kbd", "powersaved", "splash", "sshd", "earlyxdm", "hotkey-setup", "atd", "nscd",
+    "smpppd", "xend", "autofs", "libvirtd", "sendmail", "postfix", "xendomains", "cron", "ddclient"
+    "smartd", "stopblktrace", "ntp"
+];
+// All other services should be turned off
+
+
 /**
  * All security settings
  */

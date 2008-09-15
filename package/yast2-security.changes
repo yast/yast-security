@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 15 14:08:16 CEST 2008 - lslezak@suse.cz
+
+- overview dialog - display a warning in the help popup when the
+  option could not be read
+
+-------------------------------------------------------------------
 Fri Sep 12 14:01:30 CEST 2008 - lslezak@suse.cz
 
 - added more options in the security overview dialog, added "Help"

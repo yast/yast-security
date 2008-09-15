@@ -208,6 +208,12 @@ void DisplayHelpPopup(string help_id)
 {
     string help = help_mapping[help_id]:"";
 
+    // add the warning if the option is unknown
+    if (SecurityStatus(help_id) == _("Unknown"))
+    {
+	help = help + HELPS["unknown_status"]:"";
+    }
+
     if (help != nil && help != "")
     {
 	Popup::LongText(label_mapping[help_id]:_("Description"), `RichText(help), 70, 15);
