@@ -26,7 +26,7 @@ list<string> ignored_services = [
     "acpid", "dbus", "ealysyslog", "fbset", "framebufferset", "isdn", "microcode.ctl", "random",
     "consolekit", "haldaemon", "network", "syslog", "auditd", "splash_early", "alsasound",
     "irq_balancer", "kbd", "powersaved", "splash", "sshd", "earlyxdm", "hotkey-setup", "atd", "nscd",
-    "smpppd", "xend", "autofs", "libvirtd", "sendmail", "postfix", "xendomains", "cron", "ddclient"
+    "smpppd", "xend", "autofs", "libvirtd", "sendmail", "postfix", "xendomains", "cron", "ddclient",
     "smartd", "stopblktrace", "ntp"
 ];
 // All other services should be turned off
