@@ -308,6 +308,18 @@ define any OverviewDialog()
 	    else continue;
 	}
 	else if(ret == `back || ret == `next || contains(tree_dialogs, ret)) {
+	    // the current item has been selected, do not change to the same dialog
+	    if (ret == "overview")
+	    {
+		// preselect the item if it has been unselected
+		if (Wizard::QueryTreeItem() != "overview")
+		{
+		    Wizard::SelectTreeItem("overview");
+		}
+
+		continue;
+	    }
+
 	    break;
 	}
 	// user clicked a link in the richtext
@@ -428,6 +440,18 @@ define any BootDialog() ``{
 	    else continue;
 	}
 	else if(ret == `back || ret == `next || contains(tree_dialogs, ret)) {
+	    // the current item has been selected, do not change to the same dialog
+	    if (ret == "boot")
+	    {
+		// preselect the item if it has been unselected
+		if (Wizard::QueryTreeItem() != "boot")
+		{
+		    Wizard::SelectTreeItem("boot");
+		}
+
+		continue;
+	    }
+
 	    break;
 	}
 	else {
@@ -492,6 +516,18 @@ define any MiscDialog() ``{
 	    break;
 	}
 	else if(ret == `next || contains(tree_dialogs, ret)) {
+	    // the current item has been selected, do not change to the same dialog
+	    if (ret == "misc")
+	    {
+		// preselect the item if it has been unselected
+		if (Wizard::QueryTreeItem() != "misc")
+		{
+		    Wizard::SelectTreeItem("misc");
+		}
+
+		continue;
+	    }
+
 	    /* check_* */
 	    break;
 	}
@@ -574,6 +610,18 @@ define any PassDialog() ``{
 	    break;
 	}
 	else if(ret == `next || contains(tree_dialogs, ret)) {
+	    // the current item has been selected, do not change to the same dialog
+	    if (ret == "password")
+	    {
+		// preselect the item if it has been unselected
+		if (Wizard::QueryTreeItem() != "password")
+		{
+		    Wizard::SelectTreeItem("password");
+		}
+
+		continue;
+	    }
+
 	    /* check_* */
 	    if(checkMinMax("PASS_MIN_DAYS","PASS_MAX_DAYS") != true) {
 		/* Popup text */
@@ -663,6 +711,18 @@ define any LoginDialog() ``{
 	    break;
 	}
 	else if(ret == `next || contains(tree_dialogs, ret)) {
+	    // the current item has been selected, do not change to the same dialog
+	    if (ret == "login")
+	    {
+		// preselect the item if it has been unselected
+		if (Wizard::QueryTreeItem() != "login")
+		{
+		    Wizard::SelectTreeItem("login");
+		}
+
+		continue;
+	    }
+
 	    /* check_* */
 	    break;
 	}

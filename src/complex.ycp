@@ -123,6 +123,18 @@ define any MainDialog() ``{
 	else if(is(ret, string) || ret == `wizardTree) {
 	    if (contains(tree_dialogs, ret))
 	    {
+		// the current item has been selected, do not change to the same dialog
+		if (ret == "main")
+		{
+		    // preselect the item if it has been unselected
+		    if (Wizard::QueryTreeItem() != "main")
+		    {
+			Wizard::SelectTreeItem("main");
+		    }
+
+		    continue;
+		}
+
 		// switch to another dialog
 		break;
 	    }

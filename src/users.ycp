@@ -72,6 +72,18 @@ define any AdduserDialog() ``{
 	}
 	/* next */
 	else if(ret == `next || contains(tree_dialogs, ret)) {
+	    // the current item has been selected, do not change to the same dialog
+	    if (ret == "users")
+	    {
+		// preselect the item if it has been unselected
+		if (Wizard::QueryTreeItem() != "users")
+		{
+		    Wizard::SelectTreeItem("users");
+		}
+
+		continue;
+	    }
+
 	    if(checkMinMax("UID_MIN","UID_MAX") != true) {
 		/* Popup text */
 		Popup::Error(_("The minimum user ID cannot be larger than the maximum."));
