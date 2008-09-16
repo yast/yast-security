@@ -120,18 +120,15 @@ string OverviewText()
 	],
 	$[
 	    "id" : "SYSLOG_ON_NO_ERROR",
-	    "activate" : "/etc/init.d/boot.clock start",
 	    "is_secure" : (Security::Settings["SYSLOG_ON_NO_ERROR"]:"" == "yes"),
 	],
 	$[
 	    "id" : "DHCPD_RUN_CHROOTED",
 	    "is_secure" : (Security::Settings["DHCPD_RUN_CHROOTED"]:"" == "yes"),
-	    "activate"	: "/etc/init.d/dhcpd restart",
 	],
 	$[
 	    "id" : "DHCPD_RUN_AS",
 	    "is_secure" : (Security::Settings["DHCPD_RUN_AS"]:"" == "dhcp"),
-	    "activate"	: "/etc/init.d/dhcpd restart",
 	],
 	$[
 	    "id" : "DISPLAYMANAGER_ROOT_LOGIN_REMOTE",
@@ -144,8 +141,6 @@ string OverviewText()
 	$[
 	    "id" : "SMTPD_LISTEN_REMOTE",
 	    "is_secure" : (Security::Settings["SMTPD_LISTEN_REMOTE"]:"" == "no"),
-	    // FIXME
-	    "activate" : "SuSEconfig AND (/etc/init.d/sendmail OR /etc/init.d/postfix) restart"
 	],
 	$[
 	    "id" : "DISABLE_RESTART_ON_UPDATE",
@@ -158,17 +153,14 @@ string OverviewText()
 	$[
 	    "id" : "IP_TCP_SYNCOOKIES",
 	    "is_secure" : (Security::Settings["IP_TCP_SYNCOOKIES"]:"" == "yes"),
-	    "activate": "/etc/init.d/boot.ipconfig start"
 	],
 	$[
 	    "id" : "IP_FORWARD",
 	    "is_secure" : (Security::Settings["IP_FORWARD"]:"" == "no"),
-	    "activate": "/etc/init.d/boot.ipconfig start"
 	],
 	$[
 	    "id" : "IPV6_FORWARD",
 	    "is_secure" : (Security::Settings["IPV6_FORWARD"]:"" == "no"),
-	    "activate": "/etc/init.d/boot.ipconfig start"
 	],
 	$[
 	    "id" : "RUNLEVEL3_MANDATORY_SERVICES",

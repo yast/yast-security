@@ -156,6 +156,9 @@ global map<string,string> Settings = $[
     "RUNLEVEL5_EXTRA_SERVICES"		: "no",
 ];
 
+// the original settings
+map<string,string> Settings_bak = Settings;
+
 /**
  * Security settings locations
  */
@@ -458,8 +461,23 @@ global define boolean Read() {
     sleep(sl);
     if(Abort()) return false;
     modified = false;
+
+    // remeber the read values
+    Settings_bak = Settings;
     return true;
 }
+
+
+map<string,string> activation_mapping = $[
+    "SYSLOG_ON_NO_ERROR" : "/etc/init.d/boot.clock start",
+    "DHCPD_RUN_CHROOTED" : "/etc/init.d/dhcpd restart",
+    "DHCPD_RUN_AS" : "/etc/init.d/dhcpd restart",
+    // restart sendmail or postfix - whatever is installed
+    "SMTPD_LISTEN_REMOTE" : "(test -e /etc/init.d/sendmail && /sbin/SuSEconfig --module sendmail && /etc/init.d/sendmail restart) || (test -e /etc/init.d/postfix && /sbin/SuSEconfig --module postfix && /etc/init.d/postfix restart)",
+    "IP_TCP_SYNCOOKIES" : "/etc/init.d/boot.ipconfig start",
+    "IP_FORWARD" : "/etc/init.d/boot.ipconfig start",
+    "IPV6_FORWARD" : "/etc/init.d/boot.ipconfig start",
+];
 
 /**
  * Write all security settings
@@ -599,6 +617,22 @@ global define boolean Write() {
 
     if(Abort()) return false;
     Progress::NextStage();
+
+    // activate the changes
+    foreach(string setting, string action, activation_mapping,
+	{
+	    if (Settings[setting]:"" != Settings_bak[setting]:"")
+	    {
+		y2milestone("Option %1 has been modified, activating the change: %2", setting, action);
+
+		integer res = (integer)SCR::Execute(.target.bash, action);
+		if (res != 0)
+		{
+		    y2error("Activation failed");
+		}
+	    }
+	}
+    );
 
     if(Abort()) return false;
     modified = false;
