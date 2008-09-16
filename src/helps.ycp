@@ -294,6 +294,10 @@ executing <i>Trojan Horses</i>, which exploit this weakness and invade your syst
 is rather easy if you set this option.</p>") +
     _("This setting applies for regular users."),
 
+    "RUNLEVEL3_MANDATORY_SERVICES" : _("<P>Basic system services must be enabled to provide system consistency and to run the security related services.</P>"),
+    "RUNLEVEL5_MANDATORY_SERVICES" : _("<P>Basic system services must be enabled to provide system consistency and to run the security related services.</P>"),
+    "RUNLEVEL3_EXTRA_SERVICES" : _("<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"),
+    "RUNLEVEL5_EXTRA_SERVICES" : _("<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"),
 ];
 
 

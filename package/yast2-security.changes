@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 16 17:33:18 CEST 2008 - lslezak@suse.cz
+
+- check enabled services in runlevel 3 and 5 (bnc#425864)
+
+-------------------------------------------------------------------
 Mon Sep 15 16:13:46 CEST 2008 - lslezak@suse.cz
 
 - added new variables to the predefined security levels

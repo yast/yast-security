@@ -21,6 +21,9 @@ include "security/routines.ycp";
 
 list tree_dialogs = [ "main", "overview", "password", "boot", "login", "users", "misc", `wizardTree ];
 
+const list<string> configurable_options = [ "PERMISSION_SECURITY", "RUNLEVEL3_MANDATORY_SERVICES",
+    "RUNLEVEL5_MANDATORY_SERVICES", "RUNLEVEL3_EXTRA_SERVICES", "RUNLEVEL5_EXTRA_SERVICES" ];
+
 
 string SecurityStatus(string option)
 {
@@ -31,7 +34,7 @@ string SecurityStatus(string option)
     y2milestone("Option: %1, value: %2", option, value);
 
     // handle the special cases at first
-    if (option == "PERMISSION_SECURITY")
+    if (contains(configurable_options, option))
     {
 	ret = _("Configure");
     }
@@ -71,9 +74,10 @@ map<string,string> label_mapping = $[
     "IP_TCP_SYNCOOKIES" : _("Enable TCP syncookies"),
     "IP_FORWARD" : _("Disable IPv4 forwarding"),
     "IPV6_FORWARD" : _("Disable IPv6 forwarding"),
-    // TODO FIXME: implement the missing part
-    "SYSTEM_SERVICES_ARE_ENABLED" : _("Enable basic system services"),
-    "UNNECESSARY_SERVICES_ARE_ENABLED" : _("Enable extra system services")
+    "RUNLEVEL3_MANDATORY_SERVICES" : _("Enable basic system services in runlevel 3 (multiuser with network)"),
+    "RUNLEVEL5_MANDATORY_SERVICES" : _("Enable basic system services in runlevel 5 (multiuser with network and graphical login)"),
+    "RUNLEVEL3_EXTRA_SERVICES" : _("Enable extra services in runlevel 3"),
+    "RUNLEVEL5_EXTRA_SERVICES" : _("Enable extra services in runlevel 5"),
 ];
 
 
@@ -166,6 +170,22 @@ string OverviewText()
 	    "is_secure" : (Security::Settings["IPV6_FORWARD"]:"" == "no"),
 	    "activate": "/etc/init.d/boot.ipconfig start"
 	],
+	$[
+	    "id" : "RUNLEVEL3_MANDATORY_SERVICES",
+	    "is_secure" : (Security::Settings["RUNLEVEL3_MANDATORY_SERVICES"]:"" == "secure"),
+	],
+	$[
+	    "id" : "RUNLEVEL5_MANDATORY_SERVICES",
+	    "is_secure" : (Security::Settings["RUNLEVEL5_MANDATORY_SERVICES"]:"" == "secure"),
+	],
+	$[
+	    "id" : "RUNLEVEL3_EXTRA_SERVICES",
+	    "is_secure" : (Security::Settings["RUNLEVEL3_EXTRA_SERVICES"]:"" == "secure"),
+	],
+	$[
+	    "id" : "RUNLEVEL5_EXTRA_SERVICES",
+	    "is_secure" : (Security::Settings["RUNLEVEL5_EXTRA_SERVICES"]:"" == "secure"),
+	],
     ];
 
     foreach(map setting, security_mapping,
@@ -180,7 +200,7 @@ string OverviewText()
 		SecurityStatus(id),
 		setting["is_secure"]:false ?
 		    "<SUP><FONT COLOR=green SIZE=20>✔</FONT></SUP>" : "<FONT COLOR=red SIZE=20><SUP>✘</SUP></FONT>",
-		haskey(help_mapping, id) ? sformat("<A HREF=\"help_%1\">%2</A>", id, _("Help")) : ""
+		haskey(help_mapping, id) ? sformat("<A HREF=\"help_%1\">%2</A>&nbsp;&nbsp;", id, _("Help")) : ""
 	    );
 	}
     );
@@ -204,6 +224,22 @@ map link_config_mapping = $[
     "PERMISSION_SECURITY" : "misc"
 ];
 
+// mapping for "Configure" links
+// config name -> yast client
+map link_client_mapping = $[
+    "RUNLEVEL3_MANDATORY_SERVICES" : "runlevel",
+    "RUNLEVEL5_MANDATORY_SERVICES" : "runlevel",
+    "RUNLEVEL3_EXTRA_SERVICES" : "runlevel",
+    "RUNLEVEL5_EXTRA_SERVICES" : "runlevel",
+];
+
+map link_update_mapping = $[
+    "RUNLEVEL3_MANDATORY_SERVICES" : ``(Security::ReadServiceSettings()),
+    "RUNLEVEL5_MANDATORY_SERVICES" : ``(Security::ReadServiceSettings()),
+    "RUNLEVEL3_EXTRA_SERVICES" : ``(Security::ReadServiceSettings()),
+    "RUNLEVEL5_EXTRA_SERVICES" : ``(Security::ReadServiceSettings()),
+];
+
 void DisplayHelpPopup(string help_id)
 {
     string help = help_mapping[help_id]:"";
@@ -212,6 +248,39 @@ void DisplayHelpPopup(string help_id)
     if (SecurityStatus(help_id) == _("Unknown"))
     {
 	help = help + HELPS["unknown_status"]:"";
+    }
+
+    // add extra help to service related options
+    if (help_id == "RUNLEVEL3_MANDATORY_SERVICES" || help_id == "RUNLEVEL5_MANDATORY_SERVICES")
+    {
+	list<string> missing = (help_id == "RUNLEVEL3_MANDATORY_SERVICES") ? Security::MissingMandatoryServices(3)
+	    : Security::MissingMandatoryServices(5);
+
+	if (missing != nil && missing != [])
+	{
+	    string srvs = mergestring(missing, "<BR>");
+	    help = help + sformat(_("<P>These basic system services are not running:<BR><B>%1</B></P>"), srvs);
+	}
+	else
+	{
+	    help = help + _("<P>All basic services are enabled.</P>");
+	}
+    }
+    else if (help_id == "RUNLEVEL3_EXTRA_SERVICES" || help_id == "RUNLEVEL5_EXTRA_SERVICES")
+    {
+	list<string> extra = (help_id == "RUNLEVEL3_EXTRA_SERVICES") ? Security::ExtraServices(3)
+	    : Security::ExtraServices(5);
+
+	if (extra != nil && extra != [])
+	{
+	    string srvs = mergestring(extra, "<BR>");
+	    help = help + sformat(_("<P>These extra services are running:<BR><B>%1</B></P>"), srvs);
+	    help = help + _("<P>Check the list of services and disable all unused services.</P>");
+	}
+	else
+	{
+	    help = help + _("<P>Only basic system services are enabled.</P>");
+	}
     }
 
     if (help != nil && help != "")
@@ -274,6 +343,26 @@ define any OverviewDialog()
 
 		y2milestone("Switching to dialog %1", new_dialog);
 		return new_dialog;
+	    }
+	    else if (haskey(link_client_mapping, ret))
+	    {
+		string client = link_client_mapping[ret]:"";
+
+		if (client != "")
+		{
+		    y2milestone("Calling Yast client %1", client);
+		    any client_ret = WFM::CallFunction(client, []);
+		    y2milestone("Client returned %1", client_ret);
+
+		    if (client_ret == `next || client_ret == `ok || client_ret == `finish)
+		    {
+			// update the current value
+			if (haskey(link_update_mapping, ret))
+			{
+			    eval(link_update_mapping[ret]:nil);
+			}
+		    }
+		}
 	    }
 	    else
 	    {

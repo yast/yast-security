@@ -15,14 +15,15 @@ textdomain "security";
 import "Pam";
 import "PamSettings";
 import "Progress";
+import "Service";
 
 include "security/levels.ycp";
 
 
-// sevices to check - these must be running
-list<string> mandatory_services = ["ntp", "syslog", "auditd", "random", "consolekit", "kbd", "sendmail", "postfix", "cron"];
+// services to check - these must be running
+global const list<string> mandatory_services = ["ntp", "syslog", "auditd", "random", "consolekit", "kbd", "cron"];
 // sevices to check - these can be ignored (if they are running it's OK)
-list<string> ignored_services = [
+global const list<string> optional_services = [
     "acpid", "dbus", "ealysyslog", "fbset", "framebufferset", "isdn", "microcode.ctl", "random",
     "consolekit", "haldaemon", "network", "syslog", "auditd", "splash_early", "alsasound",
     "irq_balancer", "kbd", "powersaved", "splash", "sshd", "earlyxdm", "hotkey-setup", "atd", "nscd",
@@ -31,6 +32,78 @@ list<string> ignored_services = [
 ];
 // All other services should be turned off
 
+
+// return list of missing mandatory services in a runlevel
+global list<string> MissingMandatoryServices(integer runlevel)
+{
+    y2milestone("Checking mandatory services in runlevel %1", runlevel);
+
+    list<string> ret = [];
+    list<string> enabled_services = Service::EnabledServices(runlevel);
+
+    if (enabled_services == nil)
+    {
+	return nil;
+    }
+
+    foreach(string service, mandatory_services,
+	{
+	    boolean enabled = contains(enabled_services, service);
+	    y2milestone("Mandatory service %1 is enabled: %2", service, enabled);
+
+	    if (!enabled)
+	    {
+		ret = add(ret, service);
+	    }
+	}
+    );
+
+    // handle postfix and sendmail specifically - only one of them can be installed in a system
+    boolean mailer_enabled = contains(enabled_services, "postfix")
+	|| contains(enabled_services, "sendmail");
+
+    y2milestone("A mailer daemon is enabled: %1", mailer_enabled);
+
+    if (!mailer_enabled)
+    {
+	ret = add(ret, "postfix");
+	ret = add(ret, "sendmail");
+    }
+
+    y2milestone("Missing mandatory services in runlevel %1: %2", runlevel, ret);
+
+    return ret;
+}
+
+global list<string> ExtraServices(integer runlevel)
+{
+    y2milestone("Searching for extra services in runlevel %1", runlevel);
+
+    list<string> extra_services = [];
+    list<string> enabled_services = Service::EnabledServices(runlevel);
+
+    if (enabled_services == nil)
+    {
+	return nil;
+    }
+
+    foreach(string service, enabled_services,
+	{
+	    // the extra service is not mandatory and it's not optional
+	    boolean extra = !contains(mandatory_services, service) && !contains(optional_services, service);
+
+	    if (extra)
+	    {
+		y2milestone("Found extra service: %1", service);
+		extra_services = add(extra_services, service);
+	    }
+	}
+    );
+
+    y2milestone("All extra services: %1", extra_services);
+
+    return extra_services;
+}
 
 /**
  * All security settings
@@ -77,6 +150,10 @@ global map<string,string> Settings = $[
     "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"	: "no",
     "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" : "no",
     "SMTPD_LISTEN_REMOTE"		: "no",
+    "RUNLEVEL3_MANDATORY_SERVICES"	: "yes",
+    "RUNLEVEL5_MANDATORY_SERVICES"	: "yes",
+    "RUNLEVEL3_EXTRA_SERVICES"		: "no",
+    "RUNLEVEL5_EXTRA_SERVICES"		: "no",
 ];
 
 /**
@@ -141,6 +218,10 @@ map<string,list<string> > Locations = $[
  * - CONSOLE_SHUTDOWN (/etc/inittab)
  * - PASSWD_ENCRYPTION (/etc/pam?)
  * - GROUP_ENCRYPTION FIXME cannot be set
+ * - RUNLEVEL3_MANDATORY_SERVICES
+ * - RUNLEVEL5_MANDATORY_SERVICES
+ * - RUNLEVEL3_EXTRA_SERVICES
+ * - RUNLEVEL5_EXTRA_SERVICES
  */
 
 /**
@@ -219,6 +300,14 @@ global define void SetModified () {
 global define boolean Modified() {
     y2debug("modified=%1", modified);
     return modified;
+}
+
+global void ReadServiceSettings()
+{
+    Settings["RUNLEVEL3_MANDATORY_SERVICES"] = MissingMandatoryServices(3) == [] ? "secure" : "insecure";
+    Settings["RUNLEVEL5_MANDATORY_SERVICES"] = MissingMandatoryServices(5) == [] ? "secure" : "insecure";
+    Settings["RUNLEVEL3_EXTRA_SERVICES"] = ExtraServices(3) == [] ? "secure" : "insecure";
+    Settings["RUNLEVEL5_EXTRA_SERVICES"] = ExtraServices(5) == [] ? "secure" : "insecure";
 }
 
 /**
@@ -310,6 +399,9 @@ global define boolean Read() {
     sleep(sl);
     if(Abort()) return false;
     Progress::NextStage();
+
+    /* Read runlevel setting */
+    ReadServiceSettings();
 
     /* pam stuff */
     map pwcheck	= Pam::Query ("pwcheck");
