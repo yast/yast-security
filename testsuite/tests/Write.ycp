@@ -57,6 +57,8 @@ map<string,string> m = $[
     "SYSTOHC"			:	"r12",
     "SYSLOG_ON_NO_ERROR"	:	"r15",
     "SMTPD_LISTEN_REMOTE"	:	"r18",
+    "DHCPD_RUN_CHROOTED"	:	"r19",
+    "DHCPD_RUN_AS"		:	"r20",
 ];
 
 map E	= $[
