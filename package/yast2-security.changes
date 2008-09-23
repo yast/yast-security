@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Tue Sep 23 13:16:26 CEST 2008 - jsrain@suse.cz
+
+- fixed incorrect tags in helps (bnc #429063)
+
+-------------------------------------------------------------------
 Tue Sep 16 17:33:18 CEST 2008 - lslezak@suse.cz
 
 - check enabled services in runlevel 3 and 5, activate changes
