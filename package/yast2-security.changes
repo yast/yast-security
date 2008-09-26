@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Sep 26 10:02:20 CEST 2008 - lslezak@suse.cz
+
+- fixed the Security Overview dialog in ncurses mode (use a table
+  widget instead of richtext) (bnc#429965)
+- 2.17.4
+
+-------------------------------------------------------------------
 Tue Sep 23 13:16:26 CEST 2008 - jsrain@suse.cz
 
 - fixed incorrect tags in helps (bnc #429063)

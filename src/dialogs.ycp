@@ -25,7 +25,7 @@ const list<string> configurable_options = [ "PERMISSION_SECURITY", "RUNLEVEL3_MA
     "RUNLEVEL5_MANDATORY_SERVICES", "RUNLEVEL3_EXTRA_SERVICES", "RUNLEVEL5_EXTRA_SERVICES" ];
 
 
-string SecurityStatus(string option)
+string SecurityStatus(string option, boolean plaintext)
 {
     string ret = "";
 
@@ -51,6 +51,11 @@ string SecurityStatus(string option)
 	return _("Unknown");
     }
 
+    if (plaintext)
+    {
+	return ret;
+    }
+
     ret = sformat("<A HREF=\"%1\">%2</A>", option, ret);
 
     return ret;
@@ -74,23 +79,29 @@ map<string,string> label_mapping = $[
     "IP_TCP_SYNCOOKIES" : _("Enable TCP syncookies"),
     "IP_FORWARD" : _("Disable IPv4 forwarding"),
     "IPV6_FORWARD" : _("Disable IPv6 forwarding"),
-    "RUNLEVEL3_MANDATORY_SERVICES" : _("Enable basic system services in runlevel 3 (multiuser with network)"),
-    "RUNLEVEL5_MANDATORY_SERVICES" : _("Enable basic system services in runlevel 5 (multiuser with network and graphical login)"),
+    "RUNLEVEL3_MANDATORY_SERVICES" : _("Enable basic system services in runlevel 3\n (multiuser with network)"),
+    "RUNLEVEL5_MANDATORY_SERVICES" : _("Enable basic system services in runlevel 5\n (multiuser with network and graphical login)"),
     "RUNLEVEL3_EXTRA_SERVICES" : _("Enable extra services in runlevel 3"),
     "RUNLEVEL5_EXTRA_SERVICES" : _("Enable extra services in runlevel 5"),
 ];
 
 
-string OverviewText()
+any OverviewText(symbol type)
 {
-    // open a table
-    string ret = sformat("<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>
+    string ret = "";
+    list<term> ret_table = [];
+
+    if (type == `richtext)
+    {
+	// open a table
+	ret = sformat("<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>
 <TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>
 <TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>
 <TD></TD>
 </TR> <TR></TR>",
-    // table header
-    _("Security Setting"), _("Status"), _("Security Status"));
+	// table header
+	_("Security Setting"), _("Status"), _("Security Status"));
+    }
 
     list<map> security_mapping = [
 	$[
@@ -186,21 +197,42 @@ string OverviewText()
 
 	    string id = setting["id"]:"";
 
-	    // add one line for each security setting
-	    ret = ret + sformat("<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD ALIGN=center>%2</TD><TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD><TD>%4</TD></TR>",
-		label_mapping[id]:"",
-		SecurityStatus(id),
-		setting["is_secure"]:false ?
-		    "<SUP><FONT COLOR=green SIZE=20>✔</FONT></SUP>" : "<FONT COLOR=red SIZE=20><SUP>✘</SUP></FONT>",
-		haskey(help_mapping, id) ? sformat("<A HREF=\"help_%1\">%2</A>&nbsp;&nbsp;", id, _("Help")) : ""
-	    );
+	    if (type == `table)
+	    {
+		ret_table = add(ret_table, `item(`id(id), label_mapping[id]:"", SecurityStatus(id, true),
+		    setting["is_secure"]:false ? "✔" : "✘"));
+	    }
+	    else if (type == `richtext)
+	    {
+		// add one line for each security setting
+		ret = ret + sformat("<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD ALIGN=center>%2</TD><TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD><TD>%4</TD></TR>",
+		    label_mapping[id]:"",
+		    SecurityStatus(id, false),
+		    setting["is_secure"]:false ?
+			"<SUP><FONT COLOR=green SIZE=20>✔</FONT></SUP>" : "<FONT COLOR=red SIZE=20><SUP>✘</SUP></FONT>",
+		    haskey(help_mapping, id) ? sformat("<A HREF=\"help_%1\">%2</A>&nbsp;&nbsp;<BR>", id, _("Help")) : ""
+		);
+	    }
 	}
     );
 
-    // close the table
-    ret = ret + "</TABLE>";
+    if (type == `table)
+    {
+	y2milestone("Overview table: %1", ret_table);
+	return ret_table;
+    }
+    else if (type == `richtext)
+    {
+	// close the table
+	ret = ret + "</TABLE>";
 
-    return ret;
+	y2milestone("Overview text: %1", ret);
+	return ret;
+    }
+
+    y2error("Unknown type: %1", type);
+
+    return nil;;
 }
 
 // mapping for "Enable" and "Disable" links
@@ -237,7 +269,7 @@ void DisplayHelpPopup(string help_id)
     string help = help_mapping[help_id]:"";
 
     // add the warning if the option is unknown
-    if (SecurityStatus(help_id) == _("Unknown"))
+    if (SecurityStatus(help_id, true) == _("Unknown"))
     {
 	help = help + HELPS["unknown_status"]:"";
     }
@@ -286,8 +318,31 @@ define any OverviewDialog()
     /* Overview dialog caption */
     string caption = _("Security Overview");
     string help = HELPS["overview"]:"";
+    boolean textmode = UI::GetDisplayInfo()["TextMode"]:false;
 
-    term contents = `RichText(`id(`rtext), OverviewText());
+    // table header
+    term tabheader = `header(_("Security Setting"), _("Status"), `Center(_("Security Status")));
+
+    term contents = textmode ?
+	`Table(`id(`table), tabheader, OverviewText(`table)) :
+	`RichText(`id(`rtext), OverviewText(`richtext));
+
+    if (textmode)
+    {
+	// add a button box below the table
+	contents = `VBox(
+	    contents,
+	    `VSpacing(1),
+	    `HBox(
+		// push button label
+		`PushButton(`id(`change), _("Change &Status")),
+		`HSpacing(2),
+		// push button label
+		`PushButton(`id(`descr), _("&Description"))
+	    ),
+	    `VSpacing(1)
+	);
+    }
 
     Wizard::SetContentsButtons(caption, contents, help,
 	    Label::BackButton(), Label::OKButton());
@@ -323,8 +378,14 @@ define any OverviewDialog()
 	    break;
 	}
 	// user clicked a link in the richtext
-	else if (is(ret, string) && haskey(Security::Settings, ret))
+	else if ((is(ret, string) && haskey(Security::Settings, ret)) || ret == `change)
 	{
+	    if (ret == `change)
+	    {
+		// query the table in textmode
+		ret = (string)UI::QueryWidget(`id(`table), `CurrentItem);
+	    }
+
 	    y2milestone("Clicked %1 link", ret);
 
 	    string current_value = Security::Settings[(string)ret]:"";
@@ -339,7 +400,16 @@ define any OverviewDialog()
 		// the config has been changed
 		Security::SetModified();
 
-		UI::ChangeWidget(`id(`rtext), `Value, OverviewText());
+		if (textmode)
+		{
+		    UI::ChangeWidget(`id(`table), `Items, OverviewText(`table));
+		    UI::ChangeWidget(`id(`table), `CurrentItem, ret);
+		    UI::SetFocus(`id(`table));
+		}
+		else
+		{
+		    UI::ChangeWidget(`id(`rtext), `Value, OverviewText(`richtext));
+		}
 	    }
 	    else if (haskey(link_config_mapping, ret))
 	    {
@@ -365,6 +435,18 @@ define any OverviewDialog()
 			{
 			    eval(link_update_mapping[ret]:nil);
 			}
+
+			// update the overview
+			if (textmode)
+			{
+			    UI::ChangeWidget(`id(`table), `Items, OverviewText(`table));
+			    UI::ChangeWidget(`id(`table), `CurrentItem, ret);
+			    UI::SetFocus(`id(`table));
+			}
+			else
+			{
+			    UI::ChangeWidget(`id(`rtext), `Value, OverviewText(`richtext));
+			}
 		    }
 		}
 	    }
@@ -373,12 +455,20 @@ define any OverviewDialog()
 		y2error("Unknown action for link %1", ret);
 	    }
 	}
-	else if (is(ret, string) && regexpmatch((string)ret, "^help_"))
+	else if ((is(ret, string) && regexpmatch((string)ret, "^help_")) || ret == `descr)
 	{
-	    string help_id = regexpsub((string)ret, "^help_(.*)", "\\1");
+	    string help_id = textmode ?
+		(string)UI::QueryWidget(`id(`table), `CurrentItem)
+		: regexpsub((string)ret, "^help_(.*)", "\\1");
 	    y2milestone("Clicked help link: %1", help_id);
 
 	    DisplayHelpPopup(help_id);
+
+	    // switch the focus back to the table in textmode UI
+	    if (textmode)
+	    {
+		UI::SetFocus(`id(`table));
+	    }
 	}
 	else {
 	    y2error("Unexpected return code: %1", ret);
