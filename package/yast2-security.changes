@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Oct  8 08:16:33 CEST 2008 - jsuchome@suse.cz
+
+- unified help texts for IP forwarding (bnc#432186)
+- use Table instead of RichText also for GTK UI (bnc#432446)
+- 2.17.5
+
+-------------------------------------------------------------------
 Fri Sep 26 10:02:20 CEST 2008 - lslezak@suse.cz
 
 - fixed the Security Overview dialog in ncurses mode (use a table

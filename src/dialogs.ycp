@@ -318,16 +318,15 @@ define any OverviewDialog()
     /* Overview dialog caption */
     string caption = _("Security Overview");
     string help = HELPS["overview"]:"";
-    boolean textmode = UI::GetDisplayInfo()["TextMode"]:false;
+    boolean no_richtext = !(UI::GetDisplayInfo()["RichTextSupportsTable"]:true);
 
     // table header
     term tabheader = `header(_("Security Setting"), _("Status"), `Center(_("Security Status")));
-
-    term contents = textmode ?
+    term contents = no_richtext ?
 	`Table(`id(`table), tabheader, OverviewText(`table)) :
 	`RichText(`id(`rtext), OverviewText(`richtext));
 
-    if (textmode)
+    if (no_richtext)
     {
 	// add a button box below the table
 	contents = `VBox(
@@ -400,7 +399,7 @@ define any OverviewDialog()
 		// the config has been changed
 		Security::SetModified();
 
-		if (textmode)
+		if (no_richtext)
 		{
 		    UI::ChangeWidget(`id(`table), `Items, OverviewText(`table));
 		    UI::ChangeWidget(`id(`table), `CurrentItem, ret);
@@ -437,7 +436,7 @@ define any OverviewDialog()
 			}
 
 			// update the overview
-			if (textmode)
+			if (no_richtext)
 			{
 			    UI::ChangeWidget(`id(`table), `Items, OverviewText(`table));
 			    UI::ChangeWidget(`id(`table), `CurrentItem, ret);
@@ -457,15 +456,15 @@ define any OverviewDialog()
 	}
 	else if ((is(ret, string) && regexpmatch((string)ret, "^help_")) || ret == `descr)
 	{
-	    string help_id = textmode ?
+	    string help_id = no_richtext ?
 		(string)UI::QueryWidget(`id(`table), `CurrentItem)
 		: regexpsub((string)ret, "^help_(.*)", "\\1");
 	    y2milestone("Clicked help link: %1", help_id);
 
 	    DisplayHelpPopup(help_id);
 
-	    // switch the focus back to the table in textmode UI
-	    if (textmode)
+	    // switch the focus back to the table in text/GTK UI
+	    if (no_richtext)
 	    {
 		UI::SetFocus(`id(`table));
 	    }
