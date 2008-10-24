@@ -24,6 +24,7 @@ list tree_dialogs = [ "main", "overview", "password", "boot", "login", "users", 
 const list<string> configurable_options = [ "PERMISSION_SECURITY", "RUNLEVEL3_MANDATORY_SERVICES",
     "RUNLEVEL5_MANDATORY_SERVICES", "RUNLEVEL3_EXTRA_SERVICES", "RUNLEVEL5_EXTRA_SERVICES" ];
 
+const string UNKNOWN_STATUS = _("Unknown");
 
 string SecurityStatus(string option, boolean plaintext)
 {
@@ -48,7 +49,7 @@ string SecurityStatus(string option, boolean plaintext)
     }
     else
     {
-	return _("Unknown");
+	return UNKNOWN_STATUS;
     }
 
     if (plaintext)
@@ -269,7 +270,7 @@ void DisplayHelpPopup(string help_id)
     string help = help_mapping[help_id]:"";
 
     // add the warning if the option is unknown
-    if (SecurityStatus(help_id, true) == _("Unknown"))
+    if (SecurityStatus(help_id, true) == UNKNOWN_STATUS)
     {
 	help = help + HELPS["unknown_status"]:"";
     }
@@ -323,7 +324,7 @@ define any OverviewDialog()
     // table header
     term tabheader = `header(_("Security Setting"), _("Status"), `Center(_("Security Status")));
     term contents = no_richtext ?
-	`Table(`id(`table), tabheader, OverviewText(`table)) :
+	`Table(`id(`table), `opt(`immediate), tabheader, OverviewText(`table)) :
 	`RichText(`id(`rtext), OverviewText(`richtext));
 
     if (no_richtext)
@@ -468,6 +469,14 @@ define any OverviewDialog()
 	    {
 		UI::SetFocus(`id(`table));
 	    }
+	}
+	else if (ret == `table)
+	{
+	    // disable "Change Status" button if the action is unknown
+	    string current_item = (string)UI::QueryWidget(`id(`table), `CurrentItem);
+	    string status = SecurityStatus(current_item, true /* plaintext */);
+
+	    UI::ChangeWidget(`id(`change), `Enabled, status != UNKNOWN_STATUS);
 	}
 	else {
 	    y2error("Unexpected return code: %1", ret);

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Oct 24 09:45:10 CEST 2008 - lslezak@suse.cz
+
+- Disable "Change Status" button when the current value is
+  "Unknown" (bnc#436796)
+
+-------------------------------------------------------------------
 Mon Oct 13 12:00:11 CEST 2008 - lslezak@suse.cz
 
 - fixed the label for option DISPLAYMANAGER_ROOT_LOGIN_REMOTE
