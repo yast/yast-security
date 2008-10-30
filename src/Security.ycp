@@ -22,10 +22,10 @@ include "security/levels.ycp";
 
 // services to check - these must be running
 // meaning [ [ || ] && && ]
-global const list<list<string> > mandatory_services = [["ntp"], ["syslog"], ["auditd"], ["random"], ["consolekit"], ["kbd"], ["cron"], ["postfix", "sendmail"]];
+global const list<list<string> > mandatory_services = [["ntp"], ["syslog"], ["auditd"], ["random"], ["kbd"], ["cron"], ["postfix", "sendmail"]];
 // sevices to check - these can be ignored (if they are running it's OK)
 global const list<string> optional_services = [
-    "acpid", "dbus", "ealysyslog", "fbset", "framebufferset", "isdn", "microcode.ctl", "random",
+    "acpid", "boot.clock", "dbus", "ealysyslog", "fbset", "framebufferset", "isdn", "microcode.ctl", "random",
     "consolekit", "haldaemon", "network", "syslog", "auditd", "splash_early", "alsasound",
     "irq_balancer", "kbd", "powersaved", "splash", "sshd", "earlyxdm", "hotkey-setup", "atd", "nscd",
     "smpppd", "xend", "autofs", "libvirtd", "sendmail", "postfix", "xendomains", "cron", "ddclient",
@@ -42,7 +42,7 @@ global list<list<string> > MissingMandatoryServices(integer runlevel)
     list<list<string> > ret = [];
     list<string> enabled_services = Service::EnabledServices(runlevel);
 
-    y2internal("enabled_services: %1", enabled_services);
+    y2milestone("enabled_services: %1", enabled_services);
 
     if (enabled_services == nil)
     {
