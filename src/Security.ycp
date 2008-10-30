@@ -21,7 +21,8 @@ include "security/levels.ycp";
 
 
 // services to check - these must be running
-global const list<string> mandatory_services = ["ntp", "syslog", "auditd", "random", "consolekit", "kbd", "cron"];
+// meaning [ [ || ] && && ]
+global const list<list<string> > mandatory_services = [["ntp"], ["syslog"], ["auditd"], ["random"], ["consolekit"], ["kbd"], ["cron"], ["postfix", "sendmail"]];
 // sevices to check - these can be ignored (if they are running it's OK)
 global const list<string> optional_services = [
     "acpid", "dbus", "ealysyslog", "fbset", "framebufferset", "isdn", "microcode.ctl", "random",
@@ -34,41 +35,38 @@ global const list<string> optional_services = [
 
 
 // return list of missing mandatory services in a runlevel
-global list<string> MissingMandatoryServices(integer runlevel)
+global list<list<string> > MissingMandatoryServices(integer runlevel)
 {
     y2milestone("Checking mandatory services in runlevel %1", runlevel);
 
-    list<string> ret = [];
+    list<list<string> > ret = [];
     list<string> enabled_services = Service::EnabledServices(runlevel);
+
+    y2internal("enabled_services: %1", enabled_services);
 
     if (enabled_services == nil)
     {
 	return nil;
     }
 
-    foreach(string service, mandatory_services,
+    foreach(list<string> services, mandatory_services,
 	{
-	    boolean enabled = contains(enabled_services, service);
-	    y2milestone("Mandatory service %1 is enabled: %2", service, enabled);
+	    boolean enabled = false;
+
+	    foreach(string service, services,
+		{
+		    enabled = enabled || contains(enabled_services, service);
+		}
+	    );
+
+	    y2milestone("Mandatory services %1 are enabled: %2", services, enabled);
 
 	    if (!enabled)
 	    {
-		ret = add(ret, service);
+		ret = add(ret, services);
 	    }
 	}
     );
-
-    // handle postfix and sendmail specifically - only one of them can be installed in a system
-    boolean mailer_enabled = contains(enabled_services, "postfix")
-	|| contains(enabled_services, "sendmail");
-
-    y2milestone("A mailer daemon is enabled: %1", mailer_enabled);
-
-    if (!mailer_enabled)
-    {
-	ret = add(ret, "postfix");
-	ret = add(ret, "sendmail");
-    }
 
     y2milestone("Missing mandatory services in runlevel %1: %2", runlevel, ret);
 
@@ -90,7 +88,7 @@ global list<string> ExtraServices(integer runlevel)
     foreach(string service, enabled_services,
 	{
 	    // the extra service is not mandatory and it's not optional
-	    boolean extra = !contains(mandatory_services, service) && !contains(optional_services, service);
+	    boolean extra = !contains(flatten(mandatory_services), service) && !contains(optional_services, service);
 
 	    if (extra)
 	    {

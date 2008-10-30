@@ -278,13 +278,26 @@ void DisplayHelpPopup(string help_id)
     // add extra help to service related options
     if (help_id == "RUNLEVEL3_MANDATORY_SERVICES" || help_id == "RUNLEVEL5_MANDATORY_SERVICES")
     {
-	list<string> missing = (help_id == "RUNLEVEL3_MANDATORY_SERVICES") ? Security::MissingMandatoryServices(3)
-	    : Security::MissingMandatoryServices(5);
+	integer runlevel = (help_id == "RUNLEVEL3_MANDATORY_SERVICES") ? 3 : 5;
+
+	list<list<string> > missing = Security::MissingMandatoryServices(runlevel);
 
 	if (missing != nil && missing != [])
 	{
-	    string srvs = mergestring(missing, "<BR>");
-	    help = help + sformat(_("<P>These basic system services are not running:<BR><B>%1</B></P>"), srvs);
+	    string srvs = "";
+
+	    foreach(list<string> l, missing,
+		{
+		    // this is a separator between service names
+		    // e.g.: "postfix" + " or " + "sendmail"
+		    string group = mergestring(l , _(" or "));
+
+		    srvs = srvs + group + "<BR>";
+		}
+	    );
+
+	    // richtext message: %1 = runlevel ("3" or "5"), %2 = list of services
+	    help = help + sformat(_("<P>These basic system services are not enabled in runlevel %1:<BR><B>%2</B></P>"), runlevel, srvs);
 	}
 	else
 	{
@@ -293,13 +306,13 @@ void DisplayHelpPopup(string help_id)
     }
     else if (help_id == "RUNLEVEL3_EXTRA_SERVICES" || help_id == "RUNLEVEL5_EXTRA_SERVICES")
     {
-	list<string> extra = (help_id == "RUNLEVEL3_EXTRA_SERVICES") ? Security::ExtraServices(3)
-	    : Security::ExtraServices(5);
+	integer runlevel = (help_id == "RUNLEVEL3_EXTRA_SERVICES") ? 3 : 5;
+	list<string> extra = Security::ExtraServices(runlevel);
 
 	if (extra != nil && extra != [])
 	{
 	    string srvs = mergestring(extra, "<BR>");
-	    help = help + sformat(_("<P>These extra services are running:<BR><B>%1</B></P>"), srvs);
+	    help = help + sformat(_("<P>These extra services are enabled in runlevel %1:<BR><B>%2</B></P>"), runlevel, srvs);
 	    help = help + _("<P>Check the list of services and disable all unused services.</P>");
 	}
 	else

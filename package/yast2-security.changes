@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Oct 30 15:39:10 CET 2008 - lslezak@suse.cz
+
+- better check enabled mail services (bnc#437363)
+
+-------------------------------------------------------------------
 Fri Oct 24 09:45:10 CEST 2008 - lslezak@suse.cz
 
 - Disable "Change Status" button when the current value is
