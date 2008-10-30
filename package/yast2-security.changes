@@ -4,6 +4,9 @@ Thu Oct 30 15:39:10 CET 2008 - lslezak@suse.cz
 - better check enabled mail services (bnc#437363)
 - do not check "consolekit" service, it's started automatically
   (bnc#436797), added "boot.clock" as an optional service
+- fixed location of "DISABLE_RESTART_ON_UPDATE" and
+  "DISABLE_STOP_ON_REMOVAL" variables - they are in
+  /etc/sysconfig/services now
 - 2.17.7
 
 -------------------------------------------------------------------

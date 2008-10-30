@@ -191,6 +191,8 @@ map<string,list<string> > Locations = $[
     ],
     ".sysconfig.security" : [
 	"PERMISSION_SECURITY",
+    ],
+    ".sysconfig.services" : [
 	"DISABLE_RESTART_ON_UPDATE",
 	"DISABLE_STOP_ON_REMOVAL",
     ],
