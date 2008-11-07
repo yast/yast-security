@@ -73,7 +73,7 @@ define any TreeDialog()
 	{
 	    ret = MiscDialog();
 	}
-	else if (ret == `next || ret == `abort)
+	else if (ret == `next || ret == `abort || ret == `finish)
 	{
 	    break;
 	}
@@ -159,6 +159,7 @@ define any SecuritySequence() ``{
 	],
 	"main" : $[
 	    `abort	: `abort,
+	    `finish	: "write",
 	    `next	: "write"
 	],
 	"write" : $[
