@@ -160,7 +160,7 @@ map<string,string> Settings_bak = Settings;
 // keys that should not be tested against predefined levels:
 // - GROUP_ENCRYPTION does not have UI for changing
 // - RUNLEVEL*_SERVICES have different syntax, are not saved in current form
-list<string> do_not_test = [ "GROUP_ENCRYPTION",
+global list<string> do_not_test = [ "GROUP_ENCRYPTION",
 	"RUNLEVEL3_MANDATORY_SERVICES", "RUNLEVEL5_MANDATORY_SERVICES",
 	"RUNLEVEL3_EXTRA_SERVICES", "RUNLEVEL5_EXTRA_SERVICES"
 ];
@@ -591,7 +591,7 @@ global define boolean Write() {
     if (Settings["PASS_MIN_LEN"]:"5" != "5")
 	Pam::Add (sformat ("pwcheck-minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
     else
-	Pam::Remove ("pwcheck-minlen=");
+	Pam::Remove ("pwcheck-minlen");
 
     // save "remember" value (number of old user passwords to not allow)
     if (Settings["PASSWD_REMEMBER_HISTORY"]:"0" != "0")
@@ -600,7 +600,7 @@ global define boolean Write() {
 	    Settings["PASSWD_REMEMBER_HISTORY"]:"0"));
     }
     else
-	Pam::Remove ("pwcheck-remember=");
+	Pam::Remove ("pwcheck-remember");
 
     PamSettings::Write (false);
 
