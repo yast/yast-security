@@ -32,10 +32,10 @@ Read	.target.size "/etc/sysconfig/mail" 1
 Read	.sysconfig.mail.SMTPD_LISTEN_REMOTE "r18"
 Read	.target.size "/etc/sysconfig/security" 1
 Read	.sysconfig.security.PERMISSION_SECURITY "paranoid"
-Read	.target.size "/etc/sysconfig/security" 1
-Read	.sysconfig.security.DISABLE_RESTART_ON_UPDATE "r13"
-Read	.target.size "/etc/sysconfig/security" 1
-Read	.sysconfig.security.DISABLE_STOP_ON_REMOVAL "r14"
+Read	.target.size "/etc/sysconfig/services" 1
+Read	.sysconfig.services.DISABLE_RESTART_ON_UPDATE nil
+Read	.target.size "/etc/sysconfig/services" 1
+Read	.sysconfig.services.DISABLE_STOP_ON_REMOVAL nil
 Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
 Read	.target.size "/etc/sysconfig/suseconfig" 1
