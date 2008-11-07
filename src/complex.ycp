@@ -55,14 +55,19 @@ define any MainDialog() ``{
     string caption = _("Local Security Configuration");
     string help = HELPS["main"]:"";
 
+    map<string,string> settings = Security::Settings;
+    foreach (string key, Security::do_not_test, {
+        settings        = remove (settings, key);
+    });
+
     /* Determine current settings */
     any current = `custom;
     maplist(string key, map level, Levels, ``{
 	y2debug("%1=%2", key, level);
-	if(level == Security::Settings)
+	if(level == settings)
 	    current = key;
     });
-    y2debug("%1=%2", "curren", Security::Settings);
+    y2debug("%1=%2",  current, Security::Settings);
 
     /* Create RB group from the list of settings */
     term RB = `VBox();

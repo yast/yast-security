@@ -56,6 +56,7 @@ map<string,map<string,string> > Levels = $[
 
     "Level1" : $[
 	"CONSOLE_SHUTDOWN"		: "reboot",
+	"CRACKLIB_DICT_PATH"		: "/usr/lib/cracklib_dict",
 	"CWD_IN_ROOT_PATH"		: "no",
 	"CWD_IN_USER_PATH"		: "no",
 	"DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
@@ -63,7 +64,6 @@ map<string,map<string,string> > Levels = $[
 	"FAIL_DELAY"			: "1",
 	"GID_MAX"			: "60000",
 	"GID_MIN"			: "1000",
-	"GROUP_ENCRYPTION"		: "des",
 	"DISPLAYMANAGER_SHUTDOWN"	: "all",
 	"LASTLOG_ENAB"			: "yes",
 	"OBSCURE_CHECKS_ENAB"		: "yes",
@@ -107,7 +107,6 @@ map<string,map<string,string> > Levels = $[
 	"FAIL_DELAY"			: "6",
 	"GID_MAX"			: "60000",
 	"GID_MIN"			: "1000",
-	"GROUP_ENCRYPTION"		: "des",
 	"DISPLAYMANAGER_SHUTDOWN"	: "root",
 	"LASTLOG_ENAB"			: "yes",
 	"OBSCURE_CHECKS_ENAB"		: "yes",
@@ -151,7 +150,6 @@ map<string,map<string,string> > Levels = $[
 	"FAIL_DELAY"			: "3",
 	"GID_MAX"			: "60000",
 	"GID_MIN"			: "1000",
-	"GROUP_ENCRYPTION"		: "des",
 	"DISPLAYMANAGER_SHUTDOWN"	: "root",
 	"LASTLOG_ENAB"			: "yes",
 	"OBSCURE_CHECKS_ENAB"		: "yes",

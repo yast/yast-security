@@ -123,7 +123,7 @@ global map<string,string> Settings = $[
     "LASTLOG_ENAB"			: "yes",
     "OBSCURE_CHECKS_ENAB"		: "yes",
     "PASSWD_ENCRYPTION"			: "blowfish",
-    "GROUP_ENCRYPTION"			: "des",
+    "GROUP_ENCRYPTION"			: "md5",
     "PASSWD_USE_CRACKLIB"		: "yes",
     "PASS_MAX_DAYS"			: "99999",
     "PASS_MIN_DAYS"			: "0",
@@ -156,6 +156,14 @@ global map<string,string> Settings = $[
 
 // the original settings
 map<string,string> Settings_bak = Settings;
+
+// keys that should not be tested against predefined levels:
+// - GROUP_ENCRYPTION does not have UI for changing
+// - RUNLEVEL*_SERVICES have different syntax, are not saved in current form
+list<string> do_not_test = [ "GROUP_ENCRYPTION",
+	"RUNLEVEL3_MANDATORY_SERVICES", "RUNLEVEL5_MANDATORY_SERVICES",
+	"RUNLEVEL3_EXTRA_SERVICES", "RUNLEVEL5_EXTRA_SERVICES"
+];
 
 /**
  * Security settings locations
@@ -432,14 +440,14 @@ global define boolean Read() {
     Settings ["PASSWD_REMEMBER_HISTORY"]	= "0";
     foreach (string val, pam_check_settings, {
 	list lval	= splitstring (val, "=");
-	if (issubstring (val, "minlen"))
+	if (issubstring (val, "minlen") && lval[1]:"" != "")
 	    Settings ["PASS_MIN_LEN"] = lval[1]:"5";
 	/* use cracklib? */
 	if (issubstring (val, "cracklib")) {
-	    Settings ["CRACKLIB_DICT_PATH"] = lval[1]:"/usr/lib/cracklib_dict";
+            Settings ["CRACKLIB_DICT_PATH"] = lval[1]:"/usr/lib/cracklib_dict";
 	    Settings ["PASSWD_USE_CRACKLIB"] = "yes";
 	}
-	if (issubstring (val, "remember="))
+	if (issubstring (val, "remember=") && lval[1]:"" != "")
 	    Settings ["PASSWD_REMEMBER_HISTORY"] = lval[1]:"0";
     });
 
@@ -675,11 +683,16 @@ global define map Export() {
  */
 global define list Summary() {
 
+    map<string,string> settings = Security::Settings;
+    foreach (string key, Security::do_not_test, {
+        settings        = remove (settings, key);
+    });
+
     /* Determine current settings */
     any current = `custom;
     maplist(string key, map level, Levels, {
 	y2debug("%1=%2", key, level);
-	if(level == Settings)
+	if(level == settings)
 	    current = key;
     });
     y2debug("%1=%2", current, Settings);
