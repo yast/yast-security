@@ -81,8 +81,8 @@ Read	.etc.default.passwd."CRYPT_FILES" nil
 Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
 Execute	.target.bash_output "pam-config -a --pwcheck-cracklib" $[]
 Execute	.target.bash_output "pam-config -d --pwcheck-no_obscure_checks" $[]
-Execute	.target.bash_output "pam-config -d --pwcheck-minlen=" $[]
-Execute	.target.bash_output "pam-config -d --pwcheck-remember=" $[]
+Execute	.target.bash_output "pam-config -d --pwcheck-minlen" $[]
+Execute	.target.bash_output "pam-config -d --pwcheck-remember" $[]
 Write	.etc.default.passwd nil true
 Execute	.target.bash "echo 0 > /proc/sys/kernel/sysrq" 0
 Read	.sysconfig.displaymanager.DISPLAYMANAGER ""
