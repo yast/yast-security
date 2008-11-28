@@ -18,7 +18,7 @@ faillog_enab = element faillog_enab { text }
 gid_max = element gid_max { text }
 gid_min = element gid_min { text }
 group_encryption = element group_encryption { text }
-ip_forward = element ip_forward { text }
+sec_ip_forward = element ip_forward { text }
 ip_tcp_syncookies = element ip_tcp_syncookies { text }
 ipv6_forward = element ipv6_forward { text }
 kdm_shutdown = element kdm_shutdown { text }
@@ -96,7 +96,7 @@ y2_security =
   | userdel_postcmd
   | userdel_precmd
   | group_encryption
-  | ip_forward
+  | sec_ip_forward
   | displaymanager_shutdown
   | passwd_remember_history
 security = element security { y2_security* }
