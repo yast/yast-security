@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Jan 21 10:09:02 CET 2009 - jsuchome@suse.cz
+
+- removed progress dialog during read (bnc#447584) 
+
+-------------------------------------------------------------------
 Fri Nov 28 13:29:35 CET 2008 - ug@suse.de
 
 - conflict in rnc file fixed

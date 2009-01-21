@@ -327,39 +327,9 @@ global void ReadServiceSettings()
  */
 global define boolean Read() {
 
-    /* Security read dialog caption */
-    string caption = _("Initializing Security Configuration");
-    integer steps = 3;
-
-    integer sl = 0*1000;
-    sleep(sl);
-
-    Progress::New( caption, " ", steps, [
-	    /* Progress stage 1/3 */
-	    _("Read security settings"),
-	    /* Progress stage 2/3 */
-	    _("Read inittab settings"),
-	    /* Progress stage 3/3 */
-	    _("Read PAM settings"),
-	], [
-	    /* Progress step 1/4 */
-	    _("Reading security settings..."),
-	    /* Progress step 2/4 */
-	    _("Reading inittab settings..."),
-	    /* Progress step 3/4 */
-	    _("Reading PAM settings..."),
-	    /* Progress step 4/4 */
-	    _("Finished")
-	],
-	""
-    );
-
     Settings = $[];
 
     /* Read security settings */
-    sleep(sl);
-    if(Abort()) return false;
-    Progress::NextStage();
 
     mapmap(string file, list<string> vars, Locations, {
 	maplist(string var, vars, {
@@ -382,11 +352,6 @@ global define boolean Read() {
     });
     y2debug("Settings=%1", Settings);
 
-    /* Read inittab settings */
-    sleep(sl);
-    if(Abort()) return false;
-    Progress::NextStage();
-
     list inittab = SCR::Dir(.etc.inittab);
     if(contains(inittab, "ca")) {
 	string ca = (string) SCR::Read(.etc.inittab.ca);
@@ -406,13 +371,11 @@ global define boolean Read() {
 
     y2debug("Settings=%1", Settings);
 
-    /* Read pam settings */
-    sleep(sl);
-    if(Abort()) return false;
-    Progress::NextStage();
 
     /* Read runlevel setting */
     ReadServiceSettings();
+
+    /* Read pam settings */
 
     /* pam stuff */
     map pwcheck	= Pam::Query ("pwcheck");
@@ -454,9 +417,6 @@ global define boolean Read() {
     y2debug("Settings=%1", Settings);
 
     /* Local permissions hack */
-    sleep(sl);
-    if(Abort()) return false;
-    Progress::NextStage();
 
     string perm = Settings["PERMISSION_SECURITY"]:"";
     if(issubstring(perm, "easy")) perm = "easy";
@@ -466,8 +426,6 @@ global define boolean Read() {
     Settings["PERMISSION_SECURITY"] = perm;
     y2debug("Settings=%1", Settings);
 
-    sleep(sl);
-    if(Abort()) return false;
     modified = false;
 
     // remeber the read values

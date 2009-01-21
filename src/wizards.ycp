@@ -146,17 +146,12 @@ define any MainSequence() ``{
 define any SecuritySequence() ``{
 
     map aliases = $[
-	"read"	: [ ``( ReadDialog() ), true ],
 	"main"	:   ``( TreeDialog() ),
 	"write"	: [ ``( WriteDialog() ), true ]
     ];
 
     map sequence = $[
-	"ws_start" : "read",
-	"read" : $[
-	    `abort	: `abort,
-	    `next	: "main"
-	],
+	"ws_start" : "main",
 	"main" : $[
 	    `abort	: `abort,
 	    `finish	: "write",
@@ -170,6 +165,10 @@ define any SecuritySequence() ``{
 
     Wizard::CreateDialog();
     Wizard::SetDesktopIcon("security");
+
+    // Read has no progress and returns only true
+    Security::Read();
+
     any ret = Sequencer::Run(aliases, sequence);
 
     UI::CloseDialog();

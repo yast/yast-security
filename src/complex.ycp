@@ -20,18 +20,6 @@ include "security/levels.ycp";
 include "security/routines.ycp";
 include "security/dialogs.ycp";
 
-/**
- * Read settings dialog
- * @return `next if success, else `abort
- */
-define symbol ReadDialog() ``{
-
-    Wizard::RestoreHelp(HELPS["read"]:"");
-//    Security::AbortFunction = ``{return true;};
-    Security::AbortFunction = ``{return Security::PollAbort();};
-    boolean ret = Security::Read();
-    return ret ? `next : `abort;
-}
 
 /**
  * Write settings dialog
