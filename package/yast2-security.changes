@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  9 11:58:17 CET 2009 - lslezak@suse.cz
+
+- added "SuSEfirewall" and "earlysyslog" service to ignore list
+  of extra services in runlevel 3 and 5 (bnc#473345)
+
+-------------------------------------------------------------------
 Wed Jan 21 10:09:02 CET 2009 - jsuchome@suse.cz
 
 - removed progress dialog during read (bnc#447584) 
