@@ -29,7 +29,7 @@ global const list<string> optional_services = [
     "consolekit", "haldaemon", "network", "syslog", "auditd", "splash_early", "alsasound",
     "irq_balancer", "kbd", "powersaved", "splash", "sshd", "earlyxdm", "hotkey-setup", "atd", "nscd",
     "smpppd", "xend", "autofs", "libvirtd", "sendmail", "postfix", "xendomains", "cron", "ddclient",
-    "smartd", "stopblktrace", "ntp"
+    "smartd", "stopblktrace", "ntp", "SuSEfirewall", "earlysyslog"
 ];
 // All other services should be turned off
 

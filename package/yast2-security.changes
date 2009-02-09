@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb  9 11:58:17 CET 2009 - lslezak@suse.cz
+
+- added "SuSEfirewall" and "earlysyslog" service to ignore list
+  of extra services in runlevel 3 and 5 (bnc#473345)
+- 2.17.13
+
+-------------------------------------------------------------------
 Fri Nov 28 13:29:35 CET 2008 - ug@suse.de
 
 - conflict in rnc file fixed
