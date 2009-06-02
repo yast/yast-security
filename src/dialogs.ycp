@@ -675,15 +675,13 @@ define any PassDialog() ``{
 	XFrame(0.3,0.15,_("Checks"),`VBox(
 	    settings2widget("PASSWD_USE_CRACKLIB"),
 	    VSeparator(),
-	    settings2widget("OBSCURE_CHECKS_ENAB"),
+	    settings2widget("PASS_MIN_LEN"),
 	    VSeparator(),
 	    settings2widget("PASSWD_REMEMBER_HISTORY"),
-	    VSeparator()
+	    VSeparator ()
 	)),
 	`VSpacing(0.4),
 	settings2widget("PASSWD_ENCRYPTION"),
-	`VSpacing(0.4),
-	settings2widget("PASS_MIN_LEN"),
 	`VSpacing(0.4),
 	/* Frame label */
 	`Frame(_("Password Age"),`HBox(
@@ -708,6 +706,9 @@ define any PassDialog() ``{
     // select the dialog in the tree navigation
     Wizard::SelectTreeItem("password");
 
+    UI::ChangeWidget (`id ("PASS_MIN_LEN"), `Enabled,
+	Security::Settings["PASSWD_USE_CRACKLIB"]:"" == "yes");
+
     any ret = nil;
     while(true) {
 	ret = UI::UserInput();
@@ -719,6 +720,12 @@ define any PassDialog() ``{
 	}
 	else if(ret == `back) {
 	    break;
+	}
+	else if (ret == "PASSWD_USE_CRACKLIB")
+	{
+	    // minlen is an option for pam_cracklib
+	    UI::ChangeWidget (`id ("PASS_MIN_LEN"), `Enabled,
+		UI::QueryWidget (`id (ret), `Value) == true);
 	}
 	else if(ret == `next || contains(tree_dialogs, ret)) {
 	    // the current item has been selected, do not change to the same dialog
@@ -751,6 +758,10 @@ The maximum password length for the selected encryption method is %1."),
 		Security::PasswordMaxLengths[enc]:8));
 		continue;
 	    }
+	    if (min != 5)
+	    {
+		UI::ChangeWidget (`id ("PASSWD_USE_CRACKLIB"), `Value, true);
+	    }
 	    break;
 	}
 	else if (ret != "PASSWD_ENCRYPTION") {
@@ -764,7 +775,6 @@ The maximum password length for the selected encryption method is %1."),
 	widget2settings("PASS_MAX_DAYS");
 	widget2settings("PASS_MIN_LEN");
 	widget2settings("PASSWD_USE_CRACKLIB");
-	widget2settings("OBSCURE_CHECKS_ENAB");
 	widget2settings("PASS_WARN_AGE");
 	widget2settings("PASSWD_ENCRYPTION");
 	widget2settings("PASSWD_REMEMBER_HISTORY");

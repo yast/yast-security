@@ -59,7 +59,6 @@ map scr_info = $[
 	    "GID_MAX"			:	"l3",
 	    "GID_MIN"			:	"l4",
 	    "LASTLOG_ENAB"		:	"l5",
-	    "OBSCURE_CHECKS_ENAB"	:	"l6",
 	    "PASS_MAX_DAYS"		:	"l7",
 	    "PASS_MIN_DAYS"		:	"l9",
 	    "PASS_MIN_LEN"		:	"l10",

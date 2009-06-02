@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Jun  2 22:26:15 CEST 2009 - jsuchome@suse.cz
+
+- pam_pwcheck calls replaced with pam_cracklib/pam_pwhistory,
+  removed obsolete "obscure checks" settings (fate#305468)
+- 2.18.0
+
+-------------------------------------------------------------------
 Mon Feb  9 11:58:17 CET 2009 - lslezak@suse.cz
 
 - added "SuSEfirewall" and "earlysyslog" service to ignore list

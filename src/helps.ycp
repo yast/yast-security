@@ -110,11 +110,11 @@ are mainly stored in the /etc/login.defs file.</p>") +
 cannot be found in a dictionary and is not a name or other simple, common word.
 By checking the box, enforce password checking in regard to these rules.</p>") +
 
-    /* Password dialog help 3/8 */
-    _("<p><b>Test for Complicated Passwords</b>: 
-Passwords should be constructed using a mixture of characters. This makes the
-guessing of passwords very difficult. Check this box to enable additional
-checks.</p>") +
+    /* Password dialog help */
+    _("<p><b>Minimum Acceptable Password Length:</b>
+The minimum number of characters in an acceptable password. Attempts to
+assign passwords with fewer characters are rejected. A zero value
+suppresses this check. This option can only be modified when <b>Check New Passwords</b> is set.</p>") +
 
     // Password dialog help 4/8
     _("<p><b>Passwords to Remember</b>:
@@ -138,12 +138,6 @@ _("<p><b>Blowfish</b> is similar to MD5, but uses a different algorithm
 to encrypt passwords. A lot of CPU power is needed to calculate the hash,
 which makes it difficult to crack passwords with the help of a dictionary.</p>")
     +
-
-    /* Password dialog help 6/8 */
-    _("<p><b>Minimum Acceptable Password Length:</b>
-The minimum number of characters in an acceptable password. Attempts to
-assign passwords with fewer characters are rejected. A zero value
-suppresses this check.</p>") +
 
     /* Password dialog help 7/8 */
     _("<p><b>Password Age:</b> Set the minimum and

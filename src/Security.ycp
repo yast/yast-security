@@ -121,7 +121,6 @@ global map<string,string> Settings = $[
     "GID_MIN"				: "1000",
     "DISPLAYMANAGER_SHUTDOWN"		: "all",
     "LASTLOG_ENAB"			: "yes",
-    "OBSCURE_CHECKS_ENAB"		: "yes",
     "PASSWD_ENCRYPTION"			: "blowfish",
     "GROUP_ENCRYPTION"			: "md5",
     "PASSWD_USE_CRACKLIB"		: "yes",
@@ -377,11 +376,7 @@ global define boolean Read() {
 
     /* Read pam settings */
 
-    /* pam stuff */
-    map pwcheck	= Pam::Query ("pwcheck");
-    list<string> pam_check_settings = pwcheck["password"]:[];
-
-    /* read the password hash settings */
+    // read the password hash settings
     string method = PamSettings::GetDefaultValue ("CRYPT_FILES");
     if (method == nil || method == "" ||
 	!contains (["des","md5","blowfish"],method))
@@ -393,23 +388,26 @@ global define boolean Read() {
     Settings["PASSWD_ENCRYPTION"]	= method;
     Settings["GROUP_ENCRYPTION"]	= PamSettings::GetGroupHashMethod ();
 
-    /* obscure checks */
-    boolean obscure = !contains (pam_check_settings, "no_obscure_checks");
-    Settings["OBSCURE_CHECKS_ENAB"] = obscure? "yes":"no";
-
-    /* other pam_pwcheck settings */
+    // cracklib and pwhistory settings
     Settings ["PASS_MIN_LEN"] = "5";
     Settings ["PASSWD_USE_CRACKLIB"] = "no";
     Settings ["PASSWD_REMEMBER_HISTORY"]	= "0";
-    foreach (string val, pam_check_settings, {
+
+    map pam_cracklib	= Pam::Query ("cracklib");
+    if (size (pam_cracklib) > 0)
+	Settings ["PASSWD_USE_CRACKLIB"]	= "yes";
+    foreach (string val, pam_cracklib["password"]:[], {
 	list lval	= splitstring (val, "=");
-	if (issubstring (val, "minlen") && lval[1]:"" != "")
-	    Settings ["PASS_MIN_LEN"] = lval[1]:"5";
-	/* use cracklib? */
-	if (issubstring (val, "cracklib")) {
+	if (issubstring (val, "dictpath=")) {
             Settings ["CRACKLIB_DICT_PATH"] = lval[1]:"/usr/lib/cracklib_dict";
-	    Settings ["PASSWD_USE_CRACKLIB"] = "yes";
 	}
+	if (issubstring (val, "minlen=") && lval[1]:"" != "")
+	    Settings ["PASS_MIN_LEN"] = lval[1]:"5";
+    });
+
+    map pam_history	= Pam::Query ("pwhistory");
+    foreach (string val, pam_history["password"]:[], {
+	list lval	= splitstring (val, "=");
 	if (issubstring (val, "remember=") && lval[1]:"" != "")
 	    Settings ["PASSWD_REMEMBER_HISTORY"] = lval[1]:"0";
     });
@@ -532,33 +530,32 @@ global define boolean Write() {
 
     // use cracklib?
     if(Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes") {
-	string crack = "pwcheck-cracklib";
+	Pam::Add ("cracklib");
 	string pth = Settings["CRACKLIB_DICT_PATH"]:"/usr/lib/cracklib_dict";
 	if (pth != "/usr/lib/cracklib_dict")
-	    crack = "pwcheck-cracklib-path=" + pth;
-	Pam::Add (crack);
+	    Pam::Add ("--cracklib-dictpath=" + pth);
     }
     else
-	Pam::Remove ("pwcheck-cracklib");
-
-    // save obscure checks
-    Pam::Set ("pwcheck-no_obscure_checks",
-	Settings["OBSCURE_CHECKS_ENAB"]:"yes" != "yes");
+	Pam::Remove ("cracklib");
 
     // save min pass length
     if (Settings["PASS_MIN_LEN"]:"5" != "5")
-	Pam::Add (sformat ("pwcheck-minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
+    {
+	Pam::Add ("cracklib"); // minlen is part of cracklib
+	Pam::Add (sformat ("cracklib-minlen=%1", Settings["PASS_MIN_LEN"]:"5"));
+    }
     else
-	Pam::Remove ("pwcheck-minlen");
+	Pam::Remove ("cracklib-minlen");
 
     // save "remember" value (number of old user passwords to not allow)
     if (Settings["PASSWD_REMEMBER_HISTORY"]:"0" != "0")
     {
-	Pam::Add (sformat ("pwcheck-remember=%1",
+	Pam::Add ("pwhistory");
+	Pam::Add (sformat ("pwhistory-remember=%1",
 	    Settings["PASSWD_REMEMBER_HISTORY"]:"0"));
     }
     else
-	Pam::Remove ("pwcheck-remember");
+	Pam::Remove ("pwhistory-remember");
 
     PamSettings::Write (false);
 

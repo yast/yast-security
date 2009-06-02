@@ -30,7 +30,6 @@ map<string,string> m = $[
     "GID_MIN"			:	"l4",
     "DISPLAYMANAGER_SHUTDOWN"	:	"r3",
     "LASTLOG_ENAB"		:	"l5",
-    "OBSCURE_CHECKS_ENAB"	:	"l6",
     "PASS_MAX_DAYS"		:	"l7",
     "PASS_MIN_DAYS"		:	"l9",
     "PASS_MIN_LEN"		:	"l10",

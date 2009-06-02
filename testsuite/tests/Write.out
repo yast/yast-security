@@ -79,10 +79,10 @@ Write	.etc.inittab nil true
 Execute	.target.bash "/sbin/telinit q" 0
 Read	.etc.default.passwd."CRYPT_FILES" nil
 Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
-Execute	.target.bash_output "pam-config -d --pwcheck-cracklib" $[]
-Execute	.target.bash_output "pam-config -a --pwcheck-no_obscure_checks" $[]
-Execute	.target.bash_output "pam-config -a --pwcheck-minlen=l10" $[]
-Execute	.target.bash_output "pam-config -d --pwcheck-remember" $[]
+Execute	.target.bash_output "pam-config -d --cracklib" $[]
+Execute	.target.bash_output "pam-config -a --cracklib" $[]
+Execute	.target.bash_output "pam-config -a --cracklib-minlen=l10" $[]
+Execute	.target.bash_output "pam-config -d --pwhistory-remember" $[]
 Write	.etc.default.passwd nil true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
 Read	.sysconfig.displaymanager.DISPLAYMANAGER ""

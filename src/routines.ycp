@@ -60,8 +60,11 @@ define term settings2widget(string ID) ``{
         boolean enabled = false;
         if(value == "yes")
             enabled = true;
+	term chbox = `CheckBox(`id(ID), label, enabled);
+	if (m["Notify"]:"no" == "yes")
+	    chbox =  `CheckBox(`id(ID), `opt (`notify), label, enabled);
         return `VBox(
-            `Left(`CheckBox(`id(ID), label, enabled)),
+            `Left(chbox),
             VSeparator()
         );
     }

@@ -161,13 +161,6 @@ map WIDGETS = $[
 	"Value" : "yes"
     ],
 
-    "OBSCURE_CHECKS_ENAB" : $[
-	"Widget" : "CheckBox",
-	/* CheckBox label */
-	"Label" : _("&Test for Complicated Passwords"),
-	"Value" : "yes"
-    ],
-
     "PASSWD_ENCRYPTION" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */
@@ -182,6 +175,7 @@ map WIDGETS = $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */
 	"Label" : _("&Check New Passwords"),
+	"Notify" : "yes",
 	"Value" : "yes"
     ],
 
