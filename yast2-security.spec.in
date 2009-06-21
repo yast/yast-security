@@ -19,7 +19,7 @@ BuildArchitectures: noarch
 Summary:	YaST2 - Security Configuration
 
 %description
--
+The YaST2 component for security settings configuration.
 
 @PREP@
 
