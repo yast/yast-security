@@ -16,7 +16,7 @@ Obsoletes:	yast2-trans-security y2t_sec
 
 BuildArchitectures: noarch
 
-Summary:	Security configuration
+Summary:	YaST2 - Security Configuration
 
 %description
 -
