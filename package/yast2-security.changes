@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Jun 22 07:55:26 CEST 2009 - coolo@novell.com
+
+- fix uild with automake 1.11
+- 2.18.1
+
+-------------------------------------------------------------------
 Tue Jun  2 22:26:15 CEST 2009 - jsuchome@suse.cz
 
 - pam_pwcheck calls replaced with pam_cracklib/pam_pwhistory,
