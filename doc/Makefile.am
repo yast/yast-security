@@ -22,7 +22,8 @@ todo.html: Todo.txt
 		| sed 's|#\([0-9]\{4,5\}\)|<a href="http://bugzilla.suse.de/show_bug.cgi?id=\1">#\1</a>|g' \
 		> todo.html
 
-html_DATA = index.html $(wildcard *.html) todo.html #workflow.png 
+html_DATA = add.html index.html skel.html structure.html #workflow.png 
 
 CLEANFILES = todo.html
 EXTRA_DIST = Todo.txt $(html_DATA)
+
