@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  3 14:41:44 CEST 2009 - jsuchome@suse.cz
+
+- added keywords to desktop file
+- 2.18.2 
+
+-------------------------------------------------------------------
 Mon Jun 22 07:55:26 CEST 2009 - coolo@novell.com
 
 - fix uild with automake 1.11
