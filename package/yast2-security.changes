@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Oct  1 13:40:49 CEST 2009 - jsuchome@suse.cz
+
+- do not save PASS_MIN_LEN if cracklib is disabled
+- ensure polkit privileges are applied (bnc#541393)
+- 2.18.3
+
+-------------------------------------------------------------------
 Thu Sep  3 14:41:44 CEST 2009 - jsuchome@suse.cz
 
 - added keywords to desktop file

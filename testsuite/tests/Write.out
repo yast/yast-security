@@ -80,8 +80,7 @@ Execute	.target.bash "/sbin/telinit q" 0
 Read	.etc.default.passwd."CRYPT_FILES" nil
 Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
 Execute	.target.bash_output "pam-config -d --cracklib" $[]
-Execute	.target.bash_output "pam-config -a --cracklib" $[]
-Execute	.target.bash_output "pam-config -a --cracklib-minlen=l10" $[]
+Execute	.target.bash_output "pam-config -d --cracklib-minlen" $[]
 Execute	.target.bash_output "pam-config -d --pwhistory-remember" $[]
 Write	.etc.default.passwd nil true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
@@ -89,6 +88,7 @@ Read	.sysconfig.displaymanager.DISPLAYMANAGER ""
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
 Execute	.target.bash "/sbin/SuSEconfig --module kdm3" 0
 Execute	.target.bash "/sbin/SuSEconfig --module permissions" 0
+Execute	.target.bash "/sbin/set_polkit_default_privs" 0
 Execute	.target.bash "/sbin/SuSEconfig --module profiles" 0
 Execute	.target.bash "/etc/init.d/dhcpd restart" 0
 Execute	.target.bash "/etc/init.d/dhcpd restart" 0

@@ -758,10 +758,6 @@ The maximum password length for the selected encryption method is %1."),
 		Security::PasswordMaxLengths[enc]:8));
 		continue;
 	    }
-	    if (min != 5)
-	    {
-		UI::ChangeWidget (`id ("PASSWD_USE_CRACKLIB"), `Value, true);
-	    }
 	    break;
 	}
 	else if (ret != "PASSWD_ENCRYPTION") {
