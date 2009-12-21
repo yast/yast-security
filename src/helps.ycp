@@ -112,9 +112,10 @@ By checking the box, enforce password checking in regard to these rules.</p>") +
 
     /* Password dialog help */
     _("<p><b>Minimum Acceptable Password Length:</b>
-The minimum number of characters in an acceptable password. Attempts to
-assign passwords with fewer characters are rejected. A zero value
-suppresses this check. This option can only be modified when <b>Check New Passwords</b> is set.</p>") +
+The minimum acceptable size for the new password reduced by the number
+of different character classes (other, upper, lower and digit) used in the new
+password. See man pam_cracklib for a more detailed explanation.
+This option can only be modified when <b>Check New Passwords</b> is set.</p>") +
 
     // Password dialog help 4/8
     _("<p><b>Passwords to Remember</b>:
