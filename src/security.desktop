@@ -20,9 +20,8 @@ X-SuSE-YaST-AutoInstSchema=security.rnc
 X-SuSE-YaST-Keywords=security,system settings
 
 Icon=yast-security
-Exec=/sbin/yast2 security 
+Exec=xdg-su -c "/sbin/yast2 security"
 
 Name=Local Security
 GenericName=Configure local security settings
-X-KDE-SubstituteUID=true
 StartupNotify=true
