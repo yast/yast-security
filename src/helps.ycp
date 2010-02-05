@@ -51,7 +51,7 @@ workstation and server.</p>") +
 
     /* Boot dialog help 3/3 */
     _("<p><b>Shutdown Behaviour of Login Manager</b>:
-Set who is allowed to shut down the machine from KDM or GDM.</p>
+Set who is allowed to shut down the machine from KDM.</p>
 "),
 
 
