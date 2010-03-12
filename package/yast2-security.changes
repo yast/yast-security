@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Mar 12 08:05:50 CET 2010 - jsrain@suse.cz
+
+- renamed the to Security Center and Hardening (fate#309121)
+
+-------------------------------------------------------------------
 Fri Feb  5 11:45:27 CET 2010 - jsuchome@suse.cz
 
 - DISPLAYMANAGER_SHUTDOWN is not for GDM (bnc#570656) 

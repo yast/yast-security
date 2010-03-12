@@ -22,6 +22,6 @@ X-SuSE-YaST-Keywords=security,system settings
 Icon=yast-security
 Exec=xdg-su -c "/sbin/yast2 security"
 
-Name=Local Security
+Name=Security Center and Hardening
 GenericName=Configure local security settings
 StartupNotify=true
