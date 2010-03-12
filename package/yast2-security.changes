@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar 12 08:05:50 CET 2010 - jsrain@suse.cz
+
+- renamed the to Security Center and Hardening (fate#309121)
+- 2.17.14
+
+-------------------------------------------------------------------
 Mon Feb  9 11:58:17 CET 2009 - lslezak@suse.cz
 
 - added "SuSEfirewall" and "earlysyslog" service to ignore list
