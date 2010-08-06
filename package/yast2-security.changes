@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Aug  6 11:07:49 CEST 2010 - jsuchome@suse.cz
+
+- testsuite adapted to changes in yast2-pam
+- 2.20.0 
+
+-------------------------------------------------------------------
 Fri Mar 12 08:05:50 CET 2010 - jsrain@suse.cz
 
 - renamed the to Security Center and Hardening (fate#309121)

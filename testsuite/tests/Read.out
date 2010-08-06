@@ -53,6 +53,6 @@ Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
 Read	.etc.default.passwd."CRYPT_FILES" "blowfish"
 Read	.etc.default.passwd.group_crypt nil
 Read	.etc.default.passwd.crypt "md5"
-Execute	.target.bash_output "pam-config -q --cracklib" $[]
-Execute	.target.bash_output "pam-config -q --pwhistory" $[]
+Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $[]
+Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $[]
 Return	true
