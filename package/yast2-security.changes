@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Aug 16 13:30:29 CEST 2010 - jsuchome@suse.cz
+
+- removed 'disable' from descriptions of settings (bnc#610944)
+- 2.20.1
+
+-------------------------------------------------------------------
 Fri Aug  6 11:07:49 CEST 2010 - jsuchome@suse.cz
 
 - testsuite adapted to changes in yast2-pam
