@@ -166,7 +166,7 @@ map WIDGETS = $[
 	/* ComboBox label */
 	"Label" : _("P&assword Encryption Method"),
 	/* ComboBox values */
-	"Options" : [["des","DES"],["md5","MD5"],["blowfish","Blowfish"]],
+	"Options" : [["des","DES"],["md5","MD5"],["blowfish","Blowfish"], ["sha256", "SHA-256"], ["sha512", "SHA-512"]],
 	"Value" : "des",
 	"Notify" : "yes",
     ],

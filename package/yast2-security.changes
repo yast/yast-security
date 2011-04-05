@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Apr  5 11:03:35 CEST 2011 - jsuchome@suse.cz
+
+- added support for SHA-2 based crypto methods (fate309705)
+- 2.21.0 
+
+-------------------------------------------------------------------
 Wed Nov 10 14:19:15 CET 2010 - jsuchome@suse.cz
 
 - remember the default value of CRACKLIB_DICT_PATH (bnc#650425)
