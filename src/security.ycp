@@ -165,7 +165,7 @@ map cmdline = $[
 	    // command line help text for 'set passwd' option
 	    "help"	: _("Password encryption method"),
 	    "type"	: "enum",
-	    "typespec"	: [ "des", "md5", "blowfish" ],
+	    "typespec"	: [ "des", "md5", "blowfish", "sha256", "sha512" ],
 	],
 	"obscure"	: $[
 	    // command line help text for 'set obscure' option
