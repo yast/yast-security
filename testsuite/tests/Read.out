@@ -56,3 +56,4 @@ Read	.etc.default.passwd.crypt "md5"
 Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $[]
 Return	true
+Dump	sha512

@@ -14,7 +14,7 @@
 
 {
 
-include "testsuite.ycp";
+import "Testsuite";
 import "Security";
 
 map scr_info = $[
@@ -97,6 +97,8 @@ map E	= $[
     ]
 ];
 
-TEST(``(Security::Read()),[scr_info,$[],E],nil);
+Testsuite::Test (``(Security::Read()),[scr_info,$[],E],nil);
+// read blowfish, changed to sha512
+Testsuite::Dump (Security::Settings["PASSWD_ENCRYPTION"]:nil);
 
 }

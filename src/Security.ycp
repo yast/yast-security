@@ -122,7 +122,7 @@ global map<string,string> Settings = $[
     "GID_MIN"				: "1000",
     "DISPLAYMANAGER_SHUTDOWN"		: "all",
     "LASTLOG_ENAB"			: "yes",
-    "PASSWD_ENCRYPTION"			: "blowfish",
+    "PASSWD_ENCRYPTION"			: "sha512",
     "GROUP_ENCRYPTION"			: "md5",
     "PASSWD_USE_CRACKLIB"		: "yes",
     "PASS_MAX_DAYS"			: "99999",
@@ -241,18 +241,8 @@ map<string,list<string> > Locations = $[
 global map PasswordMaxLengths = $[
     "des" : 8,
     "md5" : 127,
-    "blowfish" : 72,
     "sha256"	: 127,
     "sha512"	: 127
-];
-
-/**
- * List of supported password encryption ciphers
- */
-list<string> Ciphers = [
-    // "des",
-    "md5",
-    "blowfish",
 ];
 
 /**
@@ -330,6 +320,7 @@ global void ReadServiceSettings()
 global define boolean Read() {
 
     Settings = $[];
+    modified = false;
 
     /* Read security settings */
 
@@ -381,12 +372,19 @@ global define boolean Read() {
 
     // read the password hash settings
     string method = PamSettings::GetDefaultValue ("CRYPT_FILES");
+    // change old default to new default automatically
+    if (method == "blowfish")
+    {
+	y2milestone ("found 'blowfish', changing to new default 'sha512'");
+	method		= "sha512";
+	modified	= true;
+    }
     if (method == nil || method == "" ||
-	!contains (["des","md5","blowfish","sha256","sha512"],method))
+	!contains (["des","md5","sha256","sha512"],method))
     {
 	method = PamSettings::GetHashMethod ();
     }
-    if (method == "" || !contains (["des","md5","blowfish","sha256","sha512"],method))
+    if (method == "" || !contains (["des","md5","sha256","sha512"],method))
 	method = "des";
     Settings["PASSWD_ENCRYPTION"]	= method;
     Settings["GROUP_ENCRYPTION"]	= PamSettings::GetGroupHashMethod ();
@@ -428,8 +426,6 @@ global define boolean Read() {
     else perm = "secure";
     Settings["PERMISSION_SECURITY"] = perm;
     y2debug("Settings=%1", Settings);
-
-    modified = false;
 
     // remeber the read values
     Settings_bak = Settings;
@@ -530,7 +526,7 @@ global define boolean Write() {
     Progress::NextStage();
 
     /* pam stuff */
-    string encr = Settings["PASSWD_ENCRYPTION"]:"blowfish";
+    string encr = Settings["PASSWD_ENCRYPTION"]:"sha512";
     PamSettings::SetDefaultValue ("CRYPT_FILES", encr);
 
     // use cracklib?

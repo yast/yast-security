@@ -78,7 +78,7 @@ Write	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now" true
 Write	.etc.inittab nil true
 Execute	.target.bash "/sbin/telinit q" 0
 Read	.etc.default.passwd."CRYPT_FILES" nil
-Write	.etc.default.passwd."CRYPT_FILES" "blowfish" true
+Write	.etc.default.passwd."CRYPT_FILES" "sha512" true
 Execute	.target.bash_output "/usr/sbin/pam-config -a --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --cracklib-minlen" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --pwhistory-remember" $[]

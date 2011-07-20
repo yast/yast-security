@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Jul 20 11:04:03 CEST 2011 - jsuchome@suse.cz
+
+- remove blowfish hash from selections (fate#312321)
+- 2.21.1 
+
+-------------------------------------------------------------------
 Tue Apr  5 11:03:35 CEST 2011 - jsuchome@suse.cz
 
 - added support for SHA-2 based crypto methods (fate309705)
