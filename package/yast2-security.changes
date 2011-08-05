@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Fri Aug  5 12:35:05 CEST 2011 - tgoettlicher@suse.de
+
+- fixed .desktop file (bnc #681249)
+
+-------------------------------------------------------------------
 Wed Jul 20 11:04:03 CEST 2011 - jsuchome@suse.cz
 
 - remove blowfish hash from selections (fate#312321)
