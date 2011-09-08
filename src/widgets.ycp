@@ -107,11 +107,17 @@ map WIDGETS = $[
 	"Value" : "no"
     ],
 
-    "ENABLE_SYSRQ" : $[
-	"Widget" : "CheckBox",
+    "kernel.sysrq" : $[
+	"Widget" : "ComboBox",
 	/* CheckBox label */
-	"Label" : _("Enable &Magic SysRq Keys"),
-	"Value" : "no"
+	"Label" : _("&Magic SysRq Keys"),
+	"Options" : [
+	    /* ComboBox value */
+	    ["0",_("Disable")],
+	    /* ComboBox value */
+	    ["1",_("Enable All Functions")],
+	],
+	"Editable"	: "yes"
     ],
 
     "FAIL_DELAY" : $[

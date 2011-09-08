@@ -56,14 +56,6 @@ Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH nil
 Write	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2" true
 Read	.sysconfig.suseconfig.CWD_IN_USER_PATH nil
 Write	.sysconfig.suseconfig.CWD_IN_USER_PATH "r2s" true
-Read	.sysconfig.sysctl.ENABLE_SYSRQ nil
-Write	.sysconfig.sysctl.ENABLE_SYSRQ "yes" true
-Read	.sysconfig.sysctl.IP_TCP_SYNCOOKIES nil
-Write	.sysconfig.sysctl.IP_TCP_SYNCOOKIES "r9" true
-Read	.sysconfig.sysctl.IP_FORWARD nil
-Write	.sysconfig.sysctl.IP_FORWARD "r10" true
-Read	.sysconfig.sysctl.IPV6_FORWARD nil
-Write	.sysconfig.sysctl.IPV6_FORWARD "r11" true
 Write	.etc.login_defs nil true
 Write	.sysconfig.clock nil true
 Write	.sysconfig.cron nil true
@@ -73,7 +65,6 @@ Write	.sysconfig.mail nil true
 Write	.sysconfig.security nil true
 Write	.sysconfig.services nil true
 Write	.sysconfig.suseconfig nil true
-Write	.sysconfig.sysctl nil true
 Write	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now" true
 Write	.etc.inittab nil true
 Execute	.target.bash "/sbin/telinit q" 0
@@ -83,6 +74,14 @@ Execute	.target.bash_output "/usr/sbin/pam-config -d --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --cracklib-minlen" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --pwhistory-remember" $[]
 Write	.etc.default.passwd nil true
+Read	.etc.sysctl_conf."kernel.sysrq" nil
+Write	.etc.sysctl_conf."kernel.sysrq" "1" true
+Read	.etc.sysctl_conf."net.ipv4.ip_forward" nil
+Write	.etc.sysctl_conf."net.ipv4.ip_forward" "10" true
+Read	.etc.sysctl_conf."net.ipv4.tcp_syncookies" nil
+Write	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "9" true
+Read	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" nil
+Write	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" "11" true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
 Read	.sysconfig.displaymanager.DISPLAYMANAGER ""
 Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
@@ -92,9 +91,9 @@ Execute	.target.bash "/sbin/set_polkit_default_privs" 0
 Execute	.target.bash "/sbin/SuSEconfig --module profiles" 0
 Execute	.target.bash "/etc/init.d/dhcpd restart" 0
 Execute	.target.bash "/etc/init.d/dhcpd restart" 0
-Execute	.target.bash "/etc/init.d/boot.ipconfig start" 0
-Execute	.target.bash "/etc/init.d/boot.ipconfig start" 0
-Execute	.target.bash "/etc/init.d/boot.ipconfig start" 0
 Execute	.target.bash "(test -e /etc/init.d/sendmail && /sbin/SuSEconfig --module sendmail && /etc/init.d/sendmail restart) || (test -e /etc/init.d/postfix && /sbin/SuSEconfig --module postfix && /etc/init.d/postfix restart)" 0
 Execute	.target.bash "/etc/init.d/boot.clock start" 0
+Execute	.target.bash "/etc/init.d/boot.ipconfig start" 0
+Execute	.target.bash "/etc/init.d/boot.ipconfig start" 0
+Execute	.target.bash "/etc/init.d/boot.ipconfig start" 0
 Return	true

@@ -8,8 +8,8 @@ BuildRequires:	doxygen pkg-config perl-XML-Writer update-desktop-files yast2-dev
 # new Pam.ycp API
 Requires:	yast2-pam >= 2.14.0
 
-# Service::EnabledServices()
-Requires:	yast2 >= 2.17.25
+# etc_sysctl_conf.scr
+Requires:	yast2 >= yast2-2.21.17
 
 Provides:	y2c_sec yast2-config-security
 Obsoletes:	y2c_sec yast2-config-security

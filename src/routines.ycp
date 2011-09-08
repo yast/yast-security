@@ -97,6 +97,7 @@ define term settings2widget(string ID) ``{
     list li = m["Options"]:[];
     list combo = [];
     integer i = 0;
+    boolean selected = false;
 
     while(i < size(li)) {
 	// string|list it
@@ -117,15 +118,27 @@ define term settings2widget(string ID) ``{
 	    id_s = it_list[1]:"";
 	}
 	if(value == id_t)
+	{
 	    combo = add(combo,`item(`id(id_t), id_s, true));
+	    selected	= true;
+	}
 	else
 	    combo = add(combo,`item(`id(id_t), id_s));
 	i = i + 1;
     }
+    if (!selected && m["Editable"]:"no" == "yes")
+    {
+	combo = add (combo,`item(`id(value), value, true));
+    }
 
     term combobox = nil;
+    term opt_t	= nil;
+    if(m["Editable"]:"no" == "yes")
+	opt_t	= `opt (`editable);
     if(m["Notify"]:"no" == "yes")
-	combobox = `ComboBox(`id(ID), `opt(`notify), label, combo);
+	opt_t	= add (opt_t, `notify);
+    if (opt_t != nil)
+	combobox = `ComboBox(`id(ID), opt_t, label, combo);
     else
 	combobox = `ComboBox(`id(ID), label, combo);
 

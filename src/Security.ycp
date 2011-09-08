@@ -113,10 +113,10 @@ global map<string,string> Settings = $[
     "CWD_IN_ROOT_PATH"			: "yes",
     "CWD_IN_USER_PATH"			: "yes",
     "DISPLAYMANAGER_REMOTE_ACCESS"	: "no",
-    "ENABLE_SYSRQ"			: "no",
-    "IP_TCP_SYNCOOKIES"			: "yes",
-    "IP_FORWARD"			: "no",
-    "IPV6_FORWARD"			: "no",
+    "kernel.sysrq"			: "0",
+    "net.ipv4.tcp_syncookies"		: "1",
+    "net.ipv4.ip_forward"		: "0",
+    "net.ipv6.conf.all.forwarding"	: "0",
     "FAIL_DELAY"			: "3",
     "GID_MAX"				: "60000",
     "GID_MIN"				: "1000",
@@ -207,12 +207,6 @@ map<string,list<string> > Locations = $[
     ".sysconfig.locate" : [
 	"RUN_UPDATEDB_AS",
     ],
-    ".sysconfig.sysctl" : [
-	"ENABLE_SYSRQ",
-	"IP_TCP_SYNCOOKIES",
-	"IP_FORWARD",
-	"IPV6_FORWARD",
-    ],
     ".sysconfig.clock" : [
 	"SYSTOHC",
     ],
@@ -222,6 +216,23 @@ map<string,list<string> > Locations = $[
     ".sysconfig.mail" : [
 	"SMTPD_LISTEN_REMOTE",
     ],
+];
+
+/**
+ * Default values for /etc/sysctl.conf keys
+ */
+map<string,string> sysctl	= $[
+    "kernel.sysrq"		: "0",
+    "net.ipv4.tcp_syncookies"	: "1",
+    "net.ipv4.ip_forward"	: "0",
+    "net.ipv6.conf.all.forwarding"	: "0"
+];
+
+map<string,string> sysctl2sysconfig	= $[
+    "kernel.sysrq"		: "ENABLE_SYSRQ",
+    "net.ipv4.tcp_syncookies"	: "IP_TCP_SYNCOOKIES",
+    "net.ipv4.ip_forward"	: "IP_FORWARD",
+    "net.ipv6.conf.all.forwarding"	: "IPV6_FORWARD"
 ];
 
 /*
@@ -427,6 +438,15 @@ global define boolean Read() {
     Settings["PERMISSION_SECURITY"] = perm;
     y2debug("Settings=%1", Settings);
 
+    // read sysctl.conf
+    foreach (string key, string default_value, sysctl, {
+	string val	= (string) SCR::Read (add (.etc.sysctl_conf, key));
+	if (val == nil || val == "")
+	    val	= default_value;
+	Settings[key]	= val;
+    });
+    y2debug ("Settings=%1", Settings);
+
     // remeber the read values
     Settings_bak = Settings;
     return true;
@@ -439,9 +459,9 @@ map<string,string> activation_mapping = $[
     "DHCPD_RUN_AS" : "/etc/init.d/dhcpd restart",
     // restart sendmail or postfix - whatever is installed
     "SMTPD_LISTEN_REMOTE" : "(test -e /etc/init.d/sendmail && /sbin/SuSEconfig --module sendmail && /etc/init.d/sendmail restart) || (test -e /etc/init.d/postfix && /sbin/SuSEconfig --module postfix && /etc/init.d/postfix restart)",
-    "IP_TCP_SYNCOOKIES" : "/etc/init.d/boot.ipconfig start",
-    "IP_FORWARD" : "/etc/init.d/boot.ipconfig start",
-    "IPV6_FORWARD" : "/etc/init.d/boot.ipconfig start",
+    "net.ipv4.tcp_syncookies" : "/etc/init.d/boot.ipconfig start",
+    "net.ipv4.ip_forward" : "/etc/init.d/boot.ipconfig start",
+    "net.ipv6.conf.all.forwarding" : "/etc/init.d/boot.ipconfig start",
 ];
 
 /**
@@ -560,12 +580,25 @@ global define boolean Write() {
 
     PamSettings::Write (false);
 
+    // write sysctl.conf
+    foreach (string key, string default_value, sysctl, {
+	string val	= Settings[key]:default_value;
+	if (tointeger (val) == nil)
+	{
+	    y2error ("value %1 for %2 is not integer, not writing", val, key);
+	}
+	else if (val != SCR::Read (add (.etc.sysctl_conf, key)))
+	{
+	    SCR::Write (add (.etc.sysctl_conf, key), val);
+	}
+    });
+
     /* enable sysrq? */
-    boolean sysrq = Settings["ENABLE_SYSRQ"]:"no" == "yes";
-    if(sysrq)
-	SCR::Execute(.target.bash, "echo 1 > /proc/sys/kernel/sysrq");
-    else
-	SCR::Execute(.target.bash, "echo 0 > /proc/sys/kernel/sysrq");
+    integer sysrq = tointeger (Settings["kernel.sysrq"]:"0");
+    if(sysrq != nil)
+    {
+	SCR::Execute (.target.bash, sformat ("echo %1 > /proc/sys/kernel/sysrq", sysrq));
+    }
 
     /* Finish him: SuSEconfig */
     if(Abort()) return false;
@@ -621,9 +654,26 @@ global define boolean Import(map settings) {
     map tmpSettings = $[];
     foreach(string k, string v, Settings, {
 	if (!haskey(settings, k))
-	    tmpSettings[k] = v;
+	{
+	    if (haskey (sysctl, k) && haskey (settings, sysctl2sysconfig[k]:""))
+	    {
+		string val	= settings[sysctl2sysconfig[k]:""]:"";
+		if (val == "yes")
+		    tmpSettings[k] = "1";
+		else if (val == "no")
+		    tmpSettings[k] = "0";
+		else
+		    tmpSettings[k] = val;
+	    }
+	    else
+	    {
+		tmpSettings[k] = v;
+	    }
+	}
 	else
+	{
 	    tmpSettings[k] = settings[k]:"";
+	}
     });
     Settings = (map<string,string>) eval(tmpSettings);
     return true;

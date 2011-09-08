@@ -40,14 +40,6 @@ Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
 Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_USER_PATH "r3"
-Read	.target.size "/etc/sysconfig/sysctl" 1
-Read	.sysconfig.sysctl.ENABLE_SYSRQ "r8"
-Read	.target.size "/etc/sysconfig/sysctl" 1
-Read	.sysconfig.sysctl.IP_TCP_SYNCOOKIES "r9"
-Read	.target.size "/etc/sysconfig/sysctl" 1
-Read	.sysconfig.sysctl.IP_FORWARD "r10"
-Read	.target.size "/etc/sysconfig/sysctl" 1
-Read	.sysconfig.sysctl.IPV6_FORWARD "r11"
 Dir	.etc.inittab: ["ca"]
 Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
 Read	.etc.default.passwd."CRYPT_FILES" "blowfish"
@@ -55,5 +47,9 @@ Read	.etc.default.passwd.group_crypt nil
 Read	.etc.default.passwd.crypt "md5"
 Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $[]
+Read	.etc.sysctl_conf."kernel.sysrq" "r8"
+Read	.etc.sysctl_conf."net.ipv4.ip_forward" "r10"
+Read	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "r9"
+Read	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" "r11"
 Return	true
 Dump	sha512

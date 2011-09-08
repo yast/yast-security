@@ -22,7 +22,8 @@ include "security/routines.ycp";
 list tree_dialogs = [ "main", "overview", "password", "boot", "login", "users", "misc", `wizardTree ];
 
 const list<string> configurable_options = [ "PERMISSION_SECURITY", "RUNLEVEL3_MANDATORY_SERVICES",
-    "RUNLEVEL5_MANDATORY_SERVICES", "RUNLEVEL3_EXTRA_SERVICES", "RUNLEVEL5_EXTRA_SERVICES" ];
+    "RUNLEVEL5_MANDATORY_SERVICES", "RUNLEVEL3_EXTRA_SERVICES", "RUNLEVEL5_EXTRA_SERVICES",
+    "kernel.sysrq" ];
 
 const string UNKNOWN_STATUS = _("Unknown");
 
@@ -63,7 +64,7 @@ string SecurityStatus(string option, boolean plaintext)
 }
 
 map<string,string> label_mapping = $[
-    "ENABLE_SYSRQ" : _("Use magic SysRq keys"),
+    "kernel.sysrq" : _("Use magic SysRq keys"),
     "PERMISSION_SECURITY" : _("Use secure file permissions"),
     "DISPLAYMANAGER_REMOTE_ACCESS" : _("Remote access to the display manager"),
     "CWD_IN_ROOT_PATH" : _("Use current directory in root's path"),
@@ -77,9 +78,9 @@ map<string,string> label_mapping = $[
     "SMTPD_LISTEN_REMOTE" : _("Remote access to the email delivery subsystem"),
     "DISABLE_RESTART_ON_UPDATE" : _("Restart services on update"),
     "DISABLE_STOP_ON_REMOVAL" : _("Stop services on removal"),
-    "IP_TCP_SYNCOOKIES" : _("Enable TCP syncookies"),
-    "IP_FORWARD" : _("IPv4 forwarding"),
-    "IPV6_FORWARD" : _("IPv6 forwarding"),
+    "net.ipv4.tcp_syncookies" : _("Enable TCP syncookies"),
+    "net.ipv4.ip_forward" : _("IPv4 forwarding"),
+    "net.ipv6.conf.all.forwarding" : _("IPv6 forwarding"),
     "RUNLEVEL3_MANDATORY_SERVICES" : _("Enable basic system services in runlevel 3\n (multiuser with network)"),
     "RUNLEVEL5_MANDATORY_SERVICES" : _("Enable basic system services in runlevel 5\n (multiuser with network and graphical login)"),
     "RUNLEVEL3_EXTRA_SERVICES" : _("Enable extra services in runlevel 3"),
@@ -106,8 +107,8 @@ any OverviewText(symbol type)
 
     list<map> security_mapping = [
 	$[
-	    "id" : "ENABLE_SYSRQ",
-	    "is_secure" : (Security::Settings["ENABLE_SYSRQ"]:"" == "no")
+	    "id" : "kernel.sysrq",
+	    "is_secure" : (Security::Settings["kernel.sysrq"]:"0" == "0")
 	],
 	$[
 	    "id" : "PERMISSION_SECURITY",
@@ -163,16 +164,16 @@ any OverviewText(symbol type)
 	    "is_secure" : (Security::Settings["DISABLE_STOP_ON_REMOVAL"]:"" == "no"),
 	],
 	$[
-	    "id" : "IP_TCP_SYNCOOKIES",
-	    "is_secure" : (Security::Settings["IP_TCP_SYNCOOKIES"]:"" == "yes"),
+	    "id" : "net.ipv4.tcp_syncookies",
+	    "is_secure" : (Security::Settings["net.ipv4.tcp_syncookies"]:"" == "1"),
 	],
 	$[
-	    "id" : "IP_FORWARD",
-	    "is_secure" : (Security::Settings["IP_FORWARD"]:"" == "no"),
+	    "id" : "net.ipv4.ip_forward",
+	    "is_secure" : (Security::Settings["net.ipv4.ip_forward"]:"" == "0"),
 	],
 	$[
-	    "id" : "IPV6_FORWARD",
-	    "is_secure" : (Security::Settings["IPV6_FORWARD"]:"" == "no"),
+	    "id" : "net.ipv6.conf.all.forwarding",
+	    "is_secure" : (Security::Settings["net.ipv6.conf.all.forwarding"]:"" == "0"),
 	],
 	$[
 	    "id" : "RUNLEVEL3_MANDATORY_SERVICES",
@@ -219,7 +220,7 @@ any OverviewText(symbol type)
 
     if (type == `table)
     {
-	y2milestone("Overview table: %1", ret_table);
+	y2debug("Overview table: %1", ret_table);
 	return ret_table;
     }
     else if (type == `richtext)
@@ -227,7 +228,7 @@ any OverviewText(symbol type)
 	// close the table
 	ret = ret + "</TABLE>";
 
-	y2milestone("Overview text: %1", ret);
+	y2debug("Overview text: %1", ret);
 	return ret;
     }
 
@@ -246,7 +247,8 @@ map link_value_mapping = $[
 // mapping for "Configure" links
 // config name -> dialog name
 map link_config_mapping = $[
-    "PERMISSION_SECURITY" : "misc"
+    "PERMISSION_SECURITY" : "misc",
+    "kernel.sysrq" : "misc"
 ];
 
 // mapping for "Configure" links
@@ -600,7 +602,7 @@ define any MiscDialog() ``{
 	VSeparator(),
 	settings2widget("CWD_IN_USER_PATH"),
 	`VSpacing(1.0),
-	settings2widget("ENABLE_SYSRQ"),
+	settings2widget("kernel.sysrq"),
 	`VSpacing(1.8)
     );
     contents = `HVCenter(`HVSquash(`HBox(`HSpacing(5),`VBox(`VSpacing(2),`ReplacePoint(`id(`rp_main),contents),`VSpacing(2)),`HSpacing(5))));
@@ -653,7 +655,7 @@ define any MiscDialog() ``{
 	widget2settings("CWD_IN_ROOT_PATH");
 	widget2settings("CWD_IN_USER_PATH");
 	widget2settings("RUN_UPDATEDB_AS");
-	widget2settings("ENABLE_SYSRQ");
+	widget2settings("kernel.sysrq");
     }
 
     return ret;

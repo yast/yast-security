@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Sep  8 15:43:35 CEST 2011 - jsuchome@suse.cz
+
+- sysctl settings now in /etc/sysctl.conf (bnc#714405)
+- 2.21.2 
+
+-------------------------------------------------------------------
 Fri Aug  5 12:35:05 CEST 2011 - tgoettlicher@suse.de
 
 - fixed .desktop file (bnc #681249)

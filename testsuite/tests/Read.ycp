@@ -37,12 +37,6 @@ map scr_info = $[
 	"locate" : $[
 	    "RUN_UPDATEDB_AS"		:	"r7",
 	],
-	"sysctl" : $[
-	    "ENABLE_SYSRQ"		:	"r8",
-	    "IP_TCP_SYNCOOKIES"		:	"r9",
-	    "IP_FORWARD"		:	"r10",
-	    "IPV6_FORWARD"		:	"r11",
-	],
 	"clock" : $[
 	    "SYSTOHC"			:	"r12",
 	],
@@ -81,6 +75,12 @@ map scr_info = $[
 		"crypt"			:	"md5",
 		"CRYPT_FILES"		:	"blowfish",
 	    ],
+	],
+	"sysctl_conf"	: $[
+	    "kernel.sysrq"		:	"r8",
+	    "net.ipv4.tcp_syncookies"	:	"r9",
+	    "net.ipv4.ip_forward"	:	"r10",
+	    "net.ipv6.conf.all.forwarding"	:	"r11",
 	],
     ],
     "target" : $[ "size" : 1 ],
