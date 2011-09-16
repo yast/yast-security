@@ -47,6 +47,7 @@ Read	.etc.default.passwd.group_crypt nil
 Read	.etc.default.passwd.crypt "md5"
 Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $[]
+Read	.etc.polkit-default-privs_local."org.freedesktop.upower.hibernate" "r12"
 Read	.etc.sysctl_conf."kernel.sysrq" "r8"
 Read	.etc.sysctl_conf."net.ipv4.ip_forward" "r10"
 Read	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "r9"

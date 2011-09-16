@@ -160,6 +160,21 @@ map WIDGETS = $[
 	"Value" : "all"
     ],
 
+    "HIBERNATE_SYSTEM" : $[
+	"Widget" : "ComboBox",
+	// ComboBox label
+	"Label" : _("System Hybernation"),
+	"Options" : [
+	    // ComboBox value
+	    ["active_console", _("User on the active console")],
+	    // ComboBox value
+	    ["anyone", _("Anyone can hibernate")],
+	    // ComboBox value
+	    ["auth_admin", _("Authentication always required")],
+	],
+	"Value" : "active_console"
+    ],
+
     "LASTLOG_ENAB" : $[
 	"Widget" : "CheckBox",
 	/* CheckBox label */

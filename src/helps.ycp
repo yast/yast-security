@@ -37,11 +37,11 @@ Safely abort the configuration utility by pressing <b>Abort</b> now.</p>"),
 Abort the save procedure by pressing <b>Abort</b>.</p>"),
 
 
-    /* Boot dialog help 1/3 */
+    /* Boot dialog help 1/4 */
     "boot" : _("<p><b><big>Boot Security</big></b></p>
 <p>In this dialog, change various boot settings related to security.</p>") +
 
-    /* Boot dialog help 2/3 */
+    /* Boot dialog help 2/4 */
     _("<p><b>Interpretation of Ctrl + Alt + Del</b>:
 Configure what the system should do in response to
 someone at the console pressing the CTRL + ALT + DEL key
@@ -49,9 +49,15 @@ combination. Usually the system reboots. Sometimes it is desirable
 to ignore this event, for example, when the system serves as both
 workstation and server.</p>") +
 
-    /* Boot dialog help 3/3 */
+    /* Boot dialog help 3/4 */
     _("<p><b>Shutdown Behaviour of Login Manager</b>:
 Set who is allowed to shut down the machine from KDM.</p>
+") +
+
+    // Boot dialog help 4/4
+    _("<p><b>Hibernate System</b>:
+Set the conditions for allowing users to hibernate the system. By default, user on active console has such right.
+Other options are allowing the action to any user or requiring authentication in all cases.</p>
 "),
 
 

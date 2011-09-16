@@ -58,6 +58,7 @@ map<string,string> m = $[
     "SMTPD_LISTEN_REMOTE"	:	"r18",
     "DHCPD_RUN_CHROOTED"	:	"r19",
     "DHCPD_RUN_AS"		:	"r20",
+    "HIBERNATE_SYSTEM"		:	"r21"
 ];
 
 map E	= $[

@@ -121,6 +121,7 @@ global map<string,string> Settings = $[
     "GID_MAX"				: "60000",
     "GID_MIN"				: "1000",
     "DISPLAYMANAGER_SHUTDOWN"		: "all",
+    "HIBERNATE_SYSTEM"			: "active_console",
     "LASTLOG_ENAB"			: "yes",
     "PASSWD_ENCRYPTION"			: "sha512",
     "GROUP_ENCRYPTION"			: "md5",
@@ -228,11 +229,25 @@ map<string,string> sysctl	= $[
     "net.ipv6.conf.all.forwarding"	: "0"
 ];
 
+/**
+ * Mapping of /etc/sysctl.conf keys to old (obsoleted) sysconfig ones
+ * (used during autoYaST import
+ */
 map<string,string> sysctl2sysconfig	= $[
     "kernel.sysrq"		: "ENABLE_SYSRQ",
     "net.ipv4.tcp_syncookies"	: "IP_TCP_SYNCOOKIES",
     "net.ipv4.ip_forward"	: "IP_FORWARD",
     "net.ipv6.conf.all.forwarding"	: "IPV6_FORWARD"
+];
+
+/**
+ * mapping of internal YaST values to values needed for
+ * org.freedesktop.upower.hibernate privilege
+ */
+map<string,string> ycp2polkit	= $[
+    "active_console"	: "auth_admin:auth_admin:yes",
+    "auth_admin"	: "auth_admin:auth_admin:auth_admin",
+    "anyone"		: "yes:yes:yes"
 ];
 
 /*
@@ -438,6 +453,19 @@ global define boolean Read() {
     Settings["PERMISSION_SECURITY"] = perm;
     y2debug("Settings=%1", Settings);
 
+    // read local polkit settings
+    string action	= "org.freedesktop.upower.hibernate";
+    string hibernate	= (string) SCR::Read (add (.etc.polkit-default-privs_local, action));
+    if (hibernate != nil)
+    {
+	Settings["HIBERNATE_SYSTEM"]		= "active_console";
+	if (hibernate == "auth_admin:auth_admin:auth_admin")
+	    Settings["HIBERNATE_SYSTEM"]	= "auth_admin";
+	if (hibernate == "yes:yes:yes")
+	    Settings["HIBERNATE_SYSTEM"]	= "anyone";
+    }
+    y2debug ("HIBERNATE_SYSTEM: %1", Settings["HIBERNATE_SYSTEM"]:"");
+
     // read sysctl.conf
     foreach (string key, string default_value, sysctl, {
 	string val	= (string) SCR::Read (add (.etc.sysctl_conf, key));
@@ -579,6 +607,16 @@ global define boolean Write() {
 	Pam::Remove ("pwhistory-remember");
 
     PamSettings::Write (false);
+
+    // write local polkit settings
+    if (Settings["HIBERNATE_SYSTEM"]:"" != Settings_bak["HIBERNATE_SYSTEM"]:"")
+    {
+	// allow writing any value (different from predefined ones)
+	string ycp_value= Settings["HIBERNATE_SYSTEM"]:"active_console";
+	string hibernate= ycp2polkit[ycp_value]:ycp_value;
+	string action	= "org.freedesktop.upower.hibernate";
+	SCR::Write (add (.etc.polkit-default-privs_local, action), hibernate);
+    }
 
     // write sysctl.conf
     foreach (string key, string default_value, sysctl, {

@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Sep 16 10:38:59 CEST 2011 - jsuchome@suse.cz
+
+- added option to tune system hibernation rights (bnc#704997)
+- 2.21.3
+
+-------------------------------------------------------------------
 Thu Sep  8 15:43:35 CEST 2011 - jsuchome@suse.cz
 
 - sysctl settings now in /etc/sysctl.conf (bnc#714405)

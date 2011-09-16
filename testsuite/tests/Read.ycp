@@ -82,6 +82,9 @@ map scr_info = $[
 	    "net.ipv4.ip_forward"	:	"r10",
 	    "net.ipv6.conf.all.forwarding"	:	"r11",
 	],
+	"polkit-default-privs_local"	: $[
+	    "org.freedesktop.upower.hibernate"	: "r12"
+	],
     ],
     "target" : $[ "size" : 1 ],
     "pam" : $[ "passwd" : $[ "password" : $[

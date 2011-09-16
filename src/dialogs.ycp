@@ -525,6 +525,8 @@ define any BootDialog() ``{
 		    settings2widget("CONSOLE_SHUTDOWN"),
 		    `VSpacing(1.0),
 		    settings2widget("DISPLAYMANAGER_SHUTDOWN"),
+		    `VSpacing(1.0),
+		    settings2widget("HIBERNATE_SYSTEM"),
 		    `VSpacing(1)
 		),
 		`HSpacing(3)
@@ -576,6 +578,7 @@ define any BootDialog() ``{
     if(ret == `next || contains(tree_dialogs, ret)) {
 	widget2settings("CONSOLE_SHUTDOWN");
 	widget2settings("DISPLAYMANAGER_SHUTDOWN");
+	widget2settings("HIBERNATE_SYSTEM");
     }
 
     return ret;
