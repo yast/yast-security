@@ -74,6 +74,7 @@ Execute	.target.bash_output "/usr/sbin/pam-config -d --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --cracklib-minlen" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --pwhistory-remember" $[]
 Write	.etc.default.passwd nil true
+Write	.etc.polkit-default-privs_local."org.freedesktop.upower.hibernate" "r21" true
 Read	.etc.sysctl_conf."kernel.sysrq" nil
 Write	.etc.sysctl_conf."kernel.sysrq" "1" true
 Read	.etc.sysctl_conf."net.ipv4.ip_forward" nil

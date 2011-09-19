@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Sep 19 14:55:57 CEST 2011 - jsuchome@suse.cz
+
+- fixed testsuite
+- 2.21.4 
+
+-------------------------------------------------------------------
 Fri Sep 16 10:38:59 CEST 2011 - jsuchome@suse.cz
 
 - added option to tune system hibernation rights (bnc#704997)
