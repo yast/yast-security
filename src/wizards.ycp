@@ -164,7 +164,7 @@ define any SecuritySequence() ``{
     ];
 
     Wizard::CreateDialog();
-    Wizard::SetDesktopIcon("security");
+    Wizard::SetDesktopTitleAndIcon("security");
 
     // Read has no progress and returns only true
     Security::Read();
@@ -188,7 +188,7 @@ define any SecurityAutoSequence() ``{
     term contents = `Label(_("Initializing..."));
 
     Wizard::CreateDialog();
-    Wizard::SetDesktopIcon("security");
+    Wizard::SetDesktopTitleAndIcon("security");
     Wizard::SetContentsButtons(caption, contents, "",
 	    Label::BackButton(), Label::NextButton());
 
