@@ -431,7 +431,10 @@ global define boolean Read() {
 	method = PamSettings::GetHashMethod ();
     }
     if (method == "" || !contains (["des","md5","sha256","sha512"],method))
-	method = "des";
+    {
+        method          = "sha512";
+        modified        = true;
+    }
     Settings["PASSWD_ENCRYPTION"]	= method;
     Settings["GROUP_ENCRYPTION"]	= PamSettings::GetGroupHashMethod ();
 

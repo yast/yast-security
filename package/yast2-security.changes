@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 31 15:48:21 CET 2012 - jsuchome@suse.cz
+
+- use sha512 as default encryption value, not 'des' (bnc#743715)
+- 2.22.1 
+
+-------------------------------------------------------------------
 Wed Jan 25 13:45:22 CET 2012 - jsuchome@suse.cz
 
 - confirmed license
