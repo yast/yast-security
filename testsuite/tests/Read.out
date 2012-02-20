@@ -40,8 +40,7 @@ Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
 Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_USER_PATH "r3"
-Dir	.etc.inittab: ["ca"]
-Read	.etc.inittab.ca ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
+Read	.target.symlink "/etc/systemd/system/ctrl-alt-del.target" nil
 Read	.etc.default.passwd."CRYPT_FILES" "blowfish"
 Read	.etc.default.passwd.group_crypt nil
 Read	.etc.default.passwd.crypt "md5"

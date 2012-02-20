@@ -33,6 +33,7 @@ module "Security";
 textdomain "security";
 
 import "FileUtils";
+import "Package";
 import "Pam";
 import "PamSettings";
 import "Progress";
@@ -54,6 +55,8 @@ global const list<string> optional_services = [
 ];
 // All other services should be turned off
 
+// systemd target, defining ctrl-alt-del behavior
+string ctrl_alt_del_file        =       "/etc/systemd/system/ctrl-alt-del.target";
 
 // return list of missing mandatory services in a runlevel
 global list<list<string> > MissingMandatoryServices(integer runlevel)
@@ -360,6 +363,53 @@ global void ReadServiceSettings()
 }
 
 /**
+ * Read the information about ctrl+alt+del behavior
+ * See bug 742783 for description
+ */
+global string ReadConsoleShutdown () {
+
+    string ret  = "ignore";
+
+    if (Package::Installed ("systemd"))
+    {
+        if (!FileUtils::Exists (ctrl_alt_del_file))
+        {
+            ret = "reboot";
+        }
+        else
+        {
+            string link = (string) SCR::Read (.target.symlink, ctrl_alt_del_file);
+            if (link == "/lib/systemd/system/poweroff.target")
+            {
+                ret     = "halt";
+            }
+            else if (link == "/lib/systemd/system/reboot.target" ||
+                     link == "/lib/systemd/system/ctrl-alt-del.target")
+            {
+                ret     = "reboot";
+            }
+        }
+        return ret;
+    }
+    list inittab = SCR::Dir(.etc.inittab);
+    if(contains(inittab, "ca")) {
+	string ca = (string) SCR::Read(.etc.inittab.ca);
+	if(issubstring(ca, "/bin/true") || issubstring(ca, "/bin/false"))
+	    Settings["CONSOLE_SHUTDOWN"] = "ignore";
+	else if(issubstring(ca, "reboot") || issubstring(ca, " -r"))
+	    Settings["CONSOLE_SHUTDOWN"] = "reboot";
+	else if(issubstring(ca, "halt") || issubstring(ca, " -h"))
+	    Settings["CONSOLE_SHUTDOWN"] = "halt";
+	else {
+	    y2error("Unknown ca status: %1", ca);
+	    Settings["CONSOLE_SHUTDOWN"] = "ignore";
+	}
+    }
+    else
+	Settings["CONSOLE_SHUTDOWN"] = "ignore";
+}
+
+/**
  * Read all security settings
  * @return true on success
  */
@@ -391,22 +441,7 @@ global define boolean Read() {
     });
     y2debug("Settings=%1", Settings);
 
-    list inittab = SCR::Dir(.etc.inittab);
-    if(contains(inittab, "ca")) {
-	string ca = (string) SCR::Read(.etc.inittab.ca);
-	if(issubstring(ca, "/bin/true") || issubstring(ca, "/bin/false"))
-	    Settings["CONSOLE_SHUTDOWN"] = "ignore";
-	else if(issubstring(ca, "reboot") || issubstring(ca, " -r"))
-	    Settings["CONSOLE_SHUTDOWN"] = "reboot";
-	else if(issubstring(ca, "halt") || issubstring(ca, " -h"))
-	    Settings["CONSOLE_SHUTDOWN"] = "halt";
-	else {
-	    y2error("Unknown ca status: %1", ca);
-	    Settings["CONSOLE_SHUTDOWN"] = "ignore";
-	}
-    }
-    else
-	Settings["CONSOLE_SHUTDOWN"] = "ignore";
+    Settings["CONSOLE_SHUTDOWN"]        = ReadConsoleShutdown ();
 
     y2debug("Settings=%1", Settings);
 
@@ -516,6 +551,45 @@ map<string,string> activation_mapping = $[
 ];
 
 /**
+ * Write the value of ctrl-alt-delete behavior
+ */
+boolean WriteConsoleShutdown (string ca) {
+
+    if (Package::Installed ("systemd"))
+    {
+        if (ca == "reboot")
+        {
+            SCR::Execute (.target.remove, ctrl_alt_del_file);
+        }
+        else if (ca == "halt")
+        {
+            SCR::Execute (.target.bash,
+                sformat ("ln -s -f /lib/systemd/system/poweroff.target %1",
+                ctrl_alt_del_file));
+        }
+        else
+        {
+            SCR::Execute (.target.bash,
+                sformat ("ln -s -f /dev/null %1", ctrl_alt_del_file));
+        }
+        return true;
+    }
+
+    if(ca == "reboot")
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/sbin/shutdown -r -t 4 now");
+    else if(ca == "halt")
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/sbin/shutdown -h -t 4 now");
+    else
+	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/bin/true");
+    SCR::Write(.etc.inittab, nil);
+
+    // re-read the modified inittab (#83480)
+    SCR::Execute (.target.bash, "/sbin/telinit q");
+    return true;
+}
+
+
+/**
  * Write all security settings
  * @return true on success
  */
@@ -580,17 +654,7 @@ global define boolean Write() {
     if(Abort()) return false;
     Progress::NextStage();
 
-    string ca = Settings["CONSOLE_SHUTDOWN"]:"ignore";
-    if(ca == "reboot")
-	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/sbin/shutdown -r -t 4 now");
-    else if(ca == "halt")
-	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/sbin/shutdown -h -t 4 now");
-    else
-	SCR::Write(.etc.inittab.ca, ":ctrlaltdel:/bin/true");
-    SCR::Write(.etc.inittab, nil);
-
-    // re-read the modified inittab (#83480)
-    SCR::Execute (.target.bash, "/sbin/telinit q");
+    WriteConsoleShutdown (Settings["CONSOLE_SHUTDOWN"]:"ignore");
 
     /* Write pam settings */
     if(Abort()) return false;
