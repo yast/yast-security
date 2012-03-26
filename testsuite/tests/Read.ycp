@@ -86,7 +86,11 @@ map scr_info = $[
 	    "org.freedesktop.upower.hibernate"	: "r12"
 	],
     ],
-    "target" : $[ "size" : 1 ],
+    "target" : $[
+        "size" : 1,
+        // FileUtils::Exists (ctrl_alt_del_file) returns true, so symlink is called
+        "stat"  : $[ 1:2 ]
+   ],
     "pam" : $[ "passwd" : $[ "password" : $[
 	"pam_unix" : [
 	    $[ "arguments" : "nullok use_first_pass use_authtok" ]
