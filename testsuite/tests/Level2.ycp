@@ -29,7 +29,11 @@ map R = $[
         "displaymanager" : $[
 	    "DISPLAYMANAGER"    :       "",
 	]
-    ]
+    ],
+    "target"    : $[
+        // FileUtils::Exists returns false:
+        "stat"  : $[]
+    ],
 ];
 
 Security::Settings = Levels["Level2"]:$[];
