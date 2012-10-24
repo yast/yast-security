@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Oct 24 11:08:58 CEST 2012 - jsuchome@suse.cz
+
+- remove SuSEconfig calls (fate#100011)
+- 2.23.0
+
+-------------------------------------------------------------------
 Mon Apr  2 10:27:53 CEST 2012 - jsuchome@suse.cz
 
 - testsuite: explicitely set the output of target.stat
