@@ -544,7 +544,7 @@ map<string,string> activation_mapping = $[
     "DHCPD_RUN_CHROOTED" : "/etc/init.d/dhcpd restart",
     "DHCPD_RUN_AS" : "/etc/init.d/dhcpd restart",
     // restart sendmail or postfix - whatever is installed
-    "SMTPD_LISTEN_REMOTE" : "(test -e /etc/init.d/sendmail && /sbin/SuSEconfig --module sendmail && /etc/init.d/sendmail restart) || (test -e /etc/init.d/postfix && /sbin/SuSEconfig --module postfix && /etc/init.d/postfix restart)",
+    "SMTPD_LISTEN_REMOTE" : "(test -e /etc/init.d/sendmail && VERBOSE=false /usr/lib/sendmail.d/update && /etc/init.d/sendmail restart) || (test -e /etc/init.d/postfix && /etc/init.d/postfix restart)",
     "net.ipv4.tcp_syncookies" : "/etc/init.d/boot.ipconfig start",
     "net.ipv4.ip_forward" : "/etc/init.d/boot.ipconfig start",
     "net.ipv6.conf.all.forwarding" : "/etc/init.d/boot.ipconfig start",
@@ -610,7 +610,7 @@ global define boolean Write() {
 	    /* Progress stage 3/4 */
 	    _("Write PAM settings"),
 	    /* Progress stage 4/4 */
-	    _("Run SuSEconfig"),
+	    _("Update system settings"),
 	], [
 	    /* Progress step 1/5 */
 	    _("Writing security settings..."),
@@ -619,7 +619,7 @@ global define boolean Write() {
 	    /* Progress step 3/5 */
 	    _("Writing PAM settings..."),
 	    /* Progress step 4/5 */
-	    _("Running SuSEconfig"),
+	    _("Updating system settings..."),
 	    /* Progress step 5/5 */
 	    _("Finished")
 	],
@@ -725,22 +725,16 @@ global define boolean Write() {
 	SCR::Execute (.target.bash, sformat ("echo %1 > /proc/sys/kernel/sysrq", sysrq));
     }
 
-    /* Finish him: SuSEconfig */
+    // Finish him
     if(Abort()) return false;
     Progress::NextStage();
 
-    string dm = (string)SCR::Read(.sysconfig.displaymanager.DISPLAYMANAGER);
-    string mod = (dm == "kdm" || dm == "") ? "kdm3" : dm;
-
-    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module kde3");
-    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module " + mod);
-    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module permissions");
+    // apply all current permissions as they are now (what SuSEconfig --module permissions would have done)
+    SCR::Execute(.target.bash, "/usr/bin/chkstat --system");
 
     // ensure polkit privileges are applied (bnc #541393)
     if (FileUtils::Exists ("/sbin/set_polkit_default_privs"))
 	SCR::Execute (.target.bash, "/sbin/set_polkit_default_privs");
-
-    SCR::Execute(.target.bash, "/sbin/SuSEconfig --module profiles");
 
     if(Abort()) return false;
     Progress::NextStage();
