@@ -82,15 +82,11 @@ Write	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "9" true
 Read	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" nil
 Write	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" "11" true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
-Read	.sysconfig.displaymanager.DISPLAYMANAGER ""
-Execute	.target.bash "/sbin/SuSEconfig --module kde3" 0
-Execute	.target.bash "/sbin/SuSEconfig --module kdm3" 0
-Execute	.target.bash "/sbin/SuSEconfig --module permissions" 0
+Execute	.target.bash "/usr/bin/chkstat --system" 0
 Execute	.target.bash "/sbin/set_polkit_default_privs" 0
-Execute	.target.bash "/sbin/SuSEconfig --module profiles" 0
 Execute	.target.bash "/etc/init.d/dhcpd restart" 0
 Execute	.target.bash "/etc/init.d/dhcpd restart" 0
-Execute	.target.bash "(test -e /etc/init.d/sendmail && /sbin/SuSEconfig --module sendmail && /etc/init.d/sendmail restart) || (test -e /etc/init.d/postfix && /sbin/SuSEconfig --module postfix && /etc/init.d/postfix restart)" 0
+Execute	.target.bash "(test -e /etc/init.d/sendmail && VERBOSE=false /usr/lib/sendmail.d/update && /etc/init.d/sendmail restart) || (test -e /etc/init.d/postfix && /usr/sbin/SuSEconfig.postfix && /etc/init.d/postfix restart)" 0
 Execute	.target.bash "/etc/init.d/boot.clock start" 0
 Execute	.target.bash "/etc/init.d/boot.ipconfig start" 0
 Execute	.target.bash "/etc/init.d/boot.ipconfig start" 0
