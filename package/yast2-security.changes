@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Feb  4 14:53:25 CET 2013 - jsuchome@suse.cz
+
+- testsuite adapted to last changes (SuSEconfig removal)
+- 2.23.1 
+
+-------------------------------------------------------------------
 Wed Oct 24 11:08:58 CEST 2012 - jsuchome@suse.cz
 
 - remove SuSEconfig calls (fate#100011)
