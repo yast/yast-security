@@ -35,7 +35,6 @@ textdomain "security";
 import "FileUtils";
 import "Package";
 import "Pam";
-import "PamSettings";
 import "Progress";
 import "Service";
 
@@ -57,6 +56,9 @@ global const list<string> optional_services = [
 
 // systemd target, defining ctrl-alt-del behavior
 string ctrl_alt_del_file        =       "/etc/systemd/system/ctrl-alt-del.target";
+
+// encryption methods supported by pam_unix (bnc#802006)
+list<string> encryption_methods     = [ "des", "md5", "sha256", "sha512" ];
 
 // return list of missing mandatory services in a runlevel
 global list<list<string> > MissingMandatoryServices(integer runlevel)
@@ -159,10 +161,10 @@ global map<string,string> Settings = $[
     "RUN_UPDATEDB_AS"			: "nobody",
     "UID_MAX"				: "60000",
     "UID_MIN"				: "500",
-    "SYSTEM_UID_MAX"			: "499",
-    "SYSTEM_UID_MIN"			: "100",
-    "SYSTEM_GID_MAX"			: "499",
-    "SYSTEM_GID_MIN"			: "100",
+    "SYS_UID_MAX"			: "499",
+    "SYS_UID_MIN"			: "100",
+    "SYS_GID_MAX"			: "499",
+    "SYS_GID_MIN"			: "100",
     "USERADD_CMD"			: "/usr/sbin/useradd.local",
     "USERDEL_PRECMD"			: "/usr/sbin/userdel-pre.local",
     "USERDEL_POSTCMD"			: "/usr/sbin/userdel-post.local",
@@ -203,10 +205,10 @@ map<string,list<string> > Locations = $[
 	"PASS_WARN_AGE",
 	"UID_MAX",
 	"UID_MIN",
-	"SYSTEM_UID_MAX",
-	"SYSTEM_UID_MIN",
-	"SYSTEM_GID_MAX",
-	"SYSTEM_GID_MIN",
+	"SYS_UID_MAX",
+	"SYS_UID_MIN",
+	"SYS_GID_MAX",
+	"SYS_GID_MIN",
 	"USERADD_CMD",
 	"USERDEL_PRECMD",
 	"USERDEL_POSTCMD",
@@ -264,6 +266,17 @@ map<string,string> sysctl2sysconfig	= $[
 ];
 
 /**
+ * Mapping of /etc/login.defs keys to old (obsoleted) ones
+ * (used during autoYaST import)
+ */
+map<string,string> login_defs	= $[
+    "SYS_UID_MAX"       : "SYSTEM_UID_MAX",
+    "SYS_UID_MIN"       : "SYSTEM_UID_MIN",
+    "SYS_GID_MAX"       : "SYSTEM_GID_MAX",
+    "SYS_GID_MIN"       : "SYSTEM_GID_MIN",
+];
+
+/**
  * mapping of internal YaST values to values needed for
  * org.freedesktop.upower.hibernate privilege
  */
@@ -277,7 +290,6 @@ map<string,string> ycp2polkit	= $[
  * Remaining settings:
  * - CONSOLE_SHUTDOWN (/etc/inittab)
  * - PASSWD_ENCRYPTION (/etc/pam?)
- * - GROUP_ENCRYPTION FIXME cannot be set
  * - RUNLEVEL3_MANDATORY_SERVICES
  * - RUNLEVEL5_MANDATORY_SERVICES
  * - RUNLEVEL3_EXTRA_SERVICES
@@ -451,27 +463,12 @@ global define boolean Read() {
 
     /* Read pam settings */
 
-    // read the password hash settings
-    string method = PamSettings::GetDefaultValue ("CRYPT_FILES");
-    // change old default to new default automatically
-    if (method == "blowfish")
+    string method       = (string) SCR::Read (.etc.login_defs.ENCRYPT_METHOD);
+    if (method == nil || !contains (encryption_methods, tolower (method)))
     {
-	y2milestone ("found 'blowfish', changing to new default 'sha512'");
-	method		= "sha512";
-	modified	= true;
-    }
-    if (method == nil || method == "" ||
-	!contains (["des","md5","sha256","sha512"],method))
-    {
-	method = PamSettings::GetHashMethod ();
-    }
-    if (method == "" || !contains (["des","md5","sha256","sha512"],method))
-    {
-        method          = "sha512";
-        modified        = true;
+        method    = "des";
     }
     Settings["PASSWD_ENCRYPTION"]	= method;
-    Settings["GROUP_ENCRYPTION"]	= PamSettings::GetGroupHashMethod ();
 
     // cracklib and pwhistory settings
     Settings ["PASS_MIN_LEN"] = "5";
@@ -662,7 +659,10 @@ global define boolean Write() {
 
     /* pam stuff */
     string encr = Settings["PASSWD_ENCRYPTION"]:"sha512";
-    PamSettings::SetDefaultValue ("CRYPT_FILES", encr);
+    if (encr != Settings_bak["PASSWD_ENCRYPTION"]:"")
+    {
+      SCR::Write (.etc.login_defs.ENCRYPT_METHOD, encr);
+    }
 
     // use cracklib?
     if(Settings["PASSWD_USE_CRACKLIB"]:"no" == "yes") {
@@ -692,8 +692,6 @@ global define boolean Write() {
     }
     else
 	Pam::Remove ("pwhistory-remember");
-
-    PamSettings::Write (false);
 
     // write local polkit settings
     if (Settings["HIBERNATE_SYSTEM"]:"" != Settings_bak["HIBERNATE_SYSTEM"]:"")
@@ -784,6 +782,10 @@ global define boolean Import(map settings) {
 		else
 		    tmpSettings[k] = val;
 	    }
+            else if (haskey (settings, login_defs[k]:""))
+            {
+                tmpSettings[k]  = settings[login_defs[k]:""]:"";
+            }
 	    else
 	    {
 		tmpSettings[k] = v;

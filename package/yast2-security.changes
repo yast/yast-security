@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb  6 15:46:02 CET 2013 - jsuchome@suse.cz
+
+- /etc/default/useradd is dropped (bnc#802006)
+- adapted to changes of /etc/login.defs (bnc#802006) 
+- 2.23.2
+
+-------------------------------------------------------------------
 Mon Feb  4 14:53:25 CET 2013 - jsuchome@suse.cz
 
 - testsuite adapted to last changes (SuSEconfig removal)
