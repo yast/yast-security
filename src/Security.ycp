@@ -269,7 +269,7 @@ map<string,string> sysctl2sysconfig	= $[
  * Mapping of /etc/login.defs keys to old (obsoleted) ones
  * (used during autoYaST import)
  */
-map<string,string> login_defs	= $[
+map<string,string> obsolete_login_defs	= $[
     "SYS_UID_MAX"       : "SYSTEM_UID_MAX",
     "SYS_UID_MIN"       : "SYSTEM_UID_MIN",
     "SYS_GID_MAX"       : "SYSTEM_GID_MAX",
@@ -782,9 +782,9 @@ global define boolean Import(map settings) {
 		else
 		    tmpSettings[k] = val;
 	    }
-            else if (haskey (settings, login_defs[k]:""))
+            else if (haskey (settings, obsolete_login_defs[k]:""))
             {
-                tmpSettings[k]  = settings[login_defs[k]:""]:"";
+                tmpSettings[k]  = settings[obsolete_login_defs[k]:""]:"";
             }
 	    else
 	    {
