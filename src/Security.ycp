@@ -55,10 +55,10 @@ global const list<string> optional_services = [
 // All other services should be turned off
 
 // systemd target, defining ctrl-alt-del behavior
-string ctrl_alt_del_file        =       "/etc/systemd/system/ctrl-alt-del.target";
+const string ctrl_alt_del_file        =       "/etc/systemd/system/ctrl-alt-del.target";
 
 // encryption methods supported by pam_unix (bnc#802006)
-list<string> encryption_methods     = [ "des", "md5", "sha256", "sha512" ];
+const list<string> encryption_methods     = [ "des", "md5", "sha256", "sha512" ];
 
 // return list of missing mandatory services in a runlevel
 global list<list<string> > MissingMandatoryServices(integer runlevel)
@@ -247,7 +247,7 @@ map<string,list<string> > Locations = $[
 /**
  * Default values for /etc/sysctl.conf keys
  */
-map<string,string> sysctl	= $[
+const map<string,string> sysctl	= $[
     "kernel.sysrq"		: "0",
     "net.ipv4.tcp_syncookies"	: "1",
     "net.ipv4.ip_forward"	: "0",
@@ -258,7 +258,7 @@ map<string,string> sysctl	= $[
  * Mapping of /etc/sysctl.conf keys to old (obsoleted) sysconfig ones
  * (used during autoYaST import
  */
-map<string,string> sysctl2sysconfig	= $[
+const map<string,string> sysctl2sysconfig	= $[
     "kernel.sysrq"		: "ENABLE_SYSRQ",
     "net.ipv4.tcp_syncookies"	: "IP_TCP_SYNCOOKIES",
     "net.ipv4.ip_forward"	: "IP_FORWARD",
@@ -269,7 +269,7 @@ map<string,string> sysctl2sysconfig	= $[
  * Mapping of /etc/login.defs keys to old (obsoleted) ones
  * (used during autoYaST import)
  */
-map<string,string> obsolete_login_defs	= $[
+const map<string,string> obsolete_login_defs	= $[
     "SYS_UID_MAX"       : "SYSTEM_UID_MAX",
     "SYS_UID_MIN"       : "SYSTEM_UID_MIN",
     "SYS_GID_MAX"       : "SYSTEM_GID_MAX",
@@ -280,7 +280,7 @@ map<string,string> obsolete_login_defs	= $[
  * mapping of internal YaST values to values needed for
  * org.freedesktop.upower.hibernate privilege
  */
-map<string,string> ycp2polkit	= $[
+const map<string,string> ycp2polkit	= $[
     "active_console"	: "auth_admin:auth_admin:yes",
     "auth_admin"	: "auth_admin:auth_admin:auth_admin",
     "anyone"		: "yes:yes:yes"
