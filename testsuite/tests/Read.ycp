@@ -66,15 +66,10 @@ map scr_info = $[
 	    "USERADD_CMD"		:	"l18",
 	    "USERDEL_PRECMD"		:	"l19",
 	    "USERDEL_POSTCMD"		:	"l20",
+            "ENCRYPT_METHOD"            :       "garbage",
 	],
 	"inittab" : $[
 	    "ca"			:	":ctrlaltdel:/sbin/shutdown -r -t 4 now"
-	],
-	"default" : $[
-	    "passwd" : $[
-		"crypt"			:	"md5",
-		"CRYPT_FILES"		:	"blowfish",
-	    ],
 	],
 	"sysctl_conf"	: $[
 	    "kernel.sysrq"		:	"r8",
@@ -105,7 +100,10 @@ map E	= $[
 ];
 
 Testsuite::Test (``(Security::Read()),[scr_info,$[],E],nil);
-// read blowfish, changed to sha512
+// read garbage, changed to des
 Testsuite::Dump (Security::Settings["PASSWD_ENCRYPTION"]:nil);
+
+scr_info["etc","login_defs","ENCRYPT_METHOD"] = "sha512";
+Testsuite::Test (``(Security::Read()),[scr_info,$[],E],nil);
 
 }
