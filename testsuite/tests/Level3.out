@@ -16,14 +16,14 @@ Read	.etc.login_defs.UID_MAX nil
 Write	.etc.login_defs.UID_MAX "60000" true
 Read	.etc.login_defs.UID_MIN nil
 Write	.etc.login_defs.UID_MIN "1000" true
-Read	.etc.login_defs.SYSTEM_UID_MAX nil
-Write	.etc.login_defs.SYSTEM_UID_MAX "499" true
-Read	.etc.login_defs.SYSTEM_UID_MIN nil
-Write	.etc.login_defs.SYSTEM_UID_MIN "100" true
-Read	.etc.login_defs.SYSTEM_GID_MAX nil
-Write	.etc.login_defs.SYSTEM_GID_MAX "499" true
-Read	.etc.login_defs.SYSTEM_GID_MIN nil
-Write	.etc.login_defs.SYSTEM_GID_MIN "100" true
+Read	.etc.login_defs.SYS_UID_MAX nil
+Write	.etc.login_defs.SYS_UID_MAX "499" true
+Read	.etc.login_defs.SYS_UID_MIN nil
+Write	.etc.login_defs.SYS_UID_MIN "100" true
+Read	.etc.login_defs.SYS_GID_MAX nil
+Write	.etc.login_defs.SYS_GID_MAX "499" true
+Read	.etc.login_defs.SYS_GID_MIN nil
+Write	.etc.login_defs.SYS_GID_MIN "100" true
 Read	.etc.login_defs.USERADD_CMD nil
 Write	.etc.login_defs.USERADD_CMD "/usr/sbin/useradd.local" true
 Read	.etc.login_defs.USERDEL_PRECMD nil
@@ -66,13 +66,10 @@ Write	.sysconfig.security nil true
 Write	.sysconfig.services nil true
 Write	.sysconfig.suseconfig nil true
 Execute	.target.bash "ln -s -f /dev/null /etc/systemd/system/ctrl-alt-del.target" 0
-Read	.etc.default.passwd."CRYPT_FILES" nil
-Write	.etc.default.passwd."CRYPT_FILES" "sha512" true
 Execute	.target.bash_output "/usr/sbin/pam-config -a --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -a --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -a --cracklib-minlen=6" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --pwhistory-remember" $[]
-Write	.etc.default.passwd nil true
 Read	.etc.sysctl_conf."kernel.sysrq" nil
 Write	.etc.sysctl_conf."kernel.sysrq" "0" true
 Read	.etc.sysctl_conf."net.ipv4.ip_forward" nil

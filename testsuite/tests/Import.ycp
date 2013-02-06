@@ -39,10 +39,10 @@ map<string,string> import_map = $[
     "RUN_UPDATEDB_AS"		:	"r7",
     "UID_MAX"			:	"l12",
     "UID_MIN"			:	"l13",
-    "SYSTEM_UID_MAX"		:	"l14",
+    "SYSTEM_UID_MAX"		:	"l14",// old syntax
     "SYSTEM_UID_MIN"		:	"l15",
-    "SYSTEM_GID_MAX"		:	"l16",
-    "SYSTEM_GID_MIN"		:	"l17",
+    "SYS_GID_MAX"		:	"l16",
+    "SYS_GID_MIN"		:	"l17",
     "USERADD_CMD"		:	"l18",
     "USERDEL_PRECMD"		:	"l19",
     "USERDEL_POSTCMD"		:	"l20",
@@ -71,5 +71,10 @@ map R = $[
 TEST(``(Security::Import(import_map)),[R,$[],E],nil);
 
 DUMP(Security::Settings);
+
+DUMP(Security::Settings["SYS_UID_MIN"]:"");
+DUMP(Security::Settings["SYS_UID_MAX"]:"");
+DUMP(Security::Settings["SYS_GID_MIN"]:"");
+DUMP(Security::Settings["SYS_GID_MAX"]:"");
 
 }

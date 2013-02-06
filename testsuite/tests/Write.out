@@ -16,14 +16,14 @@ Read	.etc.login_defs.UID_MAX nil
 Write	.etc.login_defs.UID_MAX "l12" true
 Read	.etc.login_defs.UID_MIN nil
 Write	.etc.login_defs.UID_MIN "l13" true
-Read	.etc.login_defs.SYSTEM_UID_MAX nil
-Write	.etc.login_defs.SYSTEM_UID_MAX "l14" true
-Read	.etc.login_defs.SYSTEM_UID_MIN nil
-Write	.etc.login_defs.SYSTEM_UID_MIN "l15" true
-Read	.etc.login_defs.SYSTEM_GID_MAX nil
-Write	.etc.login_defs.SYSTEM_GID_MAX "l16" true
-Read	.etc.login_defs.SYSTEM_GID_MIN nil
-Write	.etc.login_defs.SYSTEM_GID_MIN "l17" true
+Read	.etc.login_defs.SYS_UID_MAX nil
+Write	.etc.login_defs.SYS_UID_MAX "" true
+Read	.etc.login_defs.SYS_UID_MIN nil
+Write	.etc.login_defs.SYS_UID_MIN "" true
+Read	.etc.login_defs.SYS_GID_MAX nil
+Write	.etc.login_defs.SYS_GID_MAX "" true
+Read	.etc.login_defs.SYS_GID_MIN nil
+Write	.etc.login_defs.SYS_GID_MIN "" true
 Read	.etc.login_defs.USERADD_CMD nil
 Write	.etc.login_defs.USERADD_CMD "l18" true
 Read	.etc.login_defs.USERDEL_PRECMD nil
@@ -66,12 +66,9 @@ Write	.sysconfig.security nil true
 Write	.sysconfig.services nil true
 Write	.sysconfig.suseconfig nil true
 Execute	.target.bash "ln -s -f /lib/systemd/system/poweroff.target /etc/systemd/system/ctrl-alt-del.target" 0
-Read	.etc.default.passwd."CRYPT_FILES" nil
-Write	.etc.default.passwd."CRYPT_FILES" "sha512" true
 Execute	.target.bash_output "/usr/sbin/pam-config -d --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --cracklib-minlen" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -d --pwhistory-remember" $[]
-Write	.etc.default.passwd nil true
 Write	.etc.polkit-default-privs_local."org.freedesktop.upower.hibernate" "r21" true
 Read	.etc.sysctl_conf."kernel.sysrq" nil
 Write	.etc.sysctl_conf."kernel.sysrq" "1" true
