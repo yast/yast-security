@@ -1,0 +1,23 @@
+/*
+ * File:
+ *   etc.polkit-default-privs_local.scr
+ * Summary:
+ *   SCR Agent for reading/writing /etc/polkit-default-privs.local
+ * Access:
+ *   r/w
+ *
+ */
+.etc.polkit-default-privs_local
+
+`ag_ini(
+  `IniAgent(
+    "/etc/polkit-default-privs.local",
+    $[ "options" : ["ignore_case", "global_values", "flat"],
+       "comments" : [ "^#.*", "^[ \t]*$", ],
+       "params" : [
+	    $[
+		"match" : [ "^[ \t]*([a-zA-Z0-9_\.]+)[ \t]+(.*[^ \t]|)[ \t]*$", "%s %s", ]
+	    ]
+       ]
+	]
+    ))
