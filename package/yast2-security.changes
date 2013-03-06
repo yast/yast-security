@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Mar  6 16:19:20 CET 2013 - jsuchome@suse.cz
+
+- added missing etc_polkit-default-privs_local.scr 
+- 2.23.3
+
+-------------------------------------------------------------------
 Wed Feb  6 15:46:02 CET 2013 - jsuchome@suse.cz
 
 - /etc/default/useradd is dropped (bnc#802006)
