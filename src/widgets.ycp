@@ -195,13 +195,6 @@ map WIDGETS = $[
 	"Value" : "active_console"
     ],
 
-    "LASTLOG_ENAB" : $[
-	"Widget" : "CheckBox",
-	/* CheckBox label */
-	"Label" : _("R&ecord Successful Login Attempts"),
-	"Value" : "yes"
-    ],
-
     "PASSWD_ENCRYPTION" : $[
 	"Widget" : "ComboBox",
 	/* ComboBox label */

@@ -1,7 +1,6 @@
 Read	.etc.login_defs.FAIL_DELAY "l2"
 Read	.etc.login_defs.GID_MAX "l3"
 Read	.etc.login_defs.GID_MIN "l4"
-Read	.etc.login_defs.LASTLOG_ENAB "l5"
 Read	.etc.login_defs.PASS_MAX_DAYS "l7"
 Read	.etc.login_defs.PASS_MIN_DAYS "l9"
 Read	.etc.login_defs.PASS_WARN_AGE "l11"
@@ -51,10 +50,9 @@ Read	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "r9"
 Read	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" "r11"
 Return	true
 Dump	des
-Read	.etc.login_defs.FAIL_DELAY "l2"
+Read	.etc.login_defs.FAIL_DELAY nil
 Read	.etc.login_defs.GID_MAX "l3"
 Read	.etc.login_defs.GID_MIN "l4"
-Read	.etc.login_defs.LASTLOG_ENAB "l5"
 Read	.etc.login_defs.PASS_MAX_DAYS "l7"
 Read	.etc.login_defs.PASS_MIN_DAYS "l9"
 Read	.etc.login_defs.PASS_WARN_AGE "l11"
@@ -103,3 +101,4 @@ Read	.etc.sysctl_conf."net.ipv4.ip_forward" "r10"
 Read	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "r9"
 Read	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" "r11"
 Return	true
+Dump	none

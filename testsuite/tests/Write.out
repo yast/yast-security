@@ -4,8 +4,6 @@ Read	.etc.login_defs.GID_MAX nil
 Write	.etc.login_defs.GID_MAX "l3" true
 Read	.etc.login_defs.GID_MIN nil
 Write	.etc.login_defs.GID_MIN "l4" true
-Read	.etc.login_defs.LASTLOG_ENAB nil
-Write	.etc.login_defs.LASTLOG_ENAB "l5" true
 Read	.etc.login_defs.PASS_MAX_DAYS nil
 Write	.etc.login_defs.PASS_MAX_DAYS "l7" true
 Read	.etc.login_defs.PASS_MIN_DAYS nil
@@ -17,13 +15,13 @@ Write	.etc.login_defs.UID_MAX "l12" true
 Read	.etc.login_defs.UID_MIN nil
 Write	.etc.login_defs.UID_MIN "l13" true
 Read	.etc.login_defs.SYS_UID_MAX nil
-Write	.etc.login_defs.SYS_UID_MAX "" true
+Write	.etc.login_defs.SYS_UID_MAX "l14" true
 Read	.etc.login_defs.SYS_UID_MIN nil
-Write	.etc.login_defs.SYS_UID_MIN "" true
+Write	.etc.login_defs.SYS_UID_MIN "l15" true
 Read	.etc.login_defs.SYS_GID_MAX nil
-Write	.etc.login_defs.SYS_GID_MAX "" true
+Write	.etc.login_defs.SYS_GID_MAX "l16" true
 Read	.etc.login_defs.SYS_GID_MIN nil
-Write	.etc.login_defs.SYS_GID_MIN "" true
+Write	.etc.login_defs.SYS_GID_MIN "l17" true
 Read	.etc.login_defs.USERADD_CMD nil
 Write	.etc.login_defs.USERADD_CMD "l18" true
 Read	.etc.login_defs.USERDEL_PRECMD nil

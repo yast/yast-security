@@ -1,4 +1,13 @@
 -------------------------------------------------------------------
+Thu Mar  7 07:37:49 CET 2013 - jsuchome@suse.cz
+
+- drop unused LASTLOG_ENAB support (bnc#807099)
+- drop obsoleted GROUP_ENCRYPTION (bnc#802006)
+- if key is not present in config file, do not write new value
+  (bnc#807099)
+- 2.23.4 
+
+-------------------------------------------------------------------
 Wed Mar  6 16:19:20 CET 2013 - jsuchome@suse.cz
 
 - added missing etc_polkit-default-privs_local.scr 
