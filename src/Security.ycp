@@ -147,9 +147,7 @@ global map<string,string> Settings = $[
     "GID_MIN"				: "1000",
     "DISPLAYMANAGER_SHUTDOWN"		: "all",
     "HIBERNATE_SYSTEM"			: "active_console",
-    "LASTLOG_ENAB"			: "yes",
     "PASSWD_ENCRYPTION"			: "sha512",
-    "GROUP_ENCRYPTION"			: "md5",
     "PASSWD_USE_CRACKLIB"		: "yes",
     "PASS_MAX_DAYS"			: "99999",
     "PASS_MIN_DAYS"			: "0",
@@ -184,9 +182,8 @@ global map<string,string> Settings = $[
 map<string,string> Settings_bak = Settings;
 
 // keys that should not be tested against predefined levels:
-// - GROUP_ENCRYPTION does not have UI for changing
 // - RUNLEVEL*_SERVICES have different syntax, are not saved in current form
-global list<string> do_not_test = [ "GROUP_ENCRYPTION",
+global list<string> do_not_test = [
 	"RUNLEVEL3_MANDATORY_SERVICES", "RUNLEVEL5_MANDATORY_SERVICES",
 	"RUNLEVEL3_EXTRA_SERVICES", "RUNLEVEL5_EXTRA_SERVICES"
 ];
@@ -199,7 +196,6 @@ map<string,list<string> > Locations = $[
 	"FAIL_DELAY",
 	"GID_MAX",
 	"GID_MIN",
-	"LASTLOG_ENAB",
 	"PASS_MAX_DAYS",
 	"PASS_MIN_DAYS",
 	"PASS_WARN_AGE",
@@ -446,8 +442,10 @@ global define boolean Read() {
 		val = (string) SCR::Read(topath(file + "." + var));
 		y2debug("Reading: %1 (%2)", topath(file + "." + var), val);
 	    }
-	    if(val == nil) val = "";
-	    Settings[var] = val;
+            if (val != nil)
+            {
+	      Settings[var] = val;
+            }
 	});
 	return $[0: 0];
     });
@@ -633,9 +631,8 @@ global define boolean Write() {
     list<string> commitlist = [];
     mapmap(string file, list<string> vars, Locations, {
 	maplist(string var, vars, {
-	    string val = Settings[var]:"";
-	    if(val == nil) val = "";
-	    if(val != SCR::Read(topath(file + "." + var))) {
+	    string val = Settings[var]:nil;
+	    if(val != nil && val != SCR::Read(topath(file + "." + var))) {
 		SCR::Write(topath(file + "." + var), val);
 		commitlist = (list<string>) union(commitlist, [ file ]);
 	    }

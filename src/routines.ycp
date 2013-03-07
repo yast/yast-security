@@ -156,7 +156,9 @@ define term settings2widget(string ID) ``{
     if(m["Editable"]:"no" == "yes")
 	opt_t	= `opt (`editable);
     if(m["Notify"]:"no" == "yes")
-	opt_t	= add (opt_t, `notify);
+    {
+	opt_t	= opt_t == nil ? `opt (`notify) : add (opt_t, `notify);
+    }
     if (opt_t != nil)
 	combobox = `ComboBox(`id(ID), opt_t, label, combo);
     else
