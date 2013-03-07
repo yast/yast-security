@@ -52,7 +52,6 @@ map scr_info = $[
 	    "FAIL_DELAY"		:	"l2",
 	    "GID_MAX"			:	"l3",
 	    "GID_MIN"			:	"l4",
-	    "LASTLOG_ENAB"		:	"l5",
 	    "PASS_MAX_DAYS"		:	"l7",
 	    "PASS_MIN_DAYS"		:	"l9",
 	    "PASS_MIN_LEN"		:	"l10",
@@ -104,6 +103,10 @@ Testsuite::Test (``(Security::Read()),[scr_info,$[],E],nil);
 Testsuite::Dump (Security::Settings["PASSWD_ENCRYPTION"]:nil);
 
 scr_info["etc","login_defs","ENCRYPT_METHOD"] = "sha512";
+// reads nil -> not in the Settings
+scr_info["etc","login_defs","FAIL_DELAY"] = nil;
 Testsuite::Test (``(Security::Read()),[scr_info,$[],E],nil);
+
+Testsuite::Dump (Security::Settings["FAIL_DELAY"]:"none");
 
 }

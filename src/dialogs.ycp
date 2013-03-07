@@ -822,7 +822,6 @@ define any LoginDialog() ``{
 	    settings2widget("FAIL_DELAY"),
 	    //VSeparator(),
 	    `VSpacing(0.5),
-	    settings2widget("LASTLOG_ENAB"),
 	    VSeparator(),
 	    settings2widget("DISPLAYMANAGER_REMOTE_ACCESS")
 	    //VSeparator()
@@ -875,7 +874,6 @@ define any LoginDialog() ``{
    }
 
     if(ret == `next || contains(tree_dialogs, ret)) {
-	widget2settings("LASTLOG_ENAB");
 	widget2settings("FAIL_DELAY");
 	widget2settings("DISPLAYMANAGER_REMOTE_ACCESS");
     }
