@@ -1,6 +1,5 @@
 Makefile
 Makefile.am
-Makefile.am.common
 Makefile.in
 aclocal.m4
 autom4te.cache
@@ -15,10 +14,18 @@ configure
 configure.in
 depcomp
 install-sh
+*.pot
 libtool
 ltconfig
 ltmain.sh
 missing
 mkinstalldirs
 stamp-h*
-security.pot
+Makefile.am.common
+*.ami
+*.bz2
+*.spec
+.dep
+tmp.*
+*.log
+*.ybc
