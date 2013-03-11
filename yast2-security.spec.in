@@ -32,6 +32,11 @@ The YaST2 component for security settings configuration.
 
 @CLEAN@
 
+%post
+if [ -f /etc/login.defs  ] ; then
+  sed -e '/^[ \t]*LASTLOG_ENAB[ \t]*\"\"/d' -i /etc/login.defs
+fi
+
 %files
 %defattr(-,root,root)
 %dir @yncludedir@/security
