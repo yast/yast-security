@@ -33,6 +33,7 @@ The YaST2 component for security settings configuration.
 @CLEAN@
 
 %post
+# remove broken entry in /etc/login.defs, introduced during installation (bnc#807099)
 if [ -f /etc/login.defs  ] ; then
   sed -e '/^[ \t]*LASTLOG_ENAB[ \t]*\"\"/d' -i /etc/login.defs
 fi
