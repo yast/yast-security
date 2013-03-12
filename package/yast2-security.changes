@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Mar  8 14:04:48 CET 2013 - jsuchome@suse.cz
+
+- remove broken LASTLOG_ENAB entry from /etc/login.defs (bnc#807099)
+- 2.23.5 
+
+-------------------------------------------------------------------
 Thu Mar  7 07:37:49 CET 2013 - jsuchome@suse.cz
 
 - drop unused LASTLOG_ENAB support (bnc#807099)
