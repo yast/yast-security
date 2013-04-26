@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Apr 25 14:15:59 CEST 2013 - jsuchome@suse.cz
+
+- ignore case for encryption method names (bnc#810600)
+- 2.23.6 
+
+-------------------------------------------------------------------
 Fri Mar  8 14:04:48 CET 2013 - jsuchome@suse.cz
 
 - remove broken LASTLOG_ENAB entry from /etc/login.defs (bnc#807099)
