@@ -102,11 +102,12 @@ Testsuite::Test (``(Security::Read()),[scr_info,$[],E],nil);
 // read garbage, changed to des
 Testsuite::Dump (Security::Settings["PASSWD_ENCRYPTION"]:nil);
 
-scr_info["etc","login_defs","ENCRYPT_METHOD"] = "sha512";
+scr_info["etc","login_defs","ENCRYPT_METHOD"] = "SHA512";
 // reads nil -> not in the Settings
 scr_info["etc","login_defs","FAIL_DELAY"] = nil;
 Testsuite::Test (``(Security::Read()),[scr_info,$[],E],nil);
 
 Testsuite::Dump (Security::Settings["FAIL_DELAY"]:"none");
+Testsuite::Dump (Security::Settings["PASSWD_ENCRYPTION"]:nil);
 
 }

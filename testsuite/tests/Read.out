@@ -92,7 +92,7 @@ Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "r2"
 Read	.target.size "/etc/sysconfig/suseconfig" 1
 Read	.sysconfig.suseconfig.CWD_IN_USER_PATH "r3"
 Read	.target.symlink "/etc/systemd/system/ctrl-alt-del.target" nil
-Read	.etc.login_defs.ENCRYPT_METHOD "sha512"
+Read	.etc.login_defs.ENCRYPT_METHOD "SHA512"
 Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $[]
 Read	.etc.polkit-default-privs_local."org.freedesktop.upower.hibernate" "r12"
@@ -102,3 +102,4 @@ Read	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "r9"
 Read	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" "r11"
 Return	true
 Dump	none
+Dump	sha512

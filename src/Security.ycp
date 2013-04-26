@@ -466,7 +466,7 @@ global define boolean Read() {
     {
         method    = "des";
     }
-    Settings["PASSWD_ENCRYPTION"]	= method;
+    Settings["PASSWD_ENCRYPTION"]	= tolower (method);
 
     // cracklib and pwhistory settings
     Settings ["PASS_MIN_LEN"] = "5";
