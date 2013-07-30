@@ -19,6 +19,8 @@ Obsoletes:	yast2-trans-security y2t_sec
 
 BuildArchitectures: noarch
 
+Requires:       yast2-ruby-bindings >= 1.0.0
+
 Summary:	YaST2 - Security Configuration
 
 %description
@@ -43,8 +45,8 @@ fi
 %dir @yncludedir@/security
 @yncludedir@/security/*
 @desktopdir@/security.desktop
-@clientdir@/security*.ycp
-@moduledir@/Security.y*
+@clientdir@/security*.rb
+@moduledir@/Security.rb
 @scrconfdir@/*.scr
 @schemadir@/autoyast/rnc/security.rnc
 %doc @docdir@
