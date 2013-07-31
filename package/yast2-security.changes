@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Jul 31 08:39:17 UTC 2013 - yast-devel@opensuse.org
+
+- converted from YCP to Ruby by YCP Killer
+  (https://github.com/yast/ycp-killer)
+- version 3.0.0
+
+-------------------------------------------------------------------
 Thu Apr 25 14:15:59 CEST 2013 - jsuchome@suse.cz
 
 - ignore case for encryption method names (bnc#810600)
