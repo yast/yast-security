@@ -1,5 +1,5 @@
 Makefile
-Makefile.am
+/Makefile.am
 Makefile.in
 aclocal.m4
 autom4te.cache
@@ -28,4 +28,11 @@ Makefile.am.common
 .dep
 tmp.*
 *.log
-*.ybc
+/doc/autodocs/
+!/doc/autodocs/Makefile.am
+/testsuite/config/
+/testsuite/run/
+/testsuite/site.exp
+/testsuite/yast2-security.sum
+/testsuite/yast2-security.test/
+
