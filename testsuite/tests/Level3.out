@@ -50,10 +50,6 @@ Read	.sysconfig.services.DISABLE_RESTART_ON_UPDATE nil
 Write	.sysconfig.services.DISABLE_RESTART_ON_UPDATE "no" true
 Read	.sysconfig.services.DISABLE_STOP_ON_REMOVAL nil
 Write	.sysconfig.services.DISABLE_STOP_ON_REMOVAL "no" true
-Read	.sysconfig.suseconfig.CWD_IN_ROOT_PATH nil
-Write	.sysconfig.suseconfig.CWD_IN_ROOT_PATH "no" true
-Read	.sysconfig.suseconfig.CWD_IN_USER_PATH nil
-Write	.sysconfig.suseconfig.CWD_IN_USER_PATH "no" true
 Write	.etc.login_defs nil true
 Write	.sysconfig.clock nil true
 Write	.sysconfig.cron nil true
@@ -62,7 +58,6 @@ Write	.sysconfig.locate nil true
 Write	.sysconfig.mail nil true
 Write	.sysconfig.security nil true
 Write	.sysconfig.services nil true
-Write	.sysconfig.suseconfig nil true
 Execute	.target.bash "ln -s -f /dev/null /etc/systemd/system/ctrl-alt-del.target" 0
 Execute	.target.bash_output "/usr/sbin/pam-config -a --cracklib" $[]
 Execute	.target.bash_output "/usr/sbin/pam-config -a --cracklib" $[]

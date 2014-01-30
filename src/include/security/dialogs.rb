@@ -70,12 +70,6 @@ module Yast
         "DISPLAYMANAGER_REMOTE_ACCESS"              => _(
           "Remote access to the display manager"
         ),
-        "CWD_IN_ROOT_PATH"                          => _(
-          "Use current directory in root's path"
-        ),
-        "CWD_IN_USER_PATH"                          => _(
-          "Use current directory in path of regular users"
-        ),
         "SYSTOHC"                                   => _(
           "Write back system time to the hardware clock"
         ),

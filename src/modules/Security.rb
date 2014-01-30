@@ -107,8 +107,6 @@ module Yast
       @Settings = {
         "CONSOLE_SHUTDOWN"                          => "reboot",
         "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
-        "CWD_IN_ROOT_PATH"                          => "yes",
-        "CWD_IN_USER_PATH"                          => "yes",
         "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
         "kernel.sysrq"                              => "0",
         "net.ipv4.tcp_syncookies"                   => "1",
@@ -181,7 +179,6 @@ module Yast
           "USERDEL_PRECMD",
           "USERDEL_POSTCMD"
         ],
-        ".sysconfig.suseconfig"     => ["CWD_IN_ROOT_PATH", "CWD_IN_USER_PATH"],
         ".sysconfig.displaymanager" => [
           "DISPLAYMANAGER_REMOTE_ACCESS",
           "DISPLAYMANAGER_ROOT_LOGIN_REMOTE",

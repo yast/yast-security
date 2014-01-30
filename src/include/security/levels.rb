@@ -71,8 +71,6 @@ module Yast
           "Level1" => {
             "CONSOLE_SHUTDOWN"                          => "reboot",
             "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
-            "CWD_IN_ROOT_PATH"                          => "no",
-            "CWD_IN_USER_PATH"                          => "no",
             "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
             "kernel.sysrq"                              => "1",
             "FAIL_DELAY"                                => "1",
@@ -112,8 +110,6 @@ module Yast
           "Level2" => {
             "CONSOLE_SHUTDOWN"                          => "ignore",
             "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
-            "CWD_IN_ROOT_PATH"                          => "no",
-            "CWD_IN_USER_PATH"                          => "no",
             "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
             "kernel.sysrq"                              => "0",
             "FAIL_DELAY"                                => "6",
@@ -153,8 +149,6 @@ module Yast
           "Level3" => {
             "CONSOLE_SHUTDOWN"                          => "ignore",
             "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
-            "CWD_IN_ROOT_PATH"                          => "no",
-            "CWD_IN_USER_PATH"                          => "no",
             "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
             "kernel.sysrq"                              => "0",
             "FAIL_DELAY"                                => "3",

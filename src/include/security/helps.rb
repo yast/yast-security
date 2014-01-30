@@ -346,32 +346,6 @@ module Yast
         "PERMISSION_SECURITY"                       => _(
           "<P>There are predefined file permissions in /etc/permissions.* files. The most restrictive file permissions are defined 'secure' or 'paranoid' file.</P>"
         ),
-        "CWD_IN_ROOT_PATH"                          => _(
-          "<P>By default the current working directory is not used when searching for executables.</P>"
-        ) +
-          # Reused from the help text (misc dialog)
-          _(
-            "<p>Some systems set up a work-around by adding the dot (\".\") to the\n" +
-              "search path, enabling files in the current path to be found and executed.\n" +
-              "This is highly dangerous because you may accidentally launch unknown programs in\n" +
-              "the current directory instead of the usual systemwide files. As a result,\n" +
-              "executing <i>Trojan Horses</i>, which exploit this weakness and invade your system,\n" +
-              "is rather easy if you set this option.</p>"
-          ) +
-          _("This setting applies for <EM>root</EM> user and system users."),
-        "CWD_IN_USER_PATH"                          => _(
-          "<P>By default the current working directory is not used when searching for executables.</P>"
-        ) +
-          # Reused from the help text (misc dialog)
-          _(
-            "<p>Some systems set up a work-around by adding the dot (\".\") to the\n" +
-              "search path, enabling files in the current path to be found and executed.\n" +
-              "This is highly dangerous because you may accidentally launch unknown programs in\n" +
-              "the current directory instead of the usual systemwide files. As a result,\n" +
-              "executing <i>Trojan Horses</i>, which exploit this weakness and invade your system,\n" +
-              "is rather easy if you set this option.</p>"
-          ) +
-          _("This setting applies for regular users."),
         "RUNLEVEL3_MANDATORY_SERVICES"              => _(
           "<P>Basic system services must be enabled to provide system consistency and to run the security-related services.</P>"
         ),
