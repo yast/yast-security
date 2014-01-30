@@ -20,8 +20,6 @@ module Yast
 
       @import_map = {
         "CONSOLE_SHUTDOWN"                          => "reboot",
-        "CWD_IN_ROOT_PATH"                          => "r2",
-        "CWD_IN_USER_PATH"                          => "r2s",
         "DISPLAYMANAGER_REMOTE_ACCESS"              => "r4",
         "ENCRYPTION"                                => "md5",
         "ENABLE_SYSRQ"                              => "yes",
