@@ -37,8 +37,8 @@ Read	.target.size "/etc/sysconfig/services" 1
 Read	.sysconfig.services.DISABLE_STOP_ON_REMOVAL nil
 Read	.target.symlink "/etc/systemd/system/ctrl-alt-del.target" nil
 Read	.etc.login_defs.ENCRYPT_METHOD "garbage"
-Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $[]
-Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $[]
+Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $["exit":0, "stderr":"", "stdout":""]
+Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $["exit":0, "stderr":"", "stdout":""]
 Read	.etc.polkit-default-privs_local."org.freedesktop.upower.hibernate" "r12"
 Read	.etc.sysctl_conf."kernel.sysrq" "r8"
 Read	.etc.sysctl_conf."net.ipv4.ip_forward" "r10"
@@ -85,8 +85,8 @@ Read	.target.size "/etc/sysconfig/services" 1
 Read	.sysconfig.services.DISABLE_STOP_ON_REMOVAL nil
 Read	.target.symlink "/etc/systemd/system/ctrl-alt-del.target" nil
 Read	.etc.login_defs.ENCRYPT_METHOD "SHA512"
-Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $[]
-Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $[]
+Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $["exit":0, "stderr":"", "stdout":""]
+Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $["exit":0, "stderr":"", "stdout":""]
 Read	.etc.polkit-default-privs_local."org.freedesktop.upower.hibernate" "r12"
 Read	.etc.sysctl_conf."kernel.sysrq" "r8"
 Read	.etc.sysctl_conf."net.ipv4.ip_forward" "r10"
