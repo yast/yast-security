@@ -90,7 +90,15 @@ module Yast
         }
       }
 
-      @E = { "target" => { "bash_output" => {} } }
+      @E = {
+        "target" => {
+          "bash_output" => {
+            'exit'=>0,
+            'stdout' => '',
+            'stderr' => ''
+          }
+        }
+      }
 
       Testsuite.Test(lambda { Security.Read }, [@scr_info, {}, @E], nil)
       # read garbage, changed to des
