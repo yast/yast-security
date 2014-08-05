@@ -389,9 +389,10 @@ module Yast
       # add extra help to service related options
       if help_id == "RUNLEVEL3_MANDATORY_SERVICES" ||
           help_id == "RUNLEVEL5_MANDATORY_SERVICES"
+        # TODO: runlevel is not longer needed, but we are in 'text freeze phase'
         runlevel = help_id == "RUNLEVEL3_MANDATORY_SERVICES" ? 3 : 5
 
-        missing = Security.MissingMandatoryServices(runlevel)
+        missing = Security.MissingMandatoryServices
 
         if missing != nil && missing != []
           srvs = ""
@@ -420,8 +421,9 @@ module Yast
         end
       elsif help_id == "RUNLEVEL3_EXTRA_SERVICES" ||
           help_id == "RUNLEVEL5_EXTRA_SERVICES"
+        # TODO: runlevel is not longer needed (read above)
         runlevel = help_id == "RUNLEVEL3_EXTRA_SERVICES" ? 3 : 5
-        extra = Security.ExtraServices(runlevel)
+        extra = Security.ExtraServices
 
         if extra != nil && extra != []
           srvs = Builtins.mergestring(extra, "<BR>")
