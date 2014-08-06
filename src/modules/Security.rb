@@ -29,6 +29,9 @@ require "yast"
 
 module Yast
   class SecurityClass < Module
+
+    include Yast::Logger
+
     def main
       Yast.import "UI"
       textdomain "security"
@@ -37,7 +40,7 @@ module Yast
       Yast.import "Package"
       Yast.import "Pam"
       Yast.import "Progress"
-      Yast.import "Service"
+      Yast.import "SystemdService"
 
       Yast.include self, "security/levels.rb"
 
@@ -269,71 +272,49 @@ module Yast
       }
     end
 
-    # return list of missing mandatory services in a runlevel
-    def MissingMandatoryServices(runlevel)
-      Builtins.y2milestone(
-        "Checking mandatory services in runlevel %1",
-        runlevel
-      )
+    # List of missing mandatory services
+    #
+    # @param [Array<String>] enabled_services optional list with names of the
+    #     currently enabled services. If not provided, it will be obtained
+    #     from SystemdService.
+    def MissingMandatoryServices(enabled_services = nil)
+      log.info("Checking mandatory services")
 
-      ret = []
-      enabled_services = Service.EnabledServices(runlevel)
+      enabled_services ||= SystemdService.all.select(&:enabled?).map(&:name)
+      log.info("enabled_services: #{enabled_services}")
+      return nil if enabled_services.nil?
 
-      Builtins.y2milestone("enabled_services: %1", enabled_services)
-
-      return nil if enabled_services == nil
-
-      Builtins.foreach(@mandatory_services) do |services|
-        enabled = false
-        Builtins.foreach(services) do |service|
-          enabled = enabled || Builtins.contains(enabled_services, service)
-        end
-        Builtins.y2milestone(
-          "Mandatory services %1 are enabled: %2",
-          services,
-          enabled
-        )
-        ret = Builtins.add(ret, services) if !enabled
+      ret = @mandatory_services.select do |services|
+        enabled = services.any? { |service| enabled_services.include?(service) }
+        log.info("Mandatory services #{services} are enabled: #{enabled}")
+        !enabled
       end 
 
-
-      Builtins.y2milestone(
-        "Missing mandatory services in runlevel %1: %2",
-        runlevel,
-        ret
-      )
-
+      log.info("Missing mandatory services: #{ret}")
       deep_copy(ret)
     end
 
-    def ExtraServices(runlevel)
-      Builtins.y2milestone(
-        "Searching for extra services in runlevel %1",
-        runlevel
-      )
+    # List of enabled services that are neither mandatory nor optional
+    #
+    # @param [Array<String>] enabled_services optional list with names of the
+    #     currently enabled services. If not provided, it will be obtained
+    #     from SystemdService.
+    def ExtraServices(enabled_services = nil)
+      log.info("Searching for extra services")
 
-      extra_services = []
-      enabled_services = Service.EnabledServices(runlevel)
-
+      enabled_services ||= SystemdService.all.select(&:enabled?).map(&:name)
       return nil if enabled_services == nil
 
-      Builtins.foreach(enabled_services) do |service|
+      mandatory = @mandatory_services.flatten
+      ret = enabled_services.select do |service|
         # the extra service is not mandatory and it's not optional
-        extra = !Builtins.contains(
-          Builtins.flatten(@mandatory_services),
-          service
-        ) &&
-          !Builtins.contains(@optional_services, service)
-        if extra
-          Builtins.y2milestone("Found extra service: %1", service)
-          extra_services = Builtins.add(extra_services, service)
-        end
+        extra = !mandatory.include?(service) && !@optional_services.include?(service)
+        log.info("Found extra service: #{service}") if extra
+        extra
       end 
+      log.info("All extra services: #{ret}")
 
-
-      Builtins.y2milestone("All extra services: %1", extra_services)
-
-      deep_copy(extra_services)
+      deep_copy(ret)
     end
 
     # Check for pending Abort press
@@ -374,26 +355,13 @@ module Yast
     end
 
     def ReadServiceSettings
-      Ops.set(
-        @Settings,
-        "RUNLEVEL3_MANDATORY_SERVICES",
-        MissingMandatoryServices(3) == [] ? "secure" : "insecure"
-      )
-      Ops.set(
-        @Settings,
-        "RUNLEVEL5_MANDATORY_SERVICES",
-        MissingMandatoryServices(5) == [] ? "secure" : "insecure"
-      )
-      Ops.set(
-        @Settings,
-        "RUNLEVEL3_EXTRA_SERVICES",
-        ExtraServices(3) == [] ? "secure" : "insecure"
-      )
-      Ops.set(
-        @Settings,
-        "RUNLEVEL5_EXTRA_SERVICES",
-        ExtraServices(5) == [] ? "secure" : "insecure"
-      )
+      services = SystemdService.all.select(&:enabled?).map(&:name)
+      setting = MissingMandatoryServices(services) == [] ? "secure" : "insecure"
+      # Runlevels are not longer used, but @Settings is populated this way for
+      # compatibility with the current interface
+      @Settings["RUNLEVEL3_MANDATORY_SERVICES"] = @Settings["RUNLEVEL5_MANDATORY_SERVICES"] = setting
+      setting = ExtraServices(services) == [] ? "secure" : "insecure"
+      @Settings["RUNLEVEL3_EXTRA_SERVICES"] = @Settings["RUNLEVEL5_EXTRA_SERVICES"] = setting
 
       nil
     end
@@ -918,8 +886,8 @@ module Yast
 
     publish :variable => :mandatory_services, :type => "const list <list <string>>"
     publish :variable => :optional_services, :type => "const list <string>"
-    publish :function => :MissingMandatoryServices, :type => "list <list <string>> (integer)"
-    publish :function => :ExtraServices, :type => "list <string> (integer)"
+    publish :function => :MissingMandatoryServices, :type => "list <list <string>> ()"
+    publish :function => :ExtraServices, :type => "list <string> ()"
     publish :variable => :Settings, :type => "map <string, string>"
     publish :variable => :do_not_test, :type => "list <string>"
     publish :variable => :PasswordMaxLengths, :type => "map"
