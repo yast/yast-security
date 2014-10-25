@@ -110,20 +110,6 @@ module Yast
             ],
             "Value"   => "reboot"
           },
-          "CWD_IN_ROOT_PATH"             => {
-            "Widget" => "CheckBox",
-            # CheckBox label
-            "Label"  => _("&Current Directory in root's Path"),
-            "Value"  => "yes"
-          },
-          "CWD_IN_USER_PATH"             => {
-            "Widget" => "CheckBox",
-            # CheckBox label
-            "Label"  => _(
-              "Curr&ent Directory in Path of Regular Users"
-            ),
-            "Value"  => "yes"
-          },
           "DISPLAYMANAGER_REMOTE_ACCESS" => {
             "Widget" => "CheckBox",
             # CheckBox label
