@@ -208,14 +208,6 @@ module Yast
           ) == "no"
         },
         {
-          "id"        => "CWD_IN_ROOT_PATH",
-          "is_secure" => Ops.get(Security.Settings, "CWD_IN_ROOT_PATH", "") == "no"
-        },
-        {
-          "id"        => "CWD_IN_USER_PATH",
-          "is_secure" => Ops.get(Security.Settings, "CWD_IN_USER_PATH", "") == "no"
-        },
-        {
           "id"        => "SYSTOHC",
           "is_secure" => Ops.get(Security.Settings, "SYSTOHC", "") == "yes"
         },
@@ -738,10 +730,6 @@ module Yast
         VSpacing(1.0),
         settings2widget("RUN_UPDATEDB_AS"),
         VSpacing(1.0),
-        settings2widget("CWD_IN_ROOT_PATH"),
-        VSeparator(),
-        settings2widget("CWD_IN_USER_PATH"),
-        VSpacing(1.0),
         settings2widget("kernel.sysrq"),
         VSpacing(1.8)
       )
@@ -801,8 +789,6 @@ module Yast
 
       if ret == :next || Builtins.contains(@tree_dialogs, ret)
         widget2settings("PERMISSION_SECURITY")
-        widget2settings("CWD_IN_ROOT_PATH")
-        widget2settings("CWD_IN_USER_PATH")
         widget2settings("RUN_UPDATEDB_AS")
         widget2settings("kernel.sysrq")
       end
