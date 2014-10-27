@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Oct 27 08:00:30 UTC 2014 - mvidner@suse.com
+
+- Removed CWD_IN_ROOT_PATH, CWD_IN_USER_PATH also from the UI where
+  they showed as empty lines in the overview (FATE#100011,
+  boo#900829), by Antoine Belvire.
+- 3.1.5
+
+-------------------------------------------------------------------
 Tue Aug  5 12:58:39 UTC 2014 - ancor@suse.com
 
 - Speedup Security.ReadServiceSettings (bnc#890349)
