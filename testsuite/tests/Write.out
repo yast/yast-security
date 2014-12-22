@@ -71,6 +71,7 @@ Read	.etc.sysctl_conf."net.ipv4.tcp_syncookies" nil
 Write	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "9" true
 Read	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" nil
 Write	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" "11" true
+Write	.etc.sysctl_conf nil true
 Execute	.target.bash "echo 1 > /proc/sys/kernel/sysrq" 0
 Execute	.target.bash "/usr/bin/chkstat --system" 0
 Execute	.target.bash "/sbin/set_polkit_default_privs" 0
