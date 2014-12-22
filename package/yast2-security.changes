@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Dec 22 17:18:56 UTC 2014 - ancor@suse.com
+
+- Fixed the interface to show and process correctly values from
+  sysctl.conf.
+- Source code cleanup, including some minor fixes and new tests.
+
+-------------------------------------------------------------------
 Thu Dec  4 09:51:32 UTC 2014 - jreidinger@suse.com
 
 - remove X-KDE-Library from desktop file (bnc#899104)
