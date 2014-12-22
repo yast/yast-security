@@ -70,6 +70,7 @@ Read	.etc.sysctl_conf."net.ipv4.tcp_syncookies" nil
 Write	.etc.sysctl_conf."net.ipv4.tcp_syncookies" "1" true
 Read	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" nil
 Write	.etc.sysctl_conf."net.ipv6.conf.all.forwarding" "0" true
+Write	.etc.sysctl_conf nil true
 Execute	.target.bash "echo 0 > /proc/sys/kernel/sysrq" 0
 Execute	.target.bash "/usr/bin/chkstat --system" 0
 Return	true
