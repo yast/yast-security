@@ -2,8 +2,13 @@ default namespace = "http://www.suse.com/1.0/yast2ns"
 
 console_shutdown = element console_shutdown { text }
 cracklib_dict_path = element cracklib_dict_path { text }
+
+# not supported, kept for backward compatibility
 cwd_in_root_path = element cwd_in_root_path { text }
+
+# not supported, kept for backward compatibility
 cwd_in_user_path = element cwd_in_user_path { text }
+
 disable_restart_on_update = element disable_restart_on_update { text }
 disable_stop_on_removal = element disable_stop_on_removal { text }
 displaymanager_remote_access = element displaymanager_remote_access { text }
