@@ -330,22 +330,19 @@ module Yast
       false
     end
 
-
     # Function which returns if the settings were modified
     # @return [Boolean]  settings were modified
     def GetModified
       @modified
     end
+
     # Function sets internal variable, which indicates, that any
     # settings were modified, to "true"
-
-
     def SetModified
       @modified = true
 
       nil
     end
-
 
     # Data was modified?
     # @return true if modified
@@ -410,6 +407,36 @@ module Yast
       nil
     end
 
+    # Read the settings from the files included in @Locations
+    def read_from_locations
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @Locations.sort.each do |file, vars|
+        vars.each do |var|
+          val = ""
+          filename = nil
+          if file.include?("sysconfig")
+            filename = "/etc" + file.tr(".", "/")
+            log.info "filename=#{filename}"
+          end
+          if filename.nil? || SCR.Read(path(".target.size"), filename) > 0
+            val = SCR.Read(path("#{file}.#{var}"))
+            log.debug "Reading: #{file}.#{var} (#{val})"
+          end
+          @Settings[var] = val unless val.nil?
+        end
+      end
+    end
+
+    # Read the settings from sysctl.conf
+    def read_kernel_settings
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @sysctl.sort.each do |key, default_value|
+        val = SCR.Read(path(".etc.sysctl_conf") + key)
+        val = default_value if val.nil? || val == ""
+        @Settings[key] = val
+      end
+    end
+
     # Read all security settings
     # @return true on success
     def Read
@@ -417,34 +444,8 @@ module Yast
       @modified = false
 
       # Read security settings
-
-      Builtins.mapmap(@Locations) do |file, vars|
-        Builtins.maplist(vars) do |var|
-          val = ""
-          filename = nil
-          if Builtins.issubstring(file, "sysconfig")
-            filename = Ops.add(
-              "/etc",
-              Builtins.mergestring(Builtins.splitstring(file, "."), "/")
-            )
-            Builtins.y2debug("filename=%1", filename)
-          end
-          if filename == nil ||
-              Ops.greater_than(SCR.Read(path(".target.size"), filename), 0)
-            val = Convert.to_string(
-              SCR.Read(Builtins.topath(Ops.add(Ops.add(file, "."), var)))
-            )
-            Builtins.y2debug(
-              "Reading: %1 (%2)",
-              Builtins.topath(Ops.add(Ops.add(file, "."), var)),
-              val
-            )
-          end
-          Ops.set(@Settings, var, val) if val != nil
-        end
-        { 0 => 0 }
-      end
-      Builtins.y2debug("Settings=%1", @Settings)
+      read_from_locations
+      Builtins.y2milestone("Settings=%1", @Settings)
 
       Ops.set(@Settings, "CONSOLE_SHUTDOWN", ReadConsoleShutdown())
 
@@ -540,23 +541,16 @@ module Yast
         Ops.get(@Settings, "HIBERNATE_SYSTEM", "")
       )
 
-      # read sysctl.conf
-      Builtins.foreach(@sysctl) do |key, default_value|
-        val = Convert.to_string(
-          SCR.Read(Builtins.add(path(".etc.sysctl_conf"), key))
-        )
-        val = default_value if val == nil || val == ""
-        Ops.set(@Settings, key, val)
-      end
+      read_kernel_settings
       Builtins.y2debug("Settings=%1", @Settings)
 
-      # remeber the read values
+      # remember the read values
       @Settings_bak = deep_copy(@Settings)
       true
     end
 
     # Write the value of ctrl-alt-delete behavior
-    def WriteConsoleShutdown(ca)
+    def write_console_shutdown(ca)
       if Package.Installed("systemd")
         if ca == "reboot"
           SCR.Execute(path(".target.remove"), @ctrl_alt_del_file)
@@ -597,12 +591,136 @@ module Yast
       true
     end
 
+    # Write the settings from @Locations to the corresponding files
+    def write_to_locations
+      commitlist = []
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @Locations.sort.each do |file, vars|
+        vars.each do |var|
+          val = @Settings[var]
+          if val && val != SCR.Read(path("#{file}.#{var}"))
+            SCR.Write(path("#{file}.#{var}"), val)
+            commitlist << file unless commitlist.include?(file)
+          end
+        end
+      end
+      commitlist.each do |file|
+        SCR.Write(path(file), nil)
+      end
+    end
+
+    # Write settings related to PAM behavior
+    def write_pam_settings
+      # pam stuff
+      encr = @Settings.fetch("PASSWD_ENCRYPTION", "sha512")
+      if encr != @Settings_bak["PASSWD_ENCRYPTION"]
+        SCR.Write(path(".etc.login_defs.ENCRYPT_METHOD"), encr)
+      end
+
+      # use cracklib?
+      if @Settings["PASSWD_USE_CRACKLIB"] == "yes"
+        Pam.Add("cracklib")
+        pth = @Settings["CRACKLIB_DICT_PATH"]
+        if pth && pth != "/usr/lib/cracklib_dict"
+          Pam.Add("--cracklib-dictpath=#{pth}")
+        end
+      else
+        Pam.Remove("cracklib")
+      end
+
+      # save min pass length
+      min_len = @Settings["PASS_MIN_LEN"]
+      if min_len && min_len != "5" && @Settings["PASSWD_USE_CRACKLIB"] == "yes"
+        Pam.Add("cracklib") # minlen is part of cracklib
+        Pam.Add("cracklib-minlen=#{min_len}")
+      else
+        Pam.Remove("cracklib-minlen")
+      end
+
+      # save "remember" value (number of old user passwords to not allow)
+      remember_history = @Settings["PASSWD_REMEMBER_HISTORY"]
+      if remember_history && remember_history != "0"
+        Pam.Add("pwhistory")
+        Pam.Add("pwhistory-remember=#{remember_history}")
+      else
+        Pam.Remove("pwhistory-remember")
+      end
+    end
+
+    # Write settings related to sysctl.conf and sysrq
+    def write_kernel_settings
+      # write sysctl.conf
+      written = false
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @sysctl.sort.each do |key, default_value|
+        val = @Settings.fetch(key, default_value)
+        int_val = Integer(val) rescue nil
+        if int_val.nil?
+          log.error "value #{val} for #{key} is not integer, not writing"
+        elsif val != SCR.Read(path(".etc.sysctl_conf") + key)
+          SCR.Write(path(".etc.sysctl_conf") + key, val)
+          written = true
+        end
+      end
+      SCR.Write(path(".etc.sysctl_conf"), nil) if written
+
+      # enable sysrq?
+      sysrq = Integer(@Settings.fetch("kernel.sysrq", "0")) rescue nil
+      if sysrq != nil
+        SCR.Execute(
+          path(".target.bash"),
+          "echo #{sysrq} > /proc/sys/kernel/sysrq"
+        )
+      end
+    end
+
+    # Write local PolicyKit configuration
+    def write_polkit_settings
+      if @Settings.fetch("HIBERNATE_SYSTEM", "") !=
+          @Settings_bak.fetch("HIBERNATE_SYSTEM", "")
+        # allow writing any value (different from predefined ones)
+        ycp_value = @Settings.fetch("HIBERNATE_SYSTEM", "active_console")
+        hibernate = @ycp2polkit.fetch(ycp_value, ycp_value)
+        action = "org.freedesktop.upower.hibernate"
+        SCR.Write(
+          path(".etc.polkit-default-privs_local") + action,
+          hibernate
+        )
+      end
+    end
+
+    # Ensures that file permissions and PolicyKit privileges are applied
+    def apply_new_settings
+      # apply all current permissions as they are now
+      # (what SuSEconfig --module permissions would have done)
+      SCR.Execute(path(".target.bash"), "/usr/bin/chkstat --system")
+
+      # ensure polkit privileges are applied (bnc #541393)
+      if FileUtils.Exists("/sbin/set_polkit_default_privs")
+        SCR.Execute(path(".target.bash"), "/sbin/set_polkit_default_privs")
+      end
+    end
+
+    # Executes the corresponding activation command for the settings that have
+    # an entry in @activation_mapping and have changed
+    def activate_changes
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @activation_mapping.sort.each do |setting, action|
+        next if @Settings[setting] == @Settings_bak[setting]
+        log.info(
+          "Option #{setting} has been modified, "\
+          "activating the change: #{action}"
+        )
+        res = SCR.Execute(path(".target.bash"), action)
+        log.error "Activation failed" if res != 0
+      end
+    end
 
     # Write all security settings
     # @return true on success
     def Write
       return true if !@modified
-      Builtins.y2milestone("Writing configuration")
+      log.info "Writing configuration"
 
       # Security read dialog caption
       caption = _("Saving Security Configuration")
@@ -637,158 +755,34 @@ module Yast
         ""
       )
 
+      log.debug "Settings=#{@Settings}"
+
       # Write security settings
       return false if Abort()
       Progress.NextStage
-
-      Builtins.y2debug("Settings=%1", @Settings)
-      Ops.set(
-        @Settings,
-        "PERMISSION_SECURITY",
-        Ops.add(Ops.get(@Settings, "PERMISSION_SECURITY", ""), " local")
-      )
-
-      commitlist = []
-      Builtins.mapmap(@Locations) do |file, vars|
-        Builtins.maplist(vars) do |var|
-          val = Ops.get(@Settings, var)
-          if val != nil &&
-              val != SCR.Read(Builtins.topath(Ops.add(Ops.add(file, "."), var)))
-            SCR.Write(Builtins.topath(Ops.add(Ops.add(file, "."), var)), val)
-            commitlist = Convert.convert(
-              Builtins.union(commitlist, [file]),
-              :from => "list",
-              :to   => "list <string>"
-            )
-          end
-        end
-        { 0 => 0 }
-      end
-
-      Builtins.maplist(commitlist) do |file|
-        SCR.Write(Builtins.topath(file), nil)
-      end
+      @Settings["PERMISSION_SECURITY"] << " local"
+      write_to_locations
 
       # Write inittab settings
       return false if Abort()
       Progress.NextStage
+      write_console_shutdown(@Settings.fetch("CONSOLE_SHUTDOWN", "ignore"))
 
-      WriteConsoleShutdown(Ops.get(@Settings, "CONSOLE_SHUTDOWN", "ignore"))
-
-      # Write pam settings
+      # Write authentication and privileges settings
       return false if Abort()
       Progress.NextStage
-
-      # pam stuff
-      encr = Ops.get(@Settings, "PASSWD_ENCRYPTION", "sha512")
-      if encr != Ops.get(@Settings_bak, "PASSWD_ENCRYPTION", "")
-        SCR.Write(path(".etc.login_defs.ENCRYPT_METHOD"), encr)
-      end
-
-      # use cracklib?
-      if Ops.get(@Settings, "PASSWD_USE_CRACKLIB", "no") == "yes"
-        Pam.Add("cracklib")
-        pth = Ops.get(@Settings, "CRACKLIB_DICT_PATH", "/usr/lib/cracklib_dict")
-        if pth != "/usr/lib/cracklib_dict"
-          Pam.Add(Ops.add("--cracklib-dictpath=", pth))
-        end
-      else
-        Pam.Remove("cracklib")
-      end
-
-      # save min pass length
-      if Ops.get(@Settings, "PASS_MIN_LEN", "5") != "5" &&
-          Ops.get(@Settings, "PASSWD_USE_CRACKLIB", "no") == "yes"
-        Pam.Add("cracklib") # minlen is part of cracklib
-        Pam.Add(
-          Builtins.sformat(
-            "cracklib-minlen=%1",
-            Ops.get(@Settings, "PASS_MIN_LEN", "5")
-          )
-        )
-      else
-        Pam.Remove("cracklib-minlen")
-      end
-
-      # save "remember" value (number of old user passwords to not allow)
-      if Ops.get(@Settings, "PASSWD_REMEMBER_HISTORY", "0") != "0"
-        Pam.Add("pwhistory")
-        Pam.Add(
-          Builtins.sformat(
-            "pwhistory-remember=%1",
-            Ops.get(@Settings, "PASSWD_REMEMBER_HISTORY", "0")
-          )
-        )
-      else
-        Pam.Remove("pwhistory-remember")
-      end
-
-      # write local polkit settings
-      if Ops.get(@Settings, "HIBERNATE_SYSTEM", "") !=
-          Ops.get(@Settings_bak, "HIBERNATE_SYSTEM", "")
-        # allow writing any value (different from predefined ones)
-        ycp_value = Ops.get(@Settings, "HIBERNATE_SYSTEM", "active_console")
-        hibernate = Ops.get(@ycp2polkit, ycp_value, ycp_value)
-        action = "org.freedesktop.upower.hibernate"
-        SCR.Write(
-          Builtins.add(path(".etc.polkit-default-privs_local"), action),
-          hibernate
-        )
-      end
-
-      # write sysctl.conf
-      Builtins.foreach(@sysctl) do |key, default_value|
-        val = Ops.get(@Settings, key, default_value)
-        if Builtins.tointeger(val) == nil
-          Builtins.y2error(
-            "value %1 for %2 is not integer, not writing",
-            val,
-            key
-          )
-        elsif val != SCR.Read(Builtins.add(path(".etc.sysctl_conf"), key))
-          SCR.Write(Builtins.add(path(".etc.sysctl_conf"), key), val)
-        end
-      end
-
-      # enable sysrq?
-      sysrq = Builtins.tointeger(Ops.get(@Settings, "kernel.sysrq", "0"))
-      if sysrq != nil
-        SCR.Execute(
-          path(".target.bash"),
-          Builtins.sformat("echo %1 > /proc/sys/kernel/sysrq", sysrq)
-        )
-      end
+      write_pam_settings
+      write_polkit_settings
+      write_kernel_settings
 
       # Finish him
       return false if Abort()
       Progress.NextStage
-
-      # apply all current permissions as they are now (what SuSEconfig --module permissions would have done)
-      SCR.Execute(path(".target.bash"), "/usr/bin/chkstat --system")
-
-      # ensure polkit privileges are applied (bnc #541393)
-      if FileUtils.Exists("/sbin/set_polkit_default_privs")
-        SCR.Execute(path(".target.bash"), "/sbin/set_polkit_default_privs")
-      end
+      apply_new_settings
 
       return false if Abort()
       Progress.NextStage
-
-      # activate the changes
-      Builtins.foreach(@activation_mapping) do |setting, action|
-        if Ops.get(@Settings, setting, "") !=
-            Ops.get(@Settings_bak, setting, "")
-          Builtins.y2milestone(
-            "Option %1 has been modified, activating the change: %2",
-            setting,
-            action
-          )
-
-          res = Convert.to_integer(SCR.Execute(path(".target.bash"), action))
-          Builtins.y2error("Activation failed") if res != 0
-        end
-      end 
-
+      activate_changes
 
       return false if Abort()
       @modified = false

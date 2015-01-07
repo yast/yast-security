@@ -118,7 +118,12 @@ module Yast
 
       # mapping for "Enable" and "Disable" links
       # current value -> new value
-      @link_value_mapping = { "yes" => "no", "no" => "yes" }
+      @link_value_mapping = {
+        "yes" => "no",
+        "no" => "yes",
+        "1" => "0",
+        "0" => "1"
+      }
 
       # mapping for "Configure" links
       # config name -> dialog name
@@ -154,9 +159,9 @@ module Yast
       # handle the special cases at first
       if Builtins.contains(@configurable_options, option)
         ret = _("Configure")
-      elsif value == "yes"
+      elsif ["1", "yes"].include?(value)
         ret = _("Enabled")
-      elsif value == "no"
+      elsif ["0", "no"].include?(value)
         ret = _("Disabled")
       else
         return @UNKNOWN_STATUS
