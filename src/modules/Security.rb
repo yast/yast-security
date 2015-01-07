@@ -415,7 +415,7 @@ module Yast
           val = ""
           filename = nil
           if file.include?("sysconfig")
-            filename = "/etc" + file.gsub(".", "/")
+            filename = "/etc" + file.tr(".", "/")
             log.info "filename=#{filename}"
           end
           if filename.nil? || SCR.Read(path(".target.size"), filename) > 0
@@ -706,14 +706,13 @@ module Yast
     def activate_changes
       # NOTE: the call to #sort is only needed to satisfy the old testsuite
       @activation_mapping.sort.each do |setting, action|
-        if @Settings[setting] != @Settings_bak[setting]
-          log.info(
-            "Option #{setting} has been modified, "\
-            "activating the change: #{action}"
-          )
-          res = SCR.Execute(path(".target.bash"), action)
-          log.error "Activation failed" if res != 0
-        end
+        next if @Settings[setting] == @Settings_bak[setting]
+        log.info(
+          "Option #{setting} has been modified, "\
+          "activating the change: #{action}"
+        )
+        res = SCR.Execute(path(".target.bash"), action)
+        log.error "Activation failed" if res != 0
       end
     end
 
