@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Thu Jan  8 15:30:20 CET 2015 - jsuchome@suse.cz
+
+- fix paths for systemd target links (bnc#911523)
+- 3.1.7
+
+-------------------------------------------------------------------
 Mon Dec 22 17:18:56 UTC 2014 - ancor@suse.com
 
 - Fixed the interface to show and process correctly values from
