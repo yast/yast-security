@@ -375,10 +375,10 @@ module Yast
           link = Convert.to_string(
             SCR.Read(path(".target.symlink"), @ctrl_alt_del_file)
           )
-          if link == "/lib/systemd/system/poweroff.target"
+          if link == "/usr/lib/systemd/system/poweroff.target"
             ret = "halt"
-          elsif link == "/lib/systemd/system/reboot.target" ||
-              link == "/lib/systemd/system/ctrl-alt-del.target"
+          elsif link == "/usr/lib/systemd/system/reboot.target" ||
+              link == "/usr/lib/systemd/system/ctrl-alt-del.target"
             ret = "reboot"
           end
         end
@@ -558,7 +558,7 @@ module Yast
           SCR.Execute(
             path(".target.bash"),
             Builtins.sformat(
-              "ln -s -f /lib/systemd/system/poweroff.target %1",
+              "ln -s -f /usr/lib/systemd/system/poweroff.target %1",
               @ctrl_alt_del_file
             )
           )
