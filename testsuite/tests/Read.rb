@@ -29,7 +29,6 @@ module Yast
             "CWD_IN_USER_PATH" => "r3"
           },
           "displaymanager" => {
-            "DISPLAYMANAGER_SHUTDOWN"                   => "r3",
             "DISPLAYMANAGER_REMOTE_ACCESS"              => "r9",
             "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"          => "r16",
             "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "r17"
@@ -38,6 +37,9 @@ module Yast
           "clock"          => { "SYSTOHC" => "r12" },
           "cron"           => { "SYSLOG_ON_NO_ERROR" => "r15" },
           "mail"           => { "SMTPD_LISTEN_REMOTE" => "r18" }
+        },
+        "kde4"      => {
+          "kdmrc"          => { "AllowShutdown" => "r3" }
         },
         "etc"       => {
           "login_defs"                 => {

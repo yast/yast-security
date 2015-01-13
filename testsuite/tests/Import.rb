@@ -26,7 +26,7 @@ module Yast
         "FAIL_DELAY"                                => "l2",
         "GID_MAX"                                   => "l3",
         "GID_MIN"                                   => "l4",
-        "DISPLAYMANAGER_SHUTDOWN"                   => "r3",
+        "AllowShutdown"                             => "r3",
         "PASS_MAX_DAYS"                             => "l7",
         "PASS_MIN_DAYS"                             => "l9",
         "PASS_MIN_LEN"                              => "l10",
