@@ -655,7 +655,7 @@ module Yast
                     VSpacing(1),
                     settings2widget("CONSOLE_SHUTDOWN"),
                     VSpacing(1.0),
-                    settings2widget("DISPLAYMANAGER_SHUTDOWN"),
+                    settings2widget("AllowShutdown"),
                     VSpacing(1.0),
                     settings2widget("HIBERNATE_SYSTEM"),
                     VSpacing(1)
@@ -714,7 +714,7 @@ module Yast
 
       if ret == :next || Builtins.contains(@tree_dialogs, ret)
         widget2settings("CONSOLE_SHUTDOWN")
-        widget2settings("DISPLAYMANAGER_SHUTDOWN")
+        widget2settings("AllowShutdown")
         widget2settings("HIBERNATE_SYSTEM")
       end
 
