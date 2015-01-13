@@ -25,7 +25,8 @@ schemafiles_DATA = \
 
 scrconf_DATA = \
   scrconf/cfg_locate.scr \
-  scrconf/etc_polkit-default-privs_local.scr
+  scrconf/etc_polkit-default-privs_local.scr \
+  scrconf/kde4_kdmrc.scr
 
 desktop_DATA = \
   desktop/security.desktop
