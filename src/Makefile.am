@@ -23,9 +23,13 @@ schemafilesdir = $(schemadir)/autoyast/rnc
 schemafiles_DATA = \
   autoyast-rnc/security.rnc
 
+scrconf_DATA = \
+  scrconf/cfg_locate.scr \
+  scrconf/etc_polkit-default-privs_local.scr
+
 desktop_DATA = \
   desktop/security.desktop
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(schemafiles_DATA) $(desktop_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(schemafiles_DATA) $(scrconf_DATA) $(desktop_DATA)
 
 include $(top_srcdir)/Makefile.am.common
