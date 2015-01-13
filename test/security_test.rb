@@ -124,12 +124,12 @@ module Yast
       end
 
       it "adds missing values" do
-        Security.Settings["DISPLAYMANAGER_SHUTDOWN"] = "yes"
+        Security.Settings["AllowShutdown"] = "Root"
         Security.write_to_locations
 
-        expect(written_value_for(".sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN")).
-          to eq("yes")
-        expect(was_written?(".sysconfig.displaymanager")).to eq(true)
+        expect(written_value_for(".kde4.kdmrc.AllowShutdown")).
+          to eq("Root")
+        expect(was_written?(".kde4.kdmrc")).to eq(true)
       end
 
       it "updates changed values" do

@@ -28,6 +28,8 @@ Read	.etc.login_defs.USERDEL_PRECMD nil
 Write	.etc.login_defs.USERDEL_PRECMD "/usr/sbin/userdel-pre.local" true
 Read	.etc.login_defs.USERDEL_POSTCMD nil
 Write	.etc.login_defs.USERDEL_POSTCMD "/usr/sbin/userdel-post.local" true
+Read	.kde4.kdmrc.AllowShutdown nil
+Write	.kde4.kdmrc.AllowShutdown "All" true
 Read	.sysconfig.clock.SYSTOHC nil
 Write	.sysconfig.clock.SYSTOHC "yes" true
 Read	.sysconfig.cron.SYSLOG_ON_NO_ERROR nil
@@ -38,8 +40,6 @@ Read	.sysconfig.displaymanager.DISPLAYMANAGER_ROOT_LOGIN_REMOTE nil
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_ROOT_LOGIN_REMOTE "no" true
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN nil
 Write	.sysconfig.displaymanager.DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN "no" true
-Read	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN nil
-Write	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN "all" true
 Read	.sysconfig.locate.RUN_UPDATEDB_AS nil
 Write	.sysconfig.locate.RUN_UPDATEDB_AS "nobody" true
 Read	.sysconfig.mail.SMTPD_LISTEN_REMOTE nil
@@ -51,6 +51,7 @@ Write	.sysconfig.services.DISABLE_RESTART_ON_UPDATE "no" true
 Read	.sysconfig.services.DISABLE_STOP_ON_REMOVAL nil
 Write	.sysconfig.services.DISABLE_STOP_ON_REMOVAL "no" true
 Write	.etc.login_defs nil true
+Write	.kde4.kdmrc nil true
 Write	.sysconfig.clock nil true
 Write	.sysconfig.cron nil true
 Write	.sysconfig.displaymanager nil true
