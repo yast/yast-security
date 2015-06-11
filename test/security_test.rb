@@ -40,11 +40,9 @@ module Yast
       context "only with mandatory services" do
         let(:service_names) { %w(ntp syslog auditd random kbd cron postfix sendmail) }
 
-        it "sets settings for all runlevels to 'secure'" do
-          expect(Security.Settings["RUNLEVEL3_MANDATORY_SERVICES"]).to eq("secure")
-          expect(Security.Settings["RUNLEVEL5_MANDATORY_SERVICES"]).to eq("secure")
-          expect(Security.Settings["RUNLEVEL3_EXTRA_SERVICES"]).to eq("secure")
-          expect(Security.Settings["RUNLEVEL5_EXTRA_SERVICES"]).to eq("secure")
+        it "sets settings for services as 'secure'" do
+          expect(Security.Settings["MANDATORY_SERVICES"]).to eq("secure")
+          expect(Security.Settings["EXTRA_SERVICES"]).to eq("secure")
         end
       end
 
@@ -52,21 +50,17 @@ module Yast
         let(:service_names) { %w(ntp syslog auditd random kbd extra1 cron postfix sendmail) }
 
         it "sets settings for extra services as 'insecure'" do
-          expect(Security.Settings["RUNLEVEL3_MANDATORY_SERVICES"]).to eq("secure")
-          expect(Security.Settings["RUNLEVEL5_MANDATORY_SERVICES"]).to eq("secure")
-          expect(Security.Settings["RUNLEVEL3_EXTRA_SERVICES"]).to eq("insecure")
-          expect(Security.Settings["RUNLEVEL5_EXTRA_SERVICES"]).to eq("insecure")
+          expect(Security.Settings["MANDATORY_SERVICES"]).to eq("secure")
+          expect(Security.Settings["EXTRA_SERVICES"]).to eq("insecure")
         end
       end
 
       context "without all mandatory services and extra ones" do
         let(:service_names) { %w(ntp syslog auditd extra1 cron postfix sendmail) }
 
-        it "sets settings for all runlevels to 'insecure'" do
-          expect(Security.Settings["RUNLEVEL3_MANDATORY_SERVICES"]).to eq("insecure")
-          expect(Security.Settings["RUNLEVEL5_MANDATORY_SERVICES"]).to eq("insecure")
-          expect(Security.Settings["RUNLEVEL3_EXTRA_SERVICES"]).to eq("insecure")
-          expect(Security.Settings["RUNLEVEL5_EXTRA_SERVICES"]).to eq("insecure")
+        it "sets settings for services as 'insecure'" do
+          expect(Security.Settings["MANDATORY_SERVICES"]).to eq("insecure")
+          expect(Security.Settings["EXTRA_SERVICES"]).to eq("insecure")
         end
       end
 
@@ -74,10 +68,8 @@ module Yast
         let(:service_names) { [] }
 
         it "sets settings for mandatory to 'insecure'" do
-          expect(Security.Settings["RUNLEVEL3_MANDATORY_SERVICES"]).to eq("insecure")
-          expect(Security.Settings["RUNLEVEL5_MANDATORY_SERVICES"]).to eq("insecure")
-          expect(Security.Settings["RUNLEVEL3_EXTRA_SERVICES"]).to eq("secure")
-          expect(Security.Settings["RUNLEVEL5_EXTRA_SERVICES"]).to eq("secure")
+          expect(Security.Settings["MANDATORY_SERVICES"]).to eq("insecure")
+          expect(Security.Settings["EXTRA_SERVICES"]).to eq("secure")
         end
       end
     end

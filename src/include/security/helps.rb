@@ -346,16 +346,10 @@ module Yast
         "PERMISSION_SECURITY"                       => _(
           "<P>There are predefined file permissions in /etc/permissions.* files. The most restrictive file permissions are defined 'secure' or 'paranoid' file.</P>"
         ),
-        "RUNLEVEL3_MANDATORY_SERVICES"              => _(
+        "MANDATORY_SERVICES"                        => _(
           "<P>Basic system services must be enabled to provide system consistency and to run the security-related services.</P>"
         ),
-        "RUNLEVEL5_MANDATORY_SERVICES"              => _(
-          "<P>Basic system services must be enabled to provide system consistency and to run the security-related services.</P>"
-        ),
-        "RUNLEVEL3_EXTRA_SERVICES"                  => _(
-          "<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"
-        ),
-        "RUNLEVEL5_EXTRA_SERVICES"                  => _(
+        "EXTRA_SERVICES"                            => _(
           "<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"
         )
       } 
