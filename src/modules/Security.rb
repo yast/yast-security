@@ -145,22 +145,18 @@ module Yast
         "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"          => "no",
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "no",
         "SMTPD_LISTEN_REMOTE"                       => "no",
-        "RUNLEVEL3_MANDATORY_SERVICES"              => "yes",
-        "RUNLEVEL5_MANDATORY_SERVICES"              => "yes",
-        "RUNLEVEL3_EXTRA_SERVICES"                  => "no",
-        "RUNLEVEL5_EXTRA_SERVICES"                  => "no"
+        "MANDATORY_SERVICES"                        => "yes",
+        "EXTRA_SERVICES"                            => "no"
       }
 
       # the original settings
       @Settings_bak = deep_copy(@Settings)
 
       # keys that should not be tested against predefined levels:
-      # - RUNLEVEL*_SERVICES have different syntax, are not saved in current form
+      # - *_SERVICES have different syntax, are not saved in current form
       @do_not_test = [
-        "RUNLEVEL3_MANDATORY_SERVICES",
-        "RUNLEVEL5_MANDATORY_SERVICES",
-        "RUNLEVEL3_EXTRA_SERVICES",
-        "RUNLEVEL5_EXTRA_SERVICES"
+        "MANDATORY_SERVICES",
+        "EXTRA_SERVICES"
       ]
 
       # Security settings locations
@@ -238,10 +234,8 @@ module Yast
       # Remaining settings:
       # - CONSOLE_SHUTDOWN (/etc/inittab)
       # - PASSWD_ENCRYPTION (/etc/pam?)
-      # - RUNLEVEL3_MANDATORY_SERVICES
-      # - RUNLEVEL5_MANDATORY_SERVICES
-      # - RUNLEVEL3_EXTRA_SERVICES
-      # - RUNLEVEL5_EXTRA_SERVICES
+      # - MANDATORY_SERVICES
+      # - EXTRA_SERVICES
 
       # Number of sigificant characters in the password
       @PasswordMaxLengths = {
@@ -356,11 +350,9 @@ module Yast
     def ReadServiceSettings
       services = SystemdService.all.select(&:enabled?).map(&:name)
       setting = MissingMandatoryServices(services) == [] ? "secure" : "insecure"
-      # Runlevels are not longer used, but @Settings is populated this way for
-      # compatibility with the current interface
-      @Settings["RUNLEVEL3_MANDATORY_SERVICES"] = @Settings["RUNLEVEL5_MANDATORY_SERVICES"] = setting
+      @Settings["MANDATORY_SERVICES"] = setting
       setting = ExtraServices(services) == [] ? "secure" : "insecure"
-      @Settings["RUNLEVEL3_EXTRA_SERVICES"] = @Settings["RUNLEVEL5_EXTRA_SERVICES"] = setting
+      @Settings["EXTRA_SERVICES"] = setting
 
       nil
     end
