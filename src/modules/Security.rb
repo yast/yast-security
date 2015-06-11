@@ -26,6 +26,7 @@
 #
 # $Id$
 require "yast"
+require "yaml"
 
 module Yast
   class SecurityClass < Module
@@ -41,63 +42,24 @@ module Yast
       Yast.import "Pam"
       Yast.import "Progress"
       Yast.import "SystemdService"
+      Yast.import "Directory"
 
       Yast.include self, "security/levels.rb"
 
 
-      # services to check - these must be running
-      # meaning [ [ || ] && && ]
-      @mandatory_services = [
-        ["ntp"],
-        ["syslog"],
-        ["auditd"],
-        ["random"],
-        ["kbd"],
-        ["cron"],
-        ["postfix", "sendmail"]
-      ]
-      # sevices to check - these can be ignored (if they are running it's OK)
-      @optional_services = [
-        "acpid",
-        "boot.clock",
-        "dbus",
-        "ealysyslog",
-        "fbset",
-        "framebufferset",
-        "isdn",
-        "microcode.ctl",
-        "random",
-        "consolekit",
-        "haldaemon",
-        "network",
-        "syslog",
-        "auditd",
-        "splash_early",
-        "alsasound",
-        "irq_balancer",
-        "kbd",
-        "powersaved",
-        "splash",
-        "sshd",
-        "earlyxdm",
-        "hotkey-setup",
-        "atd",
-        "nscd",
-        "smpppd",
-        "xend",
-        "autofs",
-        "libvirtd",
-        "sendmail",
-        "postfix",
-        "xendomains",
-        "cron",
-        "ddclient",
-        "smartd",
-        "stopblktrace",
-        "ntp",
-        "SuSEfirewall",
-        "earlysyslog"
-      ]
+      # Services to check
+      srv_file = Directory.find_data_file("security/services.yml")
+      if srv_file
+        srv_lists = YAML.load_file(srv_file) rescue {}
+      else
+        srv_lists = {}
+      end
+      # These must be running
+      @mandatory_services = srv_lists["mandatory_services"] || []
+      # It must be an array of arrays (meaning [ [ || ] && && ])
+      @mandatory_services.map! {|s| s.is_a?(::String) ? [s] : s }
+      # These can be ignored (if they are running it's OK)
+      @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
 
       # systemd target, defining ctrl-alt-del behavior
