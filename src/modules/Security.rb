@@ -26,6 +26,7 @@
 #
 # $Id$
 require "yast"
+require "yaml"
 
 module Yast
   class SecurityClass < Module
@@ -41,63 +42,24 @@ module Yast
       Yast.import "Pam"
       Yast.import "Progress"
       Yast.import "SystemdService"
+      Yast.import "Directory"
 
       Yast.include self, "security/levels.rb"
 
 
-      # services to check - these must be running
-      # meaning [ [ || ] && && ]
-      @mandatory_services = [
-        ["ntp"],
-        ["syslog"],
-        ["auditd"],
-        ["random"],
-        ["kbd"],
-        ["cron"],
-        ["postfix", "sendmail"]
-      ]
-      # sevices to check - these can be ignored (if they are running it's OK)
-      @optional_services = [
-        "acpid",
-        "boot.clock",
-        "dbus",
-        "ealysyslog",
-        "fbset",
-        "framebufferset",
-        "isdn",
-        "microcode.ctl",
-        "random",
-        "consolekit",
-        "haldaemon",
-        "network",
-        "syslog",
-        "auditd",
-        "splash_early",
-        "alsasound",
-        "irq_balancer",
-        "kbd",
-        "powersaved",
-        "splash",
-        "sshd",
-        "earlyxdm",
-        "hotkey-setup",
-        "atd",
-        "nscd",
-        "smpppd",
-        "xend",
-        "autofs",
-        "libvirtd",
-        "sendmail",
-        "postfix",
-        "xendomains",
-        "cron",
-        "ddclient",
-        "smartd",
-        "stopblktrace",
-        "ntp",
-        "SuSEfirewall",
-        "earlysyslog"
-      ]
+      # Services to check
+      srv_file = Directory.find_data_file("security/services.yml")
+      if srv_file
+        srv_lists = YAML.load_file(srv_file) rescue {}
+      else
+        srv_lists = {}
+      end
+      # These must be running
+      @mandatory_services = srv_lists["mandatory_services"] || []
+      # It must be an array of arrays (meaning [ [ || ] && && ])
+      @mandatory_services.map! {|s| s.is_a?(::String) ? [s] : s }
+      # These can be ignored (if they are running it's OK)
+      @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
 
       # systemd target, defining ctrl-alt-del behavior
@@ -145,22 +107,18 @@ module Yast
         "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"          => "no",
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "no",
         "SMTPD_LISTEN_REMOTE"                       => "no",
-        "RUNLEVEL3_MANDATORY_SERVICES"              => "yes",
-        "RUNLEVEL5_MANDATORY_SERVICES"              => "yes",
-        "RUNLEVEL3_EXTRA_SERVICES"                  => "no",
-        "RUNLEVEL5_EXTRA_SERVICES"                  => "no"
+        "MANDATORY_SERVICES"                        => "yes",
+        "EXTRA_SERVICES"                            => "no"
       }
 
       # the original settings
       @Settings_bak = deep_copy(@Settings)
 
       # keys that should not be tested against predefined levels:
-      # - RUNLEVEL*_SERVICES have different syntax, are not saved in current form
+      # - *_SERVICES have different syntax, are not saved in current form
       @do_not_test = [
-        "RUNLEVEL3_MANDATORY_SERVICES",
-        "RUNLEVEL5_MANDATORY_SERVICES",
-        "RUNLEVEL3_EXTRA_SERVICES",
-        "RUNLEVEL5_EXTRA_SERVICES"
+        "MANDATORY_SERVICES",
+        "EXTRA_SERVICES"
       ]
 
       # Security settings locations
@@ -238,10 +196,8 @@ module Yast
       # Remaining settings:
       # - CONSOLE_SHUTDOWN (/etc/inittab)
       # - PASSWD_ENCRYPTION (/etc/pam?)
-      # - RUNLEVEL3_MANDATORY_SERVICES
-      # - RUNLEVEL5_MANDATORY_SERVICES
-      # - RUNLEVEL3_EXTRA_SERVICES
-      # - RUNLEVEL5_EXTRA_SERVICES
+      # - MANDATORY_SERVICES
+      # - EXTRA_SERVICES
 
       # Number of sigificant characters in the password
       @PasswordMaxLengths = {
@@ -356,11 +312,9 @@ module Yast
     def ReadServiceSettings
       services = SystemdService.all.select(&:enabled?).map(&:name)
       setting = MissingMandatoryServices(services) == [] ? "secure" : "insecure"
-      # Runlevels are not longer used, but @Settings is populated this way for
-      # compatibility with the current interface
-      @Settings["RUNLEVEL3_MANDATORY_SERVICES"] = @Settings["RUNLEVEL5_MANDATORY_SERVICES"] = setting
+      @Settings["MANDATORY_SERVICES"] = setting
       setting = ExtraServices(services) == [] ? "secure" : "insecure"
-      @Settings["RUNLEVEL3_EXTRA_SERVICES"] = @Settings["RUNLEVEL5_EXTRA_SERVICES"] = setting
+      @Settings["EXTRA_SERVICES"] = setting
 
       nil
     end

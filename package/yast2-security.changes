@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Jun 11 16:00:10 UTC 2015 - ancor@suse.com
+
+- Removed references to runlevels (obsolete). Only current systemd
+  target is analyzed.
+- List of mandatory and optional services moved to a YAML file.
+
+-------------------------------------------------------------------
 Tue Jan 13 13:24:28 UTC 2015 - ancor@suse.com
 
 - Fixed an error setting the shutdown behaviour of KDM (bnc#907907)
