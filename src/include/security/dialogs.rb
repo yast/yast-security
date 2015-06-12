@@ -34,6 +34,7 @@ module Yast
 
       Yast.import "Label"
       Yast.import "Popup"
+      Yast.import "Message"
       Yast.import "Security"
       Yast.import "Wizard"
 
@@ -514,10 +515,12 @@ module Yast
               Builtins.y2milestone("Client returned %1", client_ret)
 
               if client_ret == :next || client_ret == :ok ||
-                  client_ret == :finish
+                  client_ret == :finish || client_ret == true
                 # update the current value
-                if Builtins.haskey(@link_update_mapping, ret)
-                  Builtins.eval(Ops.get(@link_update_mapping, ret))
+                if @link_update_mapping.has_key?(ret)
+                  Popup.ShowFeedback(_("Analyzing system"), Message.takes_a_while)
+                  @link_update_mapping[ret].call
+                  Popup.ClearFeedback
                 end
 
                 # update the overview
