@@ -4,7 +4,7 @@
 # Array containing services that must be running. Each entry can be:
 #  - the name of a service (it must be running)
 #  - a nested array with a list of alternative service names (at least one of
-#      them must be running)
+#    them must be running)
 ---
 mandatory_services:
   - auditd
