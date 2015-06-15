@@ -7,54 +7,54 @@
 #    them must be running)
 ---
 mandatory_services:
+  - apparmor
   - auditd
-  - cron
-  - kbd
-  - ntp
-  - - postfix
-    - sendmail
-  - random
-  - syslog
+  - - firewalld
+    - shorewall
+    - SuSEfirewall2
+  - - NetworkManager
+    - wicked
 
 # Array containing services that are considered harmless (it's ok if they are
 # running)
 optional_services:
   - acpid
-  - boot.clock
-  - dbus
-  - ealysyslog
-  - fbset
-  - framebufferset
-  - isdn
-  - microcode.ctl
-  - random
-  - consolekit
-  - haldaemon
-  - network
-  - syslog
-  - auditd
-  - splash_early
-  - alsasound
-  - irq_balancer
-  - kbd
-  - powersaved
-  - splash
-  - sshd
-  - earlyxdm
-  - hotkey-setup
-  - atd
-  - nscd
-  - smpppd
-  - xend
   - autofs
-  - libvirtd
-  - sendmail
-  - postfix
-  - xendomains
+  - bluetooth
+  - console-kit-daemon
   - cron
-  - ddclient
+  - dbus
+  - display-manager
+  - getty@tty1
+  - haveged
+  - isdn
+  - klog
+  - libvirtd
+  - mcelog
+  - nscd
+  - ntpd
+  - polkitd
+  - postfix
+  - ModemManager
+  - NetworkManager-dispatcher
+  - NetworkManager-wait-online
+  - random
+  - sendmail
   - smartd
-  - stopblktrace
-  - ntp
-  - SuSEfirewall
-  - earlysyslog
+  - sshd
+  - syslog
+  - systemd-dmevented
+  - systemd-journal-flush
+  - systemd-journald
+  - systemd-logind
+  - systemd-udevd
+  - wickedd
+  - wickedd-auto4
+  - wickedd-dhcp4
+  - wickedd-dhcp6
+  - wickedd-nanny
+  - wpa_supplicant
+  - xend
+  - xendomains
+  - YaST2-Firstboot
+  - YaST2-Second-Stage
