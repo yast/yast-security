@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Jun 15 15:22:38 UTC 2015 - ancor@suse.com
+
+- Updated list of mandatory and optional services (part of
+  fate#318425)
+- 3.1.9
+
+-------------------------------------------------------------------
 Fri Jun 12 16:27:53 UTC 2015 - ancor@suse.com
 
 - When checking services, systemd aliases are now taken into
