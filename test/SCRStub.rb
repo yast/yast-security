@@ -26,42 +26,6 @@ module SCRStub
     end
   end
 
-  # Shortcut for generating Yast::Path objects
-  #
-  # @param route [String] textual representation of the path
-  # @return [Yast::Path] the corresponding Path object
-  def path(route)
-    Yast::Path.new(route)
-  end
-
-  # Encapsulates subsequent SCR calls into a chroot.
-  #
-  # Raises an exception if something goes wrong.
-  #
-  # @param [#to_s] directory to use as '/' for SCR calls
-  def set_root_path(directory)
-    check_version = false
-    @scr_handle = Yast::WFM.SCROpen("chroot=#{directory}:scr", check_version)
-    raise "Error creating the chrooted scr instance" if @scr_handle < 0
-    Yast::WFM.SCRSetDefault(@scr_handle)
-  end
-
-  # Resets the SCR calls to default behaviour, closing the SCR instance open by
-  # #set_root_path.
-  #
-  # Raises an exception if #set_root_path has not been called before (or if the
-  # corresponding instance has already been closed)
-  #
-  # @see #set_root_path
-  def reset_root_path
-    default_handle = Yast::WFM.SCRGetDefault
-    if default_handle != @scr_handle
-      raise "Error closing the chrooted scr instance, it's not the current default one"
-    end
-    @scr_handle = nil
-    Yast::WFM.SCRClose(default_handle)
-  end
-
   # Matcher for executing commands using SCR.Execute and .target.bash
   #
   # @return [RSpec::Mocks::Matchers::Receive]
