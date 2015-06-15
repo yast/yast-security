@@ -105,7 +105,7 @@ module Yast
           "Enable basic system services"
         ),
         "EXTRA_SERVICES"                            => _(
-          "Enable extra services"
+          "Disable extra services"
         )
       }
 
