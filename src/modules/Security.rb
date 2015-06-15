@@ -837,10 +837,10 @@ module Yast
     def read_missing_mandatory_services
       log.info("Checking mandatory services")
 
-      @missing_mandatory_services = @mandatory_services.select do |services|
+      @missing_mandatory_services = @mandatory_services.reject do |services|
         enabled = services.any? { |service| Service.enabled?(service) }
         log.info("Mandatory services #{services} are enabled: #{enabled}")
-        !enabled
+        enabled
       end
 
       log.info("Missing mandatory services: #{@missing_mandatory_services}")
@@ -851,26 +851,43 @@ module Yast
       log.info("Searching for extra services")
 
       enabled_services = SystemdService.all(names: "Names").select(&:enabled?)
-      mandatory = @mandatory_services.flatten
-      @extra_services = enabled_services.select do |service|
-        # A service is 'extra' if it's neither mandatory or optional
-        extra = !mandatory.include?(service.name) && !@optional_services.include?(service.name)
-        # If we failed to find it in the lists by name, try by alias
-        if extra
-          names = service.properties.names
-          if names
-            names = names.split.map {|name| name.sub(/\.service$/, "") }
-            # Is 'extra' if none of the aliases is mandatory nor optional
-            extra = names.none? do |name|
-              mandatory.include?(name) || @optional_services.include?(name)
-            end
-          end
+      # Remove from the list the services that are allowed
+      @extra_services = enabled_services.reject do |service|
+        allowed = allowed_service?(service.name)
+        # If the name is not allowed, try the aliases
+        if !allowed
+          names = alias_names(service)
+          allowed = names && names.any? { |name| allowed_service?(name) }
         end
-        log.info("Found extra service: #{service.name}") if extra
-        extra
+        log.info("Found extra service: #{service.name}") unless allowed
+        allowed
       end
       @extra_services.map!(&:name)
       log.info("All extra services: #{@extra_services}")
+    end
+  end
+
+  # Checks if the service is allowed (i.e. not considered 'extra')
+  #
+  # @return [Boolean] true whether the service is expected (mandatory or optional)
+  def allowed_service?(name)
+    all_mandatory_services.include?(name) || @optional_services.include?(name)
+  end
+
+  # Flat list of mandatory services
+  def all_mandatory_services
+    @all_mandatory_services ||= @mandatory_services.flatten
+  end
+
+  # List of aliases of the service
+  #
+  # @return [Array<String>] alias names excluding '.service'
+  def alias_names(service)
+    names = service.properties.names
+    if names
+      names.split.map {|name| name.sub(/\.service$/, "") }
+    else
+      nil
     end
   end
 
