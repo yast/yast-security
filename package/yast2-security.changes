@@ -2,7 +2,7 @@
 Fri Jun 12 16:27:53 UTC 2015 - ancor@suse.com
 
 - When checking services, systemd aliases are now taken into
-  account (so, for example, rsyslog is accounted and syslog).
+  account (so, for example, rsyslog is accounted as syslog).
 
 -------------------------------------------------------------------
 Thu Jun 11 16:00:10 UTC 2015 - ancor@suse.com

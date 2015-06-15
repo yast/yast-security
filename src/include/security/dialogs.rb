@@ -518,9 +518,9 @@ module Yast
                   client_ret == :finish || client_ret == true
                 # update the current value
                 if @link_update_mapping.has_key?(ret)
-                  Popup.ShowFeedback(_("Analyzing system"), Message.takes_a_while)
-                  @link_update_mapping[ret].call
-                  Popup.ClearFeedback
+                  Popup.Feedback(_("Analyzing system"), Message.takes_a_while) do
+                    @link_update_mapping[ret].call
+                  end
                 end
 
                 # update the overview
