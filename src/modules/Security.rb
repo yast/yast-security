@@ -41,6 +41,7 @@ module Yast
       Yast.import "Package"
       Yast.import "Pam"
       Yast.import "Progress"
+      Yast.import "Service"
       Yast.import "SystemdService"
       Yast.import "Directory"
 
@@ -110,6 +111,11 @@ module Yast
         "MANDATORY_SERVICES"                        => "yes",
         "EXTRA_SERVICES"                            => "no"
       }
+
+      # List of missing mandatory services
+      @missing_mandatory_services = []
+      # List of enabled services not included in mandatory or optional lists
+      @extra_services = []
 
       # the original settings
       @Settings_bak = deep_copy(@Settings)
@@ -231,48 +237,13 @@ module Yast
     end
 
     # List of missing mandatory services
-    #
-    # @param [Array<String>] enabled_services optional list with names of the
-    #     currently enabled services. If not provided, it will be obtained
-    #     from SystemdService.
-    def MissingMandatoryServices(enabled_services = nil)
-      log.info("Checking mandatory services")
-
-      enabled_services ||= SystemdService.all.select(&:enabled?).map(&:name)
-      log.info("enabled_services: #{enabled_services}")
-      return nil if enabled_services.nil?
-
-      ret = @mandatory_services.select do |services|
-        enabled = services.any? { |service| enabled_services.include?(service) }
-        log.info("Mandatory services #{services} are enabled: #{enabled}")
-        !enabled
-      end 
-
-      log.info("Missing mandatory services: #{ret}")
-      deep_copy(ret)
+    def MissingMandatoryServices
+      @missing_mandatory_services
     end
 
     # List of enabled services that are neither mandatory nor optional
-    #
-    # @param [Array<String>] enabled_services optional list with names of the
-    #     currently enabled services. If not provided, it will be obtained
-    #     from SystemdService.
-    def ExtraServices(enabled_services = nil)
-      log.info("Searching for extra services")
-
-      enabled_services ||= SystemdService.all.select(&:enabled?).map(&:name)
-      return nil if enabled_services == nil
-
-      mandatory = @mandatory_services.flatten
-      ret = enabled_services.select do |service|
-        # the extra service is not mandatory and it's not optional
-        extra = !mandatory.include?(service) && !@optional_services.include?(service)
-        log.info("Found extra service: #{service}") if extra
-        extra
-      end 
-      log.info("All extra services: #{ret}")
-
-      deep_copy(ret)
+    def ExtraServices
+      @extra_services
     end
 
     # Check for pending Abort press
@@ -310,10 +281,11 @@ module Yast
     end
 
     def ReadServiceSettings
-      services = SystemdService.all.select(&:enabled?).map(&:name)
-      setting = MissingMandatoryServices(services) == [] ? "secure" : "insecure"
+      read_missing_mandatory_services
+      setting = MissingMandatoryServices() == [] ? "secure" : "insecure"
       @Settings["MANDATORY_SERVICES"] = setting
-      setting = ExtraServices(services) == [] ? "secure" : "insecure"
+      read_extra_services
+      setting = ExtraServices() == [] ? "secure" : "insecure"
       @Settings["EXTRA_SERVICES"] = setting
 
       nil
@@ -858,6 +830,65 @@ module Yast
     publish :function => :Export, :type => "map ()"
     publish :function => :Summary, :type => "list ()"
     publish :function => :Overview, :type => "list ()"
+
+    protected
+
+    # Sets @missing_mandatory_services honoring the systemd aliases
+    def read_missing_mandatory_services
+      log.info("Checking mandatory services")
+
+      @missing_mandatory_services = @mandatory_services.reject do |services|
+        enabled = services.any? { |service| Service.enabled?(service) }
+        log.info("Mandatory services #{services} are enabled: #{enabled}")
+        enabled
+      end
+
+      log.info("Missing mandatory services: #{@missing_mandatory_services}")
+    end
+
+    # Sets @extra_services honoring the systemd aliases
+    def read_extra_services
+      log.info("Searching for extra services")
+
+      enabled_services = SystemdService.all(names: "Names").select(&:enabled?)
+      # Remove from the list the services that are allowed
+      @extra_services = enabled_services.reject do |service|
+        allowed = allowed_service?(service.name)
+        # If the name is not allowed, try the aliases
+        if !allowed
+          names = alias_names(service)
+          allowed = names && names.any? { |name| allowed_service?(name) }
+        end
+        log.info("Found extra service: #{service.name}") unless allowed
+        allowed
+      end
+      @extra_services.map!(&:name)
+      log.info("All extra services: #{@extra_services}")
+    end
+  end
+
+  # Checks if the service is allowed (i.e. not considered 'extra')
+  #
+  # @return [Boolean] true whether the service is expected (mandatory or optional)
+  def allowed_service?(name)
+    all_mandatory_services.include?(name) || @optional_services.include?(name)
+  end
+
+  # Flat list of mandatory services
+  def all_mandatory_services
+    @all_mandatory_services ||= @mandatory_services.flatten
+  end
+
+  # List of aliases of the service
+  #
+  # @return [Array<String>] alias names excluding '.service'
+  def alias_names(service)
+    names = service.properties.names
+    if names
+      names.split.map {|name| name.sub(/\.service$/, "") }
+    else
+      nil
+    end
   end
 
   Security = SecurityClass.new

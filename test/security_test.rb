@@ -7,23 +7,34 @@ require 'rspec'
 require "yast"
 require_relative 'SCRStub'
 
-def services_for(names)
-  names.map {|n| Yast::DummySystemdUnit.new(n) }
+def services_for(names, aliases = {})
+  names.map do |n|
+    if aliases[n]
+      Yast::DummySystemdUnit.new(n, aliases[n])
+    else
+      Yast::DummySystemdUnit.new(n)
+    end
+  end
 end
 
 module Yast
   # SystemdUnit is 'too smart' for our testing purposes
   class DummySystemdUnit
-    attr_accessor :name
+    attr_accessor :name, :properties
 
-    def initialize(name)
+    Struct.new("DummyProperties", :names)
+
+    def initialize(name, aliases = nil)
       self.name = name
+      self.properties = Struct::DummyProperties.new(aliases)
     end
 
     def enabled?; true; end
   end
 
   import "Security"
+  import "SystemdService"
+  import "Service"
 
   RSpec.configure do |c|
     c.include SCRStub
@@ -31,9 +42,13 @@ module Yast
 
   describe Security do
     describe "#ReadServiceSettings" do
+      let(:aliases) { {} }
 
-      before(:each) do 
-        allow(SystemdService).to receive(:all).and_return services_for(service_names)
+      before(:each) do
+        allow(Service).to receive(:enabled?) do |service|
+          service_names.include?(service)
+        end
+        allow(SystemdService).to receive(:all).and_return services_for(service_names, aliases)
         Security.ReadServiceSettings
       end
 
@@ -61,6 +76,15 @@ module Yast
         it "sets settings for services as 'insecure'" do
           expect(Security.Settings["MANDATORY_SERVICES"]).to eq("insecure")
           expect(Security.Settings["EXTRA_SERVICES"]).to eq("insecure")
+        end
+      end
+
+      context "with services that are aliases of optional services" do
+        let(:service_names) { %w(ntp rsyslog auditd random kbd anacron postfix) }
+        let(:aliases) { {"rsyslog" => "rsyslog.service syslog.service", "anacron" => "anacron cron"} }
+
+        it "sets settings for extra services as 'secure'" do
+          expect(Security.Settings["EXTRA_SERVICES"]).to eq("secure")
         end
       end
 
