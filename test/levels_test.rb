@@ -42,11 +42,17 @@ module Yast
         reset_scr_root
       end
 
+      # Not really needed, but looks better than returning nil
+      let(:empty_bash_output) { {"exit" => 0, "stdout" => "", "stderr" => ""} }
+
       it "defines the system behavior" do
-        expect(SCR).to exec_bash("ln -s -f /dev/null /etc/systemd/system/ctrl-alt-del.target")
         expect(SCR).to exec_bash_output("/usr/sbin/pam-config -a --cracklib")
+          .and_return(empty_bash_output)
         expect(SCR).to exec_bash_output("/usr/sbin/pam-config -d --cracklib-minlen")
+          .and_return(empty_bash_output)
         expect(SCR).to exec_bash_output("/usr/sbin/pam-config -d --pwhistory-remember")
+          .and_return(empty_bash_output)
+        expect(SCR).to exec_bash("ln -s -f /dev/null /etc/systemd/system/ctrl-alt-del.target")
         expect(SCR).to exec_bash("echo 0 > /proc/sys/kernel/sysrq")
         expect(SCR).to exec_bash("/usr/bin/chkstat --system")
 
