@@ -25,6 +25,10 @@ require "yast"
 require "yast/rspec"
 require_relative 'SCRStub'
 
+::RSpec.configure do |c|
+  c.include SCRStub
+end
+
 if ENV["COVERAGE"]
   require "simplecov"
   SimpleCov.start

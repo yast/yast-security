@@ -31,10 +31,6 @@ module Yast
   import "SystemdService"
   import "Service"
 
-  ::RSpec.configure do |c|
-    c.include SCRStub
-  end
-
   describe Security do
     describe "#ReadServiceSettings" do
       let(:aliases) { {} }
