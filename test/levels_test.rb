@@ -3,7 +3,7 @@
 require_relative 'test_helper'
 
 module Yast
-  class LevelsTester
+  class LevelsTester < Client
     include Yast::I18n
 
     attr_reader :Levels
