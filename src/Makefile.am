@@ -30,7 +30,10 @@ scrconf_DATA = \
 
 ydatadir = @ydatadir@/security
 ydata_DATA = \
-  data/security/services.yml
+  data/security/services.yml \
+	data/security/level1.yml \
+	data/security/level2.yml \
+	data/security/level3.yml
 
 desktop_DATA = \
   desktop/security.desktop
