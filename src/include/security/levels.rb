@@ -68,14 +68,10 @@ module Yast
       }
 
       # Levels definitions
-      @Levels = {}
-      @LevelsNames.keys.each do |level|
+      @Levels = @LevelsNames.keys.each_with_object({}) do |level, levels|
         lfile = Directory.find_data_file("security/#{level.downcase}.yml")
-        if lfile
-          @Levels[level] = YAML.load_file(lfile) rescue {}
-        else
-          @Levels[level] = {}
-        end
+        raise(Errno::ENOENT, "#{level.downcase}.yml file not found") unless lfile
+        levels[level] = YAML.load_file(lfile)
       end
 
       # EOF
