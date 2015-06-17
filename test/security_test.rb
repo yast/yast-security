@@ -1,11 +1,6 @@
 #!/usr/bin/env rspec
 
-ENV["Y2DIR"] = File.expand_path("../../src", __FILE__)
-DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
-
-require 'rspec'
-require "yast"
-require_relative 'SCRStub'
+require_relative 'test_helper'
 
 def services_for(names, aliases = {})
   names.map do |n|
@@ -35,10 +30,6 @@ module Yast
   import "Security"
   import "SystemdService"
   import "Service"
-
-  RSpec.configure do |c|
-    c.include SCRStub
-  end
 
   describe Security do
     describe "#ReadServiceSettings" do
@@ -114,13 +105,13 @@ module Yast
 
     describe "#write_to_locations" do
       before do
-        set_root_path(File.join(DATA_PATH, "system"))
+        change_scr_root(File.join(DATA_PATH, "system"))
         Security.read_from_locations
         stub_scr_write
       end
 
       after do
-        reset_root_path
+        reset_scr_root
       end
 
       it "does not write nil values" do
@@ -161,13 +152,13 @@ module Yast
 
     describe "#write_kernel_settings" do
       before do
-        set_root_path(File.join(DATA_PATH, "system"))
+        change_scr_root(File.join(DATA_PATH, "system"))
         Security.read_kernel_settings
         stub_scr_write
       end
 
       after do
-        reset_root_path
+        reset_scr_root
       end
 
       context "writing to sysctl.conf" do
