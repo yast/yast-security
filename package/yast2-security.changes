@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Jun 19 15:26:45 UTC 2015 - ancor@suse.com
+
+- Settings of security levels moved to YAML files
+- Redefined security levels (last part of fate#318425)
+- 3.1.10
+
+-------------------------------------------------------------------
 Mon Jun 15 15:22:38 UTC 2015 - ancor@suse.com
 
 - Updated list of mandatory and optional services (part of
