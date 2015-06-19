@@ -51,18 +51,18 @@ module Yast
       # Level names definitions
       @LevelsNames = {
         # level name
-        "Level1" => _("Home Workstation"),
+        "Level1" => _("Workstation"),
         # level name
-        "Level2" => _("Networked Workstation"),
+        "Level2" => _("Roaming Device"),
         # level name
         "Level3" => _("Network Server")
       }
 
       @LevelsLabels = {
         # RadioButton label
-        "Level1" => _("&Home Workstation"),
+        "Level1" => _("&Workstation"),
         # RadioButton label
-        "Level2" => _("N&etworked Workstation"),
+        "Level2" => _("&Roaming Device"),
         # RadioButton label
         "Level3" => _("Network &Server")
       }
