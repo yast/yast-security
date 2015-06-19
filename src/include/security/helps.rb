@@ -84,11 +84,11 @@ module Yast
         ) +
           # Main dialog help 5/8
           _(
-            "<p><b>Home Workstation</b>: For a home computer not connected to\nany type of a network.</p>"
+            "<p><b>Workstation</b>: For a computer connected\nto any type of network including the Internet.</p>"
           ) +
           # Main dialog help 6/8
           _(
-            "<p><b>Networked Workstation</b>: For a computer connected\nto any type of network including the Internet.</p>"
+            "<p><b>Roaming Device</b>: For a laptop, tablet or similar device\nthat connects to different networks.</p>"
           ) +
           # Main dialog help 7/8
           _(
