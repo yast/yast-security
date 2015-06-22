@@ -55,7 +55,7 @@ module Yast
       # the command line description map
       @cmdline = {
         "id"         => "security",
-        # translators: command line help text for Securoty module
+        # translators: command line help text for Security module
         "help"       => _(
           "Security configuration module"
         ),
@@ -98,7 +98,7 @@ module Yast
           "roaming"     => {
             # command line help text for 'level roaming' option
             "help" => _(
-              "Roaming Device security level"
+              "Roaming Device (e.g. laptop or tablet) security level"
             )
           },
           "server"      => {
@@ -184,11 +184,11 @@ module Yast
         current = key if level == Security.Settings
       end
       lvl = ""
-      if options.has_key?("workstation")
+      if options.key?("workstation")
         lvl = "Level1"
-      elsif options.has_key?("roaming")
+      elsif options.key?("roaming")
         lvl = "Level2"
-      elsif Builtins.haskey(options, "server")
+      elsif options.key?("server")
         lvl = "Level3"
       end
 
