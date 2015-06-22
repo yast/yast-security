@@ -1,4 +1,4 @@
-# Level 2: Networked Workstation
+# Level 2: Roaming Device
 ---
 AllowShutdown:                    Root
 CONSOLE_SHUTDOWN:                 ignore
