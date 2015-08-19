@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 19 14:55:48 UTC 2015 - ancor@suse.com
+
+- Added some entries to the list of optional services (bnc#942379)
+- 3.1.11
+
+-------------------------------------------------------------------
 Fri Jun 19 15:26:45 UTC 2015 - ancor@suse.com
 
 - Settings of security levels moved to YAML files
