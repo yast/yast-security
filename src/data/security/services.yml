@@ -21,32 +21,41 @@ optional_services:
   - acpid
   - autofs
   - bluetooth
+  - btrfsmaintenance-refresh
   - console-kit-daemon
   - cron
   - dbus
   - display-manager
   - getty@tty1
   - haveged
+  - irqbalance
+  - iscsi
   - isdn
+  - kdump
   - klog
   - libvirtd
   - mcelog
+  - ModemManager
+  - NetworkManager-dispatcher
+  - NetworkManager-wait-online
   - nscd
   - ntpd
   - polkitd
   - postfix
-  - ModemManager
-  - NetworkManager-dispatcher
-  - NetworkManager-wait-online
+  - purge-kernels
   - random
   - sendmail
   - smartd
+  - spice-vdagentd
   - sshd
   - syslog
   - systemd-dmevented
   - systemd-journal-flush
   - systemd-journald
   - systemd-logind
+  - systemd-readahead-collect
+  - systemd-readahead-drop
+  - systemd-readahead-replay
   - systemd-udevd
   - wickedd
   - wickedd-auto4
