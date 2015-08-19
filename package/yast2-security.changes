@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 19 15:20:43 UTC 2015 - ancor@suse.com
+
+- Adjusted to build and run in SLE-12-GA (bnc#941620)
+- 3.1.11.1
+
+-------------------------------------------------------------------
 Wed Aug 19 14:55:48 UTC 2015 - ancor@suse.com
 
 - Added some entries to the list of optional services (bnc#942379)
