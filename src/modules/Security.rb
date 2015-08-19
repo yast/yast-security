@@ -46,10 +46,11 @@ module Yast
       Yast.import "Directory"
 
       Yast.include self, "security/levels.rb"
+      Yast.include self, "security/directory.rb"
 
 
       # Services to check
-      srv_file = Directory.find_data_file("security/services.yml")
+      srv_file = find_data_file("security/services.yml")
       if srv_file
         srv_lists = YAML.load_file(srv_file) rescue {}
       else

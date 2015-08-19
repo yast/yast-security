@@ -48,6 +48,8 @@ module Yast
       textdomain "security"
       Yast.import "Directory"
 
+      Yast.include include_target, "security/directory.rb"
+
       # Level names definitions
       @LevelsNames = {
         # level name
@@ -69,7 +71,7 @@ module Yast
 
       # Levels definitions
       @Levels = @LevelsNames.keys.each_with_object({}) do |level, levels|
-        lfile = Directory.find_data_file("security/#{level.downcase}.yml")
+        lfile = find_data_file("security/#{level.downcase}.yml")
         raise(Errno::ENOENT, "#{level.downcase}.yml file not found") unless lfile
         levels[level] = YAML.load_file(lfile)
       end

@@ -62,4 +62,52 @@ module SCRStub
   def was_written?(path)
     @written_values.has_key?(path)
   end
+
+  # Substitute for the same method found in Yast::RSpec::SCR in yast2 >= 3.1.26
+  # Block support not implemented because it's not used in this test suite
+  def change_scr_root(directory)
+    if @scr_handle
+      raise "There is already an open chrooted SCR instance, "\
+        "a call to reset_scr_root was expected"
+    end
+
+    if !File.directory?(directory)
+      raise "#{directory} is not a valid directory"
+    end
+
+    @scr_original_handle = Yast::WFM.SCRGetDefault
+    check_version = false
+    @scr_handle = Yast::WFM.SCROpen("chroot=#{directory}:scr", check_version)
+    if @scr_handle < 0
+      @scr_handle = nil
+      @scr_original_handle = nil
+      raise "Error creating the chrooted SCR instance"
+    end
+    Yast::WFM.SCRSetDefault(@scr_handle)
+  end
+
+  # Substitute for the same method found in Yast::RSpec::SCR in yast2 >= 3.1.26
+  def reset_scr_root
+    if @scr_handle.nil?
+      raise "Unable to find a chrooted SCR instance to close"
+    end
+
+    default_handle = Yast::WFM.SCRGetDefault
+    if default_handle != @scr_handle
+      raise "Error closing the chrooted SCR instance, "\
+        "it's not the current default one"
+    end
+
+    Yast::WFM.SCRClose(default_handle)
+    Yast::WFM.SCRSetDefault(@scr_original_handle)
+  ensure
+    @scr_handle = nil
+    @scr_original_handle = nil
+  end
+
+  # Equivalent for the same method found in Yast::RSpec::Shorcuts in
+  # yast2 >= 3.1.26
+  def path(route)
+    Yast::Path.new(route)
+  end
 end

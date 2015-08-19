@@ -17,7 +17,8 @@ ynclude_DATA = \
   include/security/complex.rb \
   include/security/users.rb \
   include/security/routines.rb \
-  include/security/helps.rb
+  include/security/helps.rb \
+  include/security/directory.rb
 
 schemafilesdir = $(schemadir)/autoyast/rnc
 schemafiles_DATA = \
