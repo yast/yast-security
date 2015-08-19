@@ -26,6 +26,7 @@ optional_services:
   - cron
   - dbus
   - display-manager
+  - dm-event
   - getty@tty1
   - haveged
   - irqbalance
