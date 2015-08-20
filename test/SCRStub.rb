@@ -86,7 +86,8 @@ module SCRStub
     Yast::WFM.SCRSetDefault(@scr_handle)
   end
 
-  # Substitute for the same method found in Yast::RSpec::SCR in yast2 >= 3.1.26
+  # Substitute for the same method found in Yast::RSpec::SCR in
+  # yast2-ruby-bindings >= 3.1.26
   def reset_scr_root
     if @scr_handle.nil?
       raise "Unable to find a chrooted SCR instance to close"
@@ -106,7 +107,7 @@ module SCRStub
   end
 
   # Equivalent for the same method found in Yast::RSpec::Shorcuts in
-  # yast2 >= 3.1.26
+  # yast2-ruby-bindings >= 3.1.26
   def path(route)
     Yast::Path.new(route)
   end
