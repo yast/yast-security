@@ -110,20 +110,6 @@ module Yast
             ],
             "Value"   => "reboot"
           },
-          "CWD_IN_ROOT_PATH"             => {
-            "Widget" => "CheckBox",
-            # CheckBox label
-            "Label"  => _("&Current Directory in root's Path"),
-            "Value"  => "yes"
-          },
-          "CWD_IN_USER_PATH"             => {
-            "Widget" => "CheckBox",
-            # CheckBox label
-            "Label"  => _(
-              "Curr&ent Directory in Path of Regular Users"
-            ),
-            "Value"  => "yes"
-          },
           "DISPLAYMANAGER_REMOTE_ACCESS" => {
             "Widget" => "CheckBox",
             # CheckBox label
@@ -162,7 +148,7 @@ module Yast
             "Label"  => _("M&inimum"),
             "Value"  => "101"
           },
-          "DISPLAYMANAGER_SHUTDOWN"      => {
+          "AllowShutdown"                => {
             "Widget"  => "ComboBox",
             # ComboBox label
             "Label"   => _(
@@ -170,15 +156,11 @@ module Yast
             ),
             "Options" => [
               # ComboBox value
-              ["root", _("Only root")],
+              ["Root", _("Only root")],
               # ComboBox value
-              ["all", _("All Users")],
+              ["All", _("All Users")],
               # ComboBox value
-              ["none", _("Nobody")],
-              # ComboBox value
-              #	    ["local",_("Local Users")],
-              # ComboBox value
-              ["auto", _("Automatic")]
+              ["None", _("Nobody")]
             ],
             "Value"   => "all"
           },

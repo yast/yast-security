@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        3.1.4
+Version:        3.1.11.1
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -74,4 +74,5 @@ fi
 %{yast_moduledir}/Security.rb
 %{yast_scrconfdir}/*.scr
 %{yast_schemadir}/autoyast/rnc/security.rnc
+%{yast_ydatadir}/security
 %doc %{yast_docdir}

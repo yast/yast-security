@@ -26,6 +26,7 @@
 #
 # $Id$
 require "yast"
+require "yaml"
 
 module Yast
   class SecurityClass < Module
@@ -40,64 +41,27 @@ module Yast
       Yast.import "Package"
       Yast.import "Pam"
       Yast.import "Progress"
+      Yast.import "Service"
       Yast.import "SystemdService"
+      Yast.import "Directory"
 
       Yast.include self, "security/levels.rb"
+      Yast.include self, "security/directory.rb"
 
 
-      # services to check - these must be running
-      # meaning [ [ || ] && && ]
-      @mandatory_services = [
-        ["ntp"],
-        ["syslog"],
-        ["auditd"],
-        ["random"],
-        ["kbd"],
-        ["cron"],
-        ["postfix", "sendmail"]
-      ]
-      # sevices to check - these can be ignored (if they are running it's OK)
-      @optional_services = [
-        "acpid",
-        "boot.clock",
-        "dbus",
-        "ealysyslog",
-        "fbset",
-        "framebufferset",
-        "isdn",
-        "microcode.ctl",
-        "random",
-        "consolekit",
-        "haldaemon",
-        "network",
-        "syslog",
-        "auditd",
-        "splash_early",
-        "alsasound",
-        "irq_balancer",
-        "kbd",
-        "powersaved",
-        "splash",
-        "sshd",
-        "earlyxdm",
-        "hotkey-setup",
-        "atd",
-        "nscd",
-        "smpppd",
-        "xend",
-        "autofs",
-        "libvirtd",
-        "sendmail",
-        "postfix",
-        "xendomains",
-        "cron",
-        "ddclient",
-        "smartd",
-        "stopblktrace",
-        "ntp",
-        "SuSEfirewall",
-        "earlysyslog"
-      ]
+      # Services to check
+      srv_file = find_data_file("security/services.yml")
+      if srv_file
+        srv_lists = YAML.load_file(srv_file) rescue {}
+      else
+        srv_lists = {}
+      end
+      # These must be running
+      @mandatory_services = srv_lists["mandatory_services"] || []
+      # It must be an array of arrays (meaning [ [ || ] && && ])
+      @mandatory_services.map! {|s| s.is_a?(::String) ? [s] : s }
+      # These can be ignored (if they are running it's OK)
+      @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
 
       # systemd target, defining ctrl-alt-del behavior
@@ -118,7 +82,7 @@ module Yast
         "FAIL_DELAY"                                => "3",
         "GID_MAX"                                   => "60000",
         "GID_MIN"                                   => "1000",
-        "DISPLAYMANAGER_SHUTDOWN"                   => "all",
+        "AllowShutdown"                             => "all",
         "HIBERNATE_SYSTEM"                          => "active_console",
         "PASSWD_ENCRYPTION"                         => "sha512",
         "PASSWD_USE_CRACKLIB"                       => "yes",
@@ -145,22 +109,23 @@ module Yast
         "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"          => "no",
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "no",
         "SMTPD_LISTEN_REMOTE"                       => "no",
-        "RUNLEVEL3_MANDATORY_SERVICES"              => "yes",
-        "RUNLEVEL5_MANDATORY_SERVICES"              => "yes",
-        "RUNLEVEL3_EXTRA_SERVICES"                  => "no",
-        "RUNLEVEL5_EXTRA_SERVICES"                  => "no"
+        "MANDATORY_SERVICES"                        => "yes",
+        "EXTRA_SERVICES"                            => "no"
       }
+
+      # List of missing mandatory services
+      @missing_mandatory_services = []
+      # List of enabled services not included in mandatory or optional lists
+      @extra_services = []
 
       # the original settings
       @Settings_bak = deep_copy(@Settings)
 
       # keys that should not be tested against predefined levels:
-      # - RUNLEVEL*_SERVICES have different syntax, are not saved in current form
+      # - *_SERVICES have different syntax, are not saved in current form
       @do_not_test = [
-        "RUNLEVEL3_MANDATORY_SERVICES",
-        "RUNLEVEL5_MANDATORY_SERVICES",
-        "RUNLEVEL3_EXTRA_SERVICES",
-        "RUNLEVEL5_EXTRA_SERVICES"
+        "MANDATORY_SERVICES",
+        "EXTRA_SERVICES"
       ]
 
       # Security settings locations
@@ -182,11 +147,13 @@ module Yast
           "USERDEL_PRECMD",
           "USERDEL_POSTCMD"
         ],
+        ".kde4.kdmrc"               => [
+          "AllowShutdown"
+        ],
         ".sysconfig.displaymanager" => [
           "DISPLAYMANAGER_REMOTE_ACCESS",
           "DISPLAYMANAGER_ROOT_LOGIN_REMOTE",
-          "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN",
-          "DISPLAYMANAGER_SHUTDOWN"
+          "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"
         ],
         ".sysconfig.security"       => ["PERMISSION_SECURITY"],
         ".sysconfig.services"       => [
@@ -236,10 +203,8 @@ module Yast
       # Remaining settings:
       # - CONSOLE_SHUTDOWN (/etc/inittab)
       # - PASSWD_ENCRYPTION (/etc/pam?)
-      # - RUNLEVEL3_MANDATORY_SERVICES
-      # - RUNLEVEL5_MANDATORY_SERVICES
-      # - RUNLEVEL3_EXTRA_SERVICES
-      # - RUNLEVEL5_EXTRA_SERVICES
+      # - MANDATORY_SERVICES
+      # - EXTRA_SERVICES
 
       # Number of sigificant characters in the password
       @PasswordMaxLengths = {
@@ -273,48 +238,13 @@ module Yast
     end
 
     # List of missing mandatory services
-    #
-    # @param [Array<String>] enabled_services optional list with names of the
-    #     currently enabled services. If not provided, it will be obtained
-    #     from SystemdService.
-    def MissingMandatoryServices(enabled_services = nil)
-      log.info("Checking mandatory services")
-
-      enabled_services ||= SystemdService.all.select(&:enabled?).map(&:name)
-      log.info("enabled_services: #{enabled_services}")
-      return nil if enabled_services.nil?
-
-      ret = @mandatory_services.select do |services|
-        enabled = services.any? { |service| enabled_services.include?(service) }
-        log.info("Mandatory services #{services} are enabled: #{enabled}")
-        !enabled
-      end 
-
-      log.info("Missing mandatory services: #{ret}")
-      deep_copy(ret)
+    def MissingMandatoryServices
+      @missing_mandatory_services
     end
 
     # List of enabled services that are neither mandatory nor optional
-    #
-    # @param [Array<String>] enabled_services optional list with names of the
-    #     currently enabled services. If not provided, it will be obtained
-    #     from SystemdService.
-    def ExtraServices(enabled_services = nil)
-      log.info("Searching for extra services")
-
-      enabled_services ||= SystemdService.all.select(&:enabled?).map(&:name)
-      return nil if enabled_services == nil
-
-      mandatory = @mandatory_services.flatten
-      ret = enabled_services.select do |service|
-        # the extra service is not mandatory and it's not optional
-        extra = !mandatory.include?(service) && !@optional_services.include?(service)
-        log.info("Found extra service: #{service}") if extra
-        extra
-      end 
-      log.info("All extra services: #{ret}")
-
-      deep_copy(ret)
+    def ExtraServices
+      @extra_services
     end
 
     # Check for pending Abort press
@@ -330,22 +260,19 @@ module Yast
       false
     end
 
-
     # Function which returns if the settings were modified
     # @return [Boolean]  settings were modified
     def GetModified
       @modified
     end
+
     # Function sets internal variable, which indicates, that any
     # settings were modified, to "true"
-
-
     def SetModified
       @modified = true
 
       nil
     end
-
 
     # Data was modified?
     # @return true if modified
@@ -355,13 +282,12 @@ module Yast
     end
 
     def ReadServiceSettings
-      services = SystemdService.all.select(&:enabled?).map(&:name)
-      setting = MissingMandatoryServices(services) == [] ? "secure" : "insecure"
-      # Runlevels are not longer used, but @Settings is populated this way for
-      # compatibility with the current interface
-      @Settings["RUNLEVEL3_MANDATORY_SERVICES"] = @Settings["RUNLEVEL5_MANDATORY_SERVICES"] = setting
-      setting = ExtraServices(services) == [] ? "secure" : "insecure"
-      @Settings["RUNLEVEL3_EXTRA_SERVICES"] = @Settings["RUNLEVEL5_EXTRA_SERVICES"] = setting
+      read_missing_mandatory_services
+      setting = MissingMandatoryServices() == [] ? "secure" : "insecure"
+      @Settings["MANDATORY_SERVICES"] = setting
+      read_extra_services
+      setting = ExtraServices() == [] ? "secure" : "insecure"
+      @Settings["EXTRA_SERVICES"] = setting
 
       nil
     end
@@ -378,10 +304,10 @@ module Yast
           link = Convert.to_string(
             SCR.Read(path(".target.symlink"), @ctrl_alt_del_file)
           )
-          if link == "/lib/systemd/system/poweroff.target"
+          if link == "/usr/lib/systemd/system/poweroff.target"
             ret = "halt"
-          elsif link == "/lib/systemd/system/reboot.target" ||
-              link == "/lib/systemd/system/ctrl-alt-del.target"
+          elsif link == "/usr/lib/systemd/system/reboot.target" ||
+              link == "/usr/lib/systemd/system/ctrl-alt-del.target"
             ret = "reboot"
           end
         end
@@ -410,6 +336,36 @@ module Yast
       nil
     end
 
+    # Read the settings from the files included in @Locations
+    def read_from_locations
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @Locations.sort.each do |file, vars|
+        vars.each do |var|
+          val = ""
+          filename = nil
+          if file.include?("sysconfig")
+            filename = "/etc" + file.tr(".", "/")
+            log.info "filename=#{filename}"
+          end
+          if filename.nil? || SCR.Read(path(".target.size"), filename) > 0
+            val = SCR.Read(path("#{file}.#{var}"))
+            log.debug "Reading: #{file}.#{var} (#{val})"
+          end
+          @Settings[var] = val unless val.nil?
+        end
+      end
+    end
+
+    # Read the settings from sysctl.conf
+    def read_kernel_settings
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @sysctl.sort.each do |key, default_value|
+        val = SCR.Read(path(".etc.sysctl_conf") + key)
+        val = default_value if val.nil? || val == ""
+        @Settings[key] = val
+      end
+    end
+
     # Read all security settings
     # @return true on success
     def Read
@@ -417,34 +373,8 @@ module Yast
       @modified = false
 
       # Read security settings
-
-      Builtins.mapmap(@Locations) do |file, vars|
-        Builtins.maplist(vars) do |var|
-          val = ""
-          filename = nil
-          if Builtins.issubstring(file, "sysconfig")
-            filename = Ops.add(
-              "/etc",
-              Builtins.mergestring(Builtins.splitstring(file, "."), "/")
-            )
-            Builtins.y2debug("filename=%1", filename)
-          end
-          if filename == nil ||
-              Ops.greater_than(SCR.Read(path(".target.size"), filename), 0)
-            val = Convert.to_string(
-              SCR.Read(Builtins.topath(Ops.add(Ops.add(file, "."), var)))
-            )
-            Builtins.y2debug(
-              "Reading: %1 (%2)",
-              Builtins.topath(Ops.add(Ops.add(file, "."), var)),
-              val
-            )
-          end
-          Ops.set(@Settings, var, val) if val != nil
-        end
-        { 0 => 0 }
-      end
-      Builtins.y2debug("Settings=%1", @Settings)
+      read_from_locations
+      Builtins.y2milestone("Settings=%1", @Settings)
 
       Ops.set(@Settings, "CONSOLE_SHUTDOWN", ReadConsoleShutdown())
 
@@ -540,23 +470,16 @@ module Yast
         Ops.get(@Settings, "HIBERNATE_SYSTEM", "")
       )
 
-      # read sysctl.conf
-      Builtins.foreach(@sysctl) do |key, default_value|
-        val = Convert.to_string(
-          SCR.Read(Builtins.add(path(".etc.sysctl_conf"), key))
-        )
-        val = default_value if val == nil || val == ""
-        Ops.set(@Settings, key, val)
-      end
+      read_kernel_settings
       Builtins.y2debug("Settings=%1", @Settings)
 
-      # remeber the read values
+      # remember the read values
       @Settings_bak = deep_copy(@Settings)
       true
     end
 
     # Write the value of ctrl-alt-delete behavior
-    def WriteConsoleShutdown(ca)
+    def write_console_shutdown(ca)
       if Package.Installed("systemd")
         if ca == "reboot"
           SCR.Execute(path(".target.remove"), @ctrl_alt_del_file)
@@ -564,7 +487,7 @@ module Yast
           SCR.Execute(
             path(".target.bash"),
             Builtins.sformat(
-              "ln -s -f /lib/systemd/system/poweroff.target %1",
+              "ln -s -f /usr/lib/systemd/system/poweroff.target %1",
               @ctrl_alt_del_file
             )
           )
@@ -597,12 +520,136 @@ module Yast
       true
     end
 
+    # Write the settings from @Locations to the corresponding files
+    def write_to_locations
+      commitlist = []
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @Locations.sort.each do |file, vars|
+        vars.each do |var|
+          val = @Settings[var]
+          if val && val != SCR.Read(path("#{file}.#{var}"))
+            SCR.Write(path("#{file}.#{var}"), val)
+            commitlist << file unless commitlist.include?(file)
+          end
+        end
+      end
+      commitlist.each do |file|
+        SCR.Write(path(file), nil)
+      end
+    end
+
+    # Write settings related to PAM behavior
+    def write_pam_settings
+      # pam stuff
+      encr = @Settings.fetch("PASSWD_ENCRYPTION", "sha512")
+      if encr != @Settings_bak["PASSWD_ENCRYPTION"]
+        SCR.Write(path(".etc.login_defs.ENCRYPT_METHOD"), encr)
+      end
+
+      # use cracklib?
+      if @Settings["PASSWD_USE_CRACKLIB"] == "yes"
+        Pam.Add("cracklib")
+        pth = @Settings["CRACKLIB_DICT_PATH"]
+        if pth && pth != "/usr/lib/cracklib_dict"
+          Pam.Add("--cracklib-dictpath=#{pth}")
+        end
+      else
+        Pam.Remove("cracklib")
+      end
+
+      # save min pass length
+      min_len = @Settings["PASS_MIN_LEN"]
+      if min_len && min_len != "5" && @Settings["PASSWD_USE_CRACKLIB"] == "yes"
+        Pam.Add("cracklib") # minlen is part of cracklib
+        Pam.Add("cracklib-minlen=#{min_len}")
+      else
+        Pam.Remove("cracklib-minlen")
+      end
+
+      # save "remember" value (number of old user passwords to not allow)
+      remember_history = @Settings["PASSWD_REMEMBER_HISTORY"]
+      if remember_history && remember_history != "0"
+        Pam.Add("pwhistory")
+        Pam.Add("pwhistory-remember=#{remember_history}")
+      else
+        Pam.Remove("pwhistory-remember")
+      end
+    end
+
+    # Write settings related to sysctl.conf and sysrq
+    def write_kernel_settings
+      # write sysctl.conf
+      written = false
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @sysctl.sort.each do |key, default_value|
+        val = @Settings.fetch(key, default_value)
+        int_val = Integer(val) rescue nil
+        if int_val.nil?
+          log.error "value #{val} for #{key} is not integer, not writing"
+        elsif val != SCR.Read(path(".etc.sysctl_conf") + key)
+          SCR.Write(path(".etc.sysctl_conf") + key, val)
+          written = true
+        end
+      end
+      SCR.Write(path(".etc.sysctl_conf"), nil) if written
+
+      # enable sysrq?
+      sysrq = Integer(@Settings.fetch("kernel.sysrq", "0")) rescue nil
+      if sysrq != nil
+        SCR.Execute(
+          path(".target.bash"),
+          "echo #{sysrq} > /proc/sys/kernel/sysrq"
+        )
+      end
+    end
+
+    # Write local PolicyKit configuration
+    def write_polkit_settings
+      if @Settings.fetch("HIBERNATE_SYSTEM", "") !=
+          @Settings_bak.fetch("HIBERNATE_SYSTEM", "")
+        # allow writing any value (different from predefined ones)
+        ycp_value = @Settings.fetch("HIBERNATE_SYSTEM", "active_console")
+        hibernate = @ycp2polkit.fetch(ycp_value, ycp_value)
+        action = "org.freedesktop.upower.hibernate"
+        SCR.Write(
+          path(".etc.polkit-default-privs_local") + action,
+          hibernate
+        )
+      end
+    end
+
+    # Ensures that file permissions and PolicyKit privileges are applied
+    def apply_new_settings
+      # apply all current permissions as they are now
+      # (what SuSEconfig --module permissions would have done)
+      SCR.Execute(path(".target.bash"), "/usr/bin/chkstat --system")
+
+      # ensure polkit privileges are applied (bnc #541393)
+      if FileUtils.Exists("/sbin/set_polkit_default_privs")
+        SCR.Execute(path(".target.bash"), "/sbin/set_polkit_default_privs")
+      end
+    end
+
+    # Executes the corresponding activation command for the settings that have
+    # an entry in @activation_mapping and have changed
+    def activate_changes
+      # NOTE: the call to #sort is only needed to satisfy the old testsuite
+      @activation_mapping.sort.each do |setting, action|
+        next if @Settings[setting] == @Settings_bak[setting]
+        log.info(
+          "Option #{setting} has been modified, "\
+          "activating the change: #{action}"
+        )
+        res = SCR.Execute(path(".target.bash"), action)
+        log.error "Activation failed" if res != 0
+      end
+    end
 
     # Write all security settings
     # @return true on success
     def Write
       return true if !@modified
-      Builtins.y2milestone("Writing configuration")
+      log.info "Writing configuration"
 
       # Security read dialog caption
       caption = _("Saving Security Configuration")
@@ -637,158 +684,34 @@ module Yast
         ""
       )
 
+      log.debug "Settings=#{@Settings}"
+
       # Write security settings
       return false if Abort()
       Progress.NextStage
-
-      Builtins.y2debug("Settings=%1", @Settings)
-      Ops.set(
-        @Settings,
-        "PERMISSION_SECURITY",
-        Ops.add(Ops.get(@Settings, "PERMISSION_SECURITY", ""), " local")
-      )
-
-      commitlist = []
-      Builtins.mapmap(@Locations) do |file, vars|
-        Builtins.maplist(vars) do |var|
-          val = Ops.get(@Settings, var)
-          if val != nil &&
-              val != SCR.Read(Builtins.topath(Ops.add(Ops.add(file, "."), var)))
-            SCR.Write(Builtins.topath(Ops.add(Ops.add(file, "."), var)), val)
-            commitlist = Convert.convert(
-              Builtins.union(commitlist, [file]),
-              :from => "list",
-              :to   => "list <string>"
-            )
-          end
-        end
-        { 0 => 0 }
-      end
-
-      Builtins.maplist(commitlist) do |file|
-        SCR.Write(Builtins.topath(file), nil)
-      end
+      @Settings["PERMISSION_SECURITY"] << " local"
+      write_to_locations
 
       # Write inittab settings
       return false if Abort()
       Progress.NextStage
+      write_console_shutdown(@Settings.fetch("CONSOLE_SHUTDOWN", "ignore"))
 
-      WriteConsoleShutdown(Ops.get(@Settings, "CONSOLE_SHUTDOWN", "ignore"))
-
-      # Write pam settings
+      # Write authentication and privileges settings
       return false if Abort()
       Progress.NextStage
-
-      # pam stuff
-      encr = Ops.get(@Settings, "PASSWD_ENCRYPTION", "sha512")
-      if encr != Ops.get(@Settings_bak, "PASSWD_ENCRYPTION", "")
-        SCR.Write(path(".etc.login_defs.ENCRYPT_METHOD"), encr)
-      end
-
-      # use cracklib?
-      if Ops.get(@Settings, "PASSWD_USE_CRACKLIB", "no") == "yes"
-        Pam.Add("cracklib")
-        pth = Ops.get(@Settings, "CRACKLIB_DICT_PATH", "/usr/lib/cracklib_dict")
-        if pth != "/usr/lib/cracklib_dict"
-          Pam.Add(Ops.add("--cracklib-dictpath=", pth))
-        end
-      else
-        Pam.Remove("cracklib")
-      end
-
-      # save min pass length
-      if Ops.get(@Settings, "PASS_MIN_LEN", "5") != "5" &&
-          Ops.get(@Settings, "PASSWD_USE_CRACKLIB", "no") == "yes"
-        Pam.Add("cracklib") # minlen is part of cracklib
-        Pam.Add(
-          Builtins.sformat(
-            "cracklib-minlen=%1",
-            Ops.get(@Settings, "PASS_MIN_LEN", "5")
-          )
-        )
-      else
-        Pam.Remove("cracklib-minlen")
-      end
-
-      # save "remember" value (number of old user passwords to not allow)
-      if Ops.get(@Settings, "PASSWD_REMEMBER_HISTORY", "0") != "0"
-        Pam.Add("pwhistory")
-        Pam.Add(
-          Builtins.sformat(
-            "pwhistory-remember=%1",
-            Ops.get(@Settings, "PASSWD_REMEMBER_HISTORY", "0")
-          )
-        )
-      else
-        Pam.Remove("pwhistory-remember")
-      end
-
-      # write local polkit settings
-      if Ops.get(@Settings, "HIBERNATE_SYSTEM", "") !=
-          Ops.get(@Settings_bak, "HIBERNATE_SYSTEM", "")
-        # allow writing any value (different from predefined ones)
-        ycp_value = Ops.get(@Settings, "HIBERNATE_SYSTEM", "active_console")
-        hibernate = Ops.get(@ycp2polkit, ycp_value, ycp_value)
-        action = "org.freedesktop.upower.hibernate"
-        SCR.Write(
-          Builtins.add(path(".etc.polkit-default-privs_local"), action),
-          hibernate
-        )
-      end
-
-      # write sysctl.conf
-      Builtins.foreach(@sysctl) do |key, default_value|
-        val = Ops.get(@Settings, key, default_value)
-        if Builtins.tointeger(val) == nil
-          Builtins.y2error(
-            "value %1 for %2 is not integer, not writing",
-            val,
-            key
-          )
-        elsif val != SCR.Read(Builtins.add(path(".etc.sysctl_conf"), key))
-          SCR.Write(Builtins.add(path(".etc.sysctl_conf"), key), val)
-        end
-      end
-
-      # enable sysrq?
-      sysrq = Builtins.tointeger(Ops.get(@Settings, "kernel.sysrq", "0"))
-      if sysrq != nil
-        SCR.Execute(
-          path(".target.bash"),
-          Builtins.sformat("echo %1 > /proc/sys/kernel/sysrq", sysrq)
-        )
-      end
+      write_pam_settings
+      write_polkit_settings
+      write_kernel_settings
 
       # Finish him
       return false if Abort()
       Progress.NextStage
-
-      # apply all current permissions as they are now (what SuSEconfig --module permissions would have done)
-      SCR.Execute(path(".target.bash"), "/usr/bin/chkstat --system")
-
-      # ensure polkit privileges are applied (bnc #541393)
-      if FileUtils.Exists("/sbin/set_polkit_default_privs")
-        SCR.Execute(path(".target.bash"), "/sbin/set_polkit_default_privs")
-      end
+      apply_new_settings
 
       return false if Abort()
       Progress.NextStage
-
-      # activate the changes
-      Builtins.foreach(@activation_mapping) do |setting, action|
-        if Ops.get(@Settings, setting, "") !=
-            Ops.get(@Settings_bak, setting, "")
-          Builtins.y2milestone(
-            "Option %1 has been modified, activating the change: %2",
-            setting,
-            action
-          )
-
-          res = Convert.to_integer(SCR.Execute(path(".target.bash"), action))
-          Builtins.y2error("Activation failed") if res != 0
-        end
-      end 
-
+      activate_changes
 
       return false if Abort()
       @modified = false
@@ -908,6 +831,65 @@ module Yast
     publish :function => :Export, :type => "map ()"
     publish :function => :Summary, :type => "list ()"
     publish :function => :Overview, :type => "list ()"
+
+    protected
+
+    # Sets @missing_mandatory_services honoring the systemd aliases
+    def read_missing_mandatory_services
+      log.info("Checking mandatory services")
+
+      @missing_mandatory_services = @mandatory_services.reject do |services|
+        enabled = services.any? { |service| Service.enabled?(service) }
+        log.info("Mandatory services #{services} are enabled: #{enabled}")
+        enabled
+      end
+
+      log.info("Missing mandatory services: #{@missing_mandatory_services}")
+    end
+
+    # Sets @extra_services honoring the systemd aliases
+    def read_extra_services
+      log.info("Searching for extra services")
+
+      enabled_services = SystemdService.all(names: "Names").select(&:enabled?)
+      # Remove from the list the services that are allowed
+      @extra_services = enabled_services.reject do |service|
+        allowed = allowed_service?(service.name)
+        # If the name is not allowed, try the aliases
+        if !allowed
+          names = alias_names(service)
+          allowed = names && names.any? { |name| allowed_service?(name) }
+        end
+        log.info("Found extra service: #{service.name}") unless allowed
+        allowed
+      end
+      @extra_services.map!(&:name)
+      log.info("All extra services: #{@extra_services}")
+    end
+  end
+
+  # Checks if the service is allowed (i.e. not considered 'extra')
+  #
+  # @return [Boolean] true whether the service is expected (mandatory or optional)
+  def allowed_service?(name)
+    all_mandatory_services.include?(name) || @optional_services.include?(name)
+  end
+
+  # Flat list of mandatory services
+  def all_mandatory_services
+    @all_mandatory_services ||= @mandatory_services.flatten
+  end
+
+  # List of aliases of the service
+  #
+  # @return [Array<String>] alias names excluding '.service'
+  def alias_names(service)
+    names = service.properties.names
+    if names
+      names.split.map {|name| name.sub(/\.service$/, "") }
+    else
+      nil
+    end
   end
 
   Security = SecurityClass.new

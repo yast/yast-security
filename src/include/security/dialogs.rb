@@ -34,6 +34,7 @@ module Yast
 
       Yast.import "Label"
       Yast.import "Popup"
+      Yast.import "Message"
       Yast.import "Security"
       Yast.import "Wizard"
 
@@ -53,10 +54,8 @@ module Yast
 
       @configurable_options = [
         "PERMISSION_SECURITY",
-        "RUNLEVEL3_MANDATORY_SERVICES",
-        "RUNLEVEL5_MANDATORY_SERVICES",
-        "RUNLEVEL3_EXTRA_SERVICES",
-        "RUNLEVEL5_EXTRA_SERVICES",
+        "MANDATORY_SERVICES",
+        "EXTRA_SERVICES",
         "kernel.sysrq"
       ]
 
@@ -102,23 +101,22 @@ module Yast
         ),
         "net.ipv4.ip_forward"                       => _("IPv4 forwarding"),
         "net.ipv6.conf.all.forwarding"              => _("IPv6 forwarding"),
-        "RUNLEVEL3_MANDATORY_SERVICES"              => _(
-          "Enable basic system services in runlevel 3\n (multiuser with network)"
+        "MANDATORY_SERVICES"                        => _(
+          "Enable basic system services"
         ),
-        "RUNLEVEL5_MANDATORY_SERVICES"              => _(
-          "Enable basic system services in runlevel 5\n (multiuser with network and graphical login)"
-        ),
-        "RUNLEVEL3_EXTRA_SERVICES"                  => _(
-          "Enable extra services in runlevel 3"
-        ),
-        "RUNLEVEL5_EXTRA_SERVICES"                  => _(
-          "Enable extra services in runlevel 5"
+        "EXTRA_SERVICES"                            => _(
+          "Disable extra services"
         )
       }
 
       # mapping for "Enable" and "Disable" links
       # current value -> new value
-      @link_value_mapping = { "yes" => "no", "no" => "yes" }
+      @link_value_mapping = {
+        "yes" => "no",
+        "no" => "yes",
+        "1" => "0",
+        "0" => "1"
+      }
 
       # mapping for "Configure" links
       # config name -> dialog name
@@ -130,17 +128,13 @@ module Yast
       # mapping for "Configure" links
       # config name -> yast client
       @link_client_mapping = {
-        "RUNLEVEL3_MANDATORY_SERVICES" => "runlevel",
-        "RUNLEVEL5_MANDATORY_SERVICES" => "runlevel",
-        "RUNLEVEL3_EXTRA_SERVICES"     => "runlevel",
-        "RUNLEVEL5_EXTRA_SERVICES"     => "runlevel"
+        "MANDATORY_SERVICES" => "services-manager",
+        "EXTRA_SERVICES"     => "services-manager"
       }
 
       @link_update_mapping = {
-        "RUNLEVEL3_MANDATORY_SERVICES" => lambda { Security.ReadServiceSettings },
-        "RUNLEVEL5_MANDATORY_SERVICES" => lambda { Security.ReadServiceSettings },
-        "RUNLEVEL3_EXTRA_SERVICES"     => lambda { Security.ReadServiceSettings },
-        "RUNLEVEL5_EXTRA_SERVICES"     => lambda { Security.ReadServiceSettings }
+        "MANDATORY_SERVICES" => lambda { Security.ReadServiceSettings },
+        "EXTRA_SERVICES"     => lambda { Security.ReadServiceSettings }
       }
     end
 
@@ -154,9 +148,9 @@ module Yast
       # handle the special cases at first
       if Builtins.contains(@configurable_options, option)
         ret = _("Configure")
-      elsif value == "yes"
+      elsif ["1", "yes"].include?(value)
         ret = _("Enabled")
-      elsif value == "no"
+      elsif ["0", "no"].include?(value)
         ret = _("Disabled")
       else
         return @UNKNOWN_STATUS
@@ -206,14 +200,6 @@ module Yast
             "DISPLAYMANAGER_REMOTE_ACCESS",
             ""
           ) == "no"
-        },
-        {
-          "id"        => "CWD_IN_ROOT_PATH",
-          "is_secure" => Ops.get(Security.Settings, "CWD_IN_ROOT_PATH", "") == "no"
-        },
-        {
-          "id"        => "CWD_IN_USER_PATH",
-          "is_secure" => Ops.get(Security.Settings, "CWD_IN_USER_PATH", "") == "no"
         },
         {
           "id"        => "SYSTOHC",
@@ -288,36 +274,12 @@ module Yast
           ) == "0"
         },
         {
-          "id"        => "RUNLEVEL3_MANDATORY_SERVICES",
-          "is_secure" => Ops.get(
-            Security.Settings,
-            "RUNLEVEL3_MANDATORY_SERVICES",
-            ""
-          ) == "secure"
+          "id"        => "MANDATORY_SERVICES",
+          "is_secure" => Security.Settings["MANDATORY_SERVICES"] == "secure"
         },
         {
-          "id"        => "RUNLEVEL5_MANDATORY_SERVICES",
-          "is_secure" => Ops.get(
-            Security.Settings,
-            "RUNLEVEL5_MANDATORY_SERVICES",
-            ""
-          ) == "secure"
-        },
-        {
-          "id"        => "RUNLEVEL3_EXTRA_SERVICES",
-          "is_secure" => Ops.get(
-            Security.Settings,
-            "RUNLEVEL3_EXTRA_SERVICES",
-            ""
-          ) == "secure"
-        },
-        {
-          "id"        => "RUNLEVEL5_EXTRA_SERVICES",
-          "is_secure" => Ops.get(
-            Security.Settings,
-            "RUNLEVEL5_EXTRA_SERVICES",
-            ""
-          ) == "secure"
+          "id"        => "EXTRA_SERVICES",
+          "is_secure" => Security.Settings["EXTRA_SERVICES"] == "secure"
         }
       ]
 
@@ -387,11 +349,7 @@ module Yast
       end
 
       # add extra help to service related options
-      if help_id == "RUNLEVEL3_MANDATORY_SERVICES" ||
-          help_id == "RUNLEVEL5_MANDATORY_SERVICES"
-        # TODO: runlevel is not longer needed, but we are in 'text freeze phase'
-        runlevel = help_id == "RUNLEVEL3_MANDATORY_SERVICES" ? 3 : 5
-
+      if help_id == "MANDATORY_SERVICES"
         missing = Security.MissingMandatoryServices
 
         if missing != nil && missing != []
@@ -406,48 +364,21 @@ module Yast
 
 
           # richtext message: %1 = runlevel ("3" or "5"), %2 = list of services
-          help = Ops.add(
-            help,
-            Builtins.sformat(
-              _(
-                "<P>These basic system services are not enabled in runlevel %1:<BR><B>%2</B></P>"
-              ),
-              runlevel,
-              srvs
-            )
-          )
+          help +=
+            _("<P>These basic system services are not enabled:<BR><B>%s</B></P>") % srvs
         else
-          help = Ops.add(help, _("<P>All basic services are enabled.</P>"))
+          help += _("<P>All basic services are enabled.</P>")
         end
-      elsif help_id == "RUNLEVEL3_EXTRA_SERVICES" ||
-          help_id == "RUNLEVEL5_EXTRA_SERVICES"
-        # TODO: runlevel is not longer needed (read above)
-        runlevel = help_id == "RUNLEVEL3_EXTRA_SERVICES" ? 3 : 5
+      elsif help_id == "EXTRA_SERVICES"
         extra = Security.ExtraServices
 
         if extra != nil && extra != []
           srvs = Builtins.mergestring(extra, "<BR>")
-          help = Ops.add(
-            help,
-            Builtins.sformat(
-              _(
-                "<P>These extra services are enabled in runlevel %1:<BR><B>%2</B></P>"
-              ),
-              runlevel,
-              srvs
-            )
-          )
-          help = Ops.add(
-            help,
-            _(
-              "<P>Check the list of services and disable all unused services.</P>"
-            )
-          )
+          help +=
+            _("<P>These extra services are enabled:<BR><B>%s</B></P>") % srvs
+          help += _("<P>Check the list of services and disable all unused services.</P>")
         else
-          help = Ops.add(
-            help,
-            _("<P>Only basic system services are enabled.</P>")
-          )
+          help += _("<P>Only basic system services are enabled.</P>")
         end
       end
 
@@ -584,10 +515,12 @@ module Yast
               Builtins.y2milestone("Client returned %1", client_ret)
 
               if client_ret == :next || client_ret == :ok ||
-                  client_ret == :finish
+                  client_ret == :finish || client_ret == true
                 # update the current value
-                if Builtins.haskey(@link_update_mapping, ret)
-                  Builtins.eval(Ops.get(@link_update_mapping, ret))
+                if @link_update_mapping.has_key?(ret)
+                  Popup.Feedback(_("Analyzing system"), Message.takes_a_while) do
+                    @link_update_mapping[ret].call
+                  end
                 end
 
                 # update the overview
@@ -658,7 +591,7 @@ module Yast
                     VSpacing(1),
                     settings2widget("CONSOLE_SHUTDOWN"),
                     VSpacing(1.0),
-                    settings2widget("DISPLAYMANAGER_SHUTDOWN"),
+                    settings2widget("AllowShutdown"),
                     VSpacing(1.0),
                     settings2widget("HIBERNATE_SYSTEM"),
                     VSpacing(1)
@@ -717,7 +650,7 @@ module Yast
 
       if ret == :next || Builtins.contains(@tree_dialogs, ret)
         widget2settings("CONSOLE_SHUTDOWN")
-        widget2settings("DISPLAYMANAGER_SHUTDOWN")
+        widget2settings("AllowShutdown")
         widget2settings("HIBERNATE_SYSTEM")
       end
 
@@ -737,10 +670,6 @@ module Yast
         settings2widget("PERMISSION_SECURITY"),
         VSpacing(1.0),
         settings2widget("RUN_UPDATEDB_AS"),
-        VSpacing(1.0),
-        settings2widget("CWD_IN_ROOT_PATH"),
-        VSeparator(),
-        settings2widget("CWD_IN_USER_PATH"),
         VSpacing(1.0),
         settings2widget("kernel.sysrq"),
         VSpacing(1.8)
@@ -801,8 +730,6 @@ module Yast
 
       if ret == :next || Builtins.contains(@tree_dialogs, ret)
         widget2settings("PERMISSION_SECURITY")
-        widget2settings("CWD_IN_ROOT_PATH")
-        widget2settings("CWD_IN_USER_PATH")
         widget2settings("RUN_UPDATEDB_AS")
         widget2settings("kernel.sysrq")
       end

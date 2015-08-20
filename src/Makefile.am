@@ -17,15 +17,28 @@ ynclude_DATA = \
   include/security/complex.rb \
   include/security/users.rb \
   include/security/routines.rb \
-  include/security/helps.rb
+  include/security/helps.rb \
+  include/security/directory.rb
 
 schemafilesdir = $(schemadir)/autoyast/rnc
 schemafiles_DATA = \
   autoyast-rnc/security.rnc
 
+scrconf_DATA = \
+  scrconf/cfg_locate.scr \
+  scrconf/etc_polkit-default-privs_local.scr \
+  scrconf/kde4_kdmrc.scr
+
+ydatadir = @ydatadir@/security
+ydata_DATA = \
+  data/security/services.yml \
+	data/security/level1.yml \
+	data/security/level2.yml \
+	data/security/level3.yml
+
 desktop_DATA = \
   desktop/security.desktop
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(schemafiles_DATA) $(desktop_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(schemafiles_DATA) $(scrconf_DATA) $(ydata_DATA) $(desktop_DATA)
 
 include $(top_srcdir)/Makefile.am.common

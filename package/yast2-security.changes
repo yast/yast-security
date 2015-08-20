@@ -1,4 +1,76 @@
 -------------------------------------------------------------------
+Wed Aug 19 15:20:43 UTC 2015 - ancor@suse.com
+
+- Adjusted to build and run in SLE-12-GA (bnc#941620)
+- 3.1.11.1
+
+-------------------------------------------------------------------
+Wed Aug 19 14:55:48 UTC 2015 - ancor@suse.com
+
+- Added some entries to the list of optional services (bnc#942379)
+- 3.1.11
+
+-------------------------------------------------------------------
+Fri Jun 19 15:26:45 UTC 2015 - ancor@suse.com
+
+- Settings of security levels moved to YAML files
+- Redefined security levels (last part of fate#318425)
+- 3.1.10
+
+-------------------------------------------------------------------
+Mon Jun 15 15:22:38 UTC 2015 - ancor@suse.com
+
+- Updated list of mandatory and optional services (part of
+  fate#318425)
+- 3.1.9
+
+-------------------------------------------------------------------
+Fri Jun 12 16:27:53 UTC 2015 - ancor@suse.com
+
+- When checking services, systemd aliases are now taken into
+  account (so, for example, rsyslog is accounted as syslog).
+
+-------------------------------------------------------------------
+Thu Jun 11 16:00:10 UTC 2015 - ancor@suse.com
+
+- Removed references to runlevels (obsolete). Only current systemd
+  target is analyzed.
+- List of mandatory and optional services moved to a YAML file.
+
+-------------------------------------------------------------------
+Tue Jan 13 13:24:28 UTC 2015 - ancor@suse.com
+
+- Fixed an error setting the shutdown behaviour of KDM (bnc#907907)
+- YaST agents moved to the right location in the source tree
+- 3.1.8
+
+-------------------------------------------------------------------
+Thu Jan  8 15:30:20 CET 2015 - jsuchome@suse.cz
+
+- fix paths for systemd target links (bnc#911523)
+- 3.1.7
+
+-------------------------------------------------------------------
+Mon Dec 22 17:18:56 UTC 2014 - ancor@suse.com
+
+- Fixed the interface to show and process correctly values from
+  sysctl.conf.
+- Source code cleanup, including some minor fixes and new tests.
+
+-------------------------------------------------------------------
+Thu Dec  4 09:51:32 UTC 2014 - jreidinger@suse.com
+
+- remove X-KDE-Library from desktop file (bnc#899104)
+
+-------------------------------------------------------------------
+Mon Oct 27 08:00:30 UTC 2014 - mvidner@suse.com
+
+- Removed CWD_IN_ROOT_PATH, CWD_IN_USER_PATH also from the UI where
+  they showed as empty lines in the overview (FATE#100011,
+  boo#900829), by Antoine Belvire.
+- 3.1.5
+
+-------------------------------------------------------------------
 Tue Aug  5 12:58:39 UTC 2014 - ancor@suse.com
 
 - Speedup Security.ReadServiceSettings (bnc#890349)

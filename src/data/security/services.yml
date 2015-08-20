@@ -1,0 +1,70 @@
+# services to check by the security module
+# Right now, they do not depend on the security level (a.k.a. security settings)
+
+# Array containing services that must be running. Each entry can be:
+#  - the name of a service (it must be running)
+#  - a nested array with a list of alternative service names (at least one of
+#    them must be running)
+---
+mandatory_services:
+  - apparmor
+  - auditd
+  - - firewalld
+    - shorewall
+    - SuSEfirewall2
+  - - NetworkManager
+    - wicked
+
+# Array containing services that are considered harmless (it's ok if they are
+# running)
+optional_services:
+  - acpid
+  - autofs
+  - bluetooth
+  - btrfsmaintenance-refresh
+  - console-kit-daemon
+  - cron
+  - dbus
+  - display-manager
+  - dm-event
+  - getty@tty1
+  - haveged
+  - irqbalance
+  - iscsi
+  - isdn
+  - kdump
+  - klog
+  - libvirtd
+  - mcelog
+  - ModemManager
+  - NetworkManager-dispatcher
+  - NetworkManager-wait-online
+  - nscd
+  - ntpd
+  - polkitd
+  - postfix
+  - purge-kernels
+  - random
+  - sendmail
+  - smartd
+  - spice-vdagentd
+  - sshd
+  - syslog
+  - systemd-dmevented
+  - systemd-journal-flush
+  - systemd-journald
+  - systemd-logind
+  - systemd-readahead-collect
+  - systemd-readahead-drop
+  - systemd-readahead-replay
+  - systemd-udevd
+  - wickedd
+  - wickedd-auto4
+  - wickedd-dhcp4
+  - wickedd-dhcp6
+  - wickedd-nanny
+  - wpa_supplicant
+  - xend
+  - xendomains
+  - YaST2-Firstboot
+  - YaST2-Second-Stage

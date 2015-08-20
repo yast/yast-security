@@ -84,11 +84,11 @@ module Yast
         ) +
           # Main dialog help 5/8
           _(
-            "<p><b>Home Workstation</b>: For a home computer not connected to\nany type of a network.</p>"
+            "<p><b>Workstation</b>: For a computer connected\nto any type of network including the Internet.</p>"
           ) +
           # Main dialog help 6/8
           _(
-            "<p><b>Networked Workstation</b>: For a computer connected\nto any type of network including the Internet.</p>"
+            "<p><b>Roaming Device</b>: For a laptop, tablet or similar device\nthat connects to different networks.</p>"
           ) +
           # Main dialog help 7/8
           _(
@@ -346,16 +346,10 @@ module Yast
         "PERMISSION_SECURITY"                       => _(
           "<P>There are predefined file permissions in /etc/permissions.* files. The most restrictive file permissions are defined 'secure' or 'paranoid' file.</P>"
         ),
-        "RUNLEVEL3_MANDATORY_SERVICES"              => _(
+        "MANDATORY_SERVICES"                        => _(
           "<P>Basic system services must be enabled to provide system consistency and to run the security-related services.</P>"
         ),
-        "RUNLEVEL5_MANDATORY_SERVICES"              => _(
-          "<P>Basic system services must be enabled to provide system consistency and to run the security-related services.</P>"
-        ),
-        "RUNLEVEL3_EXTRA_SERVICES"                  => _(
-          "<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"
-        ),
-        "RUNLEVEL5_EXTRA_SERVICES"                  => _(
+        "EXTRA_SERVICES"                            => _(
           "<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"
         )
       } 
