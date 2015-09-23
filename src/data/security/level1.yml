@@ -1,12 +1,12 @@
 # Level 1: Workstation
 ---
-AllowShutdown:                    Root
 CONSOLE_SHUTDOWN:                 ignore
 CRACKLIB_DICT_PATH:               "/usr/lib/cracklib_dict"
 DISABLE_RESTART_ON_UPDATE:        'no'
 DISABLE_STOP_ON_REMOVAL:          'no'
 DISPLAYMANAGER_REMOTE_ACCESS:     'no'
 DISPLAYMANAGER_ROOT_LOGIN_REMOTE: 'no'
+DISPLAYMANAGER_SHUTDOWN:          root
 DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN: 'no'
 FAIL_DELAY:                       '6'
 GID_MAX:                          '60000'
