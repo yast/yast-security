@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep 24 07:46:36 UTC 2015 - ancor@suse.com
+
+- Adapted management of the display manager shutdown to use SLE's
+  DISPLAYMANAGER_SHUTDOWN instead of openSUSE's AllowShutdown
+  (bnc#946889)
+- 3.1.11.2
+
+-------------------------------------------------------------------
 Wed Aug 19 15:20:43 UTC 2015 - ancor@suse.com
 
 - Adjusted to build and run in SLE-12-GA (bnc#941620)

@@ -26,8 +26,7 @@ schemafiles_DATA = \
 
 scrconf_DATA = \
   scrconf/cfg_locate.scr \
-  scrconf/etc_polkit-default-privs_local.scr \
-  scrconf/kde4_kdmrc.scr
+  scrconf/etc_polkit-default-privs_local.scr
 
 ydatadir = @ydatadir@/security
 ydata_DATA = \
