@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Thu Sep 24 07:46:36 UTC 2015 - ancor@suse.com
+
+- Adapted management of the display manager shutdown to use SLE's
+  DISPLAYMANAGER_SHUTDOWN instead of openSUSE's AllowShutdown
+  (bnc#946889)
+- 3.1.12
+
+-------------------------------------------------------------------
 Wed Aug 19 14:55:48 UTC 2015 - ancor@suse.com
 
 - Added some entries to the list of optional services (bnc#942379)

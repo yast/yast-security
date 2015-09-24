@@ -148,19 +148,21 @@ module Yast
             "Label"  => _("M&inimum"),
             "Value"  => "101"
           },
-          "AllowShutdown"                => {
+          "DISPLAYMANAGER_SHUTDOWN"      => {
             "Widget"  => "ComboBox",
             # ComboBox label
             "Label"   => _(
-              "&Shutdown Behaviour of KDM Login Manager:"
+              "&Shutdown Behaviour of Login Manager:"
             ),
             "Options" => [
               # ComboBox value
-              ["Root", _("Only root")],
+              ["root", _("Only root")],
               # ComboBox value
-              ["All", _("All Users")],
+              ["all", _("All Users")],
               # ComboBox value
-              ["None", _("Nobody")]
+              ["none", _("Nobody")],
+              # ComboBox value
+              ["auto", _("Automatic")]
             ],
             "Value"   => "all"
           },
