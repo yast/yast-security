@@ -66,7 +66,7 @@ module Yast
           ) +
           # Boot dialog help 3/4
           _(
-            "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from KDM.</p>\n"
+            "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from GDM.</p>\n"
           ) +
           # Boot dialog help 4/4
           _(

@@ -81,7 +81,7 @@ module Yast
         "FAIL_DELAY"                                => "3",
         "GID_MAX"                                   => "60000",
         "GID_MIN"                                   => "1000",
-        "AllowShutdown"                             => "all",
+        "DISPLAYMANAGER_SHUTDOWN"                   => "all",
         "HIBERNATE_SYSTEM"                          => "active_console",
         "PASSWD_ENCRYPTION"                         => "sha512",
         "PASSWD_USE_CRACKLIB"                       => "yes",
@@ -146,13 +146,11 @@ module Yast
           "USERDEL_PRECMD",
           "USERDEL_POSTCMD"
         ],
-        ".kde4.kdmrc"               => [
-          "AllowShutdown"
-        ],
         ".sysconfig.displaymanager" => [
           "DISPLAYMANAGER_REMOTE_ACCESS",
           "DISPLAYMANAGER_ROOT_LOGIN_REMOTE",
-          "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"
+          "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN",
+          "DISPLAYMANAGER_SHUTDOWN"
         ],
         ".sysconfig.security"       => ["PERMISSION_SECURITY"],
         ".sysconfig.services"       => [

@@ -13,7 +13,6 @@ Read	.etc.login_defs.SYS_GID_MIN nil
 Read	.etc.login_defs.USERADD_CMD "l18"
 Read	.etc.login_defs.USERDEL_PRECMD "l19"
 Read	.etc.login_defs.USERDEL_POSTCMD "l20"
-Read	.kde4.kdmrc.AllowShutdown "r3"
 Read	.target.size "/etc/sysconfig/clock" 1
 Read	.sysconfig.clock.SYSTOHC "r12"
 Read	.target.size "/etc/sysconfig/cron" 1
@@ -24,6 +23,8 @@ Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_ROOT_LOGIN_REMOTE "r16"
 Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN "r17"
+Read	.target.size "/etc/sysconfig/displaymanager" 1
+Read	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN "r3"
 Read	.target.size "/etc/sysconfig/locate" 1
 Read	.sysconfig.locate.RUN_UPDATEDB_AS "r7"
 Read	.target.size "/etc/sysconfig/mail" 1
@@ -60,7 +61,6 @@ Read	.etc.login_defs.SYS_GID_MIN nil
 Read	.etc.login_defs.USERADD_CMD "l18"
 Read	.etc.login_defs.USERDEL_PRECMD "l19"
 Read	.etc.login_defs.USERDEL_POSTCMD "l20"
-Read	.kde4.kdmrc.AllowShutdown "r3"
 Read	.target.size "/etc/sysconfig/clock" 1
 Read	.sysconfig.clock.SYSTOHC "r12"
 Read	.target.size "/etc/sysconfig/cron" 1
@@ -71,6 +71,8 @@ Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_ROOT_LOGIN_REMOTE "r16"
 Read	.target.size "/etc/sysconfig/displaymanager" 1
 Read	.sysconfig.displaymanager.DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN "r17"
+Read	.target.size "/etc/sysconfig/displaymanager" 1
+Read	.sysconfig.displaymanager.DISPLAYMANAGER_SHUTDOWN "r3"
 Read	.target.size "/etc/sysconfig/locate" 1
 Read	.sysconfig.locate.RUN_UPDATEDB_AS "r7"
 Read	.target.size "/etc/sysconfig/mail" 1
