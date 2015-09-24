@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        3.1.11.1
+Version:        3.1.11.2
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
