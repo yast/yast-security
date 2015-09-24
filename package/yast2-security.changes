@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Sep 24 14:50:20 UTC 2015 - ancor@suse.com
+
+- Bumped version number in order to branch the SLE version due to
+  different display manager behavior (bnc#946889).
+- 3.2.0
+
+-------------------------------------------------------------------
 Wed Aug 19 14:55:48 UTC 2015 - ancor@suse.com
 
 - Added some entries to the list of optional services (bnc#942379)
