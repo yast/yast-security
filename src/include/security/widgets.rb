@@ -100,15 +100,8 @@ module Yast
             "Label"   => _(
               "&Interpretation of Ctrl + Alt + Del"
             ),
-            "Options" => [
-              # ComboBox value
-              ["ignore", _("Ignore")],
-              # ComboBox value
-              ["reboot", _("Reboot")],
-              # ComboBox value
-              ["halt", _("Halt")]
-            ],
-            "Value"   => "reboot"
+            "Options" => console_shutdown_options,
+            "Value"   => Arch.s390 ? "halt" : "reboot"
           },
           "DISPLAYMANAGER_REMOTE_ACCESS" => {
             "Widget" => "CheckBox",
@@ -267,8 +260,20 @@ module Yast
             "Label"  => _("&Minimum"),
             "Value"  => "100"
           }
-        } 
+        }
+    end
 
+    def console_shutdown_options
+      # ComboBox value
+      options = [["ignore", _("Ignore")]]
+
+      # ComboBox value, not shown in s390 architecture
+      options << ["reboot", _("Reboot")] if !Arch.s390
+
+      # ComboBox value
+      options << ["halt", _("Halt")]
+
+      options
       # EOF
     end
   end

@@ -52,28 +52,7 @@ module Yast
             "<p><b><big>Aborting Saving</big></b><br>\nAbort the save procedure by pressing <b>Abort</b>.</p>"
           ),
         # Boot dialog help 1/4
-        "boot"           => _(
-          "<p><b><big>Boot Security</big></b></p>\n<p>In this dialog, change various boot settings related to security.</p>"
-        ) +
-          # Boot dialog help 2/4
-          _(
-            "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" +
-              "Configure what the system should do in response to\n" +
-              "someone at the console pressing the CTRL + ALT + DEL key\n" +
-              "combination. Usually the system reboots. Sometimes it is desirable\n" +
-              "to ignore this event, for example, when the system serves as both\n" +
-              "workstation and server.</p>"
-          ) +
-          # Boot dialog help 3/4
-          _(
-            "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from KDM.</p>\n"
-          ) +
-          # Boot dialog help 4/4
-          _(
-            "<p><b>Hibernate System</b>:\n" +
-              "Set the conditions for allowing users to hibernate the system. By default, user on active console has such right.\n" +
-              "Other options are allowing the action to any user or requiring authentication in all cases.</p>\n"
-          ),
+        "boot"           => boot_dialog_help,
         # Main dialog help 1/8
         "main"           => _(
           "<P><BIG><B>Configuring Local Security</B></BIG></P>\n" +
@@ -352,9 +331,47 @@ module Yast
         "EXTRA_SERVICES"                            => _(
           "<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"
         )
-      } 
+      }
 
+    end
 
+    def boot_dialog_help
+      help = _(
+        "<p><b><big>Boot Security</big></b></p>\n<p>In this dialog, change various boot settings related to security.</p>"
+      )
+
+      # Boot dialog help 2/4, not shown for s390 architecture
+      if Arch.s390
+        help += _(
+          "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" +
+            "Configure what the system should do in response to\n" +
+            "someone at the console pressing the CTRL + ALT + DEL key\n" +
+            "combination. By default the system halts but sometimes it is desirable\n" +
+            "to ignore this event, for example, when the system serves as both\n" +
+            "workstation and server.</p>"
+        )
+      else
+        help += _(
+          "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" +
+            "Configure what the system should do in response to\n" +
+            "someone at the console pressing the CTRL + ALT + DEL key\n" +
+            "combination. Usually the system reboots. Sometimes it is desirable\n" +
+            "to ignore this event, for example, when the system serves as both\n" +
+            "workstation and server.</p>"
+        )
+      end
+      # Boot dialog help 3/4
+      help += _(
+          "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from KDM.</p>\n"
+        ) +
+        # Boot dialog help 4/4
+        _(
+          "<p><b>Hibernate System</b>:\n" +
+            "Set the conditions for allowing users to hibernate the system. By default, user on active console has such right.\n" +
+            "Other options are allowing the action to any user or requiring authentication in all cases.</p>\n"
+        )
+
+      help
       # EOF
     end
   end

@@ -71,7 +71,7 @@ module Yast
 
       # All security settings
       @Settings = {
-        "CONSOLE_SHUTDOWN"                          => "reboot",
+        "CONSOLE_SHUTDOWN"                          => Arch.s390 ? "halt" : "reboot",
         "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
         "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
         "kernel.sysrq"                              => "0",
@@ -294,24 +294,25 @@ module Yast
     # Read the information about ctrl+alt+del behavior
     # See bug 742783 for description
     def ReadConsoleShutdown
-      ret = "ignore"
-
       if Package.Installed("systemd")
         if !FileUtils.Exists(@ctrl_alt_del_file)
-          ret = "reboot"
+          ret = Arch.s390 ? "halt" : "reboot"
         else
-          link = Convert.to_string(
-            SCR.Read(path(".target.symlink"), @ctrl_alt_del_file)
-          )
-          if link == "/usr/lib/systemd/system/poweroff.target"
-            ret = "halt"
-          elsif link == "/usr/lib/systemd/system/reboot.target" ||
-              link == "/usr/lib/systemd/system/ctrl-alt-del.target"
-            ret = "reboot"
-          end
+          link = SCR.Read(path(".target.symlink"), @ctrl_alt_del_file).to_s
+          ret = case link
+                when "/usr/lib/systemd/system/poweroff.target"
+                  "halt"
+                when "/usr/lib/systemd/system/reboot.target"
+                  "reboot"
+                when "/usr/lib/systemd/system/ctrl-alt-del.target"
+                  Arch.s390 ? "halt" : "reboot"
+                else
+                  "ignore"
+                end
         end
         return ret
       end
+
       inittab = SCR.Dir(path(".etc.inittab"))
       if Builtins.contains(inittab, "ca")
         ca = Convert.to_string(SCR.Read(path(".etc.inittab.ca")))
@@ -375,9 +376,9 @@ module Yast
       read_from_locations
       Builtins.y2milestone("Settings=%1", @Settings)
 
-      Ops.set(@Settings, "CONSOLE_SHUTDOWN", ReadConsoleShutdown())
+      @Settings["CONSOLE_SHUTDOWN"] = ReadConsoleShutdown()
 
-      Builtins.y2debug("Settings=%1", @Settings)
+      log.debug "Settings=#{@Settings}"
 
 
       # Read runlevel setting
