@@ -207,5 +207,115 @@ module Yast
         end
       end
     end
+
+    describe "#ReadConsoleShutdown" do
+      let(:ctrl_alt_del_file) { "/etc/systemd/system/ctrl-alt-del.target" }
+      let(:target_link) { "/usr/lib/systemd/system/poweroff.target" }
+
+      context "when systemd is installed" do
+
+        context "in a non s390 architecture" do
+          before do
+            allow(Arch).to receive(:s390) { false }
+          end
+
+          context "when ctrl+alt+del file not exist" do
+            it "returns 'reboot'" do
+              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
+
+              expect(Security.ReadConsoleShutdown).to eql("reboot")
+            end
+          end
+
+          context "when ctrl+del+alt file exist" do
+            before do
+              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
+            end
+
+            it "returns 'ignore' by default" do
+              allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
+                .and_return("dummy_file")
+
+              expect(Security.ReadConsoleShutdown).to eql("ignore")
+            end
+
+            it "returns 'halt' if links to poweroff.target" do
+              allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
+                .and_return(target_link)
+
+              expect(Security.ReadConsoleShutdown).to eql("halt")
+            end
+
+            it "returns 'reboot' if links to reboot.target" do
+              target_link = "/usr/lib/systemd/system/reboot.target"
+              allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
+                .and_return(target_link)
+
+              expect(Security.ReadConsoleShutdown).to eql("reboot")
+            end
+
+            it "returns 'reboot' if links to ctrl-alt-del.target" do
+              target_link = "/usr/lib/systemd/system/ctrl-alt-del.target"
+              allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
+                .and_return(target_link)
+
+              expect(Security.ReadConsoleShutdown).to eql("reboot")
+            end
+
+          end
+        end
+
+        context "in a s390 architecture" do
+          before do
+            allow(Arch).to receive(:s390) { true }
+          end
+
+          context "when ctrl+alt+del file not exist" do
+            it "returns 'reboot'" do
+              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
+
+              expect(Security.ReadConsoleShutdown).to eql("halt")
+            end
+          end
+
+          context "when ctrl+del+alt file exist" do
+            before do
+              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
+            end
+
+            it "returns 'ignore' by default" do
+              allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
+                .and_return("dummy_file")
+
+              expect(Security.ReadConsoleShutdown).to eql("ignore")
+            end
+
+            it "returns 'halt' if links to poweroff.target" do
+              allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
+                .and_return(target_link)
+
+              expect(Security.ReadConsoleShutdown).to eql("halt")
+            end
+
+            it "returns 'reboot' if links to reboot.target" do
+              target_link = "/usr/lib/systemd/system/reboot.target"
+              allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
+                .and_return(target_link)
+
+              expect(Security.ReadConsoleShutdown).to eql("reboot")
+            end
+
+            it "returns 'halt' if links to ctrl-alt-del.target" do
+              target_link = "/usr/lib/systemd/system/ctrl-alt-del.target"
+              allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
+                .and_return(target_link)
+
+              expect(Security.ReadConsoleShutdown).to eql("halt")
+            end
+
+          end
+        end
+      end
+    end
   end
 end
