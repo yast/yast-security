@@ -573,7 +573,7 @@ module Yast
     def BootDialog
       # Boot dialog caption
       caption = _("Boot Settings")
-      help = Ops.get_string(@HELPS, "boot", "")
+      help = @HELPS["boot"] || ""
 
       # Boot dialog contents
       contents = HVCenter(
@@ -587,15 +587,7 @@ module Yast
                 _("Boot Permissions"),
                 HBox(
                   HSpacing(3),
-                  VBox(
-                    VSpacing(1),
-                    settings2widget("CONSOLE_SHUTDOWN"),
-                    VSpacing(1.0),
-                    settings2widget("AllowShutdown"),
-                    VSpacing(1.0),
-                    settings2widget("HIBERNATE_SYSTEM"),
-                    VSpacing(1)
-                  ),
+                  boot_vbox_widgets,
                   HSpacing(3)
                 )
               ),
@@ -649,7 +641,7 @@ module Yast
       end
 
       if ret == :next || Builtins.contains(@tree_dialogs, ret)
-        widget2settings("CONSOLE_SHUTDOWN")
+        widget2settings("CONSOLE_SHUTDOWN") if !Arch.s390
         widget2settings("AllowShutdown")
         widget2settings("HIBERNATE_SYSTEM")
       end
@@ -973,5 +965,18 @@ module Yast
 
       deep_copy(ret)
     end
+
+    def boot_vbox_widgets
+      VBox(
+        VSpacing(1),
+        Arch.s390 ? Empty() : settings2widget("CONSOLE_SHUTDOWN"),
+        Arch.s390 ? Empty() : VSpacing(1.0),
+        settings2widget("AllowShutdown"),
+        VSpacing(1.0),
+        settings2widget("HIBERNATE_SYSTEM"),
+        VSpacing(1)
+      )
+    end
+
   end
 end
