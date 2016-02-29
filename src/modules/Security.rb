@@ -27,11 +27,13 @@
 # $Id$
 require "yast"
 require "yaml"
+require "security/ctrl_alt_del_config"
 
 module Yast
   class SecurityClass < Module
 
     include Yast::Logger
+    include ::Security::CtrlAltDelConfig
 
     def main
       Yast.import "UI"
@@ -71,7 +73,7 @@ module Yast
 
       # All security settings
       @Settings = {
-        "CONSOLE_SHUTDOWN"                          => Arch.s390 ? "halt" : "reboot",
+        "CONSOLE_SHUTDOWN"                          => ::Security::CtrlAltDelConfig.default,
         "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
         "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
         "kernel.sysrq"                              => "0",
@@ -291,47 +293,19 @@ module Yast
       nil
     end
 
+    def inittab_shutdown_configured?
+      inittab = SCR.Dir(path(".etc.inittab"))
+      inittab.include? "ca"
+    end
+
     # Read the information about ctrl+alt+del behavior
     # See bug 742783 for description
     def ReadConsoleShutdown
-      if Package.Installed("systemd")
-        if !FileUtils.Exists(@ctrl_alt_del_file)
-          ret = Arch.s390 ? "halt" : "reboot"
-        else
-          link = SCR.Read(path(".target.symlink"), @ctrl_alt_del_file).to_s
-          ret = case link
-                when "/usr/lib/systemd/system/poweroff.target"
-                  "halt"
-                when "/usr/lib/systemd/system/reboot.target"
-                  "reboot"
-                when "/usr/lib/systemd/system/ctrl-alt-del.target"
-                  Arch.s390 ? "halt" : "reboot"
-                else
-                  "ignore"
-                end
-        end
-        return ret
-      end
+      ret = ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
 
-      inittab = SCR.Dir(path(".etc.inittab"))
-      if Builtins.contains(inittab, "ca")
-        ca = Convert.to_string(SCR.Read(path(".etc.inittab.ca")))
-        if Builtins.issubstring(ca, "/bin/true") ||
-            Builtins.issubstring(ca, "/bin/false")
-          Ops.set(@Settings, "CONSOLE_SHUTDOWN", "ignore")
-        elsif Builtins.issubstring(ca, "reboot") ||
-            Builtins.issubstring(ca, " -r")
-          Ops.set(@Settings, "CONSOLE_SHUTDOWN", "reboot")
-        elsif Builtins.issubstring(ca, "halt") ||
-            Builtins.issubstring(ca, " -h")
-          Ops.set(@Settings, "CONSOLE_SHUTDOWN", "halt")
-        else
-          Builtins.y2error("Unknown ca status: %1", ca)
-          Ops.set(@Settings, "CONSOLE_SHUTDOWN", "ignore")
-        end
-      else
-        Ops.set(@Settings, "CONSOLE_SHUTDOWN", "ignore")
-      end
+      return ret if ::Security::CtrlAltDelConfig.systemd?
+
+      @Settings["CONSOLE_SHUTDOWN"] = ret if ::Security::CtrlAltDelConfig.inittab?
 
       nil
     end

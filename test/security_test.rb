@@ -1,6 +1,7 @@
 #!/usr/bin/env rspec
 
-require_relative 'test_helper'
+require_relative "test_helper"
+require "security/ctrl_alt_del_config"
 
 def services_for(names, aliases = {})
   names.map do |n|
@@ -221,7 +222,7 @@ module Yast
 
           context "when ctrl+alt+del file not exist" do
             it "returns 'reboot'" do
-              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
+              allow(File).to receive(:exist?).with(ctrl_alt_del_file) { false }
 
               expect(Security.ReadConsoleShutdown).to eql("reboot")
             end
@@ -229,7 +230,7 @@ module Yast
 
           context "when ctrl+del+alt file exist" do
             before do
-              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
+              allow(File).to receive(:exist?).with(ctrl_alt_del_file) { true }
             end
 
             it "returns 'ignore' by default" do
@@ -272,7 +273,7 @@ module Yast
 
           context "when ctrl+alt+del file not exist" do
             it "returns 'reboot'" do
-              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
+              allow(File).to receive(:exist?).with(ctrl_alt_del_file) { false }
 
               expect(Security.ReadConsoleShutdown).to eql("halt")
             end
@@ -280,7 +281,7 @@ module Yast
 
           context "when ctrl+del+alt file exist" do
             before do
-              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
+              allow(File).to receive(:exist?).with(ctrl_alt_del_file) { true }
             end
 
             it "returns 'ignore' by default" do
@@ -311,6 +312,116 @@ module Yast
                 .and_return(target_link)
 
               expect(Security.ReadConsoleShutdown).to eql("halt")
+            end
+
+          end
+        end
+      end
+
+      context "when systemd is not installed but inittab exist" do
+        before do
+          allow(Package).to receive(:Installed).with("systemd") { false }
+        end
+
+        it "ever returns nil" do
+          allow(File).to receive(:exist?).with("/etc/inittab")
+            .and_return(false, true)
+          allow(::Security::CtrlAltDelConfig).to receive(:current)
+            .and_return("reboot", "halt")
+
+          expect(Security.ReadConsoleShutdown).to eql(nil)
+          expect(Security.ReadConsoleShutdown).to eql(nil)
+        end
+
+        context "in a non s390 architecture" do
+          before do
+            allow(Arch).to receive(:s390) { false }
+            allow(::Security::CtrlAltDelConfig).to receive(:inittab?) { true }
+          end
+
+          context "when no inittab ca entry" do
+            it "returns 'reboot'" do
+              allow(File).to receive(:exist?).with("/etc/inittab") { false }
+
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("reboot")
+            end
+          end
+
+          context "when inittab ca entry exist" do
+            before do
+              allow(File).to receive(:exist?).with("/etc/inittab") { true }
+            end
+
+            it "sets settings for shutdown as 'ignore' by default" do
+              allow(SCR).to receive(:Read).with(path(".etc.inittab.ca"))
+                .and_return("12345:ctrlaltdel:/bin/false")
+
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("ignore")
+            end
+
+            it "sets settings for shutdown as 'halt' if contains 'halt' or ' -h'" do
+              allow(SCR).to receive(:Read).with(path(".etc.inittab.ca"))
+                .and_return("12345:ctrlaltdel:/sbin/shutdown -h now")
+
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("halt")
+            end
+
+            it "sets settings for shutdown as 'reboot' if contains 'reboot' or -r" do
+              allow(SCR).to receive(:Read).with(path(".etc.inittab.ca"))
+                .and_return("12345:ctrlaltdel:/sbin/shutdown -r now")
+
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("reboot")
+            end
+
+          end
+        end
+
+        context "in a s390 architecture" do
+          before do
+            allow(Arch).to receive(:s390) { true }
+            allow(::Security::CtrlAltDelConfig).to receive(:inittab?) { true }
+          end
+
+          context "when no inittab ca entry" do
+            it "returns 'halt'" do
+              allow(File).to receive(:exist?).with("/etc/inittab") { false }
+
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("halt")
+            end
+          end
+
+          context "when inittab ca entry exist" do
+            before do
+              allow(File).to receive(:exist?).with("/etc/inittab") { true }
+            end
+
+            it "sets settings for shutdown as 'ignore' by default" do
+              allow(SCR).to receive(:Read).with(path(".etc.inittab.ca"))
+                .and_return("12345:ctrlaltdel:/bin/echo 'Not implemented'")
+
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("ignore")
+            end
+
+            it "sets settings for shutdown as 'halt' if contains 'halt' or ' -h'" do
+              allow(SCR).to receive(:Read).with(path(".etc.inittab.ca"))
+                .and_return("12345:/sbin/shutdown -h now")
+
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("halt")
+            end
+
+            it "sets settings for shutdown as 'reboot' if contains 'reboot' or -r" do
+              allow(SCR).to receive(:Read).with(path(".etc.inittab.ca"))
+                .and_return("12345:ctrlaltdel:/sbin/shutdown -r now")
+
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("reboot")
             end
 
           end

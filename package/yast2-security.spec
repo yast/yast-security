@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        3.2.0
+Version:        3.2.1
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -78,4 +78,5 @@ fi
 %{yast_scrconfdir}/*.scr
 %{yast_schemadir}/autoyast/rnc/security.rnc
 %{yast_ydatadir}/security
+%{yast_libdir}/security
 %doc %{yast_docdir}

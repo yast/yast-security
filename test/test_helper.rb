@@ -17,6 +17,9 @@
 #  you may find current contact information at www.suse.com
 
 # Set the paths
+libdir = File.expand_path("../../src/lib", __FILE__)
+$LOAD_PATH.unshift(libdir)
+
 SRC_PATH = File.expand_path("../../src", __FILE__)
 DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
 ENV["Y2DIR"] = SRC_PATH
@@ -35,6 +38,7 @@ if ENV["COVERAGE"]
 
   # for coverage we need to load all ruby files
   Dir["#{SRC_PATH}/modules/**/*.rb"].each { |f| require_relative f }
+  Dir.chdir(libdir) { Dir["**/*.rb"].each { |f| require f } }
 
   # use coveralls for on-line code coverage reporting at Travis CI
   if ENV["TRAVIS"]
@@ -45,3 +49,5 @@ if ENV["COVERAGE"]
     ]
   end
 end
+
+# force loading all files to report proper code coverage
