@@ -19,6 +19,11 @@ ynclude_DATA = \
   include/security/routines.rb \
   include/security/helps.rb
 
+
+ylibdir = @ylibdir@/security
+ylib_DATA = \
+	lib/security/ctrl_alt_del_config.rb
+
 schemafilesdir = $(schemadir)/autoyast/rnc
 schemafiles_DATA = \
   autoyast-rnc/security.rnc
@@ -38,6 +43,6 @@ ydata_DATA = \
 desktop_DATA = \
   desktop/security.desktop
 
-EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(schemafiles_DATA) $(scrconf_DATA) $(ydata_DATA) $(desktop_DATA)
+EXTRA_DIST = $(module_DATA) $(client_DATA) $(ynclude_DATA) $(schemafiles_DATA) $(scrconf_DATA) $(ydata_DATA) $(desktop_DATA) $(ylib_DATA)
 
 include $(top_srcdir)/Makefile.am.common
