@@ -222,7 +222,7 @@ module Yast
 
           context "when ctrl+alt+del file not exist" do
             it "returns 'reboot'" do
-              allow(File).to receive(:exist?).with(ctrl_alt_del_file) { false }
+              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
 
               expect(Security.ReadConsoleShutdown).to eql("reboot")
             end
@@ -230,7 +230,7 @@ module Yast
 
           context "when ctrl+del+alt file exist" do
             before do
-              allow(File).to receive(:exist?).with(ctrl_alt_del_file) { true }
+              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
             end
 
             it "returns 'ignore' by default" do
@@ -273,7 +273,7 @@ module Yast
 
           context "when ctrl+alt+del file not exist" do
             it "returns 'reboot'" do
-              allow(File).to receive(:exist?).with(ctrl_alt_del_file) { false }
+              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
 
               expect(Security.ReadConsoleShutdown).to eql("halt")
             end
@@ -281,7 +281,7 @@ module Yast
 
           context "when ctrl+del+alt file exist" do
             before do
-              allow(File).to receive(:exist?).with(ctrl_alt_del_file) { true }
+              allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
             end
 
             it "returns 'ignore' by default" do
@@ -324,7 +324,7 @@ module Yast
         end
 
         it "ever returns nil" do
-          allow(File).to receive(:exist?).with("/etc/inittab")
+          allow(FileUtils).to receive(:Exists).with("/etc/inittab")
             .and_return(false, true)
           allow(::Security::CtrlAltDelConfig).to receive(:current)
             .and_return("reboot", "halt")
@@ -341,7 +341,7 @@ module Yast
 
           context "when no inittab ca entry" do
             it "returns 'reboot'" do
-              allow(File).to receive(:exist?).with("/etc/inittab") { false }
+              allow(FileUtils).to receive(:Exists).with("/etc/inittab") { false }
 
               Security.ReadConsoleShutdown
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("reboot")
@@ -350,7 +350,7 @@ module Yast
 
           context "when inittab ca entry exist" do
             before do
-              allow(File).to receive(:exist?).with("/etc/inittab") { true }
+              allow(FileUtils).to receive(:Exists).with("/etc/inittab") { true }
             end
 
             it "sets settings for shutdown as 'ignore' by default" do
@@ -388,7 +388,7 @@ module Yast
 
           context "when no inittab ca entry" do
             it "returns 'halt'" do
-              allow(File).to receive(:exist?).with("/etc/inittab") { false }
+              allow(FileUtils).to receive(:Exists).with("/etc/inittab") { false }
 
               Security.ReadConsoleShutdown
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("halt")
@@ -397,7 +397,7 @@ module Yast
 
           context "when inittab ca entry exist" do
             before do
-              allow(File).to receive(:exist?).with("/etc/inittab") { true }
+              allow(FileUtils).to receive(:Exists).with("/etc/inittab") { true }
             end
 
             it "sets settings for shutdown as 'ignore' by default" do

@@ -28,6 +28,7 @@ module Security
     Yast.import "SCR"
     Yast.import "Arch"
     Yast.import "Package"
+    Yast.import "FileUtils"
 
     SYSTEMD_FILE = "/etc/systemd/system/ctrl-alt-del.target"
 
@@ -37,7 +38,7 @@ module Security
       end
 
       def inittab?
-        File.exist?("/etc/inittab")
+        Yast::FileUtils.Exists("/etc/inittab")
       end
 
       def default
@@ -59,7 +60,7 @@ module Security
       end
 
       def current_systemd
-        if !File.exist?(SYSTEMD_FILE)
+        if !Yast::FileUtils.Exists(SYSTEMD_FILE)
           ret = nil
         else
           link = Yast::SCR.Read(Yast::Path.new(".target.symlink"), SYSTEMD_FILE).to_s
