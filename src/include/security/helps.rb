@@ -340,17 +340,8 @@ module Yast
         "<p><b><big>Boot Security</big></b></p>\n<p>In this dialog, change various boot settings related to security.</p>"
       )
 
-      # Boot dialog help 2/4, not shown for s390 architecture
-      if Arch.s390
-        help += _(
-          "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" +
-            "Configure what the system should do in response to\n" +
-            "someone at the console pressing the CTRL + ALT + DEL key\n" +
-            "combination. By default the system halts but sometimes it is desirable\n" +
-            "to ignore this event, for example, when the system serves as both\n" +
-            "workstation and server.</p>"
-        )
-      else
+      # Boot dialog help 2/4, diferent message based on default
+      if ::Security::CtrlAltDelConfig.default == "reboot"
         help += _(
           "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" +
             "Configure what the system should do in response to\n" +
@@ -359,7 +350,17 @@ module Yast
             "to ignore this event, for example, when the system serves as both\n" +
             "workstation and server.</p>"
         )
+      else
+        help += _(
+          "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" +
+            "Configure what the system should do in response to\n" +
+            "someone at the console pressing the CTRL + ALT + DEL key\n" +
+            "combination. By default the system halts but sometimes it is desirable\n" +
+            "to ignore this event, for example, when the system serves as both\n" +
+            "workstation and server.</p>"
+        )
       end
+
       # Boot dialog help 3/4
       help += _(
           "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from KDM.</p>\n"

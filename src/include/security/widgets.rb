@@ -101,7 +101,7 @@ module Yast
               "&Interpretation of Ctrl + Alt + Del"
             ),
             "Options" => console_shutdown_options,
-            "Value"   => Arch.s390 ? "halt" : "reboot"
+            "Value"   => ::Security::CtrlAltDelConfig.default
           },
           "DISPLAYMANAGER_REMOTE_ACCESS" => {
             "Widget" => "CheckBox",
