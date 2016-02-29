@@ -263,18 +263,20 @@ module Yast
         }
     end
 
-    def console_shutdown_options
-      # ComboBox value
-      options = [["ignore", _("Ignore")]]
-
-      # ComboBox value, not shown in s390 architecture
-      options << ["reboot", _("Reboot")] if !Arch.s390
-
-      # ComboBox value
-      options << ["halt", _("Halt")]
-
-      options
-      # EOF
+    def boot_option_labels
+      {
+        "ignore" => _("Ignore"),
+        "reboot" => _("Reboot"),
+        "halt"   => _("Halt")
+      }
     end
+
+    def console_shutdown_options
+      ::Security::CtrlAltDelConfig.options.map do |opt|
+        [opt, boot_option_labels[opt]]
+      end
+    end
+
+    # EOF
   end
 end

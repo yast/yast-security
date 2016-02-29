@@ -44,6 +44,14 @@ module Security
         Yast::Arch.s390 ? "halt" : "reboot"
       end
 
+      def options
+        options = ["ignore", "reboot", "halt"]
+
+        options.delete("reboot") if Yast::Arch.s390
+
+        options
+      end
+
       def current
         return current_systemd if systemd?
         return current_inittab if inittab?
