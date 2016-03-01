@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Fri Feb 26 12:40:29 UTC 2016 - knut.anderssen@suse.com
 
-- Removed "Boot permissions - Interpretation"  of Ctrl + Alt + Del
-  for s390. (fate#319711)
+- Removed "Boot permissions - Interpretation of Ctrl + Alt + Del"
+  combo box "Reboot" entry for s390 architecture. (fate#319711)
 - 3.2.1
 
 -------------------------------------------------------------------
