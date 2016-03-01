@@ -64,37 +64,39 @@ module Security
           ret = nil
         else
           link = Yast::SCR.Read(Yast::Path.new(".target.symlink"), SYSTEMD_FILE).to_s
-          ret = case link
-                when "/usr/lib/systemd/system/poweroff.target"
-                  "halt"
-                when "/usr/lib/systemd/system/reboot.target"
-                  "reboot"
-                when "/usr/lib/systemd/system/ctrl-alt-del.target"
-                  default
-                else
-                  log.error "Not known link #{link}"
-                  "ignore"
-                end
+          ret =
+            case link
+            when "/usr/lib/systemd/system/poweroff.target"
+              "halt"
+            when "/usr/lib/systemd/system/reboot.target"
+              "reboot"
+            when "/usr/lib/systemd/system/ctrl-alt-del.target"
+              default
+            else
+              log.error "Not known link #{link}"
+              "ignore"
+            end
         end
         ret
       end
 
       def current_inittab
         ca = Yast::SCR.Read(Yast::Path.new(".etc.inittab.ca"))
-        ret = case ca
-              when /\/bin\/true/, /\/bin\/false/
-                "ignore"
-              when /reboot/, / -r/
-                "reboot"
-              when /halt/, / -h/
-                "halt"
-              when nil
-                log.error("No ca entry")
-                nil
-              else
-                log.error "Unknown ca status: #{ca}"
-                "ignore"
-              end
+        ret =
+          case ca
+          when /\/bin\/true/, /\/bin\/false/
+            "ignore"
+          when /reboot/, / -r/
+            "reboot"
+          when /halt/, / -h/
+            "halt"
+          when nil
+            log.error("No ca entry")
+            nil
+          else
+            log.error "Unknown ca status: #{ca}"
+            "ignore"
+          end
         ret
       end
     end

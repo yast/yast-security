@@ -343,20 +343,20 @@ module Yast
       # Boot dialog help 2/4, diferent message based on default
       if ::Security::CtrlAltDelConfig.default == "reboot"
         help += _(
-          "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" +
-            "Configure what the system should do in response to\n" +
-            "someone at the console pressing the CTRL + ALT + DEL key\n" +
-            "combination. Usually the system reboots. Sometimes it is desirable\n" +
-            "to ignore this event, for example, when the system serves as both\n" +
+          "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" \
+            "Configure what the system should do in response to\n" \
+            "someone at the console pressing the CTRL + ALT + DEL key\n" \
+            "combination. Usually the system reboots. Sometimes it is desirable\n" \
+            "to ignore this event, for example, when the system serves as both\n" \
             "workstation and server.</p>"
         )
       else
         help += _(
-          "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" +
-            "Configure what the system should do in response to\n" +
-            "someone at the console pressing the CTRL + ALT + DEL key\n" +
-            "combination. By default the system halts but sometimes it is desirable\n" +
-            "to ignore this event, for example, when the system serves as both\n" +
+          "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" \
+            "Configure what the system should do in response to\n" \
+            "someone at the console pressing the CTRL + ALT + DEL key\n" \
+            "combination. By default the system halts but sometimes it is desirable\n" \
+            "to ignore this event, for example, when the system serves as both\n" \
             "workstation and server.</p>"
         )
       end
@@ -367,8 +367,8 @@ module Yast
         ) +
         # Boot dialog help 4/4
         _(
-          "<p><b>Hibernate System</b>:\n" +
-            "Set the conditions for allowing users to hibernate the system. By default, user on active console has such right.\n" +
+          "<p><b>Hibernate System</b>:\n" \
+            "Set the conditions for allowing users to hibernate the system. By default, user on active console has such right.\n" \
             "Other options are allowing the action to any user or requiring authentication in all cases.</p>\n"
         )
 

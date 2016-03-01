@@ -295,7 +295,7 @@ module Yast
 
     def inittab_shutdown_configured?
       inittab = SCR.Dir(path(".etc.inittab"))
-      inittab.include? "ca"
+      inittab.include?("ca")
     end
 
     # Read the information about ctrl+alt+del behavior

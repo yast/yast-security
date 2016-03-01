@@ -25,7 +25,9 @@ module Yast
       self.properties = Struct::DummyProperties.new(aliases)
     end
 
-    def enabled?; true; end
+    def enabled?
+      true
+    end
   end
 
   import "Security"
@@ -73,7 +75,9 @@ module Yast
 
       context "with services that are aliases of optional services" do
         let(:service_names) { %w(apparmor auditd anacron firewalld wicked rsyslog) }
-        let(:aliases) { {"rsyslog" => "rsyslog.service syslog.service", "anacron" => "anacron cron"} }
+        let(:aliases) do
+          { "rsyslog" => "rsyslog.service syslog.service", "anacron" => "anacron cron" }
+        end
 
         it "sets settings for extra services as 'secure'" do
           expect(Security.Settings["EXTRA_SERVICES"]).to eq("secure")
@@ -116,16 +120,16 @@ module Yast
       end
 
       it "does not write nil values" do
-        expect(SCR).to_not receive(:Write).
-          with(path(".sysconfig.mail.SMTPD_LISTEN_REMOTE"), anything)
+        expect(SCR).to_not receive(:Write)
+          .with(path(".sysconfig.mail.SMTPD_LISTEN_REMOTE"), anything)
 
         Security.Settings["SMTPD_LISTEN_REMOTE"] = nil
         Security.write_to_locations
       end
 
       it "does not write unchanged values" do
-        expect(SCR).to_not receive(:Write).
-          with(path(".sysconfig.mail.SMTPD_LISTEN_REMOTE"), anything)
+        expect(SCR).to_not receive(:Write)
+          .with(path(".sysconfig.mail.SMTPD_LISTEN_REMOTE"), anything)
 
         Security.Settings["SMTPD_LISTEN_REMOTE"] = "no"
         Security.write_to_locations
@@ -135,8 +139,8 @@ module Yast
         Security.Settings["AllowShutdown"] = "Root"
         Security.write_to_locations
 
-        expect(written_value_for(".kde4.kdmrc.AllowShutdown")).
-          to eq("Root")
+        expect(written_value_for(".kde4.kdmrc.AllowShutdown"))
+          .to eq("Root")
         expect(was_written?(".kde4.kdmrc")).to eq(true)
       end
 
@@ -186,8 +190,8 @@ module Yast
           Security.Settings["net.ipv4.ip_forward"] = "1"
           Security.write_kernel_settings
 
-          expect(written_value_for(".etc.sysctl_conf.net.ipv4.ip_forward")).
-            to eq("1")
+          expect(written_value_for(".etc.sysctl_conf.net.ipv4.ip_forward"))
+            .to eq("1")
           expect(was_written?(".etc.sysctl_conf")).to eq(true)
         end
       end
@@ -215,7 +219,7 @@ module Yast
 
       context "when systemd is installed" do
 
-        context "in a non s390 architecture" do
+        context "on a non s390 architecture" do
           before do
             allow(Arch).to receive(:s390) { false }
           end
@@ -266,7 +270,7 @@ module Yast
           end
         end
 
-        context "in a s390 architecture" do
+        context "on a s390 architecture" do
           before do
             allow(Arch).to receive(:s390) { true }
           end
@@ -323,7 +327,7 @@ module Yast
           allow(Package).to receive(:Installed).with("systemd") { false }
         end
 
-        it "ever returns nil" do
+        it "always returns nil" do
           allow(FileUtils).to receive(:Exists).with("/etc/inittab")
             .and_return(false, true)
           allow(::Security::CtrlAltDelConfig).to receive(:current)
@@ -333,7 +337,7 @@ module Yast
           expect(Security.ReadConsoleShutdown).to eql(nil)
         end
 
-        context "in a non s390 architecture" do
+        context "on a non s390 architecture" do
           before do
             allow(Arch).to receive(:s390) { false }
             allow(::Security::CtrlAltDelConfig).to receive(:inittab?) { true }
@@ -380,7 +384,7 @@ module Yast
           end
         end
 
-        context "in a s390 architecture" do
+        context "on a s390 architecture" do
           before do
             allow(Arch).to receive(:s390) { true }
             allow(::Security::CtrlAltDelConfig).to receive(:inittab?) { true }
@@ -426,6 +430,36 @@ module Yast
 
           end
         end
+      end
+    end
+
+    describe "#read_permissions" do
+
+      context "depending on current persission" do
+        it "sets security permission to 'easy' if contains easy" do
+          Security.Settings["PERMISSION_SECURITY"] = "it_is_easy_to_test"
+
+          expect(Security.read_permissions).to eql("easy")
+          expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy")
+        end
+
+        it "sets security permission to 'paranoid' if contains paranoid" do
+          Security.Settings["PERMISSION_SECURITY"] = "paranoid_permission"
+
+          expect(Security.read_permissions).to eql("paranoid")
+          expect(Security.Settings["PERMISSION_SECURITY"]).to eql("paranoid")
+        end
+
+        it "sets secure by default" do
+          Security.Settings["PERMISSION_SECURITY"] = nil
+
+          expect(Security.read_permissions).to eql("secure")
+          expect(Security.Settings["PERMISSION_SECURITY"]).to eql("secure")
+        end
+      end
+
+      describe "#read_hibernate_settings" do
+
       end
     end
   end
