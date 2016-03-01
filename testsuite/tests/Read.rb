@@ -10,7 +10,7 @@
 #
 # $Id$
 #
-# testedfiles: Security.ycp PamSettings.ycp Pam.ycp
+# testedfiles: Security.ycp PamSettings.ycp Pam.ycp ctrl_alt_del_config.rb
 module Yast
   class ReadClient < Client
     def main
@@ -79,7 +79,8 @@ module Yast
           # FileUtils::Exists (ctrl_alt_del_file) returns true, so symlink is called
           "stat" => {
             1 => 2
-          }
+          },
+          "symlink" => "/usr/lib/systemd/system/poweroff.target"
         },
         "pam"       => {
           "passwd" => {

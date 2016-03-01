@@ -34,7 +34,7 @@ Read	.target.size "/etc/sysconfig/services" 1
 Read	.sysconfig.services.DISABLE_RESTART_ON_UPDATE nil
 Read	.target.size "/etc/sysconfig/services" 1
 Read	.sysconfig.services.DISABLE_STOP_ON_REMOVAL nil
-Read	.target.symlink "/etc/systemd/system/ctrl-alt-del.target" nil
+Read	.target.symlink "/etc/systemd/system/ctrl-alt-del.target" "/usr/lib/systemd/system/poweroff.target"
 Read	.etc.login_defs.ENCRYPT_METHOD "garbage"
 Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $["exit":0, "stderr":"", "stdout":""]
 Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $["exit":0, "stderr":"", "stdout":""]
@@ -81,7 +81,7 @@ Read	.target.size "/etc/sysconfig/services" 1
 Read	.sysconfig.services.DISABLE_RESTART_ON_UPDATE nil
 Read	.target.size "/etc/sysconfig/services" 1
 Read	.sysconfig.services.DISABLE_STOP_ON_REMOVAL nil
-Read	.target.symlink "/etc/systemd/system/ctrl-alt-del.target" nil
+Read	.target.symlink "/etc/systemd/system/ctrl-alt-del.target" "/usr/lib/systemd/system/poweroff.target"
 Read	.etc.login_defs.ENCRYPT_METHOD "SHA512"
 Execute	.target.bash_output "/usr/sbin/pam-config -q --cracklib" $["exit":0, "stderr":"", "stdout":""]
 Execute	.target.bash_output "/usr/sbin/pam-config -q --pwhistory" $["exit":0, "stderr":"", "stdout":""]
