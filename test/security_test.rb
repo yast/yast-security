@@ -553,6 +553,8 @@ module Yast
     describe "#read_from_locations" do
       before do
         change_scr_root(File.join(DATA_PATH, "system"))
+        allow(SCR).to receive(:Read).with(path(".kde4.kdmrc.AllowShutdown"))
+          .and_return("All")
         Security.read_from_locations
       end
 
@@ -565,7 +567,7 @@ module Yast
       end
 
       it "sets kde4 allow shutdown based on kdmrc" do
-        expect(Security.Settings["AllowShutdown"]).to eql("Root")
+        expect(Security.Settings["AllowShutdown"]).to eql("All")
       end
 
       it "sets different settings based on /etc/sysconfig/*" do
