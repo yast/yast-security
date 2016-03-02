@@ -100,15 +100,8 @@ module Yast
             "Label"   => _(
               "&Interpretation of Ctrl + Alt + Del"
             ),
-            "Options" => [
-              # ComboBox value
-              ["ignore", _("Ignore")],
-              # ComboBox value
-              ["reboot", _("Reboot")],
-              # ComboBox value
-              ["halt", _("Halt")]
-            ],
-            "Value"   => "reboot"
+            "Options" => console_shutdown_options,
+            "Value"   => ::Security::CtrlAltDelConfig.default
           },
           "DISPLAYMANAGER_REMOTE_ACCESS" => {
             "Widget" => "CheckBox",
@@ -267,9 +260,23 @@ module Yast
             "Label"  => _("&Minimum"),
             "Value"  => "100"
           }
-        } 
-
-      # EOF
+        }
     end
+
+    def boot_option_labels
+      {
+        "ignore" => _("Ignore"),
+        "reboot" => _("Reboot"),
+        "halt"   => _("Halt")
+      }
+    end
+
+    def console_shutdown_options
+      ::Security::CtrlAltDelConfig.options.map do |opt|
+        [opt, boot_option_labels[opt]]
+      end
+    end
+
+    # EOF
   end
 end

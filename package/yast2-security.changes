@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Feb 26 12:40:29 UTC 2016 - knut.anderssen@suse.com
+
+- Removed "Boot permissions - Interpretation of Ctrl + Alt + Del"
+  combo box "Reboot" entry for s390 architecture. (fate#319711)
+- 3.2.1
+
+-------------------------------------------------------------------
 Thu Sep 24 14:50:20 UTC 2015 - ancor@suse.com
 
 - Bumped version number in order to branch the SLE version due to

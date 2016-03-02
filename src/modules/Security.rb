@@ -27,11 +27,13 @@
 # $Id$
 require "yast"
 require "yaml"
+require "security/ctrl_alt_del_config"
 
 module Yast
   class SecurityClass < Module
 
     include Yast::Logger
+    include ::Security::CtrlAltDelConfig
 
     def main
       Yast.import "UI"
@@ -71,7 +73,7 @@ module Yast
 
       # All security settings
       @Settings = {
-        "CONSOLE_SHUTDOWN"                          => "reboot",
+        "CONSOLE_SHUTDOWN"                          => ::Security::CtrlAltDelConfig.default,
         "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
         "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
         "kernel.sysrq"                              => "0",
@@ -291,46 +293,19 @@ module Yast
       nil
     end
 
+    def inittab_shutdown_configured?
+      inittab = SCR.Dir(path(".etc.inittab"))
+      inittab.include?("ca")
+    end
+
     # Read the information about ctrl+alt+del behavior
     # See bug 742783 for description
     def ReadConsoleShutdown
-      ret = "ignore"
+      ret = ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
 
-      if Package.Installed("systemd")
-        if !FileUtils.Exists(@ctrl_alt_del_file)
-          ret = "reboot"
-        else
-          link = Convert.to_string(
-            SCR.Read(path(".target.symlink"), @ctrl_alt_del_file)
-          )
-          if link == "/usr/lib/systemd/system/poweroff.target"
-            ret = "halt"
-          elsif link == "/usr/lib/systemd/system/reboot.target" ||
-              link == "/usr/lib/systemd/system/ctrl-alt-del.target"
-            ret = "reboot"
-          end
-        end
-        return ret
-      end
-      inittab = SCR.Dir(path(".etc.inittab"))
-      if Builtins.contains(inittab, "ca")
-        ca = Convert.to_string(SCR.Read(path(".etc.inittab.ca")))
-        if Builtins.issubstring(ca, "/bin/true") ||
-            Builtins.issubstring(ca, "/bin/false")
-          Ops.set(@Settings, "CONSOLE_SHUTDOWN", "ignore")
-        elsif Builtins.issubstring(ca, "reboot") ||
-            Builtins.issubstring(ca, " -r")
-          Ops.set(@Settings, "CONSOLE_SHUTDOWN", "reboot")
-        elsif Builtins.issubstring(ca, "halt") ||
-            Builtins.issubstring(ca, " -h")
-          Ops.set(@Settings, "CONSOLE_SHUTDOWN", "halt")
-        else
-          Builtins.y2error("Unknown ca status: %1", ca)
-          Ops.set(@Settings, "CONSOLE_SHUTDOWN", "ignore")
-        end
-      else
-        Ops.set(@Settings, "CONSOLE_SHUTDOWN", "ignore")
-      end
+      return ret if ::Security::CtrlAltDelConfig.systemd?
+
+      @Settings["CONSOLE_SHUTDOWN"] = ret if ::Security::CtrlAltDelConfig.inittab?
 
       nil
     end
@@ -353,6 +328,8 @@ module Yast
           @Settings[var] = val unless val.nil?
         end
       end
+
+      log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
     # Read the settings from sysctl.conf
@@ -363,6 +340,80 @@ module Yast
         val = default_value if val.nil? || val == ""
         @Settings[key] = val
       end
+
+      log.debug "Settings (after #{__callee__}): #{@Settings}"
+    end
+
+    def read_encryption_method
+      method = SCR.Read(path(".etc.login_defs.ENCRYPT_METHOD")).to_s.downcase
+
+      method = "des" if !@encryption_methods.include?(method)
+
+      @Settings["PASSWD_ENCRYPTION"] = method
+    end
+
+    def read_pam_settings
+      read_encryption_method
+
+      # cracklib and pwhistory settings (default values)
+      @Settings["PASS_MIN_LEN"] = "5"
+      @Settings["PASSWD_REMEMBER_HISTORY"] = "0"
+      @Settings["CRACKLIB_DICT_PATH"] = "/usr/lib/cracklib_dict"
+
+      pam_cracklib = Pam.Query("cracklib") || {}
+      @Settings["PASSWD_USE_CRACKLIB"] = pam_cracklib.size > 0 ? "yes" : "no"
+
+      pam_cracklib.fetch("password", []).each do |entry|
+        key,value = entry.split("=")
+        if value
+          @Settings["CRACKLIB_DICT_PATH"] = value if key == "dictpath"
+          @Settings["PASS_MIN_LEN"]       = value if key == "minlen"
+        end
+      end
+
+      pam_history = Pam.Query("pwhistory") || {}
+      pam_history.fetch("password", []).each do |entry|
+        key,value = entry.split("=")
+        if key == "remember" && value
+          @Settings["PASSWD_REMEMBER_HISTORY"] = value
+        end
+      end
+      log.debug "Settings (after #{__callee__}): #{@Settings}"
+    end
+
+    def read_permissions
+      perm = case @Settings["PERMISSION_SECURITY"].to_s
+              when /easy/
+                "easy"
+              when /paranoid/
+                "paranoid"
+              else
+                "secure"
+              end
+
+      @Settings["PERMISSION_SECURITY"] = perm
+
+      log.debug "PERMISSION SECURITY (after #{__callee__}): " \
+        "#{@Settings['PERMISSION_SECURITY']}"
+
+      perm
+    end
+
+    def read_polkit_settings
+      action = "org.freedesktop.upower.hibernate"
+
+      hibernate = SCR.Read(Builtins.add(path(".etc.polkit-default-privs_local"), action)).to_s
+
+      @Settings["HIBERNATE_SYSTEM"] = case hibernate
+                                      when "auth_admin:auth_admin:auth_admin"
+                                        "auth_admin"
+                                      when "yes:yes:yes"
+                                        "anyone"
+                                      else
+                                        "active_console"
+                                      end
+      log.debug "HIBERNATE_SYSTEM (after #{__callee__}): " \
+        "#{@Settings['HIBERNATE_SYSTEM']}"
     end
 
     # Read all security settings
@@ -373,107 +424,27 @@ module Yast
 
       # Read security settings
       read_from_locations
-      Builtins.y2milestone("Settings=%1", @Settings)
 
-      Ops.set(@Settings, "CONSOLE_SHUTDOWN", ReadConsoleShutdown())
+      @Settings["CONSOLE_SHUTDOWN"] = ReadConsoleShutdown()
 
-      Builtins.y2debug("Settings=%1", @Settings)
-
+      log.debug "Settings (after read console shutdown): #{@Settings}"
 
       # Read runlevel setting
       ReadServiceSettings()
 
-      # Read pam settings
-
-      method = Convert.to_string(
-        SCR.Read(path(".etc.login_defs.ENCRYPT_METHOD"))
-      )
-      if method == nil ||
-          !Builtins.contains(@encryption_methods, Builtins.tolower(method))
-        method = "des"
-      end
-      Ops.set(@Settings, "PASSWD_ENCRYPTION", Builtins.tolower(method))
-
-      # cracklib and pwhistory settings
-      Ops.set(@Settings, "PASS_MIN_LEN", "5")
-      Ops.set(@Settings, "PASSWD_USE_CRACKLIB", "no")
-      Ops.set(@Settings, "PASSWD_REMEMBER_HISTORY", "0")
-
-      pam_cracklib = Pam.Query("cracklib")
-      if Ops.greater_than(Builtins.size(pam_cracklib), 0)
-        Ops.set(@Settings, "PASSWD_USE_CRACKLIB", "yes")
-      end
-      # save the default value
-      Ops.set(@Settings, "CRACKLIB_DICT_PATH", "/usr/lib/cracklib_dict")
-      Builtins.foreach(Ops.get_list(pam_cracklib, "password", [])) do |val|
-        lval = Builtins.splitstring(val, "=")
-        if Builtins.issubstring(val, "dictpath=")
-          Ops.set(
-            @Settings,
-            "CRACKLIB_DICT_PATH",
-            Ops.get_string(lval, 1, "/usr/lib/cracklib_dict")
-          )
-        end
-        if Builtins.issubstring(val, "minlen=") &&
-            Ops.get_string(lval, 1, "") != ""
-          Ops.set(@Settings, "PASS_MIN_LEN", Ops.get_string(lval, 1, "5"))
-        end
-      end
-
-      pam_history = Pam.Query("pwhistory")
-      Builtins.foreach(Ops.get_list(pam_history, "password", [])) do |val|
-        lval = Builtins.splitstring(val, "=")
-        if Builtins.issubstring(val, "remember=") &&
-            Ops.get_string(lval, 1, "") != ""
-          Ops.set(
-            @Settings,
-            "PASSWD_REMEMBER_HISTORY",
-            Ops.get_string(lval, 1, "0")
-          )
-        end
-      end
-
-      Builtins.y2debug("Settings=%1", @Settings)
+      read_pam_settings
 
       # Local permissions hack
+      read_permissions
 
-      perm = Ops.get(@Settings, "PERMISSION_SECURITY", "")
-      if Builtins.issubstring(perm, "easy")
-        perm = "easy"
-      elsif Builtins.issubstring(perm, "paranoid")
-        perm = "paranoid"
-      elsif Builtins.issubstring(perm, "secure")
-        perm = "secure"
-      else
-        perm = "secure"
-      end
-      Ops.set(@Settings, "PERMISSION_SECURITY", perm)
-      Builtins.y2debug("Settings=%1", @Settings)
-
-      # read local polkit settings
-      action = "org.freedesktop.upower.hibernate"
-      hibernate = Convert.to_string(
-        SCR.Read(Builtins.add(path(".etc.polkit-default-privs_local"), action))
-      )
-      if hibernate != nil
-        Ops.set(@Settings, "HIBERNATE_SYSTEM", "active_console")
-        if hibernate == "auth_admin:auth_admin:auth_admin"
-          Ops.set(@Settings, "HIBERNATE_SYSTEM", "auth_admin")
-        end
-        if hibernate == "yes:yes:yes"
-          Ops.set(@Settings, "HIBERNATE_SYSTEM", "anyone")
-        end
-      end
-      Builtins.y2debug(
-        "HIBERNATE_SYSTEM: %1",
-        Ops.get(@Settings, "HIBERNATE_SYSTEM", "")
-      )
+      read_polkit_settings
 
       read_kernel_settings
-      Builtins.y2debug("Settings=%1", @Settings)
 
       # remember the read values
       @Settings_bak = deep_copy(@Settings)
+
+      log.info "Settings after Read: #{@Settings}"
       true
     end
 
