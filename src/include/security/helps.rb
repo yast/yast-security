@@ -346,14 +346,14 @@ module Yast
         details = _(
           "Usually the system reboots. Sometimes it is desirable\n" \
             "to ignore this event, for example, when the system serves as both\n" \
-            "workstation and server.</p>"
+            "workstation and server."
         )
       else
         # TRANSLATORS: part of help text - default action (the default is halt)
         details = _(
           "By default the system halts but sometimes it is desirable\n" \
             "to ignore this event, for example, when the system serves as both\n" \
-            "workstation and server.</p>"
+            "workstation and server."
         )
       end
 
@@ -363,7 +363,7 @@ module Yast
         "<p><b>Interpretation of Ctrl + Alt + Del</b>:\n" \
           "Configure what the system should do in response to\n" \
           "someone at the console pressing the CTRL + ALT + DEL key\n" \
-          "combination. %s"
+          "combination. %s</p>"
       ) % details
 
       # Boot dialog help 3/4

@@ -328,6 +328,8 @@ module Yast
           @Settings[var] = val unless val.nil?
         end
       end
+
+      log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
     # Read the settings from sysctl.conf
@@ -338,6 +340,8 @@ module Yast
         val = default_value if val.nil? || val == ""
         @Settings[key] = val
       end
+
+      log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
     def read_encryption_method
@@ -374,7 +378,7 @@ module Yast
           @Settings["PASSWD_REMEMBER_HISTORY"] = value
         end
       end
-
+      log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
     def read_permissions
@@ -388,6 +392,11 @@ module Yast
               end
 
       @Settings["PERMISSION_SECURITY"] = perm
+
+      log.debug "PERMISSION SECURITY (after #{__callee__}): " \
+        "#{@Settings['PERMISSION_SECURITY']}"
+
+      perm
     end
 
     def read_polkit_settings
@@ -403,8 +412,8 @@ module Yast
                                       else
                                         "active_console"
                                       end
-
-      log.debug "HIBERNATE_SYSTEM: #{@Settings['HIBERNATE_SYSTEM']}"
+      log.debug "HIBERNATE_SYSTEM (after #{__callee__}): " \
+        "#{@Settings['HIBERNATE_SYSTEM']}"
     end
 
     # Read all security settings
@@ -415,32 +424,27 @@ module Yast
 
       # Read security settings
       read_from_locations
-      log.info "Settings=#{@Settings}"
 
       @Settings["CONSOLE_SHUTDOWN"] = ReadConsoleShutdown()
 
-      log.debug "Settings=#{@Settings}"
+      log.debug "Settings (after read console shutdown): #{@Settings}"
 
       # Read runlevel setting
       ReadServiceSettings()
 
       read_pam_settings
 
-      log.debug "Settings=#{@Settings}"
-
       # Local permissions hack
       read_permissions
-
-      log.debug "Settings=#{@Settings}"
 
       read_polkit_settings
 
       read_kernel_settings
 
-      log.debug "Settings=#{@Settings}"
-
       # remember the read values
       @Settings_bak = deep_copy(@Settings)
+
+      log.info "Settings after Read: #{@Settings}"
       true
     end
 
