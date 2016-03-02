@@ -340,6 +340,73 @@ module Yast
       end
     end
 
+    def read_encryption_method
+      method = SCR.Read(path(".etc.login_defs.ENCRYPT_METHOD")).to_s.downcase
+
+      method = "des" if !@encryption_methods.include?(method)
+
+      @Settings["PASSWD_ENCRYPTION"] = method
+    end
+
+    def read_pam_settings
+      read_encryption_method
+
+      # cracklib and pwhistory settings (default values)
+      @Settings["PASS_MIN_LEN"] = "5"
+      @Settings["PASSWD_REMEMBER_HISTORY"] = "0"
+      @Settings["CRACKLIB_DICT_PATH"] = "/usr/lib/cracklib_dict"
+
+      pam_cracklib = Pam.Query("cracklib") || {}
+      @Settings["PASSWD_USE_CRACKLIB"] = pam_cracklib.size > 0 ? "yes" : "no"
+
+      pam_cracklib.fetch("password", []).each do |entry|
+        key,value = entry.split("=")
+        if value
+          @Settings["CRACKLIB_DICT_PATH"] = value if key == "dictpath"
+          @Settings["PASS_MIN_LEN"]       = value if key == "minlen"
+        end
+      end
+
+      pam_history = Pam.Query("pwhistory") || {}
+      pam_history.fetch("password", []).each do |entry|
+        key,value = entry.split("=")
+        if key == "remember" && value
+          @Settings["PASSWD_REMEMBER_HISTORY"] = value
+        end
+      end
+
+    end
+
+    def read_permissions
+      perm = case @Settings["PERMISSION_SECURITY"].to_s
+              when /easy/
+                "easy"
+              when /paranoid/
+                "paranoid"
+              else
+                "secure"
+              end
+
+      @Settings["PERMISSION_SECURITY"] = perm
+    end
+
+    def read_polkit_settings
+      action = "org.freedesktop.upower.hibernate"
+
+      hibernate = SCR.Read(Builtins.add(path(".etc.polkit-default-privs_local"), action)).to_s
+
+      @Settings["HIBERNATE_SYSTEM"] = case hibernate
+                                      when "auth_admin:auth_admin:auth_admin"
+                                        "auth_admin"
+                                      when "yes:yes:yes"
+                                        "anyone"
+                                      else
+                                        "active_console"
+                                      end
+
+      log.debug "HIBERNATE_SYSTEM: #{@Settings['HIBERNATE_SYSTEM']}"
+    end
+
     # Read all security settings
     # @return true on success
     def Read
@@ -348,104 +415,29 @@ module Yast
 
       # Read security settings
       read_from_locations
-      Builtins.y2milestone("Settings=%1", @Settings)
+      log.info "Settings=#{@Settings}"
 
       @Settings["CONSOLE_SHUTDOWN"] = ReadConsoleShutdown()
 
       log.debug "Settings=#{@Settings}"
 
-
       # Read runlevel setting
       ReadServiceSettings()
 
-      # Read pam settings
+      read_pam_settings
 
-      method = Convert.to_string(
-        SCR.Read(path(".etc.login_defs.ENCRYPT_METHOD"))
-      )
-      if method == nil ||
-          !Builtins.contains(@encryption_methods, Builtins.tolower(method))
-        method = "des"
-      end
-      Ops.set(@Settings, "PASSWD_ENCRYPTION", Builtins.tolower(method))
-
-      # cracklib and pwhistory settings
-      Ops.set(@Settings, "PASS_MIN_LEN", "5")
-      Ops.set(@Settings, "PASSWD_USE_CRACKLIB", "no")
-      Ops.set(@Settings, "PASSWD_REMEMBER_HISTORY", "0")
-
-      pam_cracklib = Pam.Query("cracklib")
-      if Ops.greater_than(Builtins.size(pam_cracklib), 0)
-        Ops.set(@Settings, "PASSWD_USE_CRACKLIB", "yes")
-      end
-      # save the default value
-      Ops.set(@Settings, "CRACKLIB_DICT_PATH", "/usr/lib/cracklib_dict")
-      Builtins.foreach(Ops.get_list(pam_cracklib, "password", [])) do |val|
-        lval = Builtins.splitstring(val, "=")
-        if Builtins.issubstring(val, "dictpath=")
-          Ops.set(
-            @Settings,
-            "CRACKLIB_DICT_PATH",
-            Ops.get_string(lval, 1, "/usr/lib/cracklib_dict")
-          )
-        end
-        if Builtins.issubstring(val, "minlen=") &&
-            Ops.get_string(lval, 1, "") != ""
-          Ops.set(@Settings, "PASS_MIN_LEN", Ops.get_string(lval, 1, "5"))
-        end
-      end
-
-      pam_history = Pam.Query("pwhistory")
-      Builtins.foreach(Ops.get_list(pam_history, "password", [])) do |val|
-        lval = Builtins.splitstring(val, "=")
-        if Builtins.issubstring(val, "remember=") &&
-            Ops.get_string(lval, 1, "") != ""
-          Ops.set(
-            @Settings,
-            "PASSWD_REMEMBER_HISTORY",
-            Ops.get_string(lval, 1, "0")
-          )
-        end
-      end
-
-      Builtins.y2debug("Settings=%1", @Settings)
+      log.debug "Settings=#{@Settings}"
 
       # Local permissions hack
+      read_permissions
 
-      perm = Ops.get(@Settings, "PERMISSION_SECURITY", "")
-      if Builtins.issubstring(perm, "easy")
-        perm = "easy"
-      elsif Builtins.issubstring(perm, "paranoid")
-        perm = "paranoid"
-      elsif Builtins.issubstring(perm, "secure")
-        perm = "secure"
-      else
-        perm = "secure"
-      end
-      Ops.set(@Settings, "PERMISSION_SECURITY", perm)
-      Builtins.y2debug("Settings=%1", @Settings)
+      log.debug "Settings=#{@Settings}"
 
-      # read local polkit settings
-      action = "org.freedesktop.upower.hibernate"
-      hibernate = Convert.to_string(
-        SCR.Read(Builtins.add(path(".etc.polkit-default-privs_local"), action))
-      )
-      if hibernate != nil
-        Ops.set(@Settings, "HIBERNATE_SYSTEM", "active_console")
-        if hibernate == "auth_admin:auth_admin:auth_admin"
-          Ops.set(@Settings, "HIBERNATE_SYSTEM", "auth_admin")
-        end
-        if hibernate == "yes:yes:yes"
-          Ops.set(@Settings, "HIBERNATE_SYSTEM", "anyone")
-        end
-      end
-      Builtins.y2debug(
-        "HIBERNATE_SYSTEM: %1",
-        Ops.get(@Settings, "HIBERNATE_SYSTEM", "")
-      )
+      read_polkit_settings
 
       read_kernel_settings
-      Builtins.y2debug("Settings=%1", @Settings)
+
+      log.debug "Settings=#{@Settings}"
 
       # remember the read values
       @Settings_bak = deep_copy(@Settings)

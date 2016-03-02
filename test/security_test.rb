@@ -433,6 +433,43 @@ module Yast
       end
     end
 
+    describe "#read_pam_settings" do
+      before do
+        change_scr_root(File.join(DATA_PATH, "system"))
+      end
+
+      after do
+        reset_scr_root
+      end
+
+      it "sets passwd encryption setting based on /etc/login.defs" do
+        allow(Pam).to receive(:Query)
+
+        expect(Security.Settings["PASSWD_ENCRYPTION"]).to eql("sha512")
+        Security.read_pam_settings
+      end
+
+      it "sets cracklib settings" do
+        allow(Pam).to receive(:Query).with("pwhistory")
+        allow(Pam).to receive(:Query).with("cracklib")
+          .and_return("password" => ["dictpath=/shared/cracklib_dict", "minlen="])
+
+        Security.read_pam_settings
+        expect(Security.Settings["PASSWD_USE_CRACKLIB"]).to eql("yes")
+        expect(Security.Settings["CRACKLIB_DICT_PATH"]).to eql("/shared/cracklib_dict")
+        expect(Security.Settings["PASS_MIN_LEN"]).to eql("5")
+      end
+
+      it "sets password remember history settings" do
+        allow(Pam).to receive(:Query).with("cracklib")
+        allow(Pam).to receive(:Query).with("pwhistory")
+          .and_return("password" => ["remember=5"])
+
+        Security.read_pam_settings
+        expect(Security.Settings["PASSWD_REMEMBER_HISTORY"]).to eql("5")
+      end
+    end
+
     describe "#read_permissions" do
 
       context "depending on current persission" do
@@ -458,9 +495,101 @@ module Yast
         end
       end
 
-      describe "#read_hibernate_settings" do
+    end
 
+    describe "#read_polkit_settings" do
+      let(:polkit) do
+        path(".etc.polkit-default-privs_local") + "org.freedesktop.upower.hibernate"
+      end
+
+      context "depending on current polkit config" do
+
+        it "sets correctly hibernate system settings to 'anyone'" do
+          allow(SCR).to receive(:Read).with(polkit) { "yes:yes:yes" }
+
+          Security.read_polkit_settings
+          expect(Security.Settings["HIBERNATE_SYSTEM"]).to eql("anyone")
+        end
+
+        it "sets correctly hibernate settings to 'auth_admin'" do
+          allow(SCR).to receive(:Read).with(polkit) { "auth_admin:auth_admin:auth_admin" }
+
+          Security.read_polkit_settings
+          expect(Security.Settings["HIBERNATE_SYSTEM"]).to eql("auth_admin")
+        end
+        it "sets correctly hibernate settings to 'active_console' as default" do
+          allow(SCR).to receive(:Read).with(polkit) { "any_other_entry" }
+
+          Security.read_polkit_settings
+          expect(Security.Settings["HIBERNATE_SYSTEM"]).to eql("active_console")
+        end
+      end
+
+    end
+
+    describe "#read_kernel_settings" do
+      before do
+        change_scr_root(File.join(DATA_PATH, "system"))
+        Security.Settings["kernel.sysrq"]                 = nil
+        Security.Settings["net.ipv4.tcp_syncookies"]      = nil
+        Security.Settings["net.ipv4.ip_forward"]          = nil
+        Security.Settings["net.ipv6.conf.all.forwarding"] = nil
+
+        Security.read_kernel_settings
+      end
+
+      after do
+        reset_scr_root
+      end
+
+      it "sets kernel settings based on /etc/sysctl.conf" do
+        expect(Security.Settings["kernel.sysrq"]).to eql("0")
+        expect(Security.Settings["net.ipv4.tcp_syncookies"]).to eql("1")
+        expect(Security.Settings["net.ipv4.ip_forward"]).to eql("0")
+        expect(Security.Settings["net.ipv6.conf.all.forwarding"]).to eql("0")
       end
     end
+
+    describe "#read_from_locations" do
+      before do
+        change_scr_root(File.join(DATA_PATH, "system"))
+        Security.read_from_locations
+      end
+
+      after do
+        reset_scr_root
+      end
+
+      it "sets login definitions based on /etc/login.defs" do
+        expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+      end
+
+      it "sets kde4 allow shutdown based on kdmrc" do
+        expect(Security.Settings["AllowShutdown"]).to eql("Root")
+      end
+
+      it "sets different settings based on /etc/sysconfig/*" do
+        expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
+        expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
+        expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
+        expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
+        expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
+      end
+
+    end
+
+    describe "#Read" do
+      it "reads settings and returns true" do
+        expect(Security).to receive(:read_from_locations)
+        expect(Security).to receive(:ReadConsoleShutdown)
+        expect(Security).to receive(:ReadServiceSettings)
+        expect(Security).to receive(:read_pam_settings)
+        expect(Security).to receive(:read_permissions)
+        expect(Security).to receive(:read_polkit_settings)
+
+        expect(Security.Read).to eql(true)
+      end
+    end
+
   end
 end
