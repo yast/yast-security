@@ -2,6 +2,7 @@
 
 require_relative "test_helper"
 require "security/ctrl_alt_del_config"
+require "security/display_manager"
 
 def services_for(names, aliases = {})
   names.map do |n|
@@ -111,6 +112,7 @@ module Yast
     describe "#write_to_locations" do
       before do
         change_scr_root(File.join(DATA_PATH, "system"))
+        expect(Security.dm_name).to eql("kdm")
         Security.read_from_locations
         stub_scr_write
       end

@@ -28,6 +28,7 @@
 require "yast"
 require "yaml"
 require "security/ctrl_alt_del_config"
+require "security/display_manager"
 
 module Yast
   class SecurityClass < Module
@@ -65,8 +66,10 @@ module Yast
       @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
 
+      @display_manager = ::Security::DisplayManager.current
+
       # systemd target, defining ctrl-alt-del behavior
-      @ctrl_alt_del_file = "/etc/systemd/system/ctrl-alt-del.target"
+      @ctrl_alt_del_file = ::Security::CtrlAltDelConfig::SYSTEMD_FILE
 
       # encryption methods supported by pam_unix (bnc#802006)
       @encryption_methods = ["des", "md5", "sha256", "sha512"]
@@ -83,7 +86,6 @@ module Yast
         "FAIL_DELAY"                                => "3",
         "GID_MAX"                                   => "60000",
         "GID_MIN"                                   => "1000",
-        "AllowShutdown"                             => "all",
         "HIBERNATE_SYSTEM"                          => "active_console",
         "PASSWD_ENCRYPTION"                         => "sha512",
         "PASSWD_USE_CRACKLIB"                       => "yes",
@@ -112,7 +114,7 @@ module Yast
         "SMTPD_LISTEN_REMOTE"                       => "no",
         "MANDATORY_SERVICES"                        => "yes",
         "EXTRA_SERVICES"                            => "no"
-      }
+      }.merge(@display_manager.default_settings)
 
       # List of missing mandatory services
       @missing_mandatory_services = []
@@ -148,14 +150,6 @@ module Yast
           "USERDEL_PRECMD",
           "USERDEL_POSTCMD"
         ],
-        ".kde4.kdmrc"               => [
-          "AllowShutdown"
-        ],
-        ".sysconfig.displaymanager" => [
-          "DISPLAYMANAGER_REMOTE_ACCESS",
-          "DISPLAYMANAGER_ROOT_LOGIN_REMOTE",
-          "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"
-        ],
         ".sysconfig.security"       => ["PERMISSION_SECURITY"],
         ".sysconfig.services"       => [
           "DISABLE_RESTART_ON_UPDATE",
@@ -165,7 +159,7 @@ module Yast
         ".sysconfig.clock"          => ["SYSTOHC"],
         ".sysconfig.cron"           => ["SYSLOG_ON_NO_ERROR"],
         ".sysconfig.mail"           => ["SMTPD_LISTEN_REMOTE"]
-      }
+      }.merge(@display_manager.default_locations)
 
       # Default values for /etc/sysctl.conf keys
       @sysctl = {
@@ -291,6 +285,14 @@ module Yast
       @Settings["EXTRA_SERVICES"] = setting
 
       nil
+    end
+
+    def dm_shutdown_key
+      @display_manager.shutdown_key
+    end
+
+    def dm_name
+      @display_manager.name
     end
 
     def inittab_shutdown_configured?

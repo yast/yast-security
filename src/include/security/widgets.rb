@@ -141,12 +141,12 @@ module Yast
             "Label"  => _("M&inimum"),
             "Value"  => "101"
           },
-          "AllowShutdown"                => {
+          Security.dm_shutdown_key          => {
             "Widget"  => "ComboBox",
             # ComboBox label
             "Label"   => _(
-              "&Shutdown Behaviour of KDM Login Manager:"
-            ),
+              "&Shutdown Behaviour of %s Login Manager:"
+            ) % Security.dm_name,
             "Options" => [
               # ComboBox value
               ["Root", _("Only root")],

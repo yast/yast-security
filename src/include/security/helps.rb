@@ -368,8 +368,8 @@ module Yast
 
       # Boot dialog help 3/4
       help += _(
-          "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from KDM.</p>\n"
-        ) +
+          "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from %s.</p>\n"
+        ) % Security.dm_name.to_s.upcase +
         # Boot dialog help 4/4
         _(
           "<p><b>Hibernate System</b>:\n" \
