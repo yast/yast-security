@@ -147,15 +147,8 @@ module Yast
             "Label"   => _(
               "&Shutdown Behaviour of %s Login Manager:"
             ) % Security.dm_name,
-            "Options" => [
-              # ComboBox value
-              ["Root", _("Only root")],
-              # ComboBox value
-              ["All", _("All Users")],
-              # ComboBox value
-              ["None", _("Nobody")]
-            ],
-            "Value"   => "all"
+            "Options" => shutdown_options,
+            "Value"   => Security.dm_default_value
           },
           "HIBERNATE_SYSTEM"             => {
             "Widget"  => "ComboBox",
@@ -271,12 +264,25 @@ module Yast
       }
     end
 
+    def shutdown_labels
+      {
+        "root" => _("Only root"),
+        "all"  => _("All Users"),
+        "none" => _("Nobody")
+      }
+    end
+
     def console_shutdown_options
       ::Security::CtrlAltDelConfig.options.map do |opt|
-        [opt, boot_option_labels[opt]]
+        [opt, boot_option_labels[opt.downcase]]
       end
     end
 
-    # EOF
+    def shutdown_options
+      Security.dm_options.map do |opt|
+        [opt, shutdown_labels[opt.downcase]]
+      end
+    end
+
   end
 end

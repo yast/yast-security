@@ -37,9 +37,15 @@ module Yast
     include ::Security::CtrlAltDelConfig
 
     def main
-      Yast.import "UI"
+      import_modules
+
       textdomain "security"
 
+      init_settings
+    end
+
+    def import_modules
+      Yast.import "UI"
       Yast.import "FileUtils"
       Yast.import "Package"
       Yast.import "Pam"
@@ -47,9 +53,10 @@ module Yast
       Yast.import "Service"
       Yast.import "SystemdService"
       Yast.import "Directory"
-
       Yast.include self, "security/levels.rb"
+    end
 
+    def init_settings
 
       # Services to check
       srv_file = Directory.find_data_file("security/services.yml")
@@ -58,6 +65,7 @@ module Yast
       else
         srv_lists = {}
       end
+
       # These must be running
       @mandatory_services = srv_lists["mandatory_services"] || []
       # It must be an array of arrays (meaning [ [ || ] && && ])
@@ -66,7 +74,7 @@ module Yast
       @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
 
-      @display_manager = ::Security::DisplayManager.current
+      @display_manager = ::Security::DisplayManager.new
 
       # systemd target, defining ctrl-alt-del behavior
       @ctrl_alt_del_file = ::Security::CtrlAltDelConfig::SYSTEMD_FILE
@@ -291,8 +299,16 @@ module Yast
       @display_manager.shutdown_key
     end
 
+    def dm_default_value
+      @display_manager.default_value
+    end
+
     def dm_name
       @display_manager.name
+    end
+
+    def dm_options
+      @display_manager.options
     end
 
     def inittab_shutdown_configured?

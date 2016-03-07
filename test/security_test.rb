@@ -112,7 +112,7 @@ module Yast
     describe "#write_to_locations" do
       before do
         change_scr_root(File.join(DATA_PATH, "system"))
-        expect(Security.dm_name).to eql("kdm")
+        Security.init_settings
         Security.read_from_locations
         stub_scr_write
       end
@@ -553,33 +553,64 @@ module Yast
     end
 
     describe "#read_from_locations" do
-      before do
-        change_scr_root(File.join(DATA_PATH, "system"))
-        allow(SCR).to receive(:Read).with(path(".kde4.kdmrc.AllowShutdown"))
-          .and_return("All")
-        Security.read_from_locations
-      end
-
       after do
         reset_scr_root
       end
 
-      it "sets login definitions based on /etc/login.defs" do
-        expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+      context "when display manager is gdm" do
+        before do
+          change_scr_root(File.join(DATA_PATH, "system"))
+          allow(SCR).to receive(:Read)
+            .with(path(".sysconfig.displaymanager.DISPLAYMANAGER"))
+            .and_return("gdm")
+          Security.init_settings
+          expect(Security.Settings["DISPLAYMANAGER_SHUTDOWN"]).to eql("all")
+          Security.read_from_locations
+        end
+
+        it "sets login definitions based on /etc/login.defs" do
+          expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+        end
+
+        it "sets different settings based on /etc/sysconfig/*" do
+          expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
+          expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
+          expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
+          expect(Security.Settings["DISPLAYMANAGER_SHUTDOWN"]).to eql("all")
+          expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
+          expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
+        end
       end
 
-      it "sets kde4 allow shutdown based on kdmrc" do
-        expect(Security.Settings["AllowShutdown"]).to eql("All")
-      end
+      context "when display manager is kdm" do
+        before do
+          change_scr_root(File.join(DATA_PATH, "system"))
+          allow(SCR).to receive(:Read).with(path(".kde4.kdmrc.AllowShutdown"))
+            .and_return("All")
+          Security.init_settings
+          Security.read_from_locations
+        end
 
-      it "sets different settings based on /etc/sysconfig/*" do
-        expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
-        expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
-        expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
-        expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
-        expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
-      end
+        it "sets login definitions based on /etc/login.defs" do
+          expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+        end
 
+        it "sets login definitions based on /etc/login.defs" do
+          expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+        end
+
+        it "sets kde4 allow shutdown based on kdmrc" do
+          expect(Security.Settings["AllowShutdown"]).to eql("All")
+        end
+
+        it "sets different settings based on /etc/sysconfig/*" do
+          expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
+          expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
+          expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
+          expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
+          expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
+        end
+      end
     end
 
     describe "#Read" do

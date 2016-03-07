@@ -21,27 +21,58 @@
 #
 
 require "yast"
-require 'security/display_manager/base'
-require 'security/display_manager/kdm'
-require 'security/display_manager/gdm'
-
 
 module Security
-  module DisplayManager
+  class DisplayManager
     Yast.import "SCR"
 
     CONFIG_PATH = ".sysconfig.displaymanager.DISPLAYMANAGER"
 
-    DEFAULT = GDM
+    SYSCONFIG_COMMON_LOCATIONS = [
+      "DISPLAYMANAGER_REMOTE_ACCESS",
+      "DISPLAYMANAGER_ROOT_LOGIN_REMOTE",
+      "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"
+    ]
 
-    DISPLAY_MANAGERS = {
-      "kdm" => KDM
-    }
+    attr_reader :name
 
     def self.current
-      @name = Yast::SCR.Read(Yast::Path.new(CONFIG_PATH))
+      Yast::SCR.Read(Yast::Path.new(CONFIG_PATH))
+    end
 
-      (DISPLAY_MANAGERS[@name] || DEFAULT).new(@name)
+    def initialize
+      @name = DisplayManager.current
+    end
+
+    def kdm?
+      @name == "kdm"
+    end
+
+    def default_settings
+      { shutdown_key => default_value }
+    end
+
+    def shutdown_key
+      @shutdown_key ||= kdm? ? "AllowShutdown" : "DISPLAYMANAGER_SHUTDOWN"
+    end
+
+    def default_value
+      @default_value ||= kdm? ? "All" : "all"
+    end
+
+    def options
+      @options ||= kdm? ? ["Root", "All", "None"] : ["root", "all", "none"]
+    end
+
+    def default_locations
+      sysconfig_locations = SYSCONFIG_COMMON_LOCATIONS
+      sysconfig_locations << shutdown_key if !kdm?
+
+      locations = { ".sysconfig.displaymanager" => sysconfig_locations }
+
+      locations[".kde4.kdmrc"] = ["AllowShutdown"] if kdm?
+
+      locations
     end
   end
 end
