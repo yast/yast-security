@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Mar  7 09:51:41 UTC 2016 - knut.anderssen@suse.com
+
+- Removing the need for a diferent branch for different display
+  manager behaviour. (bnc#946889).
+- 3.2.2
+
+-------------------------------------------------------------------
 Fri Feb 26 12:40:29 UTC 2016 - knut.anderssen@suse.com
 
 - Removed "Boot permissions - Interpretation of Ctrl + Alt + Del"
