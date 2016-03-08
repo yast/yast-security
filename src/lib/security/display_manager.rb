@@ -37,11 +37,11 @@ module Security
     attr_reader :name
 
     def self.current
-      Yast::SCR.Read(Yast::Path.new(CONFIG_PATH))
+      @display_manager = DisplayManager.new
     end
 
     def initialize
-      @name = DisplayManager.current
+      @name = Yast::SCR.Read(Yast::Path.new(CONFIG_PATH)).to_s
     end
 
     def kdm?

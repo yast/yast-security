@@ -74,7 +74,7 @@ module Yast
       @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
 
-      @display_manager = ::Security::DisplayManager.new
+      @display_manager = ::Security::DisplayManager.current
 
       # systemd target, defining ctrl-alt-del behavior
       @ctrl_alt_del_file = ::Security::CtrlAltDelConfig::SYSTEMD_FILE
@@ -295,19 +295,21 @@ module Yast
       nil
     end
 
-    def dm_shutdown_key
+    # Delegation methods to @display_manager object
+
+    def display_manager_shutdown_key
       @display_manager.shutdown_key
     end
 
-    def dm_default_value
+    def display_manager_default_value
       @display_manager.default_value
     end
 
-    def dm_name
+    def display_manager_name
       @display_manager.name
     end
 
-    def dm_options
+    def display_manager_options
       @display_manager.options
     end
 

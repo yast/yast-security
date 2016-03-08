@@ -141,14 +141,14 @@ module Yast
             "Label"  => _("M&inimum"),
             "Value"  => "101"
           },
-          Security.dm_shutdown_key          => {
+          Security.display_manager_shutdown_key          => {
             "Widget"  => "ComboBox",
             # ComboBox label
             "Label"   => _(
               "&Shutdown Behaviour of %s Login Manager:"
-            ) % Security.dm_name,
+            ) % Security.display_manager_name,
             "Options" => shutdown_options,
-            "Value"   => Security.dm_default_value
+            "Value"   => Security.display_manager_default_value
           },
           "HIBERNATE_SYSTEM"             => {
             "Widget"  => "ComboBox",
@@ -279,7 +279,7 @@ module Yast
     end
 
     def shutdown_options
-      Security.dm_options.map do |opt|
+      Security.display_manager_options.map do |opt|
         [opt, shutdown_labels[opt.downcase]]
       end
     end
