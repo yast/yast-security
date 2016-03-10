@@ -708,6 +708,11 @@ module Yast
       true
     end
 
+    SYSCTL_VALUES = {
+      "yes" => "1",
+      "no"  => "0"
+    }
+
     # Get all security settings from the first parameter
     # (For use by autoinstallation.)
     # @param [Hash] settings The YCP structure to be imported.
@@ -718,40 +723,19 @@ module Yast
 
       @modified = true
       tmpSettings = {}
-      Builtins.foreach(@Settings) do |k, v|
-        if !Builtins.haskey(settings, k)
-          if Builtins.haskey(@sysctl, k) &&
-              Builtins.haskey(settings, Ops.get(@sysctl2sysconfig, k, ""))
-            val = Ops.get_string(
-              settings,
-              Ops.get(@sysctl2sysconfig, k, ""),
-              ""
-            )
-            if val == "yes"
-              Ops.set(tmpSettings, k, "1")
-            elsif val == "no"
-              Ops.set(tmpSettings, k, "0")
-            else
-              Ops.set(tmpSettings, k, val)
-            end
-          elsif Builtins.haskey(settings, Ops.get(@obsolete_login_defs, k, ""))
-            Ops.set(
-              tmpSettings,
-              k,
-              Ops.get_string(settings, Ops.get(@obsolete_login_defs, k, ""), "")
-            )
-          else
-            Ops.set(tmpSettings, k, v)
-          end
+      @Settings.each do |k, v|
+        if settings.key?(k)
+          tmpSettings[k] = settings[k]
         else
-          Ops.set(tmpSettings, k, Ops.get_string(settings, k, ""))
+          if @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
+            val = settings[@sysctl2sysconfig[k]].to_s
+            tmpSettings[k] = SYSCTL_VALUES[val] || val
+          else
+            tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
+          end
         end
       end
-      @Settings = Convert.convert(
-        Builtins.eval(tmpSettings),
-        :from => "map",
-        :to   => "map <string, string>"
-      )
+      @Settings = tmpSettings
       true
     end
 
