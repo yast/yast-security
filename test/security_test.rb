@@ -626,5 +626,59 @@ module Yast
       end
     end
 
+    describe "#Import" do
+      before do
+        # GENERAL
+        Security.Settings["FAIL_DELAY"]       = "5"
+        Security.Settings["PASS_MIN_LEN"]       = "3"
+        Security.Settings["MANDATORY_SERVICES"] = "no"
+
+        # SYSCTL
+        Security.Settings["net.ipv4.ip_forward"] = "1"
+
+        # OBSOLETE LOGIN DEFS
+        Security.Settings["SYS_UID_MIN"] = 200
+        Security.Settings["SYS_GID_MIN"] = 200
+
+      end
+
+      it "doest not touch current Settings if given settings are empty" do
+        current = Security.Settings.dup
+        expect(Security.Import({})).to eql(true)
+        expect(Security.Settings).to eql(current)
+      end
+
+      context "when Settings keys exists in given settings" do
+        it "imports given settings without modify" do
+          expect(Security.Import("PASS_MIN_LEN" => "8", "MANDATORY_SERVICES" => "yes")).to eql(true)
+          expect(Security.Settings["PASS_MIN_LEN"]).to eql("8")
+          expect(Security.Settings["MANDATORY_SERVICES"]).to eql("yes")
+        end
+      end
+
+      context "when Settings keys do not exist in given settings" do
+        it "imports SYSCTL settings modifying key names and adapting values" do
+          expect(Security.Import("IP_FORWARD" => "no")).to eql(true)
+
+          expect(Security.Settings["net.ipv4.ip_forward"]).to eql("0")
+        end
+
+        it "imports LOGIN DEFS settings transforming key name" do
+          expect(Security.Import("SYSTEM_UID_MIN" => "150")).to eql(true)
+          expect(Security.Import("SYSTEM_GID_MIN" => "150")).to eql(true)
+
+          expect(Security.Settings["SYS_UID_MIN"]).to eql("150")
+          expect(Security.Settings["SYS_GID_MIN"]).to eql("150")
+        end
+
+        it "does not modify not given settings" do
+          expect(Security.Import("EXTRA_SERVICES" => "yes")).to eql(true)
+
+          expect(Security.Settings["FAIL_DELAY"]).to eql("5")
+        end
+
+      end
+
+    end
   end
 end
