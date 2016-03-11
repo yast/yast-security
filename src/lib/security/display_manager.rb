@@ -34,14 +34,17 @@ module Security
       "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"
     ]
 
+    private_class_method :new
     attr_reader :name
 
+
     def self.current
-      @display_manager = DisplayManager.new
+      configured_dm = Yast::SCR.Read(Yast::Path.new(CONFIG_PATH)).to_s
+      configured_dm.empty? ? nil : new(configured_dm)
     end
 
-    def initialize
-      @name = Yast::SCR.Read(Yast::Path.new(CONFIG_PATH)).to_s
+    def initialize(name)
+      @name = name
     end
 
     def kdm?
@@ -49,24 +52,24 @@ module Security
     end
 
     def default_settings
-      { shutdown_key => default_value }
+      { shutdown_var_name => shutdown_default_value }
     end
 
-    def shutdown_key
-      @shutdown_key ||= kdm? ? "AllowShutdown" : "DISPLAYMANAGER_SHUTDOWN"
+    def shutdown_var_name
+      @shutdown_var_name ||= kdm? ? "AllowShutdown" : "DISPLAYMANAGER_SHUTDOWN"
     end
 
-    def default_value
-      @default_value ||= kdm? ? "All" : "all"
+    def shutdown_default_value
+      @shutdown_default_value ||= kdm? ? "All" : "all"
     end
 
-    def options
-      @options ||= kdm? ? ["Root", "All", "None"] : ["root", "all", "none"]
+    def shutdown_options
+      @shutdown_options ||= kdm? ? ["Root", "All", "None"] : ["root", "all", "none"]
     end
 
     def default_locations
       sysconfig_locations = SYSCONFIG_COMMON_LOCATIONS
-      sysconfig_locations << shutdown_key if !kdm?
+      sysconfig_locations << shutdown_var_name if !kdm?
 
       locations = { ".sysconfig.displaymanager" => sysconfig_locations }
 

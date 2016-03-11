@@ -1,8 +1,9 @@
 -------------------------------------------------------------------
 Mon Mar  7 09:51:41 UTC 2016 - knut.anderssen@suse.com
 
-- Removing the need for a diferent branch for different display
-  manager behaviour. (bnc#946889).
+- Added support for multiple display managers (bnc#946889).
+- Replaced testsuite tests by rspec tests.
+- Removed autotools.
 - 3.2.2
 
 -------------------------------------------------------------------

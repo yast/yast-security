@@ -36,6 +36,13 @@ module Yast
     include Yast::Logger
     include ::Security::CtrlAltDelConfig
 
+    SYSCTL_VALUES = {
+      "yes" => "1",
+      "no"  => "0"
+    }
+
+    attr_reader :display_manager
+
     def main
       import_modules
 
@@ -122,7 +129,9 @@ module Yast
         "SMTPD_LISTEN_REMOTE"                       => "no",
         "MANDATORY_SERVICES"                        => "yes",
         "EXTRA_SERVICES"                            => "no"
-      }.merge(@display_manager.default_settings)
+      }
+
+      @Settings.merge!(@display_manager.default_settings) if @display_manager
 
       # List of missing mandatory services
       @missing_mandatory_services = []
@@ -167,7 +176,9 @@ module Yast
         ".sysconfig.clock"          => ["SYSTOHC"],
         ".sysconfig.cron"           => ["SYSLOG_ON_NO_ERROR"],
         ".sysconfig.mail"           => ["SMTPD_LISTEN_REMOTE"]
-      }.merge(@display_manager.default_locations)
+      }
+
+      @Locations.merge!(@display_manager.default_locations) if @display_manager
 
       # Default values for /etc/sysctl.conf keys
       @sysctl = {
@@ -293,24 +304,6 @@ module Yast
       @Settings["EXTRA_SERVICES"] = setting
 
       nil
-    end
-
-    # Delegation methods to @display_manager object
-
-    def display_manager_shutdown_key
-      @display_manager.shutdown_key
-    end
-
-    def display_manager_default_value
-      @display_manager.default_value
-    end
-
-    def display_manager_name
-      @display_manager.name
-    end
-
-    def display_manager_options
-      @display_manager.options
     end
 
     def inittab_shutdown_configured?
@@ -707,11 +700,6 @@ module Yast
       @modified = false
       true
     end
-
-    SYSCTL_VALUES = {
-      "yes" => "1",
-      "no"  => "0"
-    }
 
     # Get all security settings from the first parameter
     # (For use by autoinstallation.)

@@ -557,22 +557,31 @@ module Yast
         reset_scr_root
       end
 
+      before do
+        change_scr_root(File.join(DATA_PATH, "system"))
+        allow(SCR).to receive(:Read)
+          .with(path(".sysconfig.displaymanager.DISPLAYMANAGER"))
+          .and_return(display_manager)
+      end
+
       context "when display manager is gdm" do
+        let(:display_manager) { "gdm" }
+
         before do
-          change_scr_root(File.join(DATA_PATH, "system"))
-          allow(SCR).to receive(:Read)
-            .with(path(".sysconfig.displaymanager.DISPLAYMANAGER"))
-            .and_return("gdm")
           Security.init_settings
+        end
+
+        it "allows everybody to shutdown by default" do
           expect(Security.Settings["DISPLAYMANAGER_SHUTDOWN"]).to eql("all")
-          Security.read_from_locations
         end
 
         it "sets login definitions based on /etc/login.defs" do
+          Security.read_from_locations
           expect(Security.Settings["FAIL_DELAY"]).to eql("3")
         end
 
         it "sets different settings based on /etc/sysconfig/*" do
+          Security.read_from_locations
           expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
           expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
           expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
@@ -583,8 +592,9 @@ module Yast
       end
 
       context "when display manager is kdm" do
+        let(:display_manager) { "kdm" }
+
         before do
-          change_scr_root(File.join(DATA_PATH, "system"))
           allow(SCR).to receive(:Read).with(path(".kde4.kdmrc.AllowShutdown"))
             .and_return("All")
           Security.init_settings

@@ -83,6 +83,8 @@ module Yast
     def initialize_security_widgets(include_target)
       textdomain "security"
 
+      @display_manager = Security.display_manager
+
       # All widgets are here
       @WIDGETS =
         #     "" : $[
@@ -140,15 +142,6 @@ module Yast
             # IntField label
             "Label"  => _("M&inimum"),
             "Value"  => "101"
-          },
-          Security.display_manager_shutdown_key          => {
-            "Widget"  => "ComboBox",
-            # ComboBox label
-            "Label"   => _(
-              "&Shutdown Behaviour of %s Login Manager:"
-            ) % Security.display_manager_name,
-            "Options" => shutdown_options,
-            "Value"   => Security.display_manager_default_value
           },
           "HIBERNATE_SYSTEM"             => {
             "Widget"  => "ComboBox",
@@ -254,6 +247,22 @@ module Yast
             "Value"  => "100"
           }
         }
+
+      @WIDGETS.merge!(
+        @display_manager.shutdown_var_name => shutdown_login_manager_widget
+      ) if @display_manager
+    end
+
+    def shutdown_login_manager_widget
+      {
+        "Widget"  => "ComboBox",
+        # ComboBox label
+        "Label"   => _(
+          "&Shutdown Behaviour of %s Login Manager:"
+        ) % @display_manager.name,
+        "Options" => shutdown_options,
+        "Value"   => @display_manager.shutdown_default_value
+      }
     end
 
     def boot_option_labels
@@ -279,10 +288,9 @@ module Yast
     end
 
     def shutdown_options
-      Security.display_manager_options.map do |opt|
+      @display_manager.shutdown_options.map do |opt|
         [opt, shutdown_labels[opt.downcase]]
       end
     end
-
   end
 end
