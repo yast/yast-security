@@ -220,6 +220,9 @@ module Yast
       let(:target_link) { "/usr/lib/systemd/system/poweroff.target" }
 
       context "when systemd is installed" do
+        before do
+          allow(Package).to receive(:Installed).with("systemd") { true }
+        end
 
         context "on a non s390 architecture" do
           before do
