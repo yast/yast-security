@@ -25,8 +25,10 @@ Source0:        %{name}-%{version}.tar.bz2
 
 Group:          System/YaST
 License:        GPL-2.0
-BuildRequires:	doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam yast2-testsuite
+BuildRequires:	doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam
 BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  rubygem(yast-rake) >= 0.2.5
+BuildRequires:  rubygem(rspec)
 # Directory.find_data_file
 BuildRequires:	yast2 >= yast2-3.1.131
 
@@ -56,7 +58,9 @@ The YaST2 component for security settings configuration.
 %setup -n %{name}-%{version}
 
 %build
-%yast_build
+
+%check
+%yast_check
 
 %install
 %yast_install
