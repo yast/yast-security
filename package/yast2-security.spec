@@ -25,31 +25,32 @@ Source0:        %{name}-%{version}.tar.bz2
 
 Group:          System/YaST
 License:        GPL-2.0
-BuildRequires:	doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam
+BuildRequires:  doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam
 BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  yast2-mail
 BuildRequires:  rubygem(yast-rake) >= 0.2.5
 BuildRequires:  rubygem(rspec)
 # Directory.find_data_file
-BuildRequires:	yast2 >= yast2-3.1.131
+BuildRequires:  yast2 >= yast2-3.1.131
 
 # new Pam.ycp API
-Requires:	yast2-pam >= 2.14.0
+Requires:       yast2-pam >= 2.14.0
 
 # etc_sysctl_conf.scr
 # Wizard::SetDesktopTitleAndIcon
 # Directory.find_data_file
-Requires:	yast2 >= yast2-3.1.131
+Requires:       yast2 >= yast2-3.1.131
 
-Provides:	y2c_sec yast2-config-security
-Obsoletes:	y2c_sec yast2-config-security
-Provides:	yast2-trans-security y2t_sec
-Obsoletes:	yast2-trans-security y2t_sec
+Provides:       y2c_sec yast2-config-security
+Obsoletes:      y2c_sec yast2-config-security
+Provides:       yast2-trans-security y2t_sec
+Obsoletes:      yast2-trans-security y2t_sec
 
 BuildArchitectures: noarch
 
 Requires:       yast2-ruby-bindings >= 1.0.0
 
-Summary:	YaST2 - Security Configuration
+Summary:        YaST2 - Security Configuration
 
 %description
 The YaST2 component for security settings configuration.
