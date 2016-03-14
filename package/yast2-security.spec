@@ -50,6 +50,13 @@ BuildArchitectures: noarch
 
 Requires:       yast2-ruby-bindings >= 1.0.0
 
+# Unfortunately we cannot move this to macros.yast,
+# bcond within macros are ignored by osc/OBS.
+%bcond_with yast_run_ci_tests
+%if %{with yast_run_ci_tests}
+BuildRequires: rubygem(yast-rake-ci)
+%endif
+
 Summary:        YaST2 - Security Configuration
 
 %description
