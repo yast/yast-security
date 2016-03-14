@@ -284,13 +284,13 @@ module Yast
 
     def console_shutdown_options
       ::Security::CtrlAltDelConfig.options.map do |opt|
-        [opt, BOOT_OPTION_LABELS[opt.downcase]]
+        [opt, _(BOOT_OPTION_LABELS[opt.downcase])]
       end
     end
 
     def shutdown_options
       @display_manager.shutdown_options.map do |opt|
-        [opt, SHUTDOWN_LABELS[opt.downcase]]
+        [opt, _(SHUTDOWN_LABELS[opt.downcase])]
       end
     end
   end
