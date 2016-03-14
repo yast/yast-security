@@ -2,6 +2,7 @@
 
 require_relative "test_helper"
 require "security/ctrl_alt_del_config"
+require "security/display_manager"
 
 def services_for(names, aliases = {})
   names.map do |n|
@@ -111,6 +112,7 @@ module Yast
     describe "#write_to_locations" do
       before do
         change_scr_root(File.join(DATA_PATH, "system"))
+        Security.init_settings
         Security.read_from_locations
         stub_scr_write
       end
@@ -218,6 +220,9 @@ module Yast
       let(:target_link) { "/usr/lib/systemd/system/poweroff.target" }
 
       context "when systemd is installed" do
+        before do
+          allow(Package).to receive(:Installed).with("systemd") { true }
+        end
 
         context "on a non s390 architecture" do
           before do
@@ -551,33 +556,74 @@ module Yast
     end
 
     describe "#read_from_locations" do
-      before do
-        change_scr_root(File.join(DATA_PATH, "system"))
-        allow(SCR).to receive(:Read).with(path(".kde4.kdmrc.AllowShutdown"))
-          .and_return("All")
-        Security.read_from_locations
-      end
-
       after do
         reset_scr_root
       end
 
-      it "sets login definitions based on /etc/login.defs" do
-        expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+      before do
+        change_scr_root(File.join(DATA_PATH, "system"))
+        allow(SCR).to receive(:Read)
+          .with(path(".sysconfig.displaymanager.DISPLAYMANAGER"))
+          .and_return(display_manager)
       end
 
-      it "sets kde4 allow shutdown based on kdmrc" do
-        expect(Security.Settings["AllowShutdown"]).to eql("All")
+      context "when display manager is gdm" do
+        let(:display_manager) { "gdm" }
+
+        before do
+          Security.init_settings
+        end
+
+        it "allows everybody to shutdown by default" do
+          expect(Security.Settings["DISPLAYMANAGER_SHUTDOWN"]).to eql("all")
+        end
+
+        it "sets login definitions based on /etc/login.defs" do
+          Security.read_from_locations
+          expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+        end
+
+        it "sets different settings based on /etc/sysconfig/*" do
+          Security.read_from_locations
+          expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
+          expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
+          expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
+          expect(Security.Settings["DISPLAYMANAGER_SHUTDOWN"]).to eql("all")
+          expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
+          expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
+        end
       end
 
-      it "sets different settings based on /etc/sysconfig/*" do
-        expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
-        expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
-        expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
-        expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
-        expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
-      end
+      context "when display manager is kdm" do
+        let(:display_manager) { "kdm" }
 
+        before do
+          allow(SCR).to receive(:Read).with(path(".kde4.kdmrc.AllowShutdown"))
+            .and_return("All")
+          Security.init_settings
+          Security.read_from_locations
+        end
+
+        it "sets login definitions based on /etc/login.defs" do
+          expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+        end
+
+        it "sets login definitions based on /etc/login.defs" do
+          expect(Security.Settings["FAIL_DELAY"]).to eql("3")
+        end
+
+        it "sets kde4 allow shutdown based on kdmrc" do
+          expect(Security.Settings["AllowShutdown"]).to eql("All")
+        end
+
+        it "sets different settings based on /etc/sysconfig/*" do
+          expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
+          expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
+          expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
+          expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
+          expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
+        end
+      end
     end
 
     describe "#Read" do
@@ -593,5 +639,59 @@ module Yast
       end
     end
 
+    describe "#Import" do
+      before do
+        # GENERAL
+        Security.Settings["FAIL_DELAY"]       = "5"
+        Security.Settings["PASS_MIN_LEN"]       = "3"
+        Security.Settings["MANDATORY_SERVICES"] = "no"
+
+        # SYSCTL
+        Security.Settings["net.ipv4.ip_forward"] = "1"
+
+        # OBSOLETE LOGIN DEFS
+        Security.Settings["SYS_UID_MIN"] = 200
+        Security.Settings["SYS_GID_MIN"] = 200
+
+      end
+
+      it "doest not touch current Settings if given settings are empty" do
+        current = Security.Settings.dup
+        expect(Security.Import({})).to eql(true)
+        expect(Security.Settings).to eql(current)
+      end
+
+      context "when Settings keys exists in given settings" do
+        it "imports given settings without modify" do
+          expect(Security.Import("PASS_MIN_LEN" => "8", "MANDATORY_SERVICES" => "yes")).to eql(true)
+          expect(Security.Settings["PASS_MIN_LEN"]).to eql("8")
+          expect(Security.Settings["MANDATORY_SERVICES"]).to eql("yes")
+        end
+      end
+
+      context "when Settings keys do not exist in given settings" do
+        it "imports SYSCTL settings modifying key names and adapting values" do
+          expect(Security.Import("IP_FORWARD" => "no")).to eql(true)
+
+          expect(Security.Settings["net.ipv4.ip_forward"]).to eql("0")
+        end
+
+        it "imports LOGIN DEFS settings transforming key name" do
+          expect(Security.Import("SYSTEM_UID_MIN" => "150")).to eql(true)
+          expect(Security.Import("SYSTEM_GID_MIN" => "150")).to eql(true)
+
+          expect(Security.Settings["SYS_UID_MIN"]).to eql("150")
+          expect(Security.Settings["SYS_GID_MIN"]).to eql("150")
+        end
+
+        it "does not modify not given settings" do
+          expect(Security.Import("EXTRA_SERVICES" => "yes")).to eql(true)
+
+          expect(Security.Settings["FAIL_DELAY"]).to eql("5")
+        end
+
+      end
+
+    end
   end
 end

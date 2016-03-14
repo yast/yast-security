@@ -83,6 +83,8 @@ module Yast
     def initialize_security_widgets(include_target)
       textdomain "security"
 
+      @display_manager = Security.display_manager
+
       # All widgets are here
       @WIDGETS =
         #     "" : $[
@@ -140,22 +142,6 @@ module Yast
             # IntField label
             "Label"  => _("M&inimum"),
             "Value"  => "101"
-          },
-          "AllowShutdown"                => {
-            "Widget"  => "ComboBox",
-            # ComboBox label
-            "Label"   => _(
-              "&Shutdown Behaviour of KDM Login Manager:"
-            ),
-            "Options" => [
-              # ComboBox value
-              ["Root", _("Only root")],
-              # ComboBox value
-              ["All", _("All Users")],
-              # ComboBox value
-              ["None", _("Nobody")]
-            ],
-            "Value"   => "all"
           },
           "HIBERNATE_SYSTEM"             => {
             "Widget"  => "ComboBox",
@@ -261,6 +247,22 @@ module Yast
             "Value"  => "100"
           }
         }
+
+      @WIDGETS.merge!(
+        @display_manager.shutdown_var_name => shutdown_login_manager_widget
+      ) if @display_manager
+    end
+
+    def shutdown_login_manager_widget
+      {
+        "Widget"  => "ComboBox",
+        # ComboBox label
+        "Label"   => _(
+          "&Shutdown Behaviour of %s Login Manager:"
+        ) % @display_manager.name,
+        "Options" => shutdown_options,
+        "Value"   => @display_manager.shutdown_default_value
+      }
     end
 
     def boot_option_labels
@@ -271,12 +273,24 @@ module Yast
       }
     end
 
+    def shutdown_labels
+      {
+        "root" => _("Only root"),
+        "all"  => _("All Users"),
+        "none" => _("Nobody")
+      }
+    end
+
     def console_shutdown_options
       ::Security::CtrlAltDelConfig.options.map do |opt|
-        [opt, boot_option_labels[opt]]
+        [opt, boot_option_labels[opt.downcase]]
       end
     end
 
-    # EOF
+    def shutdown_options
+      @display_manager.shutdown_options.map do |opt|
+        [opt, shutdown_labels[opt.downcase]]
+      end
+    end
   end
 end
