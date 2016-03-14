@@ -362,7 +362,7 @@ module Yast
             # e.g.: "postfix" + " or " + "sendmail"
             group = Builtins.mergestring(l, _(" or "))
             srvs = Ops.add(Ops.add(srvs, group), "<BR>")
-          end 
+          end
 
 
           # richtext message: %1 = runlevel ("3" or "5"), %2 = list of services
@@ -571,18 +571,15 @@ module Yast
     end
 
     def vbox_boot_permissions
-      vbox = VBox(VSpacing(1), settings2widget("CONSOLE_SHUTDOWN"))
-
-      if @display_manager
-        vbox << VSpacing(1.0)
-        vbox << settings2widget(@display_manager.shutdown_var_name)
-      end
-
-      vbox << VSpacing(1.0)
-      vbox << settings2widget("HIBERNATE_SYSTEM")
-      vbox << VSpacing(1)
-
-      vbox
+      VBox(
+        VSpacing(1),
+        settings2widget("CONSOLE_SHUTDOWN"),
+        @display_manager ? VSpacing(1.0) : Empty(),
+        @display_manager ? settings2widget(@display_manager.shutdown_var_name) : Empty(),
+        VSpacing(1.0),
+        settings2widget("HIBERNATE_SYSTEM"),
+        VSpacing(1)
+      )
     end
 
     # Boot dialog

@@ -80,6 +80,21 @@
 # @return [Hash] all widgets
 module Yast
   module SecurityWidgetsInclude
+    include Yast::I18n
+    extend Yast::I18n
+
+    BOOT_OPTION_LABELS = {
+      "ignore" => N_("Ignore"),
+      "reboot" => N_("Reboot"),
+      "halt"   => N_("Halt")
+    }
+
+    SHUTDOWN_LABELS = {
+      "root" => N_("Only root"),
+      "all"  => N_("All Users"),
+      "none" => N_("Nobody")
+    }
+
     def initialize_security_widgets(include_target)
       textdomain "security"
 
@@ -257,6 +272,8 @@ module Yast
       {
         "Widget"  => "ComboBox",
         # ComboBox label
+        # TRANSLATORS: %s will be the configured display manager usually: GDM or KDM,
+        # but could be XDM,WDM,ENTRANCE,CONSOLE
         "Label"   => _(
           "&Shutdown Behaviour of %s Login Manager:"
         ) % @display_manager.name,
@@ -265,31 +282,15 @@ module Yast
       }
     end
 
-    def boot_option_labels
-      {
-        "ignore" => _("Ignore"),
-        "reboot" => _("Reboot"),
-        "halt"   => _("Halt")
-      }
-    end
-
-    def shutdown_labels
-      {
-        "root" => _("Only root"),
-        "all"  => _("All Users"),
-        "none" => _("Nobody")
-      }
-    end
-
     def console_shutdown_options
       ::Security::CtrlAltDelConfig.options.map do |opt|
-        [opt, boot_option_labels[opt.downcase]]
+        [opt, BOOT_OPTION_LABELS[opt.downcase]]
       end
     end
 
     def shutdown_options
       @display_manager.shutdown_options.map do |opt|
-        [opt, shutdown_labels[opt.downcase]]
+        [opt, SHUTDOWN_LABELS[opt.downcase]]
       end
     end
   end
