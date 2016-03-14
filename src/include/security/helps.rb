@@ -33,6 +33,8 @@ module Yast
     def initialize_security_helps(include_target)
       textdomain "security"
 
+      @display_manager = Security.display_manager
+
       # All helps are here
       @HELPS = {
         # Read dialog help 1/2
@@ -366,16 +368,18 @@ module Yast
           "combination. %s</p>"
       ) % details
 
-      # Boot dialog help 3/4
-      help += _(
-          "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from KDM.</p>\n"
-        ) +
-        # Boot dialog help 4/4
-        _(
-          "<p><b>Hibernate System</b>:\n" \
-            "Set the conditions for allowing users to hibernate the system. By default, user on active console has such right.\n" \
-            "Other options are allowing the action to any user or requiring authentication in all cases.</p>\n"
-        )
+      if @display_manager
+        # Boot dialog help 3/4
+        help += _(
+            "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from %s.</p>\n"
+          ) % @display_manager.name.upcase +
+          # Boot dialog help 4/4
+          _(
+            "<p><b>Hibernate System</b>:\n" \
+              "Set the conditions for allowing users to hibernate the system. By default, user on active console has such right.\n" \
+              "Other options are allowing the action to any user or requiring authentication in all cases.</p>\n"
+          )
+      end
 
       help
       # EOF

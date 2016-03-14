@@ -41,6 +41,8 @@ module Yast
       Yast.include include_target, "security/helps.rb"
       Yast.include include_target, "security/routines.rb"
 
+      @display_manager = Security.display_manager
+
       @tree_dialogs = [
         "main",
         "overview",
@@ -568,6 +570,21 @@ module Yast
       deep_copy(ret)
     end
 
+    def vbox_boot_permissions
+      vbox = VBox(VSpacing(1), settings2widget("CONSOLE_SHUTDOWN"))
+
+      if @display_manager
+        vbox << VSpacing(1.0)
+        vbox << settings2widget(@display_manager.shutdown_var_name)
+      end
+
+      vbox << VSpacing(1.0)
+      vbox << settings2widget("HIBERNATE_SYSTEM")
+      vbox << VSpacing(1)
+
+      vbox
+    end
+
     # Boot dialog
     # @return dialog result
     def BootDialog
@@ -587,15 +604,7 @@ module Yast
                 _("Boot Permissions"),
                 HBox(
                   HSpacing(3),
-                  VBox(
-                    VSpacing(1),
-                    settings2widget("CONSOLE_SHUTDOWN"),
-                    VSpacing(1.0),
-                    settings2widget("AllowShutdown"),
-                    VSpacing(1.0),
-                    settings2widget("HIBERNATE_SYSTEM"),
-                    VSpacing(1)
-                  ),
+                  vbox_boot_permissions,
                   HSpacing(3)
                 )
               ),
@@ -650,7 +659,7 @@ module Yast
 
       if ret == :next || Builtins.contains(@tree_dialogs, ret)
         widget2settings("CONSOLE_SHUTDOWN")
-        widget2settings("AllowShutdown")
+        widget2settings(@display_manager.shutdown_var_name) if @display_manager
         widget2settings("HIBERNATE_SYSTEM")
       end
 

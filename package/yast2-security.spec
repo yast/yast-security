@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        3.2.1
+Version:        3.2.2
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -25,29 +25,39 @@ Source0:        %{name}-%{version}.tar.bz2
 
 Group:          System/YaST
 License:        GPL-2.0
-BuildRequires:	doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam yast2-testsuite
+BuildRequires:  doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam
 BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  yast2-mail
+BuildRequires:  rubygem(yast-rake) >= 0.2.5
+BuildRequires:  rubygem(rspec)
 # Directory.find_data_file
-BuildRequires:	yast2 >= yast2-3.1.131
+BuildRequires:  yast2 >= yast2-3.1.131
 
 # new Pam.ycp API
-Requires:	yast2-pam >= 2.14.0
+Requires:       yast2-pam >= 2.14.0
 
 # etc_sysctl_conf.scr
 # Wizard::SetDesktopTitleAndIcon
 # Directory.find_data_file
-Requires:	yast2 >= yast2-3.1.131
+Requires:       yast2 >= yast2-3.1.131
 
-Provides:	y2c_sec yast2-config-security
-Obsoletes:	y2c_sec yast2-config-security
-Provides:	yast2-trans-security y2t_sec
-Obsoletes:	yast2-trans-security y2t_sec
+Provides:       y2c_sec yast2-config-security
+Obsoletes:      y2c_sec yast2-config-security
+Provides:       yast2-trans-security y2t_sec
+Obsoletes:      yast2-trans-security y2t_sec
 
 BuildArchitectures: noarch
 
 Requires:       yast2-ruby-bindings >= 1.0.0
 
-Summary:	YaST2 - Security Configuration
+# Unfortunately we cannot move this to macros.yast,
+# bcond within macros are ignored by osc/OBS.
+%bcond_with yast_run_ci_tests
+%if %{with yast_run_ci_tests}
+BuildRequires: rubygem(yast-rake-ci)
+%endif
+
+Summary:        YaST2 - Security Configuration
 
 %description
 The YaST2 component for security settings configuration.
@@ -56,7 +66,9 @@ The YaST2 component for security settings configuration.
 %setup -n %{name}-%{version}
 
 %build
-%yast_build
+
+%check
+%yast_check
 
 %install
 %yast_install
