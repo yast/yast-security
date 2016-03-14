@@ -28,6 +28,7 @@
 require "yast"
 require "yaml"
 require "security/ctrl_alt_del_config"
+require "security/display_manager"
 
 module Yast
   class SecurityClass < Module
@@ -35,10 +36,23 @@ module Yast
     include Yast::Logger
     include ::Security::CtrlAltDelConfig
 
+    SYSCTL_VALUES = {
+      "yes" => "1",
+      "no"  => "0"
+    }
+
+    attr_reader :display_manager
+
     def main
-      Yast.import "UI"
+      import_modules
+
       textdomain "security"
 
+      init_settings
+    end
+
+    def import_modules
+      Yast.import "UI"
       Yast.import "FileUtils"
       Yast.import "Package"
       Yast.import "Pam"
@@ -46,9 +60,10 @@ module Yast
       Yast.import "Service"
       Yast.import "SystemdService"
       Yast.import "Directory"
-
       Yast.include self, "security/levels.rb"
+    end
 
+    def init_settings
 
       # Services to check
       srv_file = Directory.find_data_file("security/services.yml")
@@ -57,6 +72,7 @@ module Yast
       else
         srv_lists = {}
       end
+
       # These must be running
       @mandatory_services = srv_lists["mandatory_services"] || []
       # It must be an array of arrays (meaning [ [ || ] && && ])
@@ -65,8 +81,10 @@ module Yast
       @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
 
+      @display_manager = ::Security::DisplayManager.current
+
       # systemd target, defining ctrl-alt-del behavior
-      @ctrl_alt_del_file = "/etc/systemd/system/ctrl-alt-del.target"
+      @ctrl_alt_del_file = ::Security::CtrlAltDelConfig::SYSTEMD_FILE
 
       # encryption methods supported by pam_unix (bnc#802006)
       @encryption_methods = ["des", "md5", "sha256", "sha512"]
@@ -83,7 +101,6 @@ module Yast
         "FAIL_DELAY"                                => "3",
         "GID_MAX"                                   => "60000",
         "GID_MIN"                                   => "1000",
-        "AllowShutdown"                             => "all",
         "HIBERNATE_SYSTEM"                          => "active_console",
         "PASSWD_ENCRYPTION"                         => "sha512",
         "PASSWD_USE_CRACKLIB"                       => "yes",
@@ -113,6 +130,8 @@ module Yast
         "MANDATORY_SERVICES"                        => "yes",
         "EXTRA_SERVICES"                            => "no"
       }
+
+      @Settings.merge!(@display_manager.default_settings) if @display_manager
 
       # List of missing mandatory services
       @missing_mandatory_services = []
@@ -148,14 +167,6 @@ module Yast
           "USERDEL_PRECMD",
           "USERDEL_POSTCMD"
         ],
-        ".kde4.kdmrc"               => [
-          "AllowShutdown"
-        ],
-        ".sysconfig.displaymanager" => [
-          "DISPLAYMANAGER_REMOTE_ACCESS",
-          "DISPLAYMANAGER_ROOT_LOGIN_REMOTE",
-          "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"
-        ],
         ".sysconfig.security"       => ["PERMISSION_SECURITY"],
         ".sysconfig.services"       => [
           "DISABLE_RESTART_ON_UPDATE",
@@ -166,6 +177,8 @@ module Yast
         ".sysconfig.cron"           => ["SYSLOG_ON_NO_ERROR"],
         ".sysconfig.mail"           => ["SMTPD_LISTEN_REMOTE"]
       }
+
+      @Locations.merge!(@display_manager.default_locations) if @display_manager
 
       # Default values for /etc/sysctl.conf keys
       @sysctl = {
@@ -698,40 +711,19 @@ module Yast
 
       @modified = true
       tmpSettings = {}
-      Builtins.foreach(@Settings) do |k, v|
-        if !Builtins.haskey(settings, k)
-          if Builtins.haskey(@sysctl, k) &&
-              Builtins.haskey(settings, Ops.get(@sysctl2sysconfig, k, ""))
-            val = Ops.get_string(
-              settings,
-              Ops.get(@sysctl2sysconfig, k, ""),
-              ""
-            )
-            if val == "yes"
-              Ops.set(tmpSettings, k, "1")
-            elsif val == "no"
-              Ops.set(tmpSettings, k, "0")
-            else
-              Ops.set(tmpSettings, k, val)
-            end
-          elsif Builtins.haskey(settings, Ops.get(@obsolete_login_defs, k, ""))
-            Ops.set(
-              tmpSettings,
-              k,
-              Ops.get_string(settings, Ops.get(@obsolete_login_defs, k, ""), "")
-            )
-          else
-            Ops.set(tmpSettings, k, v)
-          end
+      @Settings.each do |k, v|
+        if settings.key?(k)
+          tmpSettings[k] = settings[k]
         else
-          Ops.set(tmpSettings, k, Ops.get_string(settings, k, ""))
+          if @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
+            val = settings[@sysctl2sysconfig[k]].to_s
+            tmpSettings[k] = SYSCTL_VALUES[val] || val
+          else
+            tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
+          end
         end
       end
-      @Settings = Convert.convert(
-        Builtins.eval(tmpSettings),
-        :from => "map",
-        :to   => "map <string, string>"
-      )
+      @Settings = tmpSettings
       true
     end
 

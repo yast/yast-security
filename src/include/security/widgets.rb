@@ -80,8 +80,25 @@
 # @return [Hash] all widgets
 module Yast
   module SecurityWidgetsInclude
+    include Yast::I18n
+    extend Yast::I18n
+
+    BOOT_OPTION_LABELS = {
+      "ignore" => N_("Ignore"),
+      "reboot" => N_("Reboot"),
+      "halt"   => N_("Halt")
+    }
+
+    SHUTDOWN_LABELS = {
+      "root" => N_("Only root"),
+      "all"  => N_("All Users"),
+      "none" => N_("Nobody")
+    }
+
     def initialize_security_widgets(include_target)
       textdomain "security"
+
+      @display_manager = Security.display_manager
 
       # All widgets are here
       @WIDGETS =
@@ -140,22 +157,6 @@ module Yast
             # IntField label
             "Label"  => _("M&inimum"),
             "Value"  => "101"
-          },
-          "AllowShutdown"                => {
-            "Widget"  => "ComboBox",
-            # ComboBox label
-            "Label"   => _(
-              "&Shutdown Behaviour of KDM Login Manager:"
-            ),
-            "Options" => [
-              # ComboBox value
-              ["Root", _("Only root")],
-              # ComboBox value
-              ["All", _("All Users")],
-              # ComboBox value
-              ["None", _("Nobody")]
-            ],
-            "Value"   => "all"
           },
           "HIBERNATE_SYSTEM"             => {
             "Widget"  => "ComboBox",
@@ -261,22 +262,36 @@ module Yast
             "Value"  => "100"
           }
         }
+
+      @WIDGETS.merge!(
+        @display_manager.shutdown_var_name => shutdown_login_manager_widget
+      ) if @display_manager
     end
 
-    def boot_option_labels
+    def shutdown_login_manager_widget
       {
-        "ignore" => _("Ignore"),
-        "reboot" => _("Reboot"),
-        "halt"   => _("Halt")
+        "Widget"  => "ComboBox",
+        # ComboBox label
+        # TRANSLATORS: %s will be the configured display manager usually: GDM or KDM,
+        # but could be XDM,WDM,ENTRANCE,CONSOLE
+        "Label"   => _(
+          "&Shutdown Behaviour of %s Login Manager:"
+        ) % @display_manager.name,
+        "Options" => shutdown_options,
+        "Value"   => @display_manager.shutdown_default_value
       }
     end
 
     def console_shutdown_options
       ::Security::CtrlAltDelConfig.options.map do |opt|
-        [opt, boot_option_labels[opt]]
+        [opt, _(BOOT_OPTION_LABELS[opt.downcase])]
       end
     end
 
-    # EOF
+    def shutdown_options
+      @display_manager.shutdown_options.map do |opt|
+        [opt, _(SHUTDOWN_LABELS[opt.downcase])]
+      end
+    end
   end
 end
