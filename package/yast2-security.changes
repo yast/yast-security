@@ -51,7 +51,7 @@ Fri Jun 12 16:27:53 UTC 2015 - ancor@suse.com
 Thu Jun 11 16:00:10 UTC 2015 - ancor@suse.com
 
 - Removed references to runlevels (obsolete). Only current systemd
-  target is analyzed.
+  target is analyzed. (fate#318425, bnc#941620)
 - List of mandatory and optional services moved to a YAML file.
 
 -------------------------------------------------------------------
