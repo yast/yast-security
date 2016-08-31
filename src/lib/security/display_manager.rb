@@ -26,7 +26,7 @@ module Security
   class DisplayManager
     Yast.import "SCR"
 
-    CONFIG_PATH = ".sysconfig.displaymanager.DISPLAYMANAGER"
+    CONFIG_PATH = ".sysconfig.displaymanager.DISPLAYMANAGER".freeze
 
     SYSCONFIG_COMMON_LOCATIONS = [
       "DISPLAYMANAGER_REMOTE_ACCESS",
@@ -36,7 +36,6 @@ module Security
 
     private_class_method :new
     attr_reader :name
-
 
     def self.current
       configured_dm = Yast::SCR.Read(Yast::Path.new(CONFIG_PATH)).to_s

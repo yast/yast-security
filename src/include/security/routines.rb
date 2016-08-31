@@ -68,7 +68,7 @@ module Yast
       widget = Ops.get_string(m, "Widget", "")
       value = Ops.get(Security.Settings, _ID, "")
       minval = Ops.get_integer(m, "MinValue", 0)
-      maxval = Ops.get_integer(m, "MaxValue", 2147483647)
+      maxval = Ops.get_integer(m, "MaxValue", 2_147_483_647)
 
       # "Widget" == "CheckBox"
       if widget == "CheckBox"
@@ -89,7 +89,7 @@ module Yast
       # "Widget" == "IntField"
       if widget == "IntField"
         intval = Builtins.tointeger(value)
-        intval = 0 if intval == nil
+        intval = 0 if intval.nil?
         return VBox(
           Left(IntField(Id(_ID), label, minval, maxval, intval)),
           VSeparator()
@@ -112,7 +112,7 @@ module Yast
         # string|list it
         Builtins.y2debug("li=%1 (%2)", li, i)
         it = Ops.get(li, i)
-        it = "" if it == nil
+        it = "" if it.nil?
         Builtins.y2debug("it=%1", it)
         id_t = ""
         id_s = ""
@@ -120,7 +120,7 @@ module Yast
           id_t = Convert.to_string(it)
           id_s = Convert.to_string(it)
         else
-          it_list = Convert.convert(it, :from => "any", :to => "list <string>")
+          it_list = Convert.convert(it, from: "any", to: "list <string>")
 
           id_t = Ops.get(it_list, 0, "")
           id_s = Ops.get(it_list, 1, "")
@@ -141,13 +141,13 @@ module Yast
       opt_t = nil
       opt_t = Opt(:editable) if Ops.get_string(m, "Editable", "no") == "yes"
       if Ops.get_string(m, "Notify", "no") == "yes"
-        opt_t = opt_t == nil ? Opt(:notify) : Builtins.add(opt_t, :notify)
+        opt_t = opt_t.nil? ? Opt(:notify) : Builtins.add(opt_t, :notify)
       end
-      if opt_t != nil
-        combobox = ComboBox(Id(_ID), opt_t, label, combo)
-      else
-        combobox = ComboBox(Id(_ID), label, combo)
-      end
+      combobox = if !opt_t.nil?
+                   ComboBox(Id(_ID), opt_t, label, combo)
+                 else
+                   ComboBox(Id(_ID), label, combo)
+                 end
 
       VBox(Left(combobox), VSeparator())
     end
@@ -158,11 +158,11 @@ module Yast
       ret = UI.QueryWidget(Id(_ID), :Value)
       new = ""
       if Ops.is_boolean?(ret)
-        if ret == true
-          new = "yes"
-        else
-          new = "no"
-        end
+        new = if ret == true
+                "yes"
+              else
+                "no"
+              end
       elsif Ops.is_integer?(ret)
         new = Builtins.sformat("%1", ret)
       elsif Ops.is_string?(ret)
@@ -172,7 +172,7 @@ module Yast
         new = nil
       end
 
-      if new != nil && Ops.get(Security.Settings, _ID, "") != new
+      if !new.nil? && Ops.get(Security.Settings, _ID, "") != new
         Builtins.y2milestone(
           "Setting modified (%1): %2 -> %3)",
           _ID,

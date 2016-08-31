@@ -30,12 +30,13 @@
 # only some calls to the basic functions. The settings are
 # initialized, main dialog is called and then settings are
 # saved.
+
 module Yast
   class SecurityClient < Client
     def main
       Yast.import "UI"
 
-      #**
+      # **
       # <h3> Security configuration
 
       textdomain "security"
@@ -49,8 +50,6 @@ module Yast
       Yast.import "Security"
 
       Yast.include self, "security/wizards.rb"
-
-
 
       # the command line description map
       @cmdline = {
@@ -89,7 +88,7 @@ module Yast
           }
         },
         "options"    => {
-          "workstation"        => {
+          "workstation" => {
             # command line help text for 'level workstation' option
             "help" => _(
               "Workstation security level"
@@ -142,7 +141,7 @@ module Yast
         "mappings"   => {
           "summary" => [],
           "level"   => ["workstation", "roaming", "server"],
-          #FIXME 1,2,3 aliases
+          # FIXME: 1,2,3 aliases
           "set"     => [
             "passwd",
             "crack",
@@ -158,7 +157,7 @@ module Yast
       # Finish
       Builtins.y2milestone("Security module finished")
       Builtins.y2milestone("----------------------------------------")
-      deep_copy(@ret) 
+      deep_copy(@ret)
 
       # EOF
     end
@@ -180,83 +179,66 @@ module Yast
     def SecurityLevelHandler(options)
       options = deep_copy(options)
       current = :custom
-      Builtins.maplist(@Levels) do |key, level|
-        current = key if level == Security.Settings
-      end
-      lvl = ""
-      if options.key?("workstation")
-        lvl = "Level1"
-      elsif options.key?("roaming")
-        lvl = "Level2"
-      elsif options.key?("server")
-        lvl = "Level3"
+
+      levels = @Levels.select { |_key, level| level == Security.Settings }
+
+      current = if levels.empty?
+                  :custom
+                else
+                  levels.last # mimic the old implementation
+                end
+
+      lvl = if options.key?("workstation")
+              "Level1"
+            elsif options.key?("roaming")
+              "Level2"
+            elsif options.key?("server")
+              "Level3"
+            else
+              :custom # shouldnt :custom and levels all same type string or symbol?
       end
 
       if current != lvl
-        Security.Settings = Ops.get(@Levels, lvl, {})
+        Security.Settings = @Levels.fetch(lvl, {})
         Security.modified = true
-        return true
       end
-      false
+      Security.modified
     end
 
     # Set value of specific security option
-    # @return [Boolean] false
+    # @return [Boolean] successfully modified?
     def SecuritySetHandler(options)
       options = deep_copy(options)
-      if Builtins.haskey(options, "passwd") &&
-          Ops.get_string(options, "passwd", "") !=
-            Ops.get(Security.Settings, "PASSWD_ENCRYPTION", "")
-        Ops.set(
-          Security.Settings,
-          "PASSWD_ENCRYPTION",
-          Ops.get_string(options, "passwd", "des")
-        )
-        Security.modified = true
-      end
-      if Builtins.haskey(options, "crack") &&
-          Ops.get_string(options, "crack", "") !=
-            Ops.get(Security.Settings, "PASSWD_USE_CRACKLIB", "")
-        Ops.set(
-          Security.Settings,
-          "PASSWD_USE_CRACKLIB",
-          Ops.get_string(options, "crack", "yes")
-        )
-        Security.modified = true
-      end
-      if Builtins.haskey(options, "permissions") &&
-          !Builtins.issubstring(
-            Ops.get(Security.Settings, "PERMISSION_SECURITY", ""),
-            Ops.get_string(options, "permissions", "")
-          )
-        Ops.set(
-          Security.Settings,
-          "PERMISSION_SECURITY",
-          Ops.add(Ops.get_string(options, "permissions", ""), " local")
-        )
+
+      if options.key?("password") &&
+          Security.Settings["PASSWD_ENCRYPTION"] != options["password"]
+        Security.Settings["PASSWD_ENCRYPTION"] = options.fetch("password", "des")
         Security.modified = true
       end
 
-      if Builtins.haskey(options, "remember") &&
-          Ops.get(Security.Settings, "PASSWD_REMEMBER_HISTORY", "0") !=
-            Ops.get_string(options, "remember", "0")
-        to_remember = Builtins.tointeger(
-          Ops.get_string(options, "remember", "0")
-        )
-        if to_remember == nil || Ops.less_than(to_remember, 0) ||
-            Ops.greater_than(to_remember, 400)
-          # error message
+      if options_has_key?("crack") &&
+          Security.Settings["PASSWD_USE_CRACKLIB"] != options["crack"]
+        Security.Settings["PASSWD_USE_CRACKLIB"] = options.fetch("crack", "yes")
+        Security.modified = true
+      end
+
+      if options.key?("permissions") &&
+          Security.Settings["PERMISSION_SECURITY"] != options["permissions"]
+        Security.Settings["PERMISSION_SECURITY"] = options.fetch("permissions", "local")
+        Security.modified = true
+      end
+
+      if options.key?("remember") &&
+          Security.Settings["PASSWD_REMEMBER_HISTORY"] != options["remember"]
+        if options["remember"].to_i.between?(0, 400)
+          Security.Settings["PASSWD_REMEMBER_HISTORY"] = options["remember"].to_i
+          Security.modified = true
+        else
           Report.Error(
             _("The number of passwords to remember must be between 0 an 400.")
           )
-          return false
         end
-        Ops.set(
-          Security.Settings,
-          "PASSWD_REMEMBER_HISTORY",
-          Ops.get_string(options, "remember", "0")
-        )
-        Security.modified = true
+        Security.modified
       end
       Security.modified
     end

@@ -23,7 +23,7 @@ ENV["Y2DIR"] = SRC_PATH
 
 require "yast"
 require "yast/rspec"
-require_relative 'SCRStub'
+require_relative "SCRStub"
 
 ::RSpec.configure do |c|
   c.include SCRStub

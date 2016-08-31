@@ -46,7 +46,7 @@ module Yast
     # @return `next if success, else `abort
     def WriteDialog
       Wizard.RestoreHelp(Ops.get_string(@HELPS, "write", ""))
-      Security.AbortFunction = lambda { Security.PollAbort }
+      Security.AbortFunction = -> { Security.PollAbort }
       ret = Security.Write
       ret ? :next : :abort
     end
@@ -133,7 +133,7 @@ module Yast
       Wizard.SetAbortButton(:abort, Label.CancelButton)
 
       ret = nil
-      while true
+      loop do
         cur = UI.QueryWidget(Id(:rb), :CurrentButton)
         ret = UI.UserInput
 

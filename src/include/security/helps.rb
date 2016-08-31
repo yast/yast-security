@@ -30,7 +30,7 @@
 # They are in one huge map called HELPS.
 module Yast
   module SecurityHelpsInclude
-    def initialize_security_helps(include_target)
+    def initialize_security_helps(_include_target)
       textdomain "security"
 
       @display_manager = Security.display_manager
@@ -334,7 +334,6 @@ module Yast
           "<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"
         )
       }
-
     end
 
     def boot_dialog_help
@@ -371,8 +370,8 @@ module Yast
       if @display_manager
         # Boot dialog help 3/4
         help += _(
-            "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from %s.</p>\n"
-          ) % @display_manager.name.upcase +
+          "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from %s.</p>\n"
+        ) % @display_manager.name.upcase +
           # Boot dialog help 4/4
           _(
             "<p><b>Hibernate System</b>:\n" \

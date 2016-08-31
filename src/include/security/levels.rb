@@ -44,7 +44,7 @@ require "yaml"
 # @return [Array] all security settings
 module Yast
   module SecurityLevelsInclude
-    def initialize_security_levels(include_target)
+    def initialize_security_levels(_include_target)
       textdomain "security"
       Yast.import "Directory"
 

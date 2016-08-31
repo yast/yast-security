@@ -56,30 +56,30 @@ module Yast
       @param = {}
 
       # Check arguments
-      if Ops.greater_than(Builtins.size(WFM.Args), 0) &&
-          Ops.is_string?(WFM.Args(0))
-        @func = Convert.to_string(WFM.Args(0))
-        if Ops.greater_than(Builtins.size(WFM.Args), 1) &&
-            Ops.is_map?(WFM.Args(1))
-          @param = Convert.to_map(WFM.Args(1))
+      if !Yast::WFM.Args.empty?
+        @func = Yast::WFM.Args[0]
+        if Yast::WFM.Args.length > 1 && Yast::WFM.Args[1].is_a?(Hash)
+          @param = WFM.Args[1]
         end
       end
+
       Builtins.y2debug("func=%1", @func)
       Builtins.y2debug("param=%1", @param)
 
       # Create a  summary
-      if @func == "Summary"
+      case @func
+      when "Summary"
         @summary = Security.Summary
         @ret = Ops.get_string(@summary, 0, "")
       # Reset configuration
-      elsif @func == "Reset"
+      when "Reset"
         Security.Import({})
         @ret = {}
       # Change configuration (run AutoSequence)
-      elsif @func == "Change"
+      when "Change"
         @ret = SecurityAutoSequence()
       # Import Data
-      elsif @func == "Import"
+      when "Import"
         # Compat
         if Builtins.haskey(@param, "encryption")
           Ops.set(
@@ -90,37 +90,37 @@ module Yast
         end
         @ret = Security.Import(
           Map.KeysToUpper(
-            Convert.convert(@param, :from => "map", :to => "map <string, any>")
+            Convert.convert(@param, from: "map", to: "map <string, any>")
           )
         )
       # Return required packages
-      elsif @func == "Packages"
+      when "Packages"
         @ret = {}
       # Return actual state
-      elsif @func == "Export"
+      when "Export"
         @ret = Map.KeysToLower(
           Convert.convert(
             Security.Export,
-            :from => "map",
-            :to   => "map <string, any>"
+            from: "map",
+            to:   "map <string, any>"
           )
         )
       # Read current state
-      elsif @func == "Read"
+      when "Read"
         Yast.import "Progress"
         Progress.off
         @ret = Security.Read
         Progress.on
       # Write givven settings
-      elsif @func == "Write"
+      when "Write"
         Yast.import "Progress"
         Security.write_only = true
         Progress.off
         @ret = Security.Write
         Progress.on
-      elsif @func == "SetModified"
+      when "SetModified"
         @ret = Security.SetModified
-      elsif @func == "GetModified"
+      when "GetModified"
         @ret = Security.GetModified
       else
         Builtins.y2error("Unknown function: %1", @func)
@@ -131,8 +131,8 @@ module Yast
       Builtins.y2milestone("Security auto finished")
       Builtins.y2milestone("----------------------------------------")
 
-      deep_copy(@ret) 
-
+      # is it needed?
+      deep_copy(@ret)
       # EOF
     end
   end
