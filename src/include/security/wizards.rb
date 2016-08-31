@@ -59,7 +59,7 @@ module Yast
       tree = Wizard.AddTreeItem(tree, "", _("User Addition"), "users")
       tree = Wizard.AddTreeItem(tree, "", _("Miscellaneous Settings"), "misc")
 
-      Wizard.CreateTree(tree, "Security")
+      Wizard.CreateTree(tree, _("Security"))
 
       ret = OverviewDialog()
 
