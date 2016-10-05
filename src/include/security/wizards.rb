@@ -25,7 +25,6 @@
 # Authors:	Michal Svec <msvec@suse.cz>
 #
 # $Id$
-# rubocop:disable Style/MethodName
 module Yast
   module SecurityWizardsInclude
     def initialize_security_wizards(include_target)

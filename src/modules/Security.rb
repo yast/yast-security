@@ -25,7 +25,6 @@
 # Authors:	Michal Svec <msvec@suse.cz>
 #
 # $Id$
-# rubocop:disable Style/MethodName
 require "yast"
 require "yaml"
 require "security/ctrl_alt_del_config"
@@ -66,7 +65,11 @@ module Yast
     def init_settings
       # Services to check
       srv_file = Directory.find_data_file("security/services.yml")
-      srv_lists = srv_file ? (YAML.load_file(srv_file) rescue {}) : {}
+      srv_lists = srv_file ? (begin
+                                YAML.load_file(srv_file)
+                              rescue
+                                {}
+                              end) : {}
 
       # These must be running
       @mandatory_services = srv_lists["mandatory_services"] || []
@@ -262,7 +265,7 @@ module Yast
     end
 
     # Abort function
-    # @return false
+    # @return [Boolean]
     def Abort
       return Builtins.eval(@AbortFunction) == true if @AbortFunction
       false
@@ -278,7 +281,6 @@ module Yast
     # settings were modified, to "true"
     def SetModified
       @modified = true
-
       nil
     end
 
@@ -296,7 +298,6 @@ module Yast
       read_extra_services
       setting = ExtraServices() == [] ? "secure" : "insecure"
       @Settings["EXTRA_SERVICES"] = setting
-
       nil
     end
 
@@ -390,13 +391,13 @@ module Yast
 
     def read_permissions
       perm = case @Settings["PERMISSION_SECURITY"].to_s
-              when /easy/
-                "easy"
-              when /paranoid/
-                "paranoid"
-              else
-                "secure"
-              end
+             when /easy/
+               "easy"
+             when /paranoid/
+               "paranoid"
+             else
+               "secure"
+             end
 
       @Settings["PERMISSION_SECURITY"] = perm
 

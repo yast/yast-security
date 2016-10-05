@@ -167,21 +167,19 @@ module Yast
 
     # Print security summary
     # @return [Boolean] false
-    def SecuritySummaryHandler(options)
-      options = deep_copy(options)
+    def SecuritySummaryHandler(_options)
       sum = Security.Summary
       CommandLine.Print(Ops.get_string(sum, 0, ""))
       false # do not call Write...
     end
 
     # Set security level
-    # @return [Boolean] successfully modified?
+    # @return [Boolean] false
     def SecurityLevelHandler(options)
       options = deep_copy(options)
       current = :custom
 
-      current = @Levels.select{ |_key, level| level == Security.Settings }.keys.last || :custom
-
+      current = @Levels.select { |_key, level| level == Security.Settings }.keys.last || :custom
 
       lvl = if options.key?("workstation")
               "Level1"
@@ -191,17 +189,17 @@ module Yast
               "Level3"
             else
               :custom # shouldnt :custom and levels all same type string or symbol?
-      end
+            end
 
       if current != lvl
         Security.Settings = @Levels.fetch(lvl, {})
         Security.modified = true
       end
-      Security.modified
+      false
     end
 
     # Set value of specific security option
-    # @return [Boolean] successfully modified?
+    # @return [Boolean] false
     def SecuritySetHandler(options)
       options = deep_copy(options)
 
@@ -233,9 +231,8 @@ module Yast
             _("The number of passwords to remember must be between 0 an 400.")
           )
         end
-        Security.modified
       end
-      Security.modified
+      false
     end
   end
 end

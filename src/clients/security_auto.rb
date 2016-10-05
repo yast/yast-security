@@ -58,9 +58,7 @@ module Yast
       # Check arguments
       if !Yast::WFM.Args.empty?
         @func = Yast::WFM.Args[0]
-        if Yast::WFM.Args[1].is_a?(Hash)
-          @param = WFM.Args[1]
-        end
+        @param = WFM.Args[1] if Yast::WFM.Args[1].is_a?(Hash)
       end
 
       Builtins.y2debug("func=%1", @func)

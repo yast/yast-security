@@ -4,46 +4,138 @@
 # https://github.com/SUSE/style-guides/blob/master/Ruby.md
 
 # https://github.com/SUSE/style-guides/blob/master/Ruby.md#strings
-Style/StringLiterals:
-  EnforcedStyle: double_quotes
+inherit_from:
+  /usr/share/YaST2/data/devtools/data/rubocop_yast_style.yml
 
-Style/StringLiteralsInInterpolation:
-  EnforcedStyle: double_quotes
-
-# Is there any justification for "aligned" which is the default?
-Style/MultilineOperationIndentation:
-  EnforcedStyle: indented
-
-# https://github.com/SUSE/style-guides/blob/master/Ruby.md#arrays
-Style/WordArray:
+Style/IfInsideElse:
   Enabled: false
 
-# align arrows:
-# "foo"     => true
-# "foo_bar" => false
-# and also colons:
-# foo:     true
-# foo_bar: false
-Style/AlignHash:
-  EnforcedHashRocketStyle: table
-  EnforcedColonStyle: table
-
-# no extra indentation for multiline function calls
-Style/AlignParameters:
-  EnforcedStyle: with_fixed_indentation
-
-# no extra indentation for case
-Style/CaseIndentation:
-  IndentWhenRelativeTo: end
-
-# "unless" has a different connotation than "if not"
-Style/NegatedIf:
+Style/MultilineTernaryOperator:
   Enabled: false
 
-# use "raise" instead of "fail"
-Style/SignalException:
-  EnforcedStyle: only_raise
-
-# do not force %r
-Style/RegexpLiteral:
+Lint/UnderscorePrefixedVariableName:
   Enabled: false
+
+
+Metrics/AbcSize:
+  Max: 129
+  Exclude:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/AbcSize:
+  Max: 30
+  Include:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/BlockNesting:
+  Max: 5
+  Exclude:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/BlockNesting:
+  Max: 2
+  Include:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+
+# Configuration parameters: CountComments.
+Metrics/ClassLength:
+  Max: 385
+  Exclude:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+# Configuration parameters: CountComments.
+Metrics/ClassLength:
+  Max: 200
+  Include:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/ModuleLength:
+  Max: 385
+  Exclude:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/ModuleLength:
+  Max: 100
+  Include:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/CyclomaticComplexity:
+  Max: 29
+  Exclude:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/CyclomaticComplexity:
+  Max: 10
+  Include:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+# Configuration parameters: AllowURI, URISchemes.
+Metrics/LineLength:
+  Max: 299
+  Exclude:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+# Configuration parameters: AllowURI, URISchemes.
+Metrics/LineLength:
+  Max: 100 # TODO this should be lower for new code
+  Include:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+# Configuration parameters: CountComments.
+Metrics/MethodLength:
+  Max: 160
+  Exclude:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+# Configuration parameters: CountComments.
+Metrics/MethodLength:
+  Max: 30 # TODO this should be lower for new code
+  Include:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/PerceivedComplexity:
+  Max: 34
+  Exclude:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+Metrics/PerceivedComplexity:
+  Max: 10
+  Include:
+    - 'src/lib/**/*.rb' # be more strict for new code in lib
+
+# be more strict then rubocop, 5 is too much
+Metrics/ParameterLists:
+  Max: 4
+
+# Configuration parameters: EnforcedStyle, SupportedStyles.
+Style/AndOr:
+  EnforcedStyle: conditionals
+
+Style/Documentation:
+  Include:
+    - 'src/lib/**/*.rb' # force well documented code only for new code
+
+Style/FileName:
+  Include:
+    - 'src/lib/**/*.rb' # force correct names on new code
+
+Style/HashSyntax:
+  Include:
+    - 'src/lib/**/*.rb' # force new hash style only for new code
+
+# JR: I found lambda easier to read and understand then ->()
+Style/Lambda:
+  Enabled: false
+
+Style/MethodName:
+  Include:
+    - 'src/lib/**/*.rb' # force correct names on new code
+
+Style/VariableName:
+  Include:
+    - 'src/lib/**/*.rb' # force known variables only for new code
+
+# alias method is more convenient method for method aliasing
+Style/Alias:
+  EnforcedStyle: prefer_alias_method

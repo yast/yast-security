@@ -19,10 +19,11 @@
 # current contact information at www.suse.com.
 # ------------------------------------------------------------------------------
 #
-
+# rubocop:disable Style/MutableConstant
 require "yast"
 
 module Security
+  # module to hold information from DisplayManager
   class DisplayManager
     Yast.import "SCR"
 

@@ -25,6 +25,7 @@
 # Authors:	Michal Svec <msvec@suse.cz>
 #
 # $Id$
+# rubocop:disable Style/GuardClause
 module Yast
   module SecurityUsersInclude
     def initialize_security_users(include_target)

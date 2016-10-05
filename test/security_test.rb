@@ -1,5 +1,4 @@
 #!/usr/bin/env rspec
-
 require_relative "test_helper"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"

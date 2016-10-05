@@ -23,6 +23,7 @@
 require "yast"
 
 module Security
+  # module to hold information from CtrlAltDelConfig
   module CtrlAltDelConfig
     include Yast::Logger
     Yast.import "SCR"

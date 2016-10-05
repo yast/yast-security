@@ -25,6 +25,7 @@
 # Authors:	Michal Svec <msvec@suse.cz>
 #
 # $Id$
+# rubocop:disable Style/GuardClause
 module Yast
   module SecurityComplexInclude
     def initialize_security_complex(include_target)

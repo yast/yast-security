@@ -137,7 +137,6 @@ module Yast
         combo = Builtins.add(combo, Item(Id(value), value, true))
       end
 
-      combobox = nil
       opt_t = nil
       opt_t = Opt(:editable) if Ops.get_string(m, "Editable", "no") == "yes"
       if Ops.get_string(m, "Notify", "no") == "yes"
