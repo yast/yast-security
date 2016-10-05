@@ -177,7 +177,6 @@ module Yast
     # @return [Boolean] false
     def SecurityLevelHandler(options)
       options = deep_copy(options)
-      current = :custom
 
       current = @Levels.select { |_key, level| level == Security.Settings }.keys.last || :custom
 

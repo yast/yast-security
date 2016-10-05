@@ -135,7 +135,7 @@ module Yast
 
       ret = nil
       loop do
-        cur = UI.QueryWidget(Id(:rb), :CurrentButton)
+        # cur = UI.QueryWidget(Id(:rb), :CurrentButton)
         ret = UI.UserInput
 
         # abort?
