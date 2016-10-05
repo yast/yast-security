@@ -180,13 +180,8 @@ module Yast
       options = deep_copy(options)
       current = :custom
 
-      levels = @Levels.select { |_key, level| level == Security.Settings }
+      current = @Levels.select{ |_key, level| level == Security.Settings }.keys.last || :custom
 
-      current = if levels.empty?
-                  :custom
-                else
-                  levels.last # mimic the old implementation
-                end
 
       lvl = if options.key?("workstation")
               "Level1"
@@ -231,7 +226,7 @@ module Yast
       if options.key?("remember") &&
           Security.Settings["PASSWD_REMEMBER_HISTORY"] != options["remember"]
         if options["remember"].to_i.between?(0, 400)
-          Security.Settings["PASSWD_REMEMBER_HISTORY"] = options["remember"].to_i
+          Security.Settings["PASSWD_REMEMBER_HISTORY"] = options["remember"] # as string not int
           Security.modified = true
         else
           Report.Error(

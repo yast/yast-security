@@ -89,7 +89,7 @@ module Yast
       # "Widget" == "IntField"
       if widget == "IntField"
         intval = Builtins.tointeger(value)
-        intval = 0 if intval.nil?
+        intval ||= 0
         return VBox(
           Left(IntField(Id(_ID), label, minval, maxval, intval)),
           VSeparator()
@@ -112,7 +112,7 @@ module Yast
         # string|list it
         Builtins.y2debug("li=%1 (%2)", li, i)
         it = Ops.get(li, i)
-        it = "" if it.nil?
+        it ||= ""
         Builtins.y2debug("it=%1", it)
         id_t = ""
         id_s = ""
@@ -158,11 +158,7 @@ module Yast
       ret = UI.QueryWidget(Id(_ID), :Value)
       new = ""
       if Ops.is_boolean?(ret)
-        new = if ret == true
-                "yes"
-              else
-                "no"
-              end
+        new = ret ? "yes" : "no"
       elsif Ops.is_integer?(ret)
         new = Builtins.sformat("%1", ret)
       elsif Ops.is_string?(ret)

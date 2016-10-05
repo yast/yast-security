@@ -58,7 +58,7 @@ module Yast
       # Check arguments
       if !Yast::WFM.Args.empty?
         @func = Yast::WFM.Args[0]
-        if Yast::WFM.Args.length > 1 && Yast::WFM.Args[1].is_a?(Hash)
+        if Yast::WFM.Args[1].is_a?(Hash)
           @param = WFM.Args[1]
         end
       end
@@ -88,23 +88,13 @@ module Yast
             Ops.get_string(@param, "encryption", "des")
           )
         end
-        @ret = Security.Import(
-          Map.KeysToUpper(
-            Convert.convert(@param, from: "map", to: "map <string, any>")
-          )
-        )
+        @ret = Security.Import(Map.KeysToUpper(@param))
       # Return required packages
       when "Packages"
         @ret = {}
       # Return actual state
       when "Export"
-        @ret = Map.KeysToLower(
-          Convert.convert(
-            Security.Export,
-            from: "map",
-            to:   "map <string, any>"
-          )
-        )
+        @ret = Security.Import(Map.KeysToUpper(Security.Export))
       # Read current state
       when "Read"
         Yast.import "Progress"
@@ -130,10 +120,7 @@ module Yast
       Builtins.y2debug("ret=%1", @ret)
       Builtins.y2milestone("Security auto finished")
       Builtins.y2milestone("----------------------------------------")
-
-      # is it needed?
-      deep_copy(@ret)
-      # EOF
+      @ret
     end
   end
 end

@@ -264,7 +264,7 @@ module Yast
     # Abort function
     # @return false
     def Abort
-      return Builtins.eval(@AbortFunction) == true if !@AbortFunction.nil?
+      return Builtins.eval(@AbortFunction) == true if @AbortFunction
       false
     end
 
@@ -733,13 +733,14 @@ module Yast
     # (For use by autoinstallation.)
     # @return [Hash] Dumped settings (later acceptable by Import ())
     def Export
-      @Settings if @Settings.is_a?(Hash)
+      deep_copy(@Settings)
     end
 
     # Create a textual summary and a list of unconfigured cards
     # @return summary of the current configuration
     def Summary
       settings = deep_copy(@Settings)
+      # settings -= @do_not_test
       @do_not_test.each { |k| settings.delete k }
 
       # Determine current settings
@@ -755,7 +756,7 @@ module Yast
       summary = _("Current Security Level: Custom settings")
       if current != :custom
         # Summary text
-        summary = _("Current Security Level: #{@LevelsNames[current]}")
+        summary = _("Current Security Level: %s") % @LevelsNames[current]
       end
       [summary, []]
     end
