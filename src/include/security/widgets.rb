@@ -87,15 +87,15 @@ module Yast
       "ignore" => N_("Ignore"),
       "reboot" => N_("Reboot"),
       "halt"   => N_("Halt")
-    }
+    }.freeze
 
     SHUTDOWN_LABELS = {
       "root" => N_("Only root"),
       "all"  => N_("All Users"),
       "none" => N_("Nobody")
-    }
+    }.freeze
 
-    def initialize_security_widgets(include_target)
+    def initialize_security_widgets(_include_target)
       textdomain "security"
 
       @display_manager = Security.display_manager

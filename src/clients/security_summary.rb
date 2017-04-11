@@ -48,7 +48,7 @@ module Yast
       # Finish
       Builtins.y2milestone("Security summary finished")
       Builtins.y2milestone("----------------------------------------")
-      @ret 
+      @ret
 
       # EOF
     end

@@ -25,6 +25,7 @@
 # Authors:	Michal Svec <msvec@suse.cz>
 #
 # $Id$
+# rubocop:disable Style/GuardClause
 module Yast
   module SecurityUsersInclude
     def initialize_security_users(include_target)
@@ -98,7 +99,7 @@ module Yast
       Wizard.SelectTreeItem("users")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?

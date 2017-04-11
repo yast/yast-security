@@ -25,6 +25,7 @@
 # Authors:	Michal Svec <msvec@suse.cz>
 #
 # $Id$
+# rubocop:disable Style/GuardClause
 module Yast
   module SecurityDialogsInclude
     def initialize_security_dialogs(include_target)
@@ -115,9 +116,9 @@ module Yast
       # current value -> new value
       @link_value_mapping = {
         "yes" => "no",
-        "no" => "yes",
-        "1" => "0",
-        "0" => "1"
+        "no"  => "yes",
+        "1"   => "0",
+        "0"   => "1"
       }
 
       # mapping for "Configure" links
@@ -135,8 +136,8 @@ module Yast
       }
 
       @link_update_mapping = {
-        "MANDATORY_SERVICES" => lambda { Security.ReadServiceSettings },
-        "EXTRA_SERVICES"     => lambda { Security.ReadServiceSettings }
+        "MANDATORY_SERVICES" => -> { Security.ReadServiceSettings },
+        "EXTRA_SERVICES"     => -> { Security.ReadServiceSettings }
       }
     end
 
@@ -165,7 +166,6 @@ module Yast
       ret
     end
 
-
     def OverviewText(type)
       ret = ""
       ret_table = []
@@ -173,10 +173,10 @@ module Yast
       if type == :richtext
         # open a table
         ret = Builtins.sformat(
-          "<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>\n" +
-            "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" +
-            "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" +
-            "<TD></TD>\n" +
+          "<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>\n" \
+            "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
+            "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
+            "<TD></TD>\n" \
             "</TR> <TR></TR>",
           # table header
           _("Security Setting"),
@@ -286,11 +286,11 @@ module Yast
       ]
 
       Builtins.foreach(security_mapping) do |setting|
-        current_value = Ops.get(
-          Security.Settings,
-          Ops.get_string(setting, "name", ""),
-          ""
-        )
+        # current_value = Ops.get(
+        #  Security.Settings,
+        #  Ops.get_string(setting, "name", ""),
+        #  ""
+        # )
         id = Ops.get_string(setting, "id", "")
         if type == :table
           ret_table = Builtins.add(
@@ -323,8 +323,7 @@ module Yast
             )
           )
         end
-      end 
-
+      end
 
       if type == :table
         Builtins.y2debug("Overview table: %1", ret_table)
@@ -354,7 +353,7 @@ module Yast
       if help_id == "MANDATORY_SERVICES"
         missing = Security.MissingMandatoryServices
 
-        if missing != nil && missing != []
+        if missing && !missing.empty?
           srvs = ""
 
           Builtins.foreach(missing) do |l|
@@ -364,7 +363,6 @@ module Yast
             srvs = Ops.add(Ops.add(srvs, group), "<BR>")
           end
 
-
           # richtext message: %1 = runlevel ("3" or "5"), %2 = list of services
           help +=
             _("<P>These basic system services are not enabled:<BR><B>%s</B></P>") % srvs
@@ -373,8 +371,7 @@ module Yast
         end
       elsif help_id == "EXTRA_SERVICES"
         extra = Security.ExtraServices
-
-        if extra != nil && extra != []
+        if extra && !extra.empty?
           srvs = Builtins.mergestring(extra, "<BR>")
           help +=
             _("<P>These extra services are enabled:<BR><B>%s</B></P>") % srvs
@@ -384,7 +381,7 @@ module Yast
         end
       end
 
-      if help != nil && help != ""
+      if help && !help.empty?
         Popup.LongText(
           Ops.get(@label_mapping, help_id, _("Description")),
           RichText(help),
@@ -447,7 +444,7 @@ module Yast
       Wizard.SelectTreeItem("overview")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
@@ -519,7 +516,7 @@ module Yast
               if client_ret == :next || client_ret == :ok ||
                   client_ret == :finish || client_ret == true
                 # update the current value
-                if @link_update_mapping.has_key?(ret)
+                if @link_update_mapping.key?(ret)
                   Popup.Feedback(_("Analyzing system"), Message.takes_a_while) do
                     @link_update_mapping[ret].call
                   end
@@ -627,7 +624,7 @@ module Yast
       Wizard.SelectTreeItem("boot")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
@@ -705,7 +702,7 @@ module Yast
       Wizard.SelectTreeItem("misc")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
@@ -815,7 +812,7 @@ module Yast
       )
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
@@ -860,9 +857,9 @@ module Yast
           )
           min = Convert.to_integer(UI.QueryWidget(Id("PASS_MIN_LEN"), :Value))
           if Ops.greater_than(
-              min,
-              Ops.get_integer(Security.PasswordMaxLengths, enc, 8)
-            )
+            min,
+            Ops.get_integer(Security.PasswordMaxLengths, enc, 8)
+          )
             # Popup text, %1 is number
             Popup.Error(
               Builtins.sformat(
@@ -909,14 +906,14 @@ module Yast
           1.0,
           _("Login"),
           VBox(
-            #VSeparator(),
-            settings2widget("FAIL_DELAY"), #VSeparator()
-            #VSeparator(),
+            # VSeparator(),
+            settings2widget("FAIL_DELAY"), # VSeparator()
+            # VSeparator(),
             VSpacing(0.5),
             VSeparator(),
             settings2widget("DISPLAYMANAGER_REMOTE_ACCESS")
           )
-        ) #,`VSpacing(1.7)
+        ) # ,`VSpacing(1.7)
       )
       contents = HVCenter(
         HVSquash(
@@ -943,7 +940,7 @@ module Yast
       Wizard.SelectTreeItem("login")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?

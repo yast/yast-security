@@ -23,6 +23,7 @@
 require "yast"
 
 module Security
+  # module to hold information from CtrlAltDelConfig
   module CtrlAltDelConfig
     include Yast::Logger
     Yast.import "SCR"
@@ -30,7 +31,7 @@ module Security
     Yast.import "Package"
     Yast.import "FileUtils"
 
-    SYSTEMD_FILE = "/etc/systemd/system/ctrl-alt-del.target"
+    SYSTEMD_FILE = "/etc/systemd/system/ctrl-alt-del.target".freeze
 
     class << self
       def systemd?

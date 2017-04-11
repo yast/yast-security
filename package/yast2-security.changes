@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Thu Sep 1 11:39:37 UTC 2016 - vpereira@suse.com
+
+- Refactoring autoconverted ruby code into ruby dialect
+
+-------------------------------------------------------------------
 Wed Aug 31 11:37:52 UTC 2016 - jreidinger@suse.com
 
 - mark string "Security" translatable (bnc#988764)

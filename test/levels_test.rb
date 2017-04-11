@@ -1,6 +1,6 @@
 #!/usr/bin/env rspec
 
-require_relative 'test_helper'
+require_relative "test_helper"
 
 module Yast
   class LevelsTester < Client
@@ -43,7 +43,7 @@ module Yast
       end
 
       # Not really needed, but looks better than returning nil
-      let(:empty_bash_output) { {"exit" => 0, "stdout" => "", "stderr" => ""} }
+      let(:empty_bash_output) { { "exit" => 0, "stdout" => "", "stderr" => "" } }
 
       it "defines the system behavior" do
         expect(SCR).to exec_bash_output("/usr/sbin/pam-config -a --cracklib")

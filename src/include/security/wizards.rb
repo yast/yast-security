@@ -63,7 +63,7 @@ module Yast
 
       ret = OverviewDialog()
 
-      while true
+      loop do
         # needed for ncurses UI
         ret = Wizard.QueryTreeItem if ret == :wizardTree
 
@@ -99,26 +99,26 @@ module Yast
     # @return [Object] Returned value from WizardSequencer() call
     def MainSequence
       aliases = {
-        "main"     => lambda { MainDialog() },
-        "password" => lambda { PassDialog() },
-        "boot"     => lambda { BootDialog() },
-        "login"    => lambda { LoginDialog() },
-        "adduser"  => lambda { AdduserDialog() },
-        "misc"     => lambda { MiscDialog() }
+        "main"     => -> { MainDialog() },
+        "password" => -> { PassDialog() },
+        "boot"     => -> { BootDialog() },
+        "login"    => -> { LoginDialog() },
+        "adduser"  => -> { AdduserDialog() },
+        "misc"     => -> { MiscDialog() }
       }
 
       sequence = {
         "ws_start" => "main",
         "main"     => {
-          :abort  => :abort,
-          :next   => "password",
-          :finish => :next
+          abort:  :abort,
+          next:   "password",
+          finish: :next
         },
-        "password" => { :abort => :abort, :next => "boot" },
-        "boot"     => { :abort => :abort, :next => "login" },
-        "login"    => { :abort => :abort, :next => "adduser" },
-        "adduser"  => { :abort => :abort, :next => "misc" },
-        "misc"     => { :abort => :abort, :next => :next }
+        "password" => { abort: :abort, next: "boot" },
+        "boot"     => { abort: :abort, next: "login" },
+        "login"    => { abort: :abort, next: "adduser" },
+        "adduser"  => { abort: :abort, next: "misc" },
+        "misc"     => { abort: :abort, next: :next }
       }
 
       ret = Sequencer.Run(aliases, sequence)
@@ -129,14 +129,14 @@ module Yast
     # Whole configuration of security
     # @return [Object] Returned value from WizardSequencer() call
     def SecuritySequence
-      aliases = { "main" => lambda { TreeDialog() }, "write" => [lambda do
+      aliases = { "main" => -> { TreeDialog() }, "write" => [lambda do
         WriteDialog()
       end, true] }
 
       sequence = {
         "ws_start" => "main",
-        "main"     => { :abort => :abort, :finish => "write", :next => "write" },
-        "write"    => { :abort => :abort, :next => :next }
+        "main"     => { abort: :abort, finish: "write", next: "write" },
+        "write"    => { abort: :abort, next: :next }
       }
 
       Wizard.CreateDialog

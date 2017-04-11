@@ -1,5 +1,4 @@
 #!/usr/bin/env rspec
-
 require_relative "test_helper"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
@@ -271,7 +270,6 @@ module Yast
 
               expect(Security.ReadConsoleShutdown).to eql("reboot")
             end
-
           end
         end
 
@@ -322,7 +320,6 @@ module Yast
 
               expect(Security.ReadConsoleShutdown).to eql("halt")
             end
-
           end
         end
       end
@@ -385,7 +382,6 @@ module Yast
               Security.ReadConsoleShutdown
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("reboot")
             end
-
           end
         end
 
@@ -432,7 +428,6 @@ module Yast
               Security.ReadConsoleShutdown
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eq("reboot")
             end
-
           end
         end
       end
@@ -476,7 +471,6 @@ module Yast
     end
 
     describe "#read_permissions" do
-
       context "depending on current persission" do
         it "sets security permission to 'easy' if contains easy" do
           Security.Settings["PERMISSION_SECURITY"] = "it_is_easy_to_test"
@@ -499,7 +493,6 @@ module Yast
           expect(Security.Settings["PERMISSION_SECURITY"]).to eql("secure")
         end
       end
-
     end
 
     describe "#read_polkit_settings" do
@@ -508,7 +501,6 @@ module Yast
       end
 
       context "depending on current polkit config" do
-
         it "sets correctly hibernate system settings to 'anyone'" do
           allow(SCR).to receive(:Read).with(polkit) { "yes:yes:yes" }
 
@@ -529,7 +521,6 @@ module Yast
           expect(Security.Settings["HIBERNATE_SYSTEM"]).to eql("active_console")
         end
       end
-
     end
 
     describe "#read_kernel_settings" do
@@ -642,7 +633,7 @@ module Yast
     describe "#Import" do
       before do
         # GENERAL
-        Security.Settings["FAIL_DELAY"]       = "5"
+        Security.Settings["FAIL_DELAY"] = "5"
         Security.Settings["PASS_MIN_LEN"]       = "3"
         Security.Settings["MANDATORY_SERVICES"] = "no"
 
@@ -652,7 +643,6 @@ module Yast
         # OBSOLETE LOGIN DEFS
         Security.Settings["SYS_UID_MIN"] = 200
         Security.Settings["SYS_GID_MIN"] = 200
-
       end
 
       it "doest not touch current Settings if given settings are empty" do
@@ -689,9 +679,7 @@ module Yast
 
           expect(Security.Settings["FAIL_DELAY"]).to eql("5")
         end
-
       end
-
     end
   end
 end

@@ -60,6 +60,6 @@ module SCRStub
   #
   # @param path used in the call to SCR.Write
   def was_written?(path)
-    @written_values.has_key?(path)
+    @written_values.key?(path)
   end
 end
