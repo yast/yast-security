@@ -65,12 +65,14 @@ module Yast
     def init_settings
       # Services to check
       srv_file = Directory.find_data_file("security/services.yml")
-      srv_lists = srv_file ? (begin
-                                YAML.load_file(srv_file)
-                              rescue
-                                {}
-                              end) : {}
-
+			srv_lists = {}
+			if srv_file
+  			begin
+     			srv_lists = YAML.load_file(srv_file)
+  			rescue => e
+    			log.warn "Failed to load yaml file: #{e.message}"
+  			end
+			end
       # These must be running
       @mandatory_services = srv_lists["mandatory_services"] || []
       # It must be an array of arrays (meaning [ [ || ] && && ])
