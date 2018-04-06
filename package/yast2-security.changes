@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Fri Apr  6 18:53:46 UTC 2018 - mfilka@suse.com
+
+- bnc#1087957 - version bump
+- 4.0.0
+
+-------------------------------------------------------------------
 Wed Aug 31 11:37:52 UTC 2016 - jreidinger@suse.com
 
 - mark string "Security" translatable (bnc#988764)
