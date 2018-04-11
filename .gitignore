@@ -35,4 +35,6 @@ tmp.*
 /testsuite/site.exp
 /testsuite/yast2-security.sum
 /testsuite/yast2-security.test/
-
+/.yardoc
+doc/autodocs
+coverage/
