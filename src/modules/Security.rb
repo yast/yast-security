@@ -26,6 +26,7 @@
 #
 # $Id$
 require "yast"
+require "yast2/systemd/service"
 require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
@@ -58,7 +59,6 @@ module Yast
       Yast.import "Pam"
       Yast.import "Progress"
       Yast.import "Service"
-      Yast.import "SystemdService"
       Yast.import "Directory"
       Yast.include self, "security/levels.rb"
     end
@@ -813,7 +813,7 @@ module Yast
     def read_extra_services
       log.info("Searching for extra services")
 
-      enabled_services = SystemdService.all(names: "Names").select(&:enabled?)
+      enabled_services = Yast2::Systemd::Service.all(names: "Names").select(&:enabled?)
       # Remove from the list the services that are allowed
       @extra_services = enabled_services.reject do |service|
         allowed = allowed_service?(service.name)

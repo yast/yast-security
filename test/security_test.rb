@@ -1,6 +1,7 @@
 #!/usr/bin/env rspec
 
 require_relative "test_helper"
+require "yast2/systemd/service"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
 
@@ -32,7 +33,6 @@ module Yast
   end
 
   import "Security"
-  import "SystemdService"
   import "Service"
 
   describe Security do
@@ -43,7 +43,7 @@ module Yast
         allow(Service).to receive(:enabled?) do |service|
           service_names.include?(service)
         end
-        allow(SystemdService).to receive(:all).and_return services_for(service_names, aliases)
+        allow(Yast2::Systemd::Service).to receive(:all).and_return services_for(service_names, aliases)
         Security.ReadServiceSettings
       end
 
