@@ -29,14 +29,14 @@ BuildRequires:  doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pa
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  rubygem(yast-rake) >= 0.2.5
 BuildRequires:  rubygem(rspec)
-# cfg_mail.scr
-BuildRequires:  yast2 >= 3.1.179
+# Yast2::Systemd::Service
+BuildRequires:  yast2 >= 4.1.3
 
 # new Pam.ycp API
 Requires:       yast2-pam >= 2.14.0
 
-# cfg_mail.scr
-Requires:       yast2 >= 3.1.179
+# Yast2::Systemd::Service
+Requires:       yast2 >= 4.1.3
 
 Provides:       y2c_sec yast2-config-security
 Obsoletes:      y2c_sec yast2-config-security
