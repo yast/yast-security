@@ -24,7 +24,7 @@ BuildRoot:      %{_tmppath}/%{name}-%{version}-build
 Source0:        %{name}-%{version}.tar.bz2
 
 Group:          System/YaST
-License:        GPL-2.0
+License:        GPL-2.0-only
 BuildRequires:  doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  rubygem(yast-rake) >= 0.2.5
