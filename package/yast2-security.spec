@@ -89,3 +89,4 @@ fi
 %{yast_ydatadir}/security
 %{yast_libdir}/security
 %doc %{yast_docdir}
+%license COPYING
