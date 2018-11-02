@@ -25,7 +25,7 @@ module Yast
       Yast.import "Security"
     end
 
-    # Write users
+    # Write security settings
     #
     def write
       Security.Write      
