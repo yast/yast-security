@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        4.1.1
+Version:        4.1.2
 Release:        0
 
 BuildRoot:      %{_tmppath}/%{name}-%{version}-build
@@ -88,5 +88,6 @@ fi
 %{yast_schemadir}/autoyast/rnc/security.rnc
 %{yast_ydatadir}/security
 %{yast_libdir}/security
+%{_datadir}/icons/*
 %doc %{yast_docdir}
 %license COPYING
