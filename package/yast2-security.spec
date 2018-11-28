@@ -88,6 +88,6 @@ fi
 %{yast_schemadir}/autoyast/rnc/security.rnc
 %{yast_ydatadir}/security
 %{yast_libdir}/security
-%{_datadir}/icons/*
+%{yast_icondir}
 %doc %{yast_docdir}
 %license COPYING
