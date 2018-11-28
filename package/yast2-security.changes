@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Mon Nov 26 02:49:10 UTC 2018 - Noah Davis <noahadvs@gmail.com>
+
+- Provide icon with module (boo#1109310)
+- 4.1.2
+
+-------------------------------------------------------------------
 Fri Nov  2 13:19:01 UTC 2018 - schubi@suse.de
 
 - Writing security settings in first AY installation stage.
