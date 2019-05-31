@@ -140,7 +140,7 @@ module Yast
       }
 
       Wizard.CreateDialog
-      Wizard.SetDesktopTitleAndIcon("security")
+      Wizard.SetDesktopTitleAndIcon("org.openSUSE.YaST.Security")
 
       # Read has no progress and returns only true
       Security.Read
@@ -161,7 +161,7 @@ module Yast
       contents = Label(_("Initializing..."))
 
       Wizard.CreateDialog
-      Wizard.SetDesktopTitleAndIcon("security")
+      Wizard.SetDesktopTitleAndIcon("org.openSUSE.YaST.Security")
       Wizard.SetContentsButtons(
         caption,
         contents,
