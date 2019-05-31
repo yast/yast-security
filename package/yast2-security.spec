@@ -12,41 +12,26 @@
 # license that conforms to the Open Source Definition (Version 1.9)
 # published by the Open Source Initiative.
 
-# Please submit bugfixes or comments via http://bugs.opensuse.org/
+# Please submit bugfixes or comments via https://bugs.opensuse.org/
 #
 
 
 Name:           yast2-security
 Version:        4.1.2
 Release:        0
-
-BuildRoot:      %{_tmppath}/%{name}-%{version}-build
-Source0:        %{name}-%{version}.tar.bz2
-
 Group:          System/YaST
 License:        GPL-2.0-only
+Summary:        YaST2 - Security Configuration
+Url:            https://github.com/yast/yast-security
+
+Source0:        %{name}-%{version}.tar.bz2
+
 BuildRequires:  doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam
 BuildRequires:  yast2-devtools >= 3.1.10
 BuildRequires:  rubygem(yast-rake) >= 0.2.5
 BuildRequires:  rubygem(rspec)
 # Yast2::Systemd::Service
 BuildRequires:  yast2 >= 4.1.3
-
-# new Pam.ycp API
-Requires:       yast2-pam >= 2.14.0
-
-# Yast2::Systemd::Service
-Requires:       yast2 >= 4.1.3
-
-Provides:       y2c_sec yast2-config-security
-Obsoletes:      y2c_sec yast2-config-security
-Provides:       yast2-trans-security y2t_sec
-Obsoletes:      yast2-trans-security y2t_sec
-
-BuildArchitectures: noarch
-
-Requires:       yast2-ruby-bindings >= 1.0.0
-
 # Unfortunately we cannot move this to macros.yast,
 # bcond within macros are ignored by osc/OBS.
 %bcond_with yast_run_ci_tests
@@ -54,13 +39,25 @@ Requires:       yast2-ruby-bindings >= 1.0.0
 BuildRequires: rubygem(yast-rake-ci)
 %endif
 
-Summary:        YaST2 - Security Configuration
+# new Pam.ycp API
+Requires:       yast2-pam >= 2.14.0
+# Yast2::Systemd::Service
+Requires:       yast2 >= 4.1.3
+Requires:       yast2-ruby-bindings >= 1.0.0
+
+Provides:       y2c_sec yast2-config-security
+Provides:       yast2-trans-security y2t_sec
+
+Obsoletes:      y2c_sec yast2-config-security
+Obsoletes:      yast2-trans-security y2t_sec
+
+BuildArch:      noarch
 
 %description
 The YaST2 component for security settings configuration.
 
 %prep
-%setup -n %{name}-%{version}
+%setup -q
 
 %build
 
@@ -69,7 +66,7 @@ The YaST2 component for security settings configuration.
 
 %install
 %yast_install
-
+%yast_metainfo
 
 %post
 # remove broken entry in /etc/login.defs, introduced during installation (bnc#807099)
@@ -78,16 +75,17 @@ if [ -f /etc/login.defs  ] ; then
 fi
 
 %files
-%defattr(-,root,root)
-%dir %{yast_yncludedir}/security
-%{yast_yncludedir}/security/*
-%{yast_desktopdir}/security.desktop
-%{yast_clientdir}/security*.rb
-%{yast_moduledir}/Security.rb
-%{yast_scrconfdir}/*.scr
-%{yast_schemadir}/autoyast/rnc/security.rnc
-%{yast_ydatadir}/security
-%{yast_libdir}/security
+%{yast_yncludedir}
+%{yast_desktopdir}
+%{yast_metainfodir}
+%{yast_clientdir}
+%{yast_moduledir}
+%{yast_scrconfdir}
+%{yast_schemadir}
+%{yast_ydatadir}
+%{yast_libdir}
 %{yast_icondir}
 %doc %{yast_docdir}
 %license COPYING
+
+%changelog
