@@ -26,8 +26,12 @@ Url:            https://github.com/yast/yast-security
 
 Source0:        %{name}-%{version}.tar.bz2
 
-BuildRequires:  doxygen pkg-config perl-XML-Writer update-desktop-files yast2-pam
-BuildRequires:  yast2-devtools >= 3.1.10
+BuildRequires:  doxygen
+BuildRequires:  pkg-config
+BuildRequires:  perl-XML-Writer
+BuildRequires:  update-desktop-files
+BuildRequires:  yast2-pam
+BuildRequires:  yast2-devtools >= 4.2.2
 BuildRequires:  rubygem(yast-rake) >= 0.2.5
 BuildRequires:  rubygem(rspec)
 # Yast2::Systemd::Service
