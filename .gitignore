@@ -12,7 +12,9 @@ config.status
 config.sub
 configure
 configure.ac
+coverage/
 depcomp
+doc/autodocs
 install-sh
 *.pot
 libtool
@@ -27,6 +29,7 @@ Makefile.am.common
 *.spec
 .dep
 tmp.*
+.yardoc/
 *.log
 /doc/autodocs/
 !/doc/autodocs/Makefile.am
