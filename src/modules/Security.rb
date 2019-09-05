@@ -395,12 +395,12 @@ module Yast
     end
 
     def read_permissions
-      # Remove "local" from the string
+      # Removing "local" from the string
       permissions = @Settings["PERMISSION_SECURITY"].to_s.split(" ")
       @Settings["PERMISSION_SECURITY"] = permissions.delete_if {|p|
         p == "local" }.join(" ")
 
-      #default value
+      # default value
       @Settings["PERMISSION_SECURITY"] = "secure" if @Settings["PERMISSION_SECURITY"].empty?
 
       log.debug "PERMISSION_SECURITY (after #{__callee__}): " \
