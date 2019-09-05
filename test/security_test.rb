@@ -485,7 +485,7 @@ module Yast
           expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy")
         end
 
-        it "sets user defined security permission " do
+        it "sets user defined security permission" do
           Security.Settings["PERMISSION_SECURITY"] = "local user_defined "
 
           expect(Security.read_permissions).to eql("user_defined")
