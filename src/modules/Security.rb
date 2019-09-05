@@ -395,21 +395,18 @@ module Yast
     end
 
     def read_permissions
-      perm = case @Settings["PERMISSION_SECURITY"].to_s
-              when /easy/
-                "easy"
-              when /paranoid/
-                "paranoid"
-              else
-                "secure"
-              end
+      # Remove "local" from the string
+      permissions = @Settings["PERMISSION_SECURITY"].to_s.split(" ")
+      @Settings["PERMISSION_SECURITY"] = permissions.delete_if {|p|
+        p == "local" }.join(" ")
 
-      @Settings["PERMISSION_SECURITY"] = perm
+      #default value
+      @Settings["PERMISSION_SECURITY"] = "secure" if @Settings["PERMISSION_SECURITY"].empty?
 
-      log.debug "PERMISSION SECURITY (after #{__callee__}): " \
+      log.debug "PERMISSION_SECURITY (after #{__callee__}): " \
         "#{@Settings['PERMISSION_SECURITY']}"
 
-      perm
+      @Settings['PERMISSION_SECURITY']
     end
 
     def read_polkit_settings
@@ -672,7 +669,9 @@ module Yast
       # Write security settings
       return false if Abort()
       Progress.NextStage
-      @Settings["PERMISSION_SECURITY"] << " local"
+      if !@Settings["PERMISSION_SECURITY"].include?("local")
+        @Settings["PERMISSION_SECURITY"] << " local"
+      end
       write_to_locations
 
       # Write inittab settings

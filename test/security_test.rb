@@ -477,16 +477,23 @@ module Yast
 
     describe "#read_permissions" do
 
-      context "depending on current persission" do
+      context "depending on current permission" do
         it "sets security permission to 'easy' if contains easy" do
-          Security.Settings["PERMISSION_SECURITY"] = "it_is_easy_to_test"
+          Security.Settings["PERMISSION_SECURITY"] = "easy local"
 
           expect(Security.read_permissions).to eql("easy")
           expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy")
         end
 
-        it "sets security permission to 'paranoid' if contains paranoid" do
-          Security.Settings["PERMISSION_SECURITY"] = "paranoid_permission"
+        it "sets user defined security permission " do
+          Security.Settings["PERMISSION_SECURITY"] = "local user_defined "
+
+          expect(Security.read_permissions).to eql("user_defined")
+          expect(Security.Settings["PERMISSION_SECURITY"]).to eql("user_defined")
+        end
+
+        it "removes local permission" do
+          Security.Settings["PERMISSION_SECURITY"] = "paranoid local"
 
           expect(Security.read_permissions).to eql("paranoid")
           expect(Security.Settings["PERMISSION_SECURITY"]).to eql("paranoid")
