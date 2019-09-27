@@ -221,7 +221,7 @@ module Yast
 
       context "when systemd is installed" do
         before do
-          allow(Package).to receive(:Installed).with("systemd") { true }
+          allow(PackageSystem).to receive(:Installed).with("systemd") { true }
         end
 
         context "on a non s390 architecture" do
@@ -329,7 +329,7 @@ module Yast
 
       context "when systemd is not installed but inittab exist" do
         before do
-          allow(Package).to receive(:Installed).with("systemd") { false }
+          allow(PackageSystem).to receive(:Installed).with("systemd") { false }
         end
 
         it "always returns nil" do
