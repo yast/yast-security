@@ -730,6 +730,10 @@ module Yast
     # (For use by autoinstallation.)
     # @return [Hash] Dumped settings (later acceptable by Import ())
     def Export
+      if @Settings["CONSOLE_SHUTDOWN"] == nil
+        log.info "CONSOLE_SHUTDOWN is nil => set to default"
+        @Settings["CONSOLE_SHUTDOWN"] = ::Security::CtrlAltDelConfig.default
+      end
       Builtins.eval(@Settings)
     end
 
