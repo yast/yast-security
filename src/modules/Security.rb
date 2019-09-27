@@ -314,13 +314,7 @@ module Yast
     # Read the information about ctrl+alt+del behavior
     # See bug 742783 for description
     def ReadConsoleShutdown
-      ret = ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
-
-      return ret if ::Security::CtrlAltDelConfig.systemd?
-
-      @Settings["CONSOLE_SHUTDOWN"] = ret if ::Security::CtrlAltDelConfig.inittab?
-
-      nil
+      ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
     end
 
     # Read the settings from the files included in @Locations
