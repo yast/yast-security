@@ -313,9 +313,8 @@ module Yast
 
     # Read the information about ctrl+alt+del behavior
     # See bug 742783 for description
-    # @return [String] reboot, ignore, ...    
     def ReadConsoleShutdown
-      ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
+     @Settings["CONSOLE_SHUTDOWN"] = ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default   
     end
 
     # Read the settings from the files included in @Locations
@@ -430,7 +429,7 @@ module Yast
       # Read security settings
       read_from_locations
 
-      @Settings["CONSOLE_SHUTDOWN"] = ReadConsoleShutdown()
+      ReadConsoleShutdown()
 
       log.debug "Settings (after read console shutdown): #{@Settings}"
 
@@ -780,7 +779,6 @@ module Yast
     publish :function => :SetModified, :type => "void ()"
     publish :function => :Modified, :type => "boolean ()"
     publish :function => :ReadServiceSettings, :type => "void ()"
-    publish :function => :ReadConsoleShutdown, :type => "string ()"
     publish :function => :Read, :type => "boolean ()"
     publish :function => :Write, :type => "boolean ()"
     publish :function => :Import, :type => "boolean (map)"
