@@ -230,7 +230,7 @@ module Yast
           end
 
           context "when ctrl+alt+del file not exist" do
-            it "returns 'reboot'" do
+            it "sets settings for shutdown as 'reboot'" do
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
 
               Security.ReadConsoleShutdown              
@@ -243,7 +243,7 @@ module Yast
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
             end
 
-            it "returns 'ignore' by default" do
+            it "sets settings for shutdown as 'ignore' by default" do
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return("dummy_file")
 
@@ -251,7 +251,7 @@ module Yast
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("ignore")
             end
 
-            it "returns 'halt' if links to poweroff.target" do
+            it "sets settings for shutdown as 'halt' if links to poweroff.target" do
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
@@ -259,7 +259,7 @@ module Yast
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("halt")
             end
 
-            it "returns 'reboot' if links to reboot.target" do
+            it "sets settings for shutdown as 'reboot' if links to reboot.target" do
               target_link = "/usr/lib/systemd/system/reboot.target"
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
@@ -268,7 +268,7 @@ module Yast
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("reboot")
             end
 
-            it "returns 'reboot' if links to ctrl-alt-del.target" do
+            it "sets settings for shutdown as 'reboot' if links to ctrl-alt-del.target" do
               target_link = "/usr/lib/systemd/system/ctrl-alt-del.target"
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
@@ -286,7 +286,7 @@ module Yast
           end
 
           context "when ctrl+alt+del file not exist" do
-            it "returns 'reboot'" do
+            it "sets settings for shutdown as 'reboot'" do
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
 
               Security.ReadConsoleShutdown
@@ -299,7 +299,7 @@ module Yast
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
             end
 
-            it "returns 'ignore' by default" do
+            it "sets settings for shutdown as 'ignore' by default" do
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return("dummy_file")
 
@@ -307,7 +307,7 @@ module Yast
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("ignore")
             end
 
-            it "returns 'halt' if links to poweroff.target" do
+            it "sets settings for shutdown as 'halt' if links to poweroff.target" do
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
@@ -315,7 +315,7 @@ module Yast
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("halt")
             end
 
-            it "returns 'reboot' if links to reboot.target" do
+            it "sets settings for shutdown as 'reboot' if links to reboot.target" do
               target_link = "/usr/lib/systemd/system/reboot.target"
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
@@ -324,7 +324,7 @@ module Yast
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("reboot")
             end
 
-            it "returns 'halt' if links to ctrl-alt-del.target" do
+            it "sets settings for shutdown as 'halt' if links to ctrl-alt-del.target" do
               target_link = "/usr/lib/systemd/system/ctrl-alt-del.target"
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
@@ -349,7 +349,7 @@ module Yast
           end
 
           context "when no inittab ca entry" do
-            it "returns 'reboot'" do
+            it "sets settings for shutdown as 'reboot'" do
               allow(FileUtils).to receive(:Exists).with("/etc/inittab") { false }
 
               Security.ReadConsoleShutdown
