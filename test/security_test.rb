@@ -698,23 +698,7 @@ module Yast
         end
 
       end
-
     end
-
-    describe "#Export" do
-      before do
-        Security.Settings["FAIL_DELAY"] = "5"
-        Security.Settings["PASS_MIN_LEN"] = "3"
-        Security.Settings["MANDATORY_SERVICES"] = "no"
-      end
-
-      context "when CONSOLE_SHUTDOWN is nil" do
-        it "sets CONSOLE_SHUTDOWN to default value" do
-          expect(Security.Export()["CONSOLE_SHUTDOWN"]).to eql(
-            ::Security::CtrlAltDelConfig.default)
-        end
-      end
-    end             
-    
+   
   end
 end
