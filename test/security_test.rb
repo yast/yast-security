@@ -221,7 +221,7 @@ module Yast
 
       context "when systemd is installed" do
         before do
-          allow(Package).to receive(:Installed).with("systemd") { true }
+          allow(PackageSystem).to receive(:Installed).with("systemd") { true }
         end
 
         context "on a non s390 architecture" do
@@ -230,10 +230,11 @@ module Yast
           end
 
           context "when ctrl+alt+del file not exist" do
-            it "returns 'reboot'" do
+            it "sets settings for shutdown as 'reboot'" do
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
 
-              expect(Security.ReadConsoleShutdown).to eql("reboot")
+              Security.ReadConsoleShutdown              
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("reboot")
             end
           end
 
@@ -242,34 +243,38 @@ module Yast
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
             end
 
-            it "returns 'ignore' by default" do
+            it "sets settings for shutdown as 'ignore' by default" do
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return("dummy_file")
 
-              expect(Security.ReadConsoleShutdown).to eql("ignore")
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("ignore")
             end
 
-            it "returns 'halt' if links to poweroff.target" do
+            it "sets settings for shutdown as 'halt' if links to poweroff.target" do
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
-              expect(Security.ReadConsoleShutdown).to eql("halt")
+              Security.ReadConsoleShutdown              
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("halt")
             end
 
-            it "returns 'reboot' if links to reboot.target" do
+            it "sets settings for shutdown as 'reboot' if links to reboot.target" do
               target_link = "/usr/lib/systemd/system/reboot.target"
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
-              expect(Security.ReadConsoleShutdown).to eql("reboot")
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("reboot")
             end
 
-            it "returns 'reboot' if links to ctrl-alt-del.target" do
+            it "sets settings for shutdown as 'reboot' if links to ctrl-alt-del.target" do
               target_link = "/usr/lib/systemd/system/ctrl-alt-del.target"
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
-              expect(Security.ReadConsoleShutdown).to eql("reboot")
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("reboot")
             end
 
           end
@@ -281,10 +286,11 @@ module Yast
           end
 
           context "when ctrl+alt+del file not exist" do
-            it "returns 'reboot'" do
+            it "sets settings for shutdown as 'reboot'" do
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
 
-              expect(Security.ReadConsoleShutdown).to eql("halt")
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("halt")
             end
           end
 
@@ -293,34 +299,38 @@ module Yast
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { true }
             end
 
-            it "returns 'ignore' by default" do
+            it "sets settings for shutdown as 'ignore' by default" do
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return("dummy_file")
 
-              expect(Security.ReadConsoleShutdown).to eql("ignore")
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("ignore")
             end
 
-            it "returns 'halt' if links to poweroff.target" do
+            it "sets settings for shutdown as 'halt' if links to poweroff.target" do
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
-              expect(Security.ReadConsoleShutdown).to eql("halt")
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("halt")
             end
 
-            it "returns 'reboot' if links to reboot.target" do
+            it "sets settings for shutdown as 'reboot' if links to reboot.target" do
               target_link = "/usr/lib/systemd/system/reboot.target"
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
-              expect(Security.ReadConsoleShutdown).to eql("reboot")
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("reboot")
             end
 
-            it "returns 'halt' if links to ctrl-alt-del.target" do
+            it "sets settings for shutdown as 'halt' if links to ctrl-alt-del.target" do
               target_link = "/usr/lib/systemd/system/ctrl-alt-del.target"
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
-              expect(Security.ReadConsoleShutdown).to eql("halt")
+              Security.ReadConsoleShutdown
+              expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("halt")
             end
 
           end
@@ -329,17 +339,7 @@ module Yast
 
       context "when systemd is not installed but inittab exist" do
         before do
-          allow(Package).to receive(:Installed).with("systemd") { false }
-        end
-
-        it "always returns nil" do
-          allow(FileUtils).to receive(:Exists).with("/etc/inittab")
-            .and_return(false, true)
-          allow(::Security::CtrlAltDelConfig).to receive(:current)
-            .and_return("reboot", "halt")
-
-          expect(Security.ReadConsoleShutdown).to eql(nil)
-          expect(Security.ReadConsoleShutdown).to eql(nil)
+          allow(PackageSystem).to receive(:Installed).with("systemd") { false }
         end
 
         context "on a non s390 architecture" do
@@ -349,7 +349,7 @@ module Yast
           end
 
           context "when no inittab ca entry" do
-            it "returns 'reboot'" do
+            it "sets settings for shutdown as 'reboot'" do
               allow(FileUtils).to receive(:Exists).with("/etc/inittab") { false }
 
               Security.ReadConsoleShutdown
