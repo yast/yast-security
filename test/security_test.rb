@@ -710,10 +710,11 @@ module Yast
 
       context "when CONSOLE_SHUTDOWN is nil" do
         it "sets CONSOLE_SHUTDOWN to default value" do
-          expect(Security.Export()["CONSOLE_SHUTDOWN"].to eql(
+          expect(Security.Export()["CONSOLE_SHUTDOWN"]).to eql(
             ::Security::CtrlAltDelConfig.default)
         end
       end
+    end             
     
   end
 end
