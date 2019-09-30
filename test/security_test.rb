@@ -698,7 +698,7 @@ module Yast
         end
 
       end
+
     end
-   
   end
 end
