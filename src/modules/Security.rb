@@ -27,6 +27,7 @@
 # $Id$
 require "yast"
 require "yast2/systemd/service"
+require "yast2/cfa/sysctl"
 require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
@@ -238,6 +239,8 @@ module Yast
       @proposal_valid = false
       @write_only = false
 
+      # Force reading of sysctl configuration
+      @sysctl_file = nil
 
       @activation_mapping = {
         "SYSLOG_ON_NO_ERROR"           => "/etc/init.d/boot.clock start",
@@ -343,7 +346,7 @@ module Yast
     def read_kernel_settings
       # NOTE: the call to #sort is only needed to satisfy the old testsuite
       @sysctl.sort.each do |key, default_value|
-        val = SCR.Read(path(".etc.sysctl_conf") + key)
+        val = sysctl_file[key]
         val = default_value if val.nil? || val == ""
         @Settings[key] = val
       end
@@ -560,12 +563,12 @@ module Yast
         int_val = Integer(val) rescue nil
         if int_val.nil?
           log.error "value #{val} for #{key} is not integer, not writing"
-        elsif val != SCR.Read(path(".etc.sysctl_conf") + key)
-          SCR.Write(path(".etc.sysctl_conf") + key, val)
+        elsif val != sysctl_file[key]
+          sysctl_file[key] = val
           written = true
         end
       end
-      SCR.Write(path(".etc.sysctl_conf"), nil) if written
+      sysctl_file.save if written
 
       # enable sysrq?
       sysrq = Integer(@Settings.fetch("kernel.sysrq", "0")) rescue nil
@@ -819,6 +822,18 @@ module Yast
       end
       @extra_services.map!(&:name)
       log.info("All extra services: #{@extra_services}")
+    end
+
+    # Returns the sysctl configuration
+    #
+    # @note It memoizes the value until {#main} is called.
+    #
+    # @return [Yast2::CFA::Sysctl]
+    def sysctl_file
+      return @sysctl_file if @sysctl_file
+      @sysctl_file = Yast2::CFA::Sysctl.new
+      @sysctl_file.load
+      @sysctl_file
     end
   end
 
