@@ -45,7 +45,7 @@ BuildRequires: rubygem(%{rb_default_ruby_abi}:yast-rake-ci)
 
 # new Pam.ycp API
 Requires:       yast2-pam >= 2.14.0
-# Yast2::CFA::Sysctl
+# CFA::Sysctl
 Requires:       yast2 >= 4.2.25
 Requires:       yast2-ruby-bindings >= 1.0.0
 
