@@ -85,7 +85,7 @@ module Yast
           Ops.set(
             @param,
             "passwd_encryption",
-            Ops.get_string(@param, "encryption", "des")
+            Ops.get_string(@param, "encryption", Security.default_encrypt_method)
           )
         end
         @ret = Security.Import(

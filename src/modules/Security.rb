@@ -34,6 +34,7 @@ require "security/display_manager"
 
 module Yast
   class SecurityClass < Module
+    DEFAULT_ENCRYPT_METHOD = "sha512".freeze
 
     include Yast::Logger
     include ::Security::CtrlAltDelConfig
@@ -357,7 +358,7 @@ module Yast
     def read_encryption_method
       method = SCR.Read(path(".etc.login_defs.ENCRYPT_METHOD")).to_s.downcase
 
-      method = "des" if !@encryption_methods.include?(method)
+      method = "sha512" if !@encryption_methods.include?(method)
 
       @Settings["PASSWD_ENCRYPTION"] = method
     end
@@ -518,7 +519,7 @@ module Yast
     # Write settings related to PAM behavior
     def write_pam_settings
       # pam stuff
-      encr = @Settings.fetch("PASSWD_ENCRYPTION", "sha512")
+      encr = @Settings.fetch("PASSWD_ENCRYPTION", default_encrypt_method)
       if encr != @Settings_bak["PASSWD_ENCRYPTION"]
         SCR.Write(path(".etc.login_defs.ENCRYPT_METHOD"), encr)
       end
@@ -763,6 +764,13 @@ module Yast
     # @return table items
     def Overview
       []
+    end
+
+    # Expose the default encryption method to other parts of the module
+    #
+    # @return [String]
+    def default_encrypt_method
+      DEFAULT_ENCRYPT_METHOD
     end
 
     publish :variable => :mandatory_services, :type => "const list <list <string>>"

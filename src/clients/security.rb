@@ -210,7 +210,7 @@ module Yast
         Ops.set(
           Security.Settings,
           "PASSWD_ENCRYPTION",
-          Ops.get_string(options, "passwd", "des")
+          Ops.get_string(options, "passwd", Security.default_encrypt_method)
         )
         Security.modified = true
       end
