@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Nov 22 12:21:59 UTC 2019 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change default encryption method from DES to SHA512 (bsc#1157541,
+  CVE-2019-3700).
+- 4.2.6
+
+-------------------------------------------------------------------
 Fri Oct 18 13:06:46 CEST 2019 - schubi@suse.de
 
 - Added extra_services to security.rnc file (bsc#1153623).
