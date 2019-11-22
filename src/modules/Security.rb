@@ -35,6 +35,7 @@ require "security/display_manager"
 module Yast
   class SecurityClass < Module
     DEFAULT_ENCRYPT_METHOD = "sha512".freeze
+    private_constant :DEFAULT_ENCRYPT_METHOD
 
     include Yast::Logger
     include ::Security::CtrlAltDelConfig
