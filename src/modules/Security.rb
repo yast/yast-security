@@ -28,6 +28,7 @@
 require "yast"
 require "yast2/systemd/service"
 require "cfa/sysctl"
+require "cfa/shadow_config"
 require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
@@ -44,6 +45,25 @@ module Yast
       "yes" => "1",
       "no"  => "0"
     }
+
+    SHADOW_ATTRS = [
+      "FAIL_DELAY",
+      "GID_MAX",
+      "GID_MIN",
+      "PASS_MAX_DAYS",
+      "PASS_MIN_DAYS",
+      "PASS_WARN_AGE",
+      "UID_MAX",
+      "UID_MIN",
+      "SYS_UID_MAX",
+      "SYS_UID_MIN",
+      "SYS_GID_MAX",
+      "SYS_GID_MIN",
+      "USERADD_CMD",
+      "USERDEL_PRECMD",
+      "USERDEL_POSTCMD"
+    ].freeze
+
 
     attr_reader :display_manager
 
@@ -153,23 +173,6 @@ module Yast
 
       # Security settings locations
       @Locations = {
-        ".etc.login_defs"           => [
-          "FAIL_DELAY",
-          "GID_MAX",
-          "GID_MIN",
-          "PASS_MAX_DAYS",
-          "PASS_MIN_DAYS",
-          "PASS_WARN_AGE",
-          "UID_MAX",
-          "UID_MIN",
-          "SYS_UID_MAX",
-          "SYS_UID_MIN",
-          "SYS_GID_MAX",
-          "SYS_GID_MIN",
-          "USERADD_CMD",
-          "USERDEL_PRECMD",
-          "USERDEL_POSTCMD"
-        ],
         ".sysconfig.security"       => ["PERMISSION_SECURITY"],
         ".sysconfig.services"       => [
           "DISABLE_RESTART_ON_UPDATE",
@@ -254,6 +257,8 @@ module Yast
         "net.ipv4.ip_forward"          => "/etc/init.d/boot.ipconfig start",
         "net.ipv6.conf.all.forwarding" => "/etc/init.d/boot.ipconfig start"
       }
+
+      @shadow_config = nil
     end
 
     # List of missing mandatory services
@@ -344,6 +349,17 @@ module Yast
       log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
+    # Reads login.defs configuration
+    def read_shadow_config
+      SHADOW_ATTRS.each do |attr|
+        value = shadow_config.public_send(attr.downcase)
+        next if value.nil?
+
+        @Settings[attr] = shadow_config.public_send(attr.downcase)
+      end
+      log.debug "Settings (after #{__callee__}): #{@Settings}"
+    end
+
     # Read the settings from sysctl.conf
     def read_kernel_settings
       # NOTE: the call to #sort is only needed to satisfy the old testsuite
@@ -357,7 +373,7 @@ module Yast
     end
 
     def read_encryption_method
-      method = SCR.Read(path(".etc.login_defs.ENCRYPT_METHOD")).to_s.downcase
+      method = shadow_config.encrypt_method.to_s.downcase
 
       method = "sha512" if !@encryption_methods.include?(method)
 
@@ -433,6 +449,7 @@ module Yast
 
       # Read security settings
       read_from_locations
+      read_shadow_config
 
       ReadConsoleShutdown()
 
@@ -517,14 +534,18 @@ module Yast
       end
     end
 
+    # Write login.defs configuration
+    def write_shadow_config
+      SHADOW_ATTRS.each do |attr|
+        shadow_config.public_send("#{attr.to_s.downcase}=", @Settings[attr])
+      end
+      encr = @Settings.fetch("PASSWD_ENCRYPTION", default_encrypt_method)
+      shadow_config.encrypt_method = encr if encr != @Settings_bak["PASSWD_ENCRYPTION"]
+      shadow_config.save
+    end
+
     # Write settings related to PAM behavior
     def write_pam_settings
-      # pam stuff
-      encr = @Settings.fetch("PASSWD_ENCRYPTION", default_encrypt_method)
-      if encr != @Settings_bak["PASSWD_ENCRYPTION"]
-        SCR.Write(path(".etc.login_defs.ENCRYPT_METHOD"), encr)
-      end
-
       # use cracklib?
       if @Settings["PASSWD_USE_CRACKLIB"] == "yes"
         Pam.Add("cracklib")
@@ -672,6 +693,7 @@ module Yast
         @Settings["PERMISSION_SECURITY"] << " local"
       end
       write_to_locations
+      write_shadow_config
 
       # Write inittab settings
       return false if Abort()
@@ -862,6 +884,10 @@ module Yast
     # @return value [String] Value to assign to the given key
     def write_sysctl_value(key, value)
       sysctl_file.public_send(SYSCTL_KEY_TO_METH[key].to_s + "=", value)
+    end
+
+    def shadow_config
+      @shadow_config ||= CFA::ShadowConfig.load
     end
   end
 

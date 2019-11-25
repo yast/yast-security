@@ -1,6 +1,7 @@
 #!/usr/bin/env rspec
 
 require_relative 'test_helper'
+require "cfa/shadow_config"
 
 module Yast
   class LevelsTester < Client
@@ -21,6 +22,13 @@ module Yast
   describe "Levels" do
     let(:tester) { LevelsTester.new }
     subject(:settings) { tester.Levels }
+
+    let(:shadow_config) { CFA::ShadowConfig.new }
+
+    before do
+      allow(CFA::ShadowConfig).to receive(:load).and_return(shadow_config)
+      allow(shadow_config).to receive(:save)
+    end
 
     it "reads the settings from the yaml files" do
       expect(settings["Level1"]["FAIL_DELAY"]).to eq "6"
@@ -55,10 +63,10 @@ module Yast
         expect(SCR).to exec_bash("ln -s -f /dev/null /etc/systemd/system/ctrl-alt-del.target")
         expect(SCR).to exec_bash("echo 0 > /proc/sys/kernel/sysrq")
         expect(SCR).to exec_bash("/usr/bin/chkstat --system")
+        expect(shadow_config).to receive(:fail_delay=).with("6")
 
         tester.apply_level2
 
-        expect(written_value_for(".etc.login_defs.FAIL_DELAY")).to eq "6"
         expect(written_value_for(".sysconfig.locate.RUN_UPDATEDB_AS")).to eq "nobody"
       end
     end
