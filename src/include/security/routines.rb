@@ -59,7 +59,7 @@ module Yast
     end
 
     # Return a widget from the WIDGETS map created acording to the ID.
-    # @param [String] ID security setting identifier
+    # @param [String] _ID security setting identifier
     # @return created widget
     # @see <a href="widgets.html">widgets.ycp</a>
     def settings2widget(_ID)
@@ -153,7 +153,7 @@ module Yast
     end
 
     # Query the widget with `id(ID) for its `Value
-    # @param [String] ID security setting identifier
+    # @param [String] _ID security setting identifier
     def widget2settings(_ID)
       ret = UI.QueryWidget(Id(_ID), :Value)
       new = ""
@@ -189,8 +189,8 @@ module Yast
     # Frame with spacings
     # @param [Float] f1 horizontal spacing
     # @param [Float] f2 vertical spacing
-    # @param [String] S frame label
-    # @param [Yast::Term] T frame contents
+    # @param [String] _S frame label
+    # @param [Yast::Term] _T frame contents
     # @return frame with contents
     def XFrame(f1, f2, _S, _T)
       f1 = deep_copy(f1)

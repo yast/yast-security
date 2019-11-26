@@ -881,7 +881,7 @@ module Yast
     end
 
     # @param key    [String] Key to set the value for
-    # @return value [String] Value to assign to the given key
+    # @param value [String] Value to assign to the given key
     def write_sysctl_value(key, value)
       sysctl_file.public_send(SYSCTL_KEY_TO_METH[key].to_s + "=", value)
     end
