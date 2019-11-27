@@ -37,10 +37,13 @@ module Yast
 
   describe Security do
     let(:sysctl_file) { CFA::Sysctl.new }
+    let(:shadow_config) { CFA::ShadowConfig.new }
 
     before do
       allow(CFA::Sysctl).to receive(:new).and_return(sysctl_file)
       allow(sysctl_file).to receive(:save)
+      allow(CFA::ShadowConfig).to receive(:load).and_return(shadow_config)
+      allow(shadow_config).to receive(:save)
       Security.main
     end
 
@@ -106,6 +109,7 @@ module Yast
     describe "#Write" do
       it "writes and applies all the settings" do
         expect(Security).to receive(:write_to_locations)
+        expect(Security).to receive(:write_shadow_config)
         expect(Security).to receive(:write_console_shutdown)
         expect(Security).to receive(:write_pam_settings)
         expect(Security).to receive(:write_polkit_settings)
@@ -155,13 +159,23 @@ module Yast
       end
 
       it "updates changed values" do
-        Security.Settings["USERADD_CMD"] = "cmd"
-        Security.Settings["USERDEL_PRECMD"] = ""
+        Security.Settings["SYSTOHC"] = "yes"
         Security.write_to_locations
 
-        expect(written_value_for(".etc.login_defs.USERADD_CMD")).to eq("cmd")
-        expect(written_value_for(".etc.login_defs.USERDEL_PRECMD")).to eq("")
-        expect(was_written?(".etc.login_defs")).to eq(true)
+        expect(written_value_for(".sysconfig.clock.SYSTOHC")).to eq("yes")
+        expect(was_written?(".sysconfig.clock")).to eq(true)
+      end
+    end
+
+    describe "#write_shadow_config" do
+      before do
+        Security.Settings["FAIL_DELAY"] = "10"
+      end
+
+      it "writes login.defs configuration" do
+        expect(shadow_config).to receive(:fail_delay=).with("10")
+        expect(shadow_config).to receive(:save)
+        Security.write_shadow_config
       end
     end
 
@@ -635,6 +649,17 @@ module Yast
           expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
           expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
         end
+      end
+    end
+
+    describe "#read_shadow_config" do
+      before do
+        allow(shadow_config).to receive(:fail_delay).and_return("10")
+      end
+
+      it "reads login.defs configuration" do
+        Security.read_shadow_config
+        expect(Security.Settings["FAIL_DELAY"]).to eq("10")
       end
     end
 
