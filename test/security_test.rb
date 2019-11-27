@@ -172,7 +172,7 @@ module Yast
         Security.Settings["FAIL_DELAY"] = "10"
       end
 
-      it "reads login.defs configuration" do
+      it "writes login.defs configuration" do
         expect(shadow_config).to receive(:fail_delay=).with("10")
         expect(shadow_config).to receive(:save)
         Security.write_shadow_config
