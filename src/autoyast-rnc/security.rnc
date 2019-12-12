@@ -61,7 +61,6 @@ mandatory_services = element mandatory_services  { text }
 net.ipv4.ip_forward = element net.ipv4.ip_forward  { text }
 net.ipv4.tcp_syncookies = element net.ipv4.tcp_syncookies { text }
 net.ipv6.conf.all.forwarding = element net.ipv6.conf.all.forwarding { text }
-
 y2_security =
   console_shutdown
   | cracklib_dict_path
