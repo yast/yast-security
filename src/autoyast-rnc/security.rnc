@@ -45,12 +45,23 @@ system_gid_max = element system_gid_max { text }
 system_gid_min = element system_gid_min { text }
 system_uid_max = element system_uid_max { text }
 system_uid_min = element system_uid_min { text }
+sys_gid_max = element sys_gid_max { text }
+sys_gid_min = element sys_gid_min { text }
+sys_uid_max = element sys_uid_max { text }
+sys_uid_min = element sys_uid_min { text }
 systohc = element systohc { text }
 uid_max = element uid_max { text }
 uid_min = element uid_min { text }
 useradd_cmd = element useradd_cmd { text }
 userdel_postcmd = element userdel_postcmd { text }
 userdel_precmd = element userdel_precmd { text }
+hibernate_system = element hibernate_system  { text }
+kernel.sysrq = element kernel.sysrq  { text }
+mandatory_services = element mandatory_services  { text }
+net.ipv4.ip_forward = element net.ipv4.ip_forward  { text }
+net.ipv4.tcp_syncookies = element net.ipv4.tcp_syncookies { text }
+net.ipv6.conf.all.forwarding = element net.ipv6.conf.all.forwarding { text }
+
 y2_security =
   console_shutdown
   | cracklib_dict_path
@@ -91,12 +102,22 @@ y2_security =
   | system_gid_min
   | system_uid_max
   | system_uid_min
+  | sys_gid_max
+  | sys_gid_min
+  | sys_uid_max
+  | sys_uid_min
   | systohc
   | uid_max
   | uid_min
   | useradd_cmd
   | userdel_postcmd
   | userdel_precmd
+  | hibernate_system
+  | kernel.sysrq
+  | mandatory_services
+  | net.ipv4.ip_forward
+  | net.ipv4.tcp_syncookies
+  | net.ipv6.conf.all.forwarding
   | group_encryption
   | sec_ip_forward
   | displaymanager_shutdown
