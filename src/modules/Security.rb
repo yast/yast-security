@@ -248,7 +248,6 @@ module Yast
       @sysctl_file = nil
 
       @activation_mapping = {
-        "SYSLOG_ON_NO_ERROR"           => "/etc/init.d/boot.clock start",
         "DHCPD_RUN_CHROOTED"           => "/etc/init.d/dhcpd restart",
         "DHCPD_RUN_AS"                 => "/etc/init.d/dhcpd restart",
         # restart sendmail or postfix - whatever is installed
