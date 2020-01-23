@@ -248,13 +248,13 @@ module Yast
       @sysctl_file = nil
 
       @activation_mapping = {
-        "DHCPD_RUN_CHROOTED"           => "/bin/systemctl try-restart dhcpd.service",
-        "DHCPD_RUN_AS"                 => "/bin/systemctl try-restart dhcpd.service",
+        "DHCPD_RUN_CHROOTED"           => "/usr/bin/systemctl try-restart dhcpd.service",
+        "DHCPD_RUN_AS"                 => "/usr/bin/systemctl try-restart dhcpd.service",
         # restart sendmail or postfix - whatever is installed
-        "SMTPD_LISTEN_REMOTE"          => "/bin/systemctl try-restart sendmail postfix",
-        "net.ipv4.tcp_syncookies"      => "/bin/systemctl try-restart network",
-        "net.ipv4.ip_forward"          => "/bin/systemctl try-restart network",
-        "net.ipv6.conf.all.forwarding" => "/bin/systemctl try-restart network"
+        "SMTPD_LISTEN_REMOTE"          => "/usr/bin/systemctl try-restart sendmail postfix",
+        "net.ipv4.tcp_syncookies"      => "/usr/bin/systemctl try-restart network",
+        "net.ipv4.ip_forward"          => "/usr/bin/systemctl try-restart network",
+        "net.ipv6.conf.all.forwarding" => "/usr/bin/systemctl try-restart network"
       }
 
       @shadow_config = nil
