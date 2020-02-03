@@ -36,12 +36,12 @@ module Yast
   import "Service"
 
   describe Security do
-    let(:sysctl_file) { CFA::Sysctl.new }
+    let(:sysctl_config) { CFA::SysctlConfig.new }
     let(:shadow_config) { CFA::ShadowConfig.new }
 
     before do
-      allow(CFA::Sysctl).to receive(:new).and_return(sysctl_file)
-      allow(sysctl_file).to receive(:save)
+      allow(CFA::SysctlConfig).to receive(:new).and_return(sysctl_config)
+      allow(sysctl_config).to receive(:save)
       allow(CFA::ShadowConfig).to receive(:load).and_return(shadow_config)
       allow(shadow_config).to receive(:save)
       Security.main
@@ -198,21 +198,21 @@ module Yast
         it "does not write invalid values" do
           Security.Settings["kernel.sysrq"] = "yes"
           Security.Settings["net.ipv4.ip_forward"] = ""
-          expect(sysctl_file).to_not receive(:kernel_sysrq).with("yes")
-          expect(sysctl_file).to_not receive(:raw_forward_ipv4=).with("")
+          expect(sysctl_config).to_not receive(:kernel_sysrq).with("yes")
+          expect(sysctl_config).to_not receive(:raw_forward_ipv4=).with("")
           Security.write_kernel_settings
         end
 
         it "does not write unchanged values" do
           Security.Settings["net.ipv4.ip_forward"] = "0"
-          expect(sysctl_file).to_not receive(:raw_forward_ipv4=).with("0")
+          expect(sysctl_config).to_not receive(:raw_forward_ipv4=).with("0")
           Security.write_kernel_settings
         end
 
         it "writes changed values" do
           Security.Settings["net.ipv4.ip_forward"] = "1"
-          expect(sysctl_file).to receive(:raw_forward_ipv4=).with("1")
-          expect(sysctl_file).to receive(:save)
+          expect(sysctl_config).to receive(:raw_forward_ipv4=).with("1")
+          expect(sysctl_config).to receive(:save)
           Security.write_kernel_settings
         end
       end

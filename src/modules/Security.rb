@@ -27,7 +27,7 @@
 # $Id$
 require "yast"
 require "yast2/systemd/service"
-require "cfa/sysctl"
+require "cfa/sysctl_config"
 require "cfa/shadow_config"
 require "yaml"
 require "security/ctrl_alt_del_config"
@@ -245,7 +245,7 @@ module Yast
       @write_only = false
 
       # Force reading of sysctl configuration
-      @sysctl_file = nil
+      @sysctl_config = nil
 
       @activation_mapping = {
         "DHCPD_RUN_CHROOTED"           => "/usr/bin/systemctl try-restart dhcpd.service",
@@ -590,7 +590,7 @@ module Yast
           written = true
         end
       end
-      sysctl_file.save if written
+      sysctl_config.save if written
 
       # enable sysrq?
       sysrq = Integer(@Settings.fetch("kernel.sysrq", "0")) rescue nil
@@ -858,15 +858,15 @@ module Yast
     #
     # @note It memoizes the value until {#main} is called.
     #
-    # @return [Yast2::CFA::Sysctl]
-    def sysctl_file
-      return @sysctl_file if @sysctl_file
-      @sysctl_file = CFA::Sysctl.new
-      @sysctl_file.load
-      @sysctl_file
+    # @return [Yast2::CFA::SysctlConfig]
+    def sysctl_config
+      return @sysctl_config if @sysctl_config
+      @sysctl_config = CFA::SysctlConfig.new
+      @sysctl_config.load
+      @sysctl_config
     end
 
-    # Map sysctl keys to method names from the CFA::Sysctl class.
+    # Map sysctl keys to method names from the CFA::SysctlConfig class.
     SYSCTL_KEY_TO_METH = {
       "kernel.sysrq"                 => :kernel_sysrq,
       "net.ipv4.tcp_syncookies"      => :raw_tcp_syncookies,
@@ -876,13 +876,13 @@ module Yast
 
     # @param key [String] Key to get the value for
     def read_sysctl_value(key)
-      sysctl_file.public_send(SYSCTL_KEY_TO_METH[key])
+      sysctl_config.public_send(SYSCTL_KEY_TO_METH[key])
     end
 
     # @param key    [String] Key to set the value for
     # @param value [String] Value to assign to the given key
     def write_sysctl_value(key, value)
-      sysctl_file.public_send(SYSCTL_KEY_TO_METH[key].to_s + "=", value)
+      sysctl_config.public_send(SYSCTL_KEY_TO_METH[key].to_s + "=", value)
     end
 
     def shadow_config
