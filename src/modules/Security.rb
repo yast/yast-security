@@ -869,9 +869,9 @@ module Yast
     # Map sysctl keys to method names from the CFA::SysctlConfig class.
     SYSCTL_KEY_TO_METH = {
       "kernel.sysrq"                 => :kernel_sysrq,
-      "net.ipv4.tcp_syncookies"      => :raw_tcp_syncookies,
-      "net.ipv4.ip_forward"          => :raw_forward_ipv4,
-      "net.ipv6.conf.all.forwarding" => :raw_forward_ipv6
+      "net.ipv4.tcp_syncookies"      => :tcp_syncookies,
+      "net.ipv4.ip_forward"          => :forward_ipv4,
+      "net.ipv6.conf.all.forwarding" => :forward_ipv6
     }.freeze
 
     # @param key [String] Key to get the value for
