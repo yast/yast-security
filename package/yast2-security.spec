@@ -35,7 +35,7 @@ BuildRequires:  yast2-devtools >= 4.2.2
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:yast-rake) >= 0.2.5
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 # CFA::SysctlConfig
-BuildRequires:  yast2 >= 4.2.64
+BuildRequires:  yast2 >= 4.2.65
 # Unfortunately we cannot move this to macros.yast,
 # bcond within macros are ignored by osc/OBS.
 %bcond_with yast_run_ci_tests
@@ -46,7 +46,7 @@ BuildRequires: rubygem(%{rb_default_ruby_abi}:yast-rake-ci)
 # new Pam.ycp API
 Requires:       yast2-pam >= 2.14.0
 # CFA::SysctlConfig
-Requires:       yast2 >= 4.2.64
+Requires:       yast2 >= 4.2.65
 Requires:       yast2-ruby-bindings >= 1.0.0
 
 Provides:       y2c_sec yast2-config-security
