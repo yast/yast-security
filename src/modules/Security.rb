@@ -726,6 +726,19 @@ module Yast
     # @return [Boolean] True on success
     def Import(settings)
       settings = deep_copy(settings)
+      if settings.key?("KERNEL.SYSRQ")
+        settings["kernel.sysrq"] = settings["KERNEL.SYSRQ"]
+      end
+      if settings.key?("NET.IPV4.TCP_SYNCOOKIES")
+        settings["net.ipv4.tcp_syncookies"] = settings["NET.IPV4.TCP_SYNCOOKIES"]
+      end
+      if settings.key?("NET.IPV4.IP_FORWARD")
+        settings["net.ipv4.ip_forward"] = settings["NET.IPV4.IP_FORWARD"]
+      end
+      if settings.key?("NET.IPV6.CONF.ALL.FORWARDING")
+        settings["net.ipv6.conf.all.forwarding"] = settings["NET.IPV6.CONF.ALL.FORWARDING"]
+      end
+
       return true if settings == {}
 
       @modified = true
