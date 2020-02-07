@@ -590,7 +590,10 @@ module Yast
           written = true
         end
       end
-      sysctl_config.save if written
+
+      if written && !sysctl_config.conflict?
+        sysctl_config.save
+      end
 
       # enable sysrq?
       sysrq = Integer(@Settings.fetch("kernel.sysrq", "0")) rescue nil
