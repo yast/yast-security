@@ -742,6 +742,11 @@ module Yast
         settings["net.ipv6.conf.all.forwarding"] = settings.delete["NET.IPV6.CONF.ALL.FORWARDING"]
       end
 
+      # conversion to true/false
+      settings["net.ipv4.tcp_syncookies"] = settings["net.ipv4.tcp_syncookies"] == "1" ? true : false
+      settings["net.ipv4.ip_forward"] = settings["net.ipv4.ip_forward"] == "1" ? true : false
+      settings["net.ipv6.conf.all.forwarding"] = settings["net.ipv6.conf.all.forwarding"] == "1" ? true : false
+
       return true if settings == {}
 
       @modified = true
@@ -766,6 +771,17 @@ module Yast
     # (For use by autoinstallation.)
     # @return [Hash] Dumped settings (later acceptable by Import ())
     def Export
+      # conversion to 0/1 string
+      if [TrueClass, FalseClass].include?(@Settings["net.ipv4.ip_forward"].class)
+        @Settings["net.ipv4.ip_forward"] = @Settings["net.ipv4.ip_forward"] ? "1" : "0"
+      end
+      if [TrueClass, FalseClass].include?(@Settings["net.ipv6.conf.all.forwarding"].class)
+        @Settings["net.ipv6.conf.all.forwarding"] = @Settings["net.ipv6.conf.all.forwarding"] ? "1" : "0"
+      end
+      if [TrueClass, FalseClass].include?(@Settings["net.ipv4.tcp_syncookies"].class)
+        @Settings["net.ipv4.tcp_syncookies"] = @Settings["net.ipv4.tcp_syncookies"] ? "1" : "0"
+      end
+
       Builtins.eval(@Settings)
     end
 
