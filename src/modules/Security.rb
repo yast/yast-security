@@ -118,9 +118,9 @@ module Yast
         "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
         "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
         "kernel.sysrq"                              => "0",
-        "net.ipv4.tcp_syncookies"                   => "1",
-        "net.ipv4.ip_forward"                       => "0",
-        "net.ipv6.conf.all.forwarding"              => "0",
+        "net.ipv4.tcp_syncookies"                   => true,
+        "net.ipv4.ip_forward"                       => false,
+        "net.ipv6.conf.all.forwarding"              => false,
         "FAIL_DELAY"                                => "3",
         "GID_MAX"                                   => "60000",
         "GID_MIN"                                   => "1000",
@@ -583,8 +583,8 @@ module Yast
       @sysctl.sort.each do |key, default_value|
         val = @Settings.fetch(key, default_value)
         int_val = Integer(val) rescue nil
-        if int_val.nil?
-          log.error "value #{val} for #{key} is not integer, not writing"
+        if int_val.nil? && ![TrueClass, FalseClass].include?(val.class)
+          log.error "value #{val} for #{key} has wrong type, not writing"
         elsif val != read_sysctl_value(key)
           write_sysctl_value(key, val)
           written = true
@@ -885,9 +885,9 @@ module Yast
     # Map sysctl keys to method names from the CFA::SysctlConfig class.
     SYSCTL_KEY_TO_METH = {
       "kernel.sysrq"                 => :kernel_sysrq,
-      "net.ipv4.tcp_syncookies"      => :raw_tcp_syncookies,
-      "net.ipv4.ip_forward"          => :raw_forward_ipv4,
-      "net.ipv6.conf.all.forwarding" => :raw_forward_ipv6
+      "net.ipv4.tcp_syncookies"      => :tcp_syncookies,
+      "net.ipv4.ip_forward"          => :forward_ipv4,
+      "net.ipv6.conf.all.forwarding" => :forward_ipv6
     }.freeze
 
     # @param key [String] Key to get the value for

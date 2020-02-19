@@ -117,7 +117,9 @@ module Yast
         "yes" => "no",
         "no" => "yes",
         "1" => "0",
-        "0" => "1"
+        "0" => "1",
+        true => false,
+        false => true
       }
 
       # mapping for "Configure" links
@@ -150,9 +152,9 @@ module Yast
       # handle the special cases at first
       if Builtins.contains(@configurable_options, option)
         ret = _("Configure")
-      elsif ["1", "yes"].include?(value)
+      elsif ["1", "yes", true].include?(value)
         ret = _("Enabled")
-      elsif ["0", "no"].include?(value)
+      elsif ["0", "no", false].include?(value)
         ret = _("Disabled")
       else
         return @UNKNOWN_STATUS
@@ -257,23 +259,15 @@ module Yast
         },
         {
           "id"        => "net.ipv4.tcp_syncookies",
-          "is_secure" => Ops.get(
-            Security.Settings,
-            "net.ipv4.tcp_syncookies",
-            ""
-          ) == "1"
+          "is_secure" => Security.Settings[ "net.ipv4.tcp_syncookies" ]
         },
         {
           "id"        => "net.ipv4.ip_forward",
-          "is_secure" => Ops.get(Security.Settings, "net.ipv4.ip_forward", "") == "0"
+          "is_secure" => !Security.Settings["net.ipv4.ip_forward"]
         },
         {
           "id"        => "net.ipv6.conf.all.forwarding",
-          "is_secure" => Ops.get(
-            Security.Settings,
-            "net.ipv6.conf.all.forwarding",
-            ""
-          ) == "0"
+          "is_secure" => !Security.Settings["net.ipv6.conf.all.forwarding"]
         },
         {
           "id"        => "MANDATORY_SERVICES",
@@ -481,12 +475,7 @@ module Yast
           Builtins.y2milestone("Clicked %1 link", ret)
 
           current_value = Ops.get(Security.Settings, Convert.to_string(ret), "")
-
-          new_value = Ops.get_string(
-            @link_value_mapping,
-            current_value,
-            current_value
-          )
+          new_value = @link_value_mapping[current_value]
 
           # set the new value and refresh the overview
           if Builtins.haskey(@link_value_mapping, current_value) &&

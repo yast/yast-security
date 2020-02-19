@@ -34,6 +34,6 @@ USERADD_CMD:                      "/usr/sbin/useradd.local"
 USERDEL_POSTCMD:                  "/usr/sbin/userdel-post.local"
 USERDEL_PRECMD:                   "/usr/sbin/userdel-pre.local"
 kernel.sysrq:                     '0'
-net.ipv4.ip_forward:              '0'
-net.ipv4.tcp_syncookies:          '1'
-net.ipv6.conf.all.forwarding:     '0'
+net.ipv4.ip_forward:              false
+net.ipv4.tcp_syncookies:          true
+net.ipv6.conf.all.forwarding:     false
