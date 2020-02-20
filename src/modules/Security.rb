@@ -759,7 +759,7 @@ module Yast
         else
           if @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
             val = settings[@sysctl2sysconfig[k]].to_s
-            tmpSettings[k] = SYSCTL_VALUES[val] || val
+            tmpSettings[k] = SYSCTL_VALUES.key?(val) ? SYSCTL_VALUES[val] : val
           else
             tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
           end

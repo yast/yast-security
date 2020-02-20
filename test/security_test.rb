@@ -228,7 +228,7 @@ module Yast
         it "writes valid values" do
           expect(SCR).to exec_bash("echo 1 > /proc/sys/kernel/sysrq")
 
-          Security.Settings["kernel.sysrq"] = true
+          Security.Settings["kernel.sysrq"] = "1"
           Security.write_kernel_settings
         end
       end
