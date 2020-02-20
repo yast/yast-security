@@ -204,13 +204,13 @@ module Yast
         end
 
         it "does not write unchanged values" do
-          Security.Settings["net.ipv4.ip_forward"] = "0"
+          Security.Settings["net.ipv4.ip_forward"] = false
           expect(sysctl_config).to_not receive(:raw_forward_ipv4=).with("0")
           Security.write_kernel_settings
         end
 
         it "writes changed values" do
-          Security.Settings["net.ipv4.ip_forward"] = "1"
+          Security.Settings["net.ipv4.ip_forward"] = true
           expect(sysctl_config).to receive(:raw_forward_ipv4=).with("1")
           expect(sysctl_config).to receive(:save)
           Security.write_kernel_settings
@@ -228,7 +228,7 @@ module Yast
         it "writes valid values" do
           expect(SCR).to exec_bash("echo 1 > /proc/sys/kernel/sysrq")
 
-          Security.Settings["kernel.sysrq"] = "1"
+          Security.Settings["kernel.sysrq"] = true
           Security.write_kernel_settings
         end
       end
@@ -575,9 +575,9 @@ module Yast
 
       it "sets kernel settings based on /etc/sysctl.conf" do
         expect(Security.Settings["kernel.sysrq"]).to eql("0")
-        expect(Security.Settings["net.ipv4.tcp_syncookies"]).to eql("1")
-        expect(Security.Settings["net.ipv4.ip_forward"]).to eql("0")
-        expect(Security.Settings["net.ipv6.conf.all.forwarding"]).to eql("0")
+        expect(Security.Settings["net.ipv4.tcp_syncookies"]).to eql(true)
+        expect(Security.Settings["net.ipv4.ip_forward"]).to eql(false)
+        expect(Security.Settings["net.ipv6.conf.all.forwarding"]).to eql(false)
       end
     end
 
@@ -684,7 +684,7 @@ module Yast
         Security.Settings["MANDATORY_SERVICES"] = "no"
 
         # SYSCTL
-        Security.Settings["net.ipv4.ip_forward"] = "1"
+        Security.Settings["net.ipv4.ip_forward"] = true
 
         # OBSOLETE LOGIN DEFS
         Security.Settings["SYS_UID_MIN"] = 200
@@ -710,7 +710,7 @@ module Yast
         it "imports SYSCTL settings modifying key names and adapting values" do
           expect(Security.Import("IP_FORWARD" => "no")).to eql(true)
 
-          expect(Security.Settings["net.ipv4.ip_forward"]).to eql("0")
+          expect(Security.Settings["net.ipv4.ip_forward"]).to eql(false)
         end
 
         it "imports LOGIN DEFS settings transforming key name" do

@@ -42,8 +42,8 @@ module Yast
     include ::Security::CtrlAltDelConfig
 
     SYSCTL_VALUES = {
-      "yes" => "1",
-      "no"  => "0"
+      "yes" => true,
+      "no"  => false
     }
 
     SHADOW_ATTRS = [
