@@ -189,9 +189,9 @@ module Yast
       # Default values for /etc/sysctl.conf keys
       @sysctl = {
         "kernel.sysrq"                 => "0",
-        "net.ipv4.tcp_syncookies"      => "1",
-        "net.ipv4.ip_forward"          => "0",
-        "net.ipv6.conf.all.forwarding" => "0"
+        "net.ipv4.tcp_syncookies"      => true,
+        "net.ipv4.ip_forward"          => false,
+        "net.ipv6.conf.all.forwarding" => false
       }
 
       # Mapping of /etc/sysctl.conf keys to old (obsoleted) sysconfig ones
@@ -743,9 +743,11 @@ module Yast
       end
 
       # conversion to true/false
-      settings["net.ipv4.tcp_syncookies"] = settings["net.ipv4.tcp_syncookies"] == "1" ? true : false
-      settings["net.ipv4.ip_forward"] = settings["net.ipv4.ip_forward"] == "1" ? true : false
-      settings["net.ipv6.conf.all.forwarding"] = settings["net.ipv6.conf.all.forwarding"] == "1" ? true : false
+      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
+        if settings.key?(key) && settings[key].is_a?(::String)
+          settings[key] = settings[key] == "1" ? true : false
+        end
+      end
 
       return true if settings == {}
 
@@ -764,6 +766,7 @@ module Yast
         end
       end
       @Settings = tmpSettings
+
       true
     end
 
@@ -771,18 +774,15 @@ module Yast
     # (For use by autoinstallation.)
     # @return [Hash] Dumped settings (later acceptable by Import ())
     def Export
+      settings = deep_copy(@Settings)
       # conversion to 0/1 string
-      if [TrueClass, FalseClass].include?(@Settings["net.ipv4.ip_forward"].class)
-        @Settings["net.ipv4.ip_forward"] = @Settings["net.ipv4.ip_forward"] ? "1" : "0"
-      end
-      if [TrueClass, FalseClass].include?(@Settings["net.ipv6.conf.all.forwarding"].class)
-        @Settings["net.ipv6.conf.all.forwarding"] = @Settings["net.ipv6.conf.all.forwarding"] ? "1" : "0"
-      end
-      if [TrueClass, FalseClass].include?(@Settings["net.ipv4.tcp_syncookies"].class)
-        @Settings["net.ipv4.tcp_syncookies"] = @Settings["net.ipv4.tcp_syncookies"] ? "1" : "0"
+      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
+        if [TrueClass, FalseClass].include?(settings[key].class)
+          settings[key] = settings[key] ? "1" : "0"
+        end
       end
 
-      Builtins.eval(@Settings)
+      settings
     end
 
     # Create a textual summary and a list of unconfigured cards
