@@ -27,7 +27,7 @@
 # $Id$
 require "yast"
 require "yast2/systemd/service"
-require "cfa/sysctl"
+require "cfa/sysctl_config"
 require "cfa/shadow_config"
 require "yaml"
 require "security/ctrl_alt_del_config"
@@ -42,8 +42,8 @@ module Yast
     include ::Security::CtrlAltDelConfig
 
     SYSCTL_VALUES = {
-      "yes" => "1",
-      "no"  => "0"
+      "yes" => true,
+      "no"  => false
     }
 
     SHADOW_ATTRS = [
@@ -118,9 +118,9 @@ module Yast
         "CRACKLIB_DICT_PATH"                        => "/usr/lib/cracklib_dict",
         "DISPLAYMANAGER_REMOTE_ACCESS"              => "no",
         "kernel.sysrq"                              => "0",
-        "net.ipv4.tcp_syncookies"                   => "1",
-        "net.ipv4.ip_forward"                       => "0",
-        "net.ipv6.conf.all.forwarding"              => "0",
+        "net.ipv4.tcp_syncookies"                   => true,
+        "net.ipv4.ip_forward"                       => false,
+        "net.ipv6.conf.all.forwarding"              => false,
         "FAIL_DELAY"                                => "3",
         "GID_MAX"                                   => "60000",
         "GID_MIN"                                   => "1000",
@@ -189,9 +189,9 @@ module Yast
       # Default values for /etc/sysctl.conf keys
       @sysctl = {
         "kernel.sysrq"                 => "0",
-        "net.ipv4.tcp_syncookies"      => "1",
-        "net.ipv4.ip_forward"          => "0",
-        "net.ipv6.conf.all.forwarding" => "0"
+        "net.ipv4.tcp_syncookies"      => true,
+        "net.ipv4.ip_forward"          => false,
+        "net.ipv6.conf.all.forwarding" => false
       }
 
       # Mapping of /etc/sysctl.conf keys to old (obsoleted) sysconfig ones
@@ -245,7 +245,7 @@ module Yast
       @write_only = false
 
       # Force reading of sysctl configuration
-      @sysctl_file = nil
+      @sysctl_config = nil
 
       @activation_mapping = {
         "DHCPD_RUN_CHROOTED"           => "/usr/bin/systemctl try-restart dhcpd.service",
@@ -583,14 +583,17 @@ module Yast
       @sysctl.sort.each do |key, default_value|
         val = @Settings.fetch(key, default_value)
         int_val = Integer(val) rescue nil
-        if int_val.nil?
-          log.error "value #{val} for #{key} is not integer, not writing"
+        if int_val.nil? && ![TrueClass, FalseClass].include?(val.class)
+          log.error "value #{val} for #{key} has wrong type, not writing"
         elsif val != read_sysctl_value(key)
           write_sysctl_value(key, val)
           written = true
         end
       end
-      sysctl_file.save if written
+
+      if written && !sysctl_config.conflict?
+        sysctl_config.save
+      end
 
       # enable sysrq?
       sysrq = Integer(@Settings.fetch("kernel.sysrq", "0")) rescue nil
@@ -726,6 +729,26 @@ module Yast
     # @return [Boolean] True on success
     def Import(settings)
       settings = deep_copy(settings)
+      if settings.key?("KERNEL.SYSRQ")
+        settings["kernel.sysrq"] = settings.delete("KERNEL.SYSRQ")
+      end
+      if settings.key?("NET.IPV4.TCP_SYNCOOKIES")
+        settings["net.ipv4.tcp_syncookies"] = settings.delete("NET.IPV4.TCP_SYNCOOKIES")
+      end
+      if settings.key?("NET.IPV4.IP_FORWARD")
+        settings["net.ipv4.ip_forward"] = settings.delete("NET.IPV4.IP_FORWARD")
+      end
+      if settings.key?("NET.IPV6.CONF.ALL.FORWARDING")
+        settings["net.ipv6.conf.all.forwarding"] = settings.delete("NET.IPV6.CONF.ALL.FORWARDING")
+      end
+
+      # conversion to true/false
+      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
+        if settings.key?(key) && settings[key].is_a?(::String)
+          settings[key] = settings[key] == "1" ? true : false
+        end
+      end
+
       return true if settings == {}
 
       @modified = true
@@ -736,13 +759,14 @@ module Yast
         else
           if @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
             val = settings[@sysctl2sysconfig[k]].to_s
-            tmpSettings[k] = SYSCTL_VALUES[val] || val
+            tmpSettings[k] = SYSCTL_VALUES.key?(val) ? SYSCTL_VALUES[val] : val
           else
             tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
           end
         end
       end
       @Settings = tmpSettings
+
       true
     end
 
@@ -750,7 +774,15 @@ module Yast
     # (For use by autoinstallation.)
     # @return [Hash] Dumped settings (later acceptable by Import ())
     def Export
-      Builtins.eval(@Settings)
+      settings = deep_copy(@Settings)
+      # conversion to 0/1 string
+      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
+        if [TrueClass, FalseClass].include?(settings[key].class)
+          settings[key] = settings[key] ? "1" : "0"
+        end
+      end
+
+      settings
     end
 
     # Create a textual summary and a list of unconfigured cards
@@ -858,31 +890,31 @@ module Yast
     #
     # @note It memoizes the value until {#main} is called.
     #
-    # @return [Yast2::CFA::Sysctl]
-    def sysctl_file
-      return @sysctl_file if @sysctl_file
-      @sysctl_file = CFA::Sysctl.new
-      @sysctl_file.load
-      @sysctl_file
+    # @return [Yast2::CFA::SysctlConfig]
+    def sysctl_config
+      return @sysctl_config if @sysctl_config
+      @sysctl_config = CFA::SysctlConfig.new
+      @sysctl_config.load
+      @sysctl_config
     end
 
-    # Map sysctl keys to method names from the CFA::Sysctl class.
+    # Map sysctl keys to method names from the CFA::SysctlConfig class.
     SYSCTL_KEY_TO_METH = {
       "kernel.sysrq"                 => :kernel_sysrq,
-      "net.ipv4.tcp_syncookies"      => :raw_tcp_syncookies,
-      "net.ipv4.ip_forward"          => :raw_forward_ipv4,
-      "net.ipv6.conf.all.forwarding" => :raw_forward_ipv6
+      "net.ipv4.tcp_syncookies"      => :tcp_syncookies,
+      "net.ipv4.ip_forward"          => :forward_ipv4,
+      "net.ipv6.conf.all.forwarding" => :forward_ipv6
     }.freeze
 
     # @param key [String] Key to get the value for
     def read_sysctl_value(key)
-      sysctl_file.public_send(SYSCTL_KEY_TO_METH[key])
+      sysctl_config.public_send(SYSCTL_KEY_TO_METH[key])
     end
 
     # @param key    [String] Key to set the value for
     # @param value [String] Value to assign to the given key
     def write_sysctl_value(key, value)
-      sysctl_file.public_send(SYSCTL_KEY_TO_METH[key].to_s + "=", value)
+      sysctl_config.public_send(SYSCTL_KEY_TO_METH[key].to_s + "=", value)
     end
 
     def shadow_config

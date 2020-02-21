@@ -36,12 +36,12 @@ module Yast
   import "Service"
 
   describe Security do
-    let(:sysctl_file) { CFA::Sysctl.new }
+    let(:sysctl_config) { CFA::SysctlConfig.new }
     let(:shadow_config) { CFA::ShadowConfig.new }
 
     before do
-      allow(CFA::Sysctl).to receive(:new).and_return(sysctl_file)
-      allow(sysctl_file).to receive(:save)
+      allow(CFA::SysctlConfig).to receive(:new).and_return(sysctl_config)
+      allow(sysctl_config).to receive(:save)
       allow(CFA::ShadowConfig).to receive(:load).and_return(shadow_config)
       allow(shadow_config).to receive(:save)
       Security.main
@@ -193,26 +193,26 @@ module Yast
       context "writing to sysctl.conf" do
         before do
           allow(SCR).to exec_bash(/echo .* \/kernel\/sysrq/)
+          allow(sysctl_config).to receive(:conflict?).and_return(false)
         end
 
         it "does not write invalid values" do
           Security.Settings["kernel.sysrq"] = "yes"
           Security.Settings["net.ipv4.ip_forward"] = ""
-          expect(sysctl_file).to_not receive(:kernel_sysrq).with("yes")
-          expect(sysctl_file).to_not receive(:raw_forward_ipv4=).with("")
+          expect(sysctl_config).to_not receive(:kernel_sysrq).with("yes")
+          expect(sysctl_config).to_not receive(:raw_forward_ipv4=).with("")
           Security.write_kernel_settings
         end
 
         it "does not write unchanged values" do
-          Security.Settings["net.ipv4.ip_forward"] = "0"
-          expect(sysctl_file).to_not receive(:raw_forward_ipv4=).with("0")
+          Security.Settings["net.ipv4.ip_forward"] = false
+          expect(sysctl_config).to_not receive(:save)
           Security.write_kernel_settings
         end
 
         it "writes changed values" do
-          Security.Settings["net.ipv4.ip_forward"] = "1"
-          expect(sysctl_file).to receive(:raw_forward_ipv4=).with("1")
-          expect(sysctl_file).to receive(:save)
+          Security.Settings["net.ipv4.ip_forward"] = true
+          expect(sysctl_config).to receive(:save)
           Security.write_kernel_settings
         end
       end
@@ -575,9 +575,9 @@ module Yast
 
       it "sets kernel settings based on /etc/sysctl.conf" do
         expect(Security.Settings["kernel.sysrq"]).to eql("0")
-        expect(Security.Settings["net.ipv4.tcp_syncookies"]).to eql("1")
-        expect(Security.Settings["net.ipv4.ip_forward"]).to eql("0")
-        expect(Security.Settings["net.ipv6.conf.all.forwarding"]).to eql("0")
+        expect(Security.Settings["net.ipv4.tcp_syncookies"]).to eql(true)
+        expect(Security.Settings["net.ipv4.ip_forward"]).to eql(false)
+        expect(Security.Settings["net.ipv6.conf.all.forwarding"]).to eql(false)
       end
     end
 
@@ -684,7 +684,7 @@ module Yast
         Security.Settings["MANDATORY_SERVICES"] = "no"
 
         # SYSCTL
-        Security.Settings["net.ipv4.ip_forward"] = "1"
+        Security.Settings["net.ipv4.ip_forward"] = true
 
         # OBSOLETE LOGIN DEFS
         Security.Settings["SYS_UID_MIN"] = 200
@@ -710,7 +710,7 @@ module Yast
         it "imports SYSCTL settings modifying key names and adapting values" do
           expect(Security.Import("IP_FORWARD" => "no")).to eql(true)
 
-          expect(Security.Settings["net.ipv4.ip_forward"]).to eql("0")
+          expect(Security.Settings["net.ipv4.ip_forward"]).to eql(false)
         end
 
         it "imports LOGIN DEFS settings transforming key name" do
