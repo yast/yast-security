@@ -193,6 +193,7 @@ module Yast
       context "writing to sysctl.conf" do
         before do
           allow(SCR).to exec_bash(/echo .* \/kernel\/sysrq/)
+          allow(sysctl_config).to receive(:conflict?).and_return(false)
         end
 
         it "does not write invalid values" do
@@ -205,13 +206,12 @@ module Yast
 
         it "does not write unchanged values" do
           Security.Settings["net.ipv4.ip_forward"] = false
-          expect(sysctl_config).to_not receive(:raw_forward_ipv4=).with("0")
+          expect(sysctl_config).to_not receive(:save)
           Security.write_kernel_settings
         end
 
         it "writes changed values" do
           Security.Settings["net.ipv4.ip_forward"] = true
-          expect(sysctl_config).to receive(:raw_forward_ipv4=).with("1")
           expect(sysctl_config).to receive(:save)
           Security.write_kernel_settings
         end
