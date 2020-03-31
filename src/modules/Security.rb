@@ -591,18 +591,8 @@ module Yast
         end
       end
 
-      if written && !sysctl_config.conflict?
-        sysctl_config.save
-      end
-
-      # enable sysrq?
-      sysrq = Integer(@Settings.fetch("kernel.sysrq", "0")) rescue nil
-      if sysrq != nil
-        SCR.Execute(
-          path(".target.bash"),
-          "echo #{sysrq} > /proc/sys/kernel/sysrq"
-        )
-      end
+      sysctl_config.save if written
+      written
     end
 
     # Write local PolicyKit configuration
@@ -620,8 +610,20 @@ module Yast
       end
     end
 
+    # Apply sysctl changes into the running system.
+    #
+    # When the sysctl YaST config file conflicts with other sysctl files, it
+    # applies the changes system wide. Otherwise it only applies the changes
+    # from the sysctl YaST config file.
+    def apply_sysctl_changes
+      args = sysctl_conflict? ? ["--system"] : ["-p", CFA::Sysctl::PATH]
+
+      Yast::Execute.on_target("/sbin/sysctl", *args)
+    end
+
     # Ensures that file permissions and PolicyKit privileges are applied
-    def apply_new_settings
+    def apply_new_settings(sysctl: false)
+      apply_sysctl_changes if sysctl
       # apply all current permissions as they are now
       # (what SuSEconfig --module permissions would have done)
       SCR.Execute(path(".target.bash"), "/usr/bin/chkstat --system")
@@ -707,12 +709,12 @@ module Yast
       Progress.NextStage
       write_pam_settings
       write_polkit_settings
-      write_kernel_settings
+      sysctl_modified = write_kernel_settings
 
       # Finish him
       return false if Abort()
       Progress.NextStage
-      apply_new_settings
+      apply_new_settings(sysctl: sysctl_modified)
 
       return false if Abort()
       Progress.NextStage
@@ -896,6 +898,10 @@ module Yast
       @sysctl_config = CFA::SysctlConfig.new
       @sysctl_config.load
       @sysctl_config
+    end
+
+    def sysctl_conflict?
+      @conflict ||= sysctl_config.conflict?
     end
 
     # Map sysctl keys to method names from the CFA::SysctlConfig class.
