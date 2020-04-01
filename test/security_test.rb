@@ -165,12 +165,13 @@ module Yast
       let(:conflict) { true }
 
       before do
-        allow(Security).to receive(:sysctl_conflict?).and_return(conflict)
+        allow(Security).to receive(:sysctl_config).and_return(sysctl_config)
+        allow(sysctl_config).to receive(:conflict?).and_return(conflict)
       end
 
       context "when sysctl changes conflicts with other files" do
         it "applies the changes system wide" do
-          expect(Yast::Execute).to receive(:on_target).with("/sbin/sysctl", "--system")
+          expect(Yast::Execute).to receive(:on_target).with("/usr/sbin/sysctl", "--system")
 
           Security.apply_sysctl_changes
         end
@@ -181,7 +182,7 @@ module Yast
 
         it "applies only the YaST sysctl config file changes" do
           expect(Yast::Execute).to receive(:on_target)
-            .with("/sbin/sysctl", "-p", CFA::Sysctl::PATH)
+            .with("/usr/sbin/sysctl", "-p", CFA::Sysctl::PATH)
 
           Security.apply_sysctl_changes
         end

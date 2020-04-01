@@ -617,9 +617,9 @@ module Yast
     # applies the changes system wide. Otherwise it only applies the changes
     # from the sysctl YaST config file.
     def apply_sysctl_changes
-      args = sysctl_conflict? ? ["--system"] : ["-p", CFA::Sysctl::PATH]
+      args = sysctl_config.conflict? ? ["--system"] : ["-p", CFA::Sysctl::PATH]
 
-      Yast::Execute.on_target("/sbin/sysctl", *args)
+      Yast::Execute.on_target("/usr/sbin/sysctl", *args)
     end
 
     # Ensures that sysctl changes, file permissions and PolicyKit privileges
@@ -903,10 +903,6 @@ module Yast
       @sysctl_config = CFA::SysctlConfig.new
       @sysctl_config.load
       @sysctl_config
-    end
-
-    def sysctl_conflict?
-      @conflict ||= sysctl_config.conflict?
     end
 
     # Map sysctl keys to method names from the CFA::SysctlConfig class.
