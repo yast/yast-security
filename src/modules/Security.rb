@@ -591,6 +591,7 @@ module Yast
         end
       end
 
+      # In case of modified, always write the changes (bsc#1167234)
       sysctl_config.save if written
       written
     end
@@ -621,8 +622,12 @@ module Yast
       Yast::Execute.on_target("/sbin/sysctl", *args)
     end
 
-    # Ensures that file permissions and PolicyKit privileges are applied
+    # Ensures that sysctl changes, file permissions and PolicyKit privileges
+    # are applied
+    #
+    # @param sysctl [Boolean] whether sysctl changes should be applied or not
     def apply_new_settings(sysctl: false)
+      # Apply sysctl changes to the running system (bsc#1167234)
       apply_sysctl_changes if sysctl
       # apply all current permissions as they are now
       # (what SuSEconfig --module permissions would have done)
