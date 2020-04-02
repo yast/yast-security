@@ -162,30 +162,22 @@ module Yast
     end
 
     describe "#apply_sysctl_changes" do
-      let(:conflict) { true }
-
       before do
         allow(Security).to receive(:sysctl_config).and_return(sysctl_config)
-        allow(sysctl_config).to receive(:conflict?).and_return(conflict)
+        allow(sysctl_config).to receive(:conflict?)
+        allow(Yast::Execute).to receive(:on_target).with("/usr/sbin/sysctl", "--system")
       end
 
-      context "when sysctl changes conflicts with other files" do
-        it "applies the changes system wide" do
-          expect(Yast::Execute).to receive(:on_target).with("/usr/sbin/sysctl", "--system")
+      it "checks if there are sysctl conflicts with other files" do
+        expect(sysctl_config).to receive(:conflict?)
 
-          Security.apply_sysctl_changes
-        end
+        Security.apply_sysctl_changes
       end
 
-      context "when sysctl changes do not conflict with other files" do
-        let(:conflict) { false }
+      it "applies the changes from all the configuration files" do
+        expect(Yast::Execute).to receive(:on_target).with("/usr/sbin/sysctl", "--system")
 
-        it "applies only the YaST sysctl config file changes" do
-          expect(Yast::Execute).to receive(:on_target)
-            .with("/usr/sbin/sysctl", "-p", CFA::Sysctl::PATH)
-
-          Security.apply_sysctl_changes
-        end
+        Security.apply_sysctl_changes
       end
     end
 

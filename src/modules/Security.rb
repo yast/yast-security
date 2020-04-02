@@ -611,15 +611,12 @@ module Yast
       end
     end
 
-    # Apply sysctl changes into the running system.
-    #
-    # When the sysctl YaST config file conflicts with other sysctl files, it
-    # applies the changes system wide. Otherwise it only applies the changes
-    # from the sysctl YaST config file.
+    # Apply sysctl settings from all the sysctl configuration files
     def apply_sysctl_changes
-      args = sysctl_config.conflict? ? ["--system"] : ["-p", CFA::Sysctl::PATH]
+      # Reports if there are conflict when the configuration is applied
+      sysctl_config.conflict?
 
-      Yast::Execute.on_target("/usr/sbin/sysctl", *args)
+      Yast::Execute.on_target("/usr/sbin/sysctl", "--system")
     end
 
     # Ensures that sysctl changes, file permissions and PolicyKit privileges
