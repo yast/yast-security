@@ -591,18 +591,9 @@ module Yast
         end
       end
 
-      if written && !sysctl_config.conflict?
-        sysctl_config.save
-      end
-
-      # enable sysrq?
-      sysrq = Integer(@Settings.fetch("kernel.sysrq", "0")) rescue nil
-      if sysrq != nil
-        SCR.Execute(
-          path(".target.bash"),
-          "echo #{sysrq} > /proc/sys/kernel/sysrq"
-        )
-      end
+      # In case of modified, always write the changes (bsc#1167234)
+      sysctl_config.save if written
+      written
     end
 
     # Write local PolicyKit configuration
@@ -620,8 +611,21 @@ module Yast
       end
     end
 
-    # Ensures that file permissions and PolicyKit privileges are applied
-    def apply_new_settings
+    # Apply sysctl settings from all the sysctl configuration files
+    def apply_sysctl_changes
+      # Reports if there are conflict when the configuration is applied
+      sysctl_config.conflict?
+
+      Yast::Execute.on_target("/usr/sbin/sysctl", "--system")
+    end
+
+    # Ensures that sysctl changes, file permissions and PolicyKit privileges
+    # are applied
+    #
+    # @param sysctl [Boolean] whether sysctl changes should be applied or not
+    def apply_new_settings(sysctl: false)
+      # Apply sysctl changes to the running system (bsc#1167234)
+      apply_sysctl_changes if sysctl
       # apply all current permissions as they are now
       # (what SuSEconfig --module permissions would have done)
       SCR.Execute(path(".target.bash"), "/usr/bin/chkstat --system")
@@ -707,12 +711,12 @@ module Yast
       Progress.NextStage
       write_pam_settings
       write_polkit_settings
-      write_kernel_settings
+      sysctl_modified = write_kernel_settings
 
       # Finish him
       return false if Abort()
       Progress.NextStage
-      apply_new_settings
+      apply_new_settings(sysctl: sysctl_modified)
 
       return false if Abort()
       Progress.NextStage

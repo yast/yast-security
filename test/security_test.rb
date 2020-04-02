@@ -38,6 +38,7 @@ module Yast
   describe Security do
     let(:sysctl_config) { CFA::SysctlConfig.new }
     let(:shadow_config) { CFA::ShadowConfig.new }
+    let(:bash_path) { Yast::Path.new(".target.bash") }
 
     before do
       allow(CFA::SysctlConfig).to receive(:new).and_return(sysctl_config)
@@ -121,6 +122,65 @@ module Yast
       end
     end
 
+    describe "#apply_new_settings" do
+      before do
+        allow(Security).to receive(:apply_sysctl_changes)
+        allow(Yast::SCR).to receive(:Execute)
+      end
+
+      context "when the sysctl config is modified" do
+        it "applies sysctl changes" do
+          expect(Security).to receive(:apply_sysctl_changes)
+
+          Security.apply_new_settings(sysctl: true)
+        end
+      end
+
+      context "when the sysctl config is not modified" do
+        it "does not apply sysctl changes" do
+          expect(Security).to_not receive(:apply_sysctl_changes)
+
+          Security.apply_new_settings
+        end
+      end
+
+      it "applies all current permissions as they are now" do
+        expect(Yast::SCR).to receive(:Execute)
+          .with(bash_path, "/usr/bin/chkstat --system")
+
+        Security.apply_new_settings
+      end
+
+      it "ensures polkit privileges are applied" do
+        expect(FileUtils)
+          .to receive(:Exists).with("/sbin/set_polkit_default_privs").and_return(true)
+        expect(Yast::SCR).to receive(:Execute)
+          .with(bash_path, "/sbin/set_polkit_default_privs")
+
+        Security.apply_new_settings
+      end
+    end
+
+    describe "#apply_sysctl_changes" do
+      before do
+        allow(Security).to receive(:sysctl_config).and_return(sysctl_config)
+        allow(sysctl_config).to receive(:conflict?)
+        allow(Yast::Execute).to receive(:on_target).with("/usr/sbin/sysctl", "--system")
+      end
+
+      it "checks if there are sysctl conflicts with other files" do
+        expect(sysctl_config).to receive(:conflict?)
+
+        Security.apply_sysctl_changes
+      end
+
+      it "applies the changes from all the configuration files" do
+        expect(Yast::Execute).to receive(:on_target).with("/usr/sbin/sysctl", "--system")
+
+        Security.apply_sysctl_changes
+      end
+    end
+
     describe "#write_to_locations" do
       before do
         change_scr_root(File.join(DATA_PATH, "system"))
@@ -201,34 +261,34 @@ module Yast
           Security.Settings["net.ipv4.ip_forward"] = ""
           expect(sysctl_config).to_not receive(:kernel_sysrq).with("yes")
           expect(sysctl_config).to_not receive(:raw_forward_ipv4=).with("")
-          Security.write_kernel_settings
+          expect(Security.write_kernel_settings).to eq(false)
         end
 
         it "does not write unchanged values" do
           Security.Settings["net.ipv4.ip_forward"] = false
           expect(sysctl_config).to_not receive(:save)
           Security.write_kernel_settings
+          expect(Security.write_kernel_settings).to eq(false)
         end
 
         it "writes changed values" do
           Security.Settings["net.ipv4.ip_forward"] = true
           expect(sysctl_config).to receive(:save)
           Security.write_kernel_settings
+          expect(Security.write_kernel_settings).to eq(true)
         end
       end
 
       context "setting sysrq" do
         it "does not write invalid values" do
-          expect(SCR).to_not exec_bash(/echo .* \/kernel\/sysrq/)
-
           Security.Settings["kernel.sysrq"] = "yes"
+          expect(sysctl_config).to_not receive(:save)
           Security.write_kernel_settings
         end
 
         it "writes valid values" do
-          expect(SCR).to exec_bash("echo 1 > /proc/sys/kernel/sysrq")
-
           Security.Settings["kernel.sysrq"] = "1"
+          expect(sysctl_config).to receive(:save)
           Security.write_kernel_settings
         end
       end

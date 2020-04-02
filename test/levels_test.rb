@@ -2,6 +2,7 @@
 
 require_relative 'test_helper'
 require "cfa/shadow_config"
+require "cfa/sysctl_config"
 
 module Yast
   class LevelsTester < Client
@@ -24,10 +25,15 @@ module Yast
     subject(:settings) { tester.Levels }
 
     let(:shadow_config) { CFA::ShadowConfig.new }
+    let(:sysctl_config) { CFA::SysctlConfig.new }
 
     before do
+      tester
       allow(CFA::ShadowConfig).to receive(:load).and_return(shadow_config)
       allow(shadow_config).to receive(:save)
+      allow(Security).to receive(:sysctl_config).and_return(sysctl_config)
+      allow(sysctl_config).to receive(:conflict?)
+      allow(Security).to receive(:write_kernel_settings).and_return(true)
     end
 
     it "reads the settings from the yaml files" do
@@ -61,7 +67,7 @@ module Yast
         expect(SCR).to exec_bash_output("/usr/sbin/pam-config -d --pwhistory-remember")
           .and_return(empty_bash_output)
         expect(SCR).to exec_bash("ln -s -f /dev/null /etc/systemd/system/ctrl-alt-del.target")
-        expect(SCR).to exec_bash("echo 0 > /proc/sys/kernel/sysrq")
+        expect(Yast::Execute).to receive(:on_target).with("/usr/sbin/sysctl", "--system")
         expect(SCR).to exec_bash("/usr/bin/chkstat --system")
         expect(shadow_config).to receive(:fail_delay=).with("6")
 
