@@ -739,7 +739,7 @@ module Yast
     describe "#Import" do
       before do
         # GENERAL
-        Security.Settings["FAIL_DELAY"]       = "5"
+        Security.Settings["FAIL_DELAY"]         = "5"
         Security.Settings["PASS_MIN_LEN"]       = "3"
         Security.Settings["MANDATORY_SERVICES"] = "no"
 

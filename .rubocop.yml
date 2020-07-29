@@ -1,0 +1,505 @@
+# use the shared YaST defaults
+inherit_from:
+  /usr/share/YaST2/data/devtools/data/rubocop-0.71.0_yast_style.yml
+
+# Offense count: 1
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, IndentationWidth.
+# SupportedStyles: outdent, indent
+Layout/AccessModifierIndentation:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, IndentationWidth.
+# SupportedStyles: with_first_argument, with_fixed_indentation
+Layout/AlignArguments:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+
+# Offense count: 11
+# Cop supports --auto-correct.
+# Configuration parameters: AllowMultipleStyles, EnforcedHashRocketStyle, EnforcedColonStyle, EnforcedLastArgumentHashStyle.
+# SupportedHashRocketStyles: key, separator, table
+# SupportedColonStyles: key, separator, table
+# SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
+Layout/AlignHash:
+  Exclude:
+    - 'src/clients/security.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Layout/BlockEndNewline:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyleAlignWith, AutoCorrect, Severity.
+# SupportedStylesAlignWith: keyword, variable, start_of_line
+Layout/EndAlignment:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, IndentationWidth.
+# SupportedStyles: consistent, consistent_relative_to_receiver, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
+Layout/IndentFirstArgument:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/helps.rb'
+
+# Offense count: 7
+# Cop supports --auto-correct.
+Layout/LeadingCommentSpace:
+  Exclude:
+    - 'src/clients/security.rb'
+    - 'src/include/security/dialogs.rb'
+
+# Offense count: 3
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, IndentationWidth.
+# SupportedStyles: aligned, indented
+Layout/MultilineOperationIndentation:
+  Exclude:
+    - 'src/clients/security.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+# Configuration parameters: AllowForAlignment.
+Layout/SpaceAroundOperators:
+  Exclude:
+    - 'test/security_test.rb'
+
+# Offense count: 3
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces, SpaceBeforeBlockParameters.
+# SupportedStyles: space, no_space
+# SupportedStylesForEmptyBraces: space, no_space
+Layout/SpaceInsideBlockBraces:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBraces.
+# SupportedStyles: space, no_space, compact
+# SupportedStylesForEmptyBraces: space, no_space
+Layout/SpaceInsideHashLiteralBraces:
+  Exclude:
+    - 'test/levels_test.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, EnforcedStyleForEmptyBrackets.
+# SupportedStyles: space, no_space
+# SupportedStylesForEmptyBrackets: space, no_space
+Layout/SpaceInsideReferenceBrackets:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+
+# Offense count: 59
+# Cop supports --auto-correct.
+# Configuration parameters: IndentationWidth.
+Layout/Tab:
+  Exclude:
+    - 'src/clients/security.rb'
+    - 'src/clients/security_auto.rb'
+    - 'src/clients/security_finish.rb'
+    - 'src/clients/security_summary.rb'
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/helps.rb'
+    - 'src/include/security/levels.rb'
+    - 'src/include/security/routines.rb'
+    - 'src/include/security/users.rb'
+    - 'src/include/security/widgets.rb'
+    - 'src/include/security/wizards.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 7
+# Cop supports --auto-correct.
+# Configuration parameters: AllowInHeredoc.
+Layout/TrailingWhitespace:
+  Exclude:
+    - 'src/clients/security.rb'
+    - 'src/clients/security_auto.rb'
+    - 'src/clients/security_summary.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/lib/security/clients/security_finish.rb'
+    - 'test/security_test.rb'
+
+# Offense count: 8
+Lint/LiteralAsCondition:
+  Exclude:
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/users.rb'
+    - 'src/include/security/wizards.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Lint/ScriptPermission:
+  Exclude:
+    - 'test/security_finish_test.rb'
+
+# Offense count: 5
+# Configuration parameters: AllowKeywordBlockArguments.
+Lint/UnderscorePrefixedVariableName:
+  Exclude:
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/routines.rb'
+
+# Offense count: 3
+# Cop supports --auto-correct.
+# Configuration parameters: AllowUnusedKeywordArguments, IgnoreEmptyMethods.
+Lint/UnusedMethodArgument:
+  Exclude:
+    - 'src/include/security/helps.rb'
+    - 'src/include/security/levels.rb'
+    - 'src/include/security/widgets.rb'
+
+# Offense count: 2
+Lint/UselessAssignment:
+  Exclude:
+    - 'src/clients/security.rb'
+    - 'src/include/security/dialogs.rb'
+
+# Offense count: 20
+Metrics/AbcSize:
+  Max: 126
+
+# Offense count: 19
+# Configuration parameters: CountComments, ExcludedMethods.
+# ExcludedMethods: refine
+Metrics/BlockLength:
+  Max: 591
+
+# Offense count: 9
+# Configuration parameters: CountBlocks.
+Metrics/BlockNesting:
+  Max: 6
+
+# Offense count: 1
+# Configuration parameters: CountComments.
+Metrics/ClassLength:
+  Max: 634
+
+# Offense count: 19
+Metrics/CyclomaticComplexity:
+  Max: 34
+
+# Offense count: 41
+# Cop supports --auto-correct.
+# Configuration parameters: AutoCorrect, AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
+# URISchemes: http, https
+Metrics/LineLength:
+  Max: 587
+
+# Offense count: 22
+# Configuration parameters: CountComments, ExcludedMethods.
+Metrics/MethodLength:
+  Max: 259
+
+# Offense count: 7
+# Configuration parameters: CountComments.
+Metrics/ModuleLength:
+  Max: 757
+
+# Offense count: 20
+Metrics/PerceivedComplexity:
+  Max: 39
+
+# Offense count: 2
+# Configuration parameters: ExpectMatchingDefinition, Regex, IgnoreExecutableScripts, AllowedAcronyms.
+# AllowedAcronyms: CLI, DSL, ACL, API, ASCII, CPU, CSS, DNS, EOF, GUID, HTML, HTTP, HTTPS, ID, IP, JSON, LHS, QPS, RAM, RHS, RPC, SLA, SMTP, SQL, SSH, TCP, TLS, TTL, UDP, UI, UID, UUID, URI, URL, UTF8, VM, XML, XMPP, XSRF, XSS
+Naming/FileName:
+  Exclude:
+    - 'src/modules/Security.rb'
+    - 'test/SCRStub.rb'
+
+# Offense count: 38
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: snake_case, camelCase
+Naming/MethodName:
+  Exclude:
+    - 'src/clients/security.rb'
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/routines.rb'
+    - 'src/include/security/users.rb'
+    - 'src/include/security/wizards.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 9
+# Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
+# AllowedNames: io, id, to, by, on, in, at, ip, db
+Naming/UncommunicativeMethodParamName:
+  Exclude:
+    - 'src/include/security/routines.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 29
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: snake_case, camelCase
+Naming/VariableName:
+  Exclude:
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/helps.rb'
+    - 'src/include/security/levels.rb'
+    - 'src/include/security/routines.rb'
+    - 'src/include/security/widgets.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, ProceduralMethods, FunctionalMethods, IgnoredMethods, AllowBracesOnProceduralOneLiners.
+# SupportedStyles: line_count_based, semantic, braces_for_chaining, always_braces
+# ProceduralMethods: benchmark, bm, bmbm, create, each_with_object, measure, new, realtime, tap, with_object
+# FunctionalMethods: let, let!, subject, watch
+# IgnoredMethods: lambda, proc, it
+Style/BlockDelimiters:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 4
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.
+# SupportedStyles: assign_to_condition, assign_inside_condition
+Style/ConditionalAssignment:
+  Exclude:
+    - 'src/include/security/helps.rb'
+    - 'src/include/security/routines.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Style/Dir:
+  Exclude:
+    - 'test/test_helper.rb'
+
+# Offense count: 16
+Style/Documentation:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/**/*'
+    - 'src/clients/security.rb'
+    - 'src/clients/security_auto.rb'
+    - 'src/clients/security_summary.rb'
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/helps.rb'
+    - 'src/include/security/levels.rb'
+    - 'src/include/security/routines.rb'
+    - 'src/include/security/users.rb'
+    - 'src/include/security/widgets.rb'
+    - 'src/include/security/wizards.rb'
+    - 'src/lib/security/clients/security_finish.rb'
+    - 'src/lib/security/ctrl_alt_del_config.rb'
+    - 'src/lib/security/display_manager.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: empty, nil, both
+Style/EmptyElse:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 16
+# Cop supports --auto-correct.
+Style/Encoding:
+  Enabled: false
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Style/ExpandPathArguments:
+  Exclude:
+    - 'test/test_helper.rb'
+
+# Offense count: 22
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: always, never
+Style/FrozenStringLiteralComment:
+  Enabled: false
+
+# Offense count: 8
+# Configuration parameters: MinBodyLength.
+Style/GuardClause:
+  Exclude:
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/users.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 70
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, UseHashRocketsWithSymbolValues, PreferHashRocketsForNonAlnumEndingSymbols.
+# SupportedStyles: ruby19, hash_rockets, no_mixed_keys, ruby19_no_mixed_keys
+Style/HashSyntax:
+  Exclude:
+    - 'src/clients/security_auto.rb'
+    - 'src/include/security/routines.rb'
+    - 'src/include/security/wizards.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 1
+Style/IfInsideElse:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 6
+# Cop supports --auto-correct.
+Style/IfUnlessModifier:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/routines.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 7
+# Cop supports --auto-correct.
+Style/InfiniteLoop:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/users.rb'
+    - 'src/include/security/wizards.rb'
+
+# Offense count: 10
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: line_count_dependent, lambda, literal
+Style/Lambda:
+  Exclude:
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/wizards.rb'
+
+# Offense count: 4
+# Cop supports --auto-correct.
+Style/LineEndConcatenation:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Style/MultilineIfModifier:
+  Exclude:
+    - 'src/include/security/widgets.rb'
+
+# Offense count: 4
+Style/MultilineTernaryOperator:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+
+# Offense count: 9
+Style/MultipleComparison:
+  Exclude:
+    - 'src/include/security/complex.rb'
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/users.rb'
+    - 'src/include/security/wizards.rb'
+
+# Offense count: 6
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: literals, strict
+Style/MutableConstant:
+  Exclude:
+    - 'src/include/security/widgets.rb'
+    - 'src/lib/security/ctrl_alt_del_config.rb'
+    - 'src/lib/security/display_manager.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 4
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: predicate, comparison
+Style/NilComparison:
+  Exclude:
+    - 'src/clients/security.rb'
+    - 'src/include/security/routines.rb'
+
+# Offense count: 6
+# Cop supports --auto-correct.
+# Configuration parameters: IncludeSemanticChanges.
+Style/NonNilCheck:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/routines.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 4
+# Cop supports --auto-correct.
+# Configuration parameters: PreferredDelimiters.
+Style/PercentLiteralDelimiters:
+  Exclude:
+    - 'test/security_test.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: short, verbose
+Style/PreferredHashMethods:
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+    - 'test/SCRStub.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Style/RedundantConditional:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+Style/RescueModifier:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+# Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
+# Whitelist: present?, blank?, presence, try, try!
+Style/SafeNavigation:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 3
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.
+# SupportedStyles: single_quotes, double_quotes
+Style/StringLiterals:
+  Exclude:
+    - 'src/modules/Security.rb'
+    - 'test/levels_test.rb'
+    - 'test/test_helper.rb'
+
+# Offense count: 2
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle.
+# SupportedStyles: single_quotes, double_quotes
+Style/StringLiteralsInInterpolation:
+  Exclude:
+    - 'src/modules/Security.rb'
+
+# Offense count: 5
+# Cop supports --auto-correct.
+# Configuration parameters: EnforcedStyle, AllowSafeAssignment.
+# SupportedStyles: require_parentheses, require_no_parentheses, require_parentheses_when_complex
+Style/TernaryParentheses:
+  Exclude:
+    - 'src/include/security/routines.rb'
+    - 'src/modules/Security.rb'
+
+# Offense count: 1
+# Cop supports --auto-correct.
+Style/ZeroLengthPredicate:
+  Exclude:
+    - 'src/modules/Security.rb'

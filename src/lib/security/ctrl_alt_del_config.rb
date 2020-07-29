@@ -56,6 +56,7 @@ module Security
       def current
         return current_systemd if systemd?
         return current_inittab if inittab?
+
         nil
       end
 

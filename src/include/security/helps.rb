@@ -334,7 +334,6 @@ module Yast
           "<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"
         )
       }
-
     end
 
     def boot_dialog_help

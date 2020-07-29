@@ -50,8 +50,6 @@ module Yast
 
       Yast.include self, "security/wizards.rb"
 
-
-
       # the command line description map
       @cmdline = {
         "id"         => "security",
@@ -142,7 +140,7 @@ module Yast
         "mappings"   => {
           "summary" => [],
           "level"   => ["workstation", "roaming", "server"],
-          #FIXME 1,2,3 aliases
+          #FIXME: 1,2,3 aliases
           "set"     => [
             "passwd",
             "crack",

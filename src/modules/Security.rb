@@ -64,7 +64,6 @@ module Yast
       "USERDEL_POSTCMD"
     ].freeze
 
-
     attr_reader :display_manager
 
     def main
@@ -87,7 +86,6 @@ module Yast
     end
 
     def init_settings
-
       # Services to check
       srv_file = Directory.find_data_file("security/services.yml")
       if srv_file
@@ -280,6 +278,7 @@ module Yast
     # @return blah blah lahjk
     def Abort
       return Builtins.eval(@AbortFunction) == true if @AbortFunction != nil
+
       false
     end
 
@@ -323,7 +322,7 @@ module Yast
     # Read the information about ctrl+alt+del behavior
     # See bug 742783 for description
     def ReadConsoleShutdown
-     @Settings["CONSOLE_SHUTDOWN"] = ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default   
+      @Settings["CONSOLE_SHUTDOWN"] = ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
     end
 
     # Read the settings from the files included in @Locations
@@ -391,7 +390,7 @@ module Yast
       @Settings["PASSWD_USE_PWQUALITY"] = pam_pwquality.size > 0 ? "yes" : "no"
 
       pam_pwquality.fetch("password", []).each do |entry|
-        key,value = entry.split("=")
+        key, value = entry.split("=")
         if value
           @Settings["CRACKLIB_DICT_PATH"] = value if key == "dictpath"
           @Settings["PASS_MIN_LEN"]       = value if key == "minlen"
@@ -400,7 +399,7 @@ module Yast
 
       pam_history = Pam.Query("pwhistory") || {}
       pam_history.fetch("password", []).each do |entry|
-        key,value = entry.split("=")
+        key, value = entry.split("=")
         if key == "remember" && value
           @Settings["PASSWD_REMEMBER_HISTORY"] = value
         end
@@ -653,6 +652,7 @@ module Yast
       # NOTE: the call to #sort is only needed to satisfy the old testsuite
       @activation_mapping.sort.each do |setting, action|
         next if @Settings[setting] == @Settings_bak[setting]
+
         log.info(
           "Option #{setting} has been modified, "\
           "activating the change: #{action}"
@@ -666,6 +666,7 @@ module Yast
     # @return true on success
     def Write
       return true if !@modified
+
       log.info "Writing configuration"
 
       # Security read dialog caption
@@ -705,6 +706,7 @@ module Yast
 
       # Write security settings
       return false if Abort()
+
       Progress.NextStage
       if !@Settings["PERMISSION_SECURITY"].include?("local")
         @Settings["PERMISSION_SECURITY"] << " local"
@@ -714,11 +716,13 @@ module Yast
 
       # Write inittab settings
       return false if Abort()
+
       Progress.NextStage
       write_console_shutdown(@Settings.fetch("CONSOLE_SHUTDOWN", "ignore"))
 
       # Write authentication and privileges settings
       return false if Abort()
+
       Progress.NextStage
       write_pam_settings
       write_polkit_settings
@@ -726,14 +730,17 @@ module Yast
 
       # Finish him
       return false if Abort()
+
       Progress.NextStage
       apply_new_settings(sysctl: sysctl_modified)
 
       return false if Abort()
+
       Progress.NextStage
       activate_changes
 
       return false if Abort()
+
       @modified = false
       true
     end
@@ -916,6 +923,7 @@ module Yast
     # @return [Yast2::CFA::SysctlConfig]
     def sysctl_config
       return @sysctl_config if @sysctl_config
+
       @sysctl_config = CFA::SysctlConfig.new
       @sysctl_config.load
       @sysctl_config

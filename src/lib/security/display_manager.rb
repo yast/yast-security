@@ -37,7 +37,6 @@ module Security
     private_class_method :new
     attr_reader :name
 
-
     def self.current
       configured_dm = Yast::SCR.Read(Yast::Path.new(CONFIG_PATH)).to_s
       configured_dm.empty? ? nil : new(configured_dm)

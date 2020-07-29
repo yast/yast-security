@@ -167,7 +167,6 @@ module Yast
       ret
     end
 
-
     def OverviewText(type)
       ret = ""
       ret_table = []
@@ -319,7 +318,6 @@ module Yast
         end
       end 
 
-
       if type == :table
         Builtins.y2debug("Overview table: %1", ret_table)
         return deep_copy(ret_table)
@@ -357,7 +355,6 @@ module Yast
             group = Builtins.mergestring(l, _(" or "))
             srvs = Ops.add(Ops.add(srvs, group), "<BR>")
           end
-
 
           # richtext message: %1 = runlevel ("3" or "5"), %2 = list of services
           help +=
