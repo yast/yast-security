@@ -35,6 +35,7 @@ pass_warn_age = element pass_warn_age { STRING }
 passwd_encryption = element passwd_encryption { STRING }
 passwd_remember_history = element passwd_remember_history { STRING }
 passwd_use_cracklib = element passwd_use_cracklib { STRING }
+passwd_use_pwquality = element passwd_use_pwquality { STRING }
 permission_security = element permission_security { STRING }
 run_updatedb_as = element run_updatedb_as { STRING }
 runlevel3_extra_services = element runlevel3_extra_services { STRING }
@@ -91,6 +92,7 @@ y2_security =
   | pass_min_len
   | pass_warn_age
   | passwd_use_cracklib
+  | passwd_use_pwquality
   | permission_security
   | run_updatedb_as
   | runlevel3_extra_services

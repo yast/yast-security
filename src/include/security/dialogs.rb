@@ -747,7 +747,7 @@ module Yast
           0.15,
           _("Checks"),
           VBox(
-            settings2widget("PASSWD_USE_CRACKLIB"),
+            settings2widget("PASSWD_USE_PWQUALITY"),
             VSeparator(),
             settings2widget("PASS_MIN_LEN"),
             VSeparator(),
@@ -800,7 +800,7 @@ module Yast
       UI.ChangeWidget(
         Id("PASS_MIN_LEN"),
         :Enabled,
-        Ops.get(Security.Settings, "PASSWD_USE_CRACKLIB", "") == "yes"
+        Ops.get(Security.Settings, "PASSWD_USE_PWQUALITY", "") == "yes"
       )
 
       ret = nil
@@ -816,8 +816,8 @@ module Yast
           end
         elsif ret == :back
           break
-        elsif ret == "PASSWD_USE_CRACKLIB"
-          # minlen is an option for pam_cracklib
+        elsif ret == "PASSWD_USE_PWQUALITY"
+          # minlen is an option for pam_pwquality
           UI.ChangeWidget(
             Id("PASS_MIN_LEN"),
             :Enabled,
@@ -874,7 +874,7 @@ module Yast
         widget2settings("PASS_MIN_DAYS")
         widget2settings("PASS_MAX_DAYS")
         widget2settings("PASS_MIN_LEN")
-        widget2settings("PASSWD_USE_CRACKLIB")
+        widget2settings("PASSWD_USE_PWQUALITY")
         widget2settings("PASS_WARN_AGE")
         widget2settings("PASSWD_ENCRYPTION")
         widget2settings("PASSWD_REMEMBER_HISTORY")

@@ -60,9 +60,10 @@ module Yast
       let(:empty_bash_output) { {"exit" => 0, "stdout" => "", "stderr" => ""} }
 
       it "defines the system behavior" do
-        expect(SCR).to exec_bash_output("/usr/sbin/pam-config -a --cracklib")
+        allow(Pam).to receive(:List).and_return(["pwquality", "pwhistory"])
+        expect(SCR).to exec_bash_output("/usr/sbin/pam-config -a --pwquality")
           .and_return(empty_bash_output)
-        expect(SCR).to exec_bash_output("/usr/sbin/pam-config -d --cracklib-minlen")
+        expect(SCR).to exec_bash_output("/usr/sbin/pam-config -d --pwquality-minlen")
           .and_return(empty_bash_output)
         expect(SCR).to exec_bash_output("/usr/sbin/pam-config -d --pwhistory-remember")
           .and_return(empty_bash_output)

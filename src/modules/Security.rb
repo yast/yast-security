@@ -126,7 +126,7 @@ module Yast
         "GID_MIN"                                   => "1000",
         "HIBERNATE_SYSTEM"                          => "active_console",
         "PASSWD_ENCRYPTION"                         => "sha512",
-        "PASSWD_USE_CRACKLIB"                       => "yes",
+        "PASSWD_USE_PWQUALITY"                      => "yes",
         "PASS_MAX_DAYS"                             => "99999",
         "PASS_MIN_DAYS"                             => "0",
         "PASS_MIN_LEN"                              => "5",
@@ -195,7 +195,7 @@ module Yast
       }
 
       # Mapping of /etc/sysctl.conf keys to old (obsoleted) sysconfig ones
-      # (used during autoYaST import
+      # (used during autoYaST import)
       @sysctl2sysconfig = {
         "kernel.sysrq"                 => "ENABLE_SYSRQ",
         "net.ipv4.tcp_syncookies"      => "IP_TCP_SYNCOOKIES",
@@ -382,15 +382,15 @@ module Yast
     def read_pam_settings
       read_encryption_method
 
-      # cracklib and pwhistory settings (default values)
+      # pwquality and pwhistory settings (default values)
       @Settings["PASS_MIN_LEN"] = "5"
       @Settings["PASSWD_REMEMBER_HISTORY"] = "0"
       @Settings["CRACKLIB_DICT_PATH"] = "/usr/lib/cracklib_dict"
 
-      pam_cracklib = Pam.Query("cracklib") || {}
-      @Settings["PASSWD_USE_CRACKLIB"] = pam_cracklib.size > 0 ? "yes" : "no"
+      pam_pwquality = Pam.Query(pwquality_module) || {}
+      @Settings["PASSWD_USE_PWQUALITY"] = pam_pwquality.size > 0 ? "yes" : "no"
 
-      pam_cracklib.fetch("password", []).each do |entry|
+      pam_pwquality.fetch("password", []).each do |entry|
         key,value = entry.split("=")
         if value
           @Settings["CRACKLIB_DICT_PATH"] = value if key == "dictpath"
@@ -438,6 +438,17 @@ module Yast
                                       end
       log.debug "HIBERNATE_SYSTEM (after #{__callee__}): " \
         "#{@Settings['HIBERNATE_SYSTEM']}"
+    end
+
+    # The name of the PAM module to deal with password quality. Either
+    # "pwquality" or "cracklib". See bug #1171318 why this is needed.
+    def pwquality_module
+      return @mod_name if @mod_name
+
+      # Both pwquality and cracklib can be installed. in that case
+      # cracklib seems to be a non-functional deprecated module. So
+      # prefer pwquality.
+      @mod_name = Pam.List.include?("pwquality") ? "pwquality" : "cracklib"
     end
 
     # Read all security settings
@@ -545,24 +556,24 @@ module Yast
 
     # Write settings related to PAM behavior
     def write_pam_settings
-      # use cracklib?
-      if @Settings["PASSWD_USE_CRACKLIB"] == "yes"
-        Pam.Add("cracklib")
+      # use pwquality?
+      if @Settings["PASSWD_USE_PWQUALITY"] == "yes"
+        Pam.Add(pwquality_module)
         pth = @Settings["CRACKLIB_DICT_PATH"]
         if pth && pth != "/usr/lib/cracklib_dict"
-          Pam.Add("--cracklib-dictpath=#{pth}")
+          Pam.Add(pwquality_module + "-dictpath=#{pth}")
         end
       else
-        Pam.Remove("cracklib")
+        Pam.Remove(pwquality_module)
       end
 
       # save min pass length
       min_len = @Settings["PASS_MIN_LEN"]
-      if min_len && min_len != "5" && @Settings["PASSWD_USE_CRACKLIB"] == "yes"
-        Pam.Add("cracklib") # minlen is part of cracklib
-        Pam.Add("cracklib-minlen=#{min_len}")
+      if min_len && min_len != "5" && @Settings["PASSWD_USE_PWQUALITY"] == "yes"
+        Pam.Add(pwquality_module) # minlen is part of pwquality
+        Pam.Add(pwquality_module + "-minlen=#{min_len}")
       else
-        Pam.Remove("cracklib-minlen")
+        Pam.Remove(pwquality_module + "-minlen")
       end
 
       # save "remember" value (number of old user passwords to not allow)
@@ -753,6 +764,10 @@ module Yast
         end
       end
 
+      if settings.key?("PASSWD_USE_CRACKLIB")
+        settings["PASSWD_USE_PWQUALITY"] = settings.delete("PASSWD_USE_CRACKLIB")
+      end
+
       return true if settings == {}
 
       @modified = true
@@ -784,6 +799,10 @@ module Yast
         if [TrueClass, FalseClass].include?(settings[key].class)
           settings[key] = settings[key] ? "1" : "0"
         end
+      end
+
+      if pwquality_module == "cracklib"
+        settings["PASSWD_USE_CRACKLIB"] = settings.delete("PASSWD_USE_PWQUALITY")
       end
 
       settings

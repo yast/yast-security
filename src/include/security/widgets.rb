@@ -186,7 +186,7 @@ module Yast
             "Value"   => "des",
             "Notify"  => "yes"
           },
-          "PASSWD_USE_CRACKLIB"          => {
+          "PASSWD_USE_PWQUALITY"         => {
             "Widget" => "CheckBox",
             # CheckBox label
             "Label"  => _("&Check New Passwords"),

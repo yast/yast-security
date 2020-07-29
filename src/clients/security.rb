@@ -216,10 +216,10 @@ module Yast
       end
       if Builtins.haskey(options, "crack") &&
           Ops.get_string(options, "crack", "") !=
-            Ops.get(Security.Settings, "PASSWD_USE_CRACKLIB", "")
+            Ops.get(Security.Settings, "PASSWD_USE_PWQUALITY", "")
         Ops.set(
           Security.Settings,
-          "PASSWD_USE_CRACKLIB",
+          "PASSWD_USE_PWQUALITY",
           Ops.get_string(options, "crack", "yes")
         )
         Security.modified = true
