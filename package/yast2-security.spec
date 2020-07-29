@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        4.3.0
+Version:        4.3.1
 Release:        0
 Group:          System/YaST
 License:        GPL-2.0-only
@@ -30,7 +30,8 @@ BuildRequires:  doxygen
 BuildRequires:  pkg-config
 BuildRequires:  perl-XML-Writer
 BuildRequires:  update-desktop-files
-BuildRequires:  yast2-pam
+# Pam.List
+BuildRequires:  yast2-pam >= 4.3.1
 BuildRequires:  yast2-devtools >= 4.2.2
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:yast-rake) >= 0.2.5
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
@@ -48,6 +49,8 @@ Requires:       yast2-pam >= 2.14.0
 # CFA::SysctlConfig
 Requires:       yast2 >= 4.2.66
 Requires:       yast2-ruby-bindings >= 1.0.0
+# Pam.List
+Requires:       yast2-pam >= 4.3.1
 
 Provides:       y2c_sec yast2-config-security
 Provides:       yast2-trans-security y2t_sec

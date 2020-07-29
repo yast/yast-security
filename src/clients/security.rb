@@ -50,8 +50,6 @@ module Yast
 
       Yast.include self, "security/wizards.rb"
 
-
-
       # the command line description map
       @cmdline = {
         "id"         => "security",
@@ -142,7 +140,7 @@ module Yast
         "mappings"   => {
           "summary" => [],
           "level"   => ["workstation", "roaming", "server"],
-          #FIXME 1,2,3 aliases
+          #FIXME: 1,2,3 aliases
           "set"     => [
             "passwd",
             "crack",
@@ -216,10 +214,10 @@ module Yast
       end
       if Builtins.haskey(options, "crack") &&
           Ops.get_string(options, "crack", "") !=
-            Ops.get(Security.Settings, "PASSWD_USE_CRACKLIB", "")
+            Ops.get(Security.Settings, "PASSWD_USE_PWQUALITY", "")
         Ops.set(
           Security.Settings,
-          "PASSWD_USE_CRACKLIB",
+          "PASSWD_USE_PWQUALITY",
           Ops.get_string(options, "crack", "yes")
         )
         Security.modified = true

@@ -14,7 +14,7 @@ GID_MIN:                          '1000'
 HIBERNATE_SYSTEM:                 active_console
 PASSWD_ENCRYPTION:                sha512
 PASSWD_REMEMBER_HISTORY:          '0'
-PASSWD_USE_CRACKLIB:              'yes'
+PASSWD_USE_PWQUALITY:             'yes'
 PASS_MAX_DAYS:                    '99999'
 PASS_MIN_DAYS:                    '1'
 PASS_MIN_LEN:                     '6'

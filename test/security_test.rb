@@ -533,19 +533,19 @@ module Yast
         Security.read_pam_settings
       end
 
-      it "sets cracklib settings" do
+      it "sets pwquality settings" do
         allow(Pam).to receive(:Query).with("pwhistory")
-        allow(Pam).to receive(:Query).with("cracklib")
+        allow(Pam).to receive(:Query).with("pwquality")
           .and_return("password" => ["dictpath=/shared/cracklib_dict", "minlen="])
 
         Security.read_pam_settings
-        expect(Security.Settings["PASSWD_USE_CRACKLIB"]).to eql("yes")
+        expect(Security.Settings["PASSWD_USE_PWQUALITY"]).to eql("yes")
         expect(Security.Settings["CRACKLIB_DICT_PATH"]).to eql("/shared/cracklib_dict")
         expect(Security.Settings["PASS_MIN_LEN"]).to eql("5")
       end
 
       it "sets password remember history settings" do
-        allow(Pam).to receive(:Query).with("cracklib")
+        allow(Pam).to receive(:Query).with("pwquality")
         allow(Pam).to receive(:Query).with("pwhistory")
           .and_return("password" => ["remember=5"])
 
@@ -739,7 +739,7 @@ module Yast
     describe "#Import" do
       before do
         # GENERAL
-        Security.Settings["FAIL_DELAY"]       = "5"
+        Security.Settings["FAIL_DELAY"]         = "5"
         Security.Settings["PASS_MIN_LEN"]       = "3"
         Security.Settings["MANDATORY_SERVICES"] = "no"
 
