@@ -520,6 +520,7 @@ module Yast
     describe "#read_pam_settings" do
       before do
         change_scr_root(File.join(DATA_PATH, "system"))
+        allow(Pam).to receive(:List).and_return(["pwquality"])
       end
 
       after do
