@@ -178,6 +178,8 @@ Metrics/AbcSize:
 # ExcludedMethods: refine
 Metrics/BlockLength:
   Max: 591
+  Exclude:
+    - 'test/**/*.rb'
 
 # Offense count: 9
 # Configuration parameters: CountBlocks.
