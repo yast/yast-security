@@ -550,7 +550,7 @@ module Yast
         Pam.Add("cracklib")
         pth = @Settings["CRACKLIB_DICT_PATH"]
         if pth && pth != "/usr/lib/cracklib_dict"
-          Pam.Add("--cracklib-dictpath=#{pth}")
+          Pam.Add("cracklib-dictpath=#{pth}")
         end
       else
         Pam.Remove("cracklib")

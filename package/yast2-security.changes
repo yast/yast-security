@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 25 10:37:12 UTC 2020 - Steffen Winterfeldt <snwint@suse.com>
+
+- set cracklib dictpath correctly (bsc#1174619)
+- 4.2.13
+
+-------------------------------------------------------------------
 Tue Mar 31 17:41:17 UTC 2020 - Knut Anderssen <kanderssen@suse.com>
 
 - Apply sysctl changes to the running system when the YaST sysctl
