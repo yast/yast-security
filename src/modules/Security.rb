@@ -41,9 +41,13 @@ module Yast
     include Yast::Logger
     include ::Security::CtrlAltDelConfig
 
-    SYSCTL_VALUES = {
+    SYSCTL_VALUES_TO_BOOLEAN = {
       "yes" => true,
       "no"  => false
+    }
+    SYSCTL_VALUES_TO_INTSTRING = {
+      "yes" => "1",
+      "no"  => "0"
     }
 
     SHADOW_ATTRS = [
@@ -762,9 +766,15 @@ module Yast
           tmpSettings[k] = settings[k]
         else
           if @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
+            # using the old sysconfig AY format
             val = settings[@sysctl2sysconfig[k]].to_s
-            tmpSettings[k] = SYSCTL_VALUES.key?(val) ? SYSCTL_VALUES[val] : val
+            if @sysctl[k].is_a?(TrueClass) || @sysctl[k].is_a?(FalseClass)
+              tmpSettings[k] = SYSCTL_VALUES_TO_BOOLEAN.key?(val) ? SYSCTL_VALUES_TO_BOOLEAN[val] : val
+            else
+              tmpSettings[k] = SYSCTL_VALUES_TO_INTSTRING.key?(val) ? SYSCTL_VALUES_TO_INTSTRING[val] : val
+            end
           else
+            # using old login defs settings ?
             tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
           end
         end
