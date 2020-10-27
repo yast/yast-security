@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Oct 27 13:26:57 CET 2020 - schubi@suse.de
+
+- AY-Import: Translate <enable_sysrq> setting to <kernel.sysrq>
+  with the correct value format (bsc#1177720).
+- 4.2.14
+
+-------------------------------------------------------------------
 Tue Aug 25 10:37:12 UTC 2020 - Steffen Winterfeldt <snwint@suse.com>
 
 - set cracklib dictpath correctly (bsc#1174619)
