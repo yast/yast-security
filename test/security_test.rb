@@ -782,6 +782,12 @@ module Yast
           expect(Security.Settings["SYS_GID_MIN"]).to eql("150")
         end
 
+        it "imports enable_sysrq settings transforming key name" do
+          expect(Security.Import("enable_sysrq" => "no")).to eql(true)
+
+          expect(Security.Settings["kernel.sysrq"]).to eql("0")
+        end
+
         it "does not modify not given settings" do
           expect(Security.Import("EXTRA_SERVICES" => "yes")).to eql(true)
 
