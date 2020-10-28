@@ -6,11 +6,6 @@ Tue Oct 27 13:26:57 CET 2020 - schubi@suse.de
 - 4.3.4
 
 -------------------------------------------------------------------
-Tue Aug 25 10:37:12 UTC 2020 - Steffen Winterfeldt <snwint@suse.com>
-
-- set cracklib dictpath correctly (bsc#1174619)
-
--------------------------------------------------------------------
 Thu Aug 13 10:00:58 UTC 2020 - Ladislav Slezák <lslezak@suse.cz>
 
 - Fixed randomly failing unit tests, do not query the installed
