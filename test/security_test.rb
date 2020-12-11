@@ -219,11 +219,11 @@ module Yast
       end
 
       it "updates changed values" do
-        Security.Settings["SYSTOHC"] = "yes"
+        Security.Settings["SMTPD_LISTEN_REMOTE"] = "yes"
         Security.write_to_locations
 
-        expect(written_value_for(".sysconfig.clock.SYSTOHC")).to eq("yes")
-        expect(was_written?(".sysconfig.clock")).to eq(true)
+        expect(written_value_for(".sysconfig.mail.SMTPD_LISTEN_REMOTE")).to eq("yes")
+        expect(was_written?(".sysconfig.mail.SMTPD_LISTEN_REMOTE")).to eq(true)
       end
     end
 

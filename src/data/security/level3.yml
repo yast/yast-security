@@ -23,7 +23,6 @@ PERMISSION_SECURITY:              secure
 RUN_UPDATEDB_AS:                  nobody
 SMTPD_LISTEN_REMOTE:              'no'
 SYSLOG_ON_NO_ERROR:               'yes'
-SYSTOHC:                          'yes'
 SYS_GID_MAX:                      '499'
 SYS_GID_MIN:                      '100'
 SYS_UID_MAX:                      '499'
