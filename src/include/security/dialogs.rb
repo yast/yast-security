@@ -71,9 +71,6 @@ module Yast
         "DISPLAYMANAGER_REMOTE_ACCESS"              => _(
           "Remote access to the display manager"
         ),
-        "SYSTOHC"                                   => _(
-          "Write back system time to the hardware clock"
-        ),
         "SYSLOG_ON_NO_ERROR"                        => _(
           "Always generate syslog message for cron scripts"
         ),
@@ -203,10 +200,6 @@ module Yast
             "DISPLAYMANAGER_REMOTE_ACCESS",
             ""
           ) == "no"
-        },
-        {
-          "id"        => "SYSTOHC",
-          "is_secure" => Ops.get(Security.Settings, "SYSTOHC", "") == "yes"
         },
         {
           "id"        => "SYSLOG_ON_NO_ERROR",

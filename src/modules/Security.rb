@@ -147,7 +147,6 @@ module Yast
         "USERDEL_PRECMD"                            => "/usr/sbin/userdel-pre.local",
         "USERDEL_POSTCMD"                           => "/usr/sbin/userdel-post.local",
         "PASSWD_REMEMBER_HISTORY"                   => "0",
-        "SYSTOHC"                                   => "yes",
         "SYSLOG_ON_NO_ERROR"                        => "yes",
         "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"          => "no",
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "no",
@@ -181,7 +180,6 @@ module Yast
           "DISABLE_STOP_ON_REMOVAL"
         ],
         ".sysconfig.locate"         => ["RUN_UPDATEDB_AS"],
-        ".sysconfig.clock"          => ["SYSTOHC"],
         ".sysconfig.cron"           => ["SYSLOG_ON_NO_ERROR"],
         ".sysconfig.mail"           => ["SMTPD_LISTEN_REMOTE"]
       }

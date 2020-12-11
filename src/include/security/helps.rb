@@ -259,12 +259,6 @@ module Yast
             "are being used.</P><P>If you do not need <EM>XDMCP</EM> for remote graphical\n" \
             "logins, then disable this option.</P>"
         ),
-        "SYSTOHC"                                   => _(
-          "<P>Upon startup, the system time is being set from the hardware clock of the\n" \
-            "computer. As a consequence, setting the hardware clock before shutting down is\n" \
-            "necessary.</P><P>Consistent system time is essential for the system to create\n" \
-            "correct log messages.</P>"
-        ),
         "SYSLOG_ON_NO_ERROR"                        => _(
           "<P>Malfunctions in a system are usually detected by anomalies in its behaviour. Syslog messages about events that reoccur on a regular basis are important to find causes of problems. And the absence of a single record can tell more than the absence of all log records.</P><P>Therefore, syslog messages of system events are only useful if they are present.</P>"
         ),
