@@ -550,11 +550,18 @@ module Yast
     end
 
     def vbox_boot_permissions
+      display_manager_widget = Empty()
+      if @display_manager && !@display_manager.shutdown_var_name.empty?
+        display_manager_widget = VBox(
+          VSpacing(1.0),
+          settings2widget(@display_manager.shutdown_var_name)
+        )
+      end
+
       VBox(
         VSpacing(1),
         settings2widget("CONSOLE_SHUTDOWN"),
-        @display_manager ? VSpacing(1.0) : Empty(),
-        @display_manager ? settings2widget(@display_manager.shutdown_var_name) : Empty(),
+        display_manager_widget,
         VSpacing(1.0),
         settings2widget("HIBERNATE_SYSTEM"),
         VSpacing(1)
@@ -635,7 +642,9 @@ module Yast
 
       if ret == :next || Builtins.contains(@tree_dialogs, ret)
         widget2settings("CONSOLE_SHUTDOWN")
-        widget2settings(@display_manager.shutdown_var_name) if @display_manager
+        if @display_manager && !@display_manager.shutdown_var_name.empty?
+          widget2settings(@display_manager.shutdown_var_name)
+        end
         widget2settings("HIBERNATE_SYSTEM")
       end
 

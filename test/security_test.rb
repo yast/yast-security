@@ -661,10 +661,6 @@ module Yast
           Security.init_settings
         end
 
-        it "allows everybody to shutdown by default" do
-          expect(Security.Settings["DISPLAYMANAGER_SHUTDOWN"]).to eql("all")
-        end
-
         it "sets login definitions based on /etc/login.defs" do
           Security.read_from_locations
           expect(Security.Settings["FAIL_DELAY"]).to eql("3")
@@ -675,7 +671,6 @@ module Yast
           expect(Security.Settings["DISPLAYMANAGER_REMOTE_ACCESS"]).to eql("yes")
           expect(Security.Settings["DISPLAYMANAGER_ROOT_LOGIN_REMOTE"]).to eql("yes")
           expect(Security.Settings["DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"]).to eql("no")
-          expect(Security.Settings["DISPLAYMANAGER_SHUTDOWN"]).to eql("all")
           expect(Security.Settings["PERMISSION_SECURITY"]).to eql("easy local")
           expect(Security.Settings["DISABLE_RESTART_ON_UPDATE"]).to eql("no")
         end

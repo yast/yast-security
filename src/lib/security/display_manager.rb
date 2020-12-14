@@ -51,27 +51,23 @@ module Security
     end
 
     def default_settings
-      { shutdown_var_name => shutdown_default_value }
+      kdm? ? { "AllowShutdown" => "All" } : {}
     end
 
     def shutdown_var_name
-      @shutdown_var_name ||= kdm? ? "AllowShutdown" : "DISPLAYMANAGER_SHUTDOWN"
+      @shutdown_var_name ||= kdm? ? "AllowShutdown" : ""
     end
 
     def shutdown_default_value
-      @shutdown_default_value ||= kdm? ? "All" : "all"
+      @shutdown_default_value ||= kdm? ? "All" : ""
     end
 
     def shutdown_options
-      @shutdown_options ||= kdm? ? ["Root", "All", "None"] : ["root", "all", "none"]
+      @shutdown_options ||= kdm? ? ["Root", "All", "None"] : []
     end
 
     def default_locations
-      sysconfig_locations = SYSCONFIG_COMMON_LOCATIONS
-      sysconfig_locations << shutdown_var_name if !kdm?
-
-      locations = { ".sysconfig.displaymanager" => sysconfig_locations }
-
+      locations = { ".sysconfig.displaymanager" => SYSCONFIG_COMMON_LOCATIONS }
       locations[".kde4.kdmrc"] = ["AllowShutdown"] if kdm?
 
       locations
