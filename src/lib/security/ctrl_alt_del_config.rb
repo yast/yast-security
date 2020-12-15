@@ -37,10 +37,6 @@ module Security
         Yast::PackageSystem.Installed("systemd")
       end
 
-      def inittab?
-        Yast::FileUtils.Exists("/etc/inittab")
-      end
-
       def default
         Yast::Arch.s390 ? "halt" : "reboot"
       end
@@ -55,7 +51,6 @@ module Security
 
       def current
         return current_systemd if systemd?
-        return current_inittab if inittab?
 
         nil
       end
@@ -78,26 +73,6 @@ module Security
               "ignore"
             end
         end
-        ret
-      end
-
-      def current_inittab
-        ca = Yast::SCR.Read(Yast::Path.new(".etc.inittab.ca"))
-        ret =
-          case ca
-          when /\/bin\/true/, /\/bin\/false/
-            "ignore"
-          when /reboot/, / -r/
-            "reboot"
-          when /halt/, / -h/
-            "halt"
-          when nil
-            log.error("No ca entry")
-            nil
-          else
-            log.error "Unknown ca status: #{ca}"
-            "ignore"
-          end
         ret
       end
     end
