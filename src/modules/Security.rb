@@ -221,7 +221,6 @@ module Yast
       }
 
       # Remaining settings:
-      # - CONSOLE_SHUTDOWN (/etc/inittab)
       # - PASSWD_ENCRYPTION (/etc/pam?)
       # - MANDATORY_SERVICES
       # - EXTRA_SERVICES
@@ -314,11 +313,6 @@ module Yast
       @Settings["EXTRA_SERVICES"] = setting
 
       nil
-    end
-
-    def inittab_shutdown_configured?
-      inittab = SCR.Dir(path(".etc.inittab"))
-      inittab.include?("ca")
     end
 
     # Read the information about ctrl+alt+del behavior
@@ -487,44 +481,23 @@ module Yast
 
     # Write the value of ctrl-alt-delete behavior
     def write_console_shutdown(ca)
-      if Package.Installed("systemd")
-        if ca == "reboot"
-          SCR.Execute(path(".target.remove"), @ctrl_alt_del_file)
-        elsif ca == "halt"
-          SCR.Execute(
-            path(".target.bash"),
-            Builtins.sformat(
-              "ln -s -f /usr/lib/systemd/system/poweroff.target %1",
-              @ctrl_alt_del_file
-            )
-          )
-        else
-          SCR.Execute(
-            path(".target.bash"),
-            Builtins.sformat("ln -s -f /dev/null %1", @ctrl_alt_del_file)
-          )
-        end
-        return true
-      end
-
       if ca == "reboot"
-        SCR.Write(
-          path(".etc.inittab.ca"),
-          ":ctrlaltdel:/sbin/shutdown -r -t 4 now"
-        )
+        SCR.Execute(path(".target.remove"), @ctrl_alt_del_file)
       elsif ca == "halt"
-        SCR.Write(
-          path(".etc.inittab.ca"),
-          ":ctrlaltdel:/sbin/shutdown -h -t 4 now"
+        SCR.Execute(
+          path(".target.bash"),
+          Builtins.sformat(
+            "ln -s -f /usr/lib/systemd/system/poweroff.target %1",
+            @ctrl_alt_del_file
+          )
         )
       else
-        SCR.Write(path(".etc.inittab.ca"), ":ctrlaltdel:/bin/true")
+        SCR.Execute(
+          path(".target.bash"),
+          Builtins.sformat("ln -s -f /dev/null %1", @ctrl_alt_del_file)
+        )
       end
-      SCR.Write(path(".etc.inittab"), nil)
-
-      # re-read the modified inittab (#83480)
-      SCR.Execute(path(".target.bash"), "/sbin/telinit q")
-      true
+      return true
     end
 
     # Write the settings from @Locations to the corresponding files
@@ -683,7 +656,7 @@ module Yast
           # Progress stage 1/4
           _("Write security settings"),
           # Progress stage 2/4
-          _("Write inittab settings"),
+          _("Write shutdown settings"),
           # Progress stage 3/4
           _("Write PAM settings"),
           # Progress stage 4/4
@@ -693,7 +666,7 @@ module Yast
           # Progress step 1/5
           _("Writing security settings..."),
           # Progress step 2/5
-          _("Writing inittab settings..."),
+          _("Writing shutdown settings..."),
           # Progress step 3/5
           _("Writing PAM settings..."),
           # Progress step 4/5
@@ -716,7 +689,7 @@ module Yast
       write_to_locations
       write_shadow_config
 
-      # Write inittab settings
+      # Write shutdown settings
       return false if Abort()
 
       Progress.NextStage
