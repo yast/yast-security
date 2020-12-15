@@ -51,6 +51,7 @@ module Security
 
       def current
         return current_systemd if systemd?
+
         nil
       end
 

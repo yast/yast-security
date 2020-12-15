@@ -497,7 +497,7 @@ module Yast
           Builtins.sformat("ln -s -f /dev/null %1", @ctrl_alt_del_file)
         )
       end
-      return true
+      true
     end
 
     # Write the settings from @Locations to the corresponding files
