@@ -259,8 +259,7 @@ module Yast
         it "does not write invalid values" do
           Security.Settings["kernel.sysrq"] = "yes"
           Security.Settings["net.ipv4.ip_forward"] = ""
-          expect(sysctl_config).to_not receive(:kernel_sysrq).with("yes")
-          expect(sysctl_config).to_not receive(:raw_forward_ipv4=).with("")
+          expect(sysctl_config).to_not receive(:kernel_sysrq)
           expect(Security.write_kernel_settings).to eq(false)
         end
 
