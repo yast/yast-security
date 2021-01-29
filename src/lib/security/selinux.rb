@@ -29,23 +29,30 @@ module Security
     GETENFORCE_PATH = "/usr/sbin/getenforce"
     private_constant :GETENFORCE_PATH
 
-    POLICY_KEYS = ["security", "selinux", "enforcing"]
-    private_constant :POLICY_KEYS
+    class << self
+      DEFAULT_POLICY_OPTIONS = {
+        "security"  => :missing,
+        "selinux"   => :missing,
+        "enforcing" => :missing
+      }.freeze
+      private_constant :DEFAULT_POLICY_OPTIONS
 
-    ENABLE_POLICY = { "security" => "selinux", "selinux" => "1" }
-    private_constant :ENABLE_POLICY
+      def define_policy(name, options = {})
+        policies[name] = DEFAULT_POLICY_OPTIONS.merge(options)
+      end
 
-    DISABLE_POLICY = Hash[*POLICY_KEYS.flat_map { |key| [key, :missing] }]
-    private_constant :DISABLE_POLICY
+      def policies
+        @policies ||= {}
+      end
 
-    POLICIES = {
-      :disabled   => DISABLE_POLICY,
-      :permissive => ENABLE_POLICY.merge("enforcing" => :missing),
-      :enforcing  => ENABLE_POLICY.merge("enforcing" => "1")
-    }
-    private_constant :POLICIES
+      def policy_keys
+        DEFAULT_POLICY_OPTIONS.keys
+      end
+    end
 
-    attr_reader :changed
+    define_policy(:disabled)
+    define_policy(:permissive, "security" => "selinux", "selinux" => "1", "enforcing" => :missing)
+    define_policy(:enforcing, "security" => "selinux", "selinux" => "1", "enforcing" => "1")
 
     def initialize
       propose_policy if Yast::Mode.installation
@@ -53,15 +60,17 @@ module Security
 
     # Returns the policy set in booting params
     def policy
-      POLICIES.key(policy_from_kernel_params) || :disabled
+      @policy ||= match_policy(policy_from_kernel_params) || :disabled
     end
 
     # Use the given policy for the next boot (in running system is needed to #save)
     def policy=(key)
-      if POLICIES.keys.include?(key)
-        log.debug("Changing SELinux to #{key} mode: #{POLICIES[key]}")
+      found_policy = find_policy(key)
 
-        update_policy(*POLICIES[key])
+      if found_policy
+        log.debug("Changing SELinux to #{key} mode: #{found_policy}")
+
+        @policy = key
       else
         log.debug("Unknown `#{key}` SELinux policy")
       end
@@ -78,26 +87,38 @@ module Security
     def propose_policy
       key = :enforcing # read it from control-file
 
-      update_policy(POLICIES[key])
-      key
+      log.debug "Proposing the `#{key}` SELinux policy: #{@policy}"
+      @policy = key
+      save
     end
 
     def save
-      Yast::Bootloader.Write
+      update_policy
+
+      Yast::Bootloader.Write unless Yast::Mode.installation
     end
 
     private
 
+    def find_policy(key)
+      self.class.policies[key]
+    end
+
+    def match_policy(policy_options)
+      self.class.policies.key(policy_options)
+    end
+
     def policy_from_kernel_params
-      Hash[*POLICY_KEYS.flat_map { |key| [key, read_param(key)] }]
+      Hash[*self.class.policy_keys.flat_map { |key| [key, read_param(key)] }]
     end
 
     def read_param(key)
       Yast::Bootloader.kernel_param(:common, key.to_s)
     end
 
-    def update_policy(*params)
-      Yast::Bootloader.modify_kernel_params(*params)
+    def update_policy
+      policy = find_policy(@policy)
+      Yast::Bootloader.modify_kernel_params(**policy)
     end
   end
 end
