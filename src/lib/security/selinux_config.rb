@@ -22,7 +22,7 @@ require "yast2/execute"
 
 module Security
   # Class for handling SELinux kernel params
-  class Selinux
+  class SelinuxConfig
     include Yast::Logger
     Yast.import "Bootloader"
 

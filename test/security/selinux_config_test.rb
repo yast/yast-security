@@ -20,9 +20,9 @@
 
 require_relative "../test_helper"
 
-require "security/selinux"
+require "security/selinux_config"
 
-describe Security::Selinux do
+describe Security::SelinuxConfig do
   subject { described_class.new }
 
   before do
