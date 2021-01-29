@@ -60,7 +60,7 @@ module Security
 
     # Returns the policy set in booting params
     def policy
-      @policy ||= match_policy(policy_from_kernel_params) || :disabled
+      @policy ||= match_policy(policy_options_from_kernel) || :disabled
     end
 
     # Use the given policy for the next boot (in running system is needed to #save)
@@ -108,7 +108,7 @@ module Security
       self.class.policies.key(policy_options)
     end
 
-    def policy_from_kernel_params
+    def policy_options_from_kernel
       Hash[*self.class.policy_keys.flat_map { |key| [key, read_param(key)] }]
     end
 
