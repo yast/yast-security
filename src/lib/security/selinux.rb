@@ -26,7 +26,7 @@ module Security
     include Yast::Logger
     Yast.import "Bootloader"
 
-    GETENFORCE_PATH = "/usr/sbin/getenforce"
+    GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
 
     class << self
