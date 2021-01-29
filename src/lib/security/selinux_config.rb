@@ -65,6 +65,7 @@ module Security
     def running_policy
       Yast::Execute.locally!(GETENFORCE_PATH, stdout: :capture).chomp.downcase.to_sym
     rescue Cheetah::ExecutionFailed
+      log.debug("`#{GETENFORCE_PATH}` not available. SELinux or selinux-tools missing")
       :disabled
     end
 
