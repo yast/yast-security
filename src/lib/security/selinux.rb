@@ -54,51 +54,64 @@ module Security
     define_policy(:permissive, "security" => "selinux", "selinux" => "1", "enforcing" => :missing)
     define_policy(:enforcing, "security" => "selinux", "selinux" => "1", "enforcing" => "1")
 
+    attr_reader :policy
+
     def initialize
       propose_policy if Yast::Mode.installation
-    end
-
-    # Returns the policy set in booting params
-    def policy
-      @policy ||= match_policy(policy_options_from_kernel) || :disabled
-    end
-
-    # Use the given policy for the next boot (in running system is needed to #save)
-    def policy=(key)
-      found_policy = find_policy(key)
-
-      if found_policy
-        log.debug("Changing SELinux to #{key} mode: #{found_policy}")
-
-        @policy = key
-      else
-        log.debug("Unknown `#{key}` SELinux policy")
-      end
+      @policy = configured_policy
     end
 
     # Returns the policy applied in the running system
     def running_policy
       Yast::Execute.locally!(GETENFORCE_PATH, stdout: :capture).chomp.downcase.to_sym
     rescue Cheetah::ExecutionFailed
-      nil
+      :disabled
+    end
+
+    # If current policy value is different to the configured one
+    def changed?
+      @policy != configured_policy
+    end
+
+    # Use the given policy for the next boot (in running system is needed to #save)
+    def update_policy(policy_key)
+      found_policy = find_policy(policy_key)
+
+      if found_policy
+        log.debug("Changing SELinux configuration to `#{policy_key}` policy: #{found_policy}")
+
+        @policy = policy_key
+      else
+        log.debug("Unknown `#{policy_key}` SELinux policy")
+      end
+    end
+    alias_method :policy=, :update_policy
+
+    def save
+      policy_options = find_policy(policy)
+
+      return unless policy_options && changed?
+
+      log.debug("Writting SELinux kernel params: #{policy_options}")
+
+      Yast::Bootloader.modify_kernel_params(**policy_options)
+      Yast::Bootloader.Write unless Yast::Mode.installation
+    end
+
+    private
+
+    def configured_policy
+      match_policy(policy_options_from_kernel) || :disabled
     end
 
     # Propose a policy according to the value set in the control-file
     def propose_policy
       key = :enforcing # read it from control-file
 
-      log.debug "Proposing the `#{key}` SELinux policy: #{@policy}"
-      @policy = key
+      log.debug "Proposing the `#{key}` SELinux policy"
+      update_policy(policy_key)
       save
     end
-
-    def save
-      update_policy
-
-      Yast::Bootloader.Write unless Yast::Mode.installation
-    end
-
-    private
 
     def find_policy(key)
       self.class.policies[key]
@@ -117,8 +130,20 @@ module Security
     end
 
     def update_policy
-      policy = find_policy(@policy)
-      Yast::Bootloader.modify_kernel_params(**policy)
+      found_policy = find_policy(@policy)
+
+      if found_policy
+        log.debug("Changing SELinux to #{key} mode: #{found_policy}")
+
+        @policy = key
+      else
+        log.debug("Unknown `#{key}` SELinux policy")
+      end
+
+      if policy
+        Yast::Bootloader.modify_kernel_params(**policy)
+      else
+      end
     end
   end
 end
