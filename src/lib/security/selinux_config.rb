@@ -26,9 +26,6 @@ module Security
     include Yast::Logger
     Yast.import "Bootloader"
 
-    GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
-    private_constant :GETENFORCE_PATH
-
     class << self
       DEFAULT_POLICY_OPTIONS = {
         "security"  => :missing,
@@ -100,6 +97,9 @@ module Security
     end
 
     private
+
+    GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
+    private_constant :GETENFORCE_PATH
 
     def configured_policy
       match_policy(policy_options_from_kernel) || :disabled
