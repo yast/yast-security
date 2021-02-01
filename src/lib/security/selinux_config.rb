@@ -26,31 +26,6 @@ module Security
     include Yast::Logger
     Yast.import "Bootloader"
 
-    class << self
-      DEFAULT_POLICY_OPTIONS = {
-        "security"  => :missing,
-        "selinux"   => :missing,
-        "enforcing" => :missing
-      }.freeze
-      private_constant :DEFAULT_POLICY_OPTIONS
-
-      def define_policy(name, options = {})
-        policies[name] = DEFAULT_POLICY_OPTIONS.merge(options)
-      end
-
-      def policies
-        @policies ||= {}
-      end
-
-      def policy_keys
-        DEFAULT_POLICY_OPTIONS.keys
-      end
-    end
-
-    define_policy(:disabled)
-    define_policy(:permissive, "security" => "selinux", "selinux" => "1", "enforcing" => :missing)
-    define_policy(:enforcing, "security" => "selinux", "selinux" => "1", "enforcing" => "1")
-
     attr_reader :policy
 
     def initialize
@@ -101,6 +76,16 @@ module Security
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
 
+    POLICY_KEYS = ["security", "selinux", "enforcing"].freeze
+    private_constant :POLICY_KEYS
+
+    POLICIES = {
+      disabled:   { "security" => :missing, "selinux" => :missing, "enforcing" => :missing },
+      permissive: { "security" => "selinux", "selinux" => "1", "enforcing" => :missing },
+      enforcing:  { "security" => "selinux", "selinux" => "1", "enforcing" => "1" },
+    }.freeze
+    private_constant :POLICIES
+
     def configured_policy
       match_policy(policy_options_from_kernel) || :disabled
     end
@@ -115,15 +100,15 @@ module Security
     end
 
     def find_policy(key)
-      self.class.policies[key]
+      POLICIES[key]
     end
 
     def match_policy(policy_options)
-      self.class.policies.key(policy_options)
+      POLICIES.key(policy_options)
     end
 
     def policy_options_from_kernel
-      Hash[*self.class.policy_keys.flat_map { |key| [key, read_param(key)] }]
+      Hash[*POLICY_KEYS.flat_map { |key| [key, read_param(key)] }]
     end
 
     def read_param(key)
