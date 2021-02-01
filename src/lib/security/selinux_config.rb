@@ -79,11 +79,11 @@ module Security
       found_policy = find_policy(policy_key)
 
       if found_policy
-        log.debug("Changing SELinux configuration to `#{policy_key}` policy: #{found_policy}")
+        log.info("Changing SELinux configuration to `#{policy_key}` policy: #{found_policy}")
 
         @policy = policy_key
       else
-        log.debug("Unknown `#{policy_key}` SELinux policy")
+        log.info("Unknown `#{policy_key}` SELinux policy")
       end
     end
     alias_method :policy=, :update_policy
@@ -93,7 +93,7 @@ module Security
 
       return unless policy_options && changed?
 
-      log.debug("Writting SELinux kernel params: #{policy_options}")
+      log.info("Writting SELinux kernel params: #{policy_options}")
 
       Yast::Bootloader.modify_kernel_params(**policy_options)
       Yast::Bootloader.Write unless Yast::Mode.installation
@@ -109,7 +109,7 @@ module Security
     def propose_policy
       key = :enforcing # read it from control-file
 
-      log.debug "Proposing the `#{key}` SELinux policy"
+      log.info "Proposing the `#{key}` SELinux policy"
       update_policy(policy_key)
       save
     end
@@ -128,23 +128,6 @@ module Security
 
     def read_param(key)
       Yast::Bootloader.kernel_param(:common, key.to_s)
-    end
-
-    def update_policy
-      found_policy = find_policy(@policy)
-
-      if found_policy
-        log.debug("Changing SELinux to #{key} mode: #{found_policy}")
-
-        @policy = key
-      else
-        log.debug("Unknown `#{key}` SELinux policy")
-      end
-
-      if policy
-        Yast::Bootloader.modify_kernel_params(**policy)
-      else
-      end
     end
   end
 end
