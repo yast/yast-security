@@ -41,11 +41,11 @@ module Security
     #
     # @return [Symbol]
     def initial_policy
-      @initial_policy ||=
-        begin
-          propose_policy if Yast::Mode.installation
-          configured_policy
-        end
+      return @initial_policy if @initial_policy
+
+      propose_policy if Yast::Mode.installation
+
+      @initial_policy = configured_policy
     end
 
     # Returns the policy applied in the running system
