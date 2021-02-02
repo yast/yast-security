@@ -66,7 +66,7 @@ module Security
     # @note using nil means to set SELinux policy as disabled.
     #
     # @param id [String, Symbol, nil] a SELinux policy identifier
-    # @return [] true when policy found and set; false otherwise
+    # @return [Symvol] given policy id as a symbol or :disabled
     def policy=(id)
       @policy = id&.to_sym || :disabled
     end
