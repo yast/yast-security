@@ -23,7 +23,10 @@ require "yast2/execute"
 module Security
   # Class for handling SELinux kernel params
   class SelinuxConfig
+    extend Yast::I18n
+    include Yast::I18n
     include Yast::Logger
+
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
 
@@ -61,6 +64,13 @@ module Security
       :disabled
     end
 
+    # Returns the available SELinux policies
+    #
+    # @return [Hash{Symbol=><String, Symbol>}] collection holding available policies' ids and names
+    def available_policies
+      POLICIES.map { |id, policy| { id: id, name: _(policy[:name]) } }
+    end
+
     # Set the policy to given value
     #
     # @note using nil means to set SELinux policy as disabled.
@@ -81,7 +91,7 @@ module Security
     #
     # @return [Boolean] false if there area not policy options or nothing changed; true otherwise
     def save
-      policy_options = find_policy(policy)
+      policy_options = find_policy_options(policy)
 
       unless policy_options
         log.info("Unknown `#{policy}` SELinux policy")
@@ -119,18 +129,32 @@ module Security
     # https://www.kernel.org/doc/html/latest/admin-guide/LSM/index.html
     # and/or grep for CONFIG_LSM in /boot/config-*
     POLICIES = {
-      disabled:   { "security" => :missing, "selinux" => :missing, "enforcing" => :missing },
-      permissive: { "security" => "selinux", "selinux" => "1", "enforcing" => :missing },
-      enforcing:  { "security" => "selinux", "selinux" => "1", "enforcing" => "1" },
+      disabled: {
+        # TRANSLATORS: the name for the disabled SELinux mode
+        name: N_("Disabled"),
+        options: { "security" => :missing, "selinux" => :missing, "enforcing" => :missing },
+      },
+      permissive: {
+        # TRANSLATORS: the name for the permissive SELinux mode
+        name: N_("Permissive"),
+        options: { "security" => "selinux", "selinux" => "1", "enforcing" => :missing }
+      },
+      enforcing: {
+        # TRANSLATORS: the name for the enforcing SELinux mode
+        name: N_("Enforcing"),
+        options: { "security" => "selinux", "selinux" => "1", "enforcing" => "1" }
+      }
     }.freeze
     private_constant :POLICIES
 
-    # Returns the requested policy, if exists
+    # Returns the options for the requested policy, if exists
     #
     # @param key [String, Symbol] the policy identifier
     # @return [Hash, nil] options for matched policy or nil if none
-    def find_policy(key)
-      POLICIES[key.to_sym]
+    def find_policy_options(key)
+      id = key.to_sym
+
+      POLICIES[id] && POLICIES[id][:options]
     end
 
     # Proposes a policy based on `selinux_policy` value set in the control file
