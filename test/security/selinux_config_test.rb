@@ -124,6 +124,15 @@ describe Security::SelinuxConfig do
     end
   end
 
+  describe "#available_modes" do
+    it "returns all known SELinux modes" do
+      modes = subject.available_modes
+      mode_ids = modes.map { |m| m[:id] }
+
+      expect(mode_ids).to eq([:disabled, :permissive, :enforcing])
+    end
+  end
+
   describe "#running_mode=" do
     let(:getenforce_cmd) { ["/usr/sbin/getenforce", stdout: :capture] }
     let(:cheetah_error) { Cheetah::ExecutionFailed.new([], "", nil, nil) }
