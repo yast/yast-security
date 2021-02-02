@@ -119,8 +119,6 @@ module Security
     # https://www.kernel.org/doc/html/latest/admin-guide/LSM/index.html
     # and/or grep for CONFIG_LSM in /boot/config-*
     POLICIES = {
-      # NOTE: setting the "security" module to :missing, which means to remove the options from the
-      #       kernel
       disabled:   { "security" => :missing, "selinux" => :missing, "enforcing" => :missing },
       permissive: { "security" => "selinux", "selinux" => "1", "enforcing" => :missing },
       enforcing:  { "security" => "selinux", "selinux" => "1", "enforcing" => "1" },
