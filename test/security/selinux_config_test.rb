@@ -25,15 +25,15 @@ require "security/selinux_config"
 describe Security::SelinuxConfig do
   subject { described_class.new }
   let(:installation_mode) { false }
-  let(:default_policy) { "enforcing" }
+  let(:default_mode) { "enforcing" }
 
   before do
     allow(Yast::Mode).to receive(:installation).and_return(installation_mode)
-    allow(Yast::ProductFeatures).to receive(:GetFeature).with("globals", "selinux_policy")
-      .and_return(default_policy)
+    allow(Yast::ProductFeatures).to receive(:GetFeature).with("globals", "selinux_mode")
+      .and_return(default_mode)
   end
 
-  RSpec.shared_examples 'initial policy' do
+  RSpec.shared_examples 'initial mode' do
     context "in a running system" do
       before do
         allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "security")
@@ -49,8 +49,8 @@ describe Security::SelinuxConfig do
         let(:selinux_status) { "1" }
         let(:selinux_enforcing) { "0" }
 
-        it "returns the configured policy" do
-          expect(subject.initial_policy).to eq(:permissive)
+        it "returns the configured mode" do
+          expect(subject.initial_mode).to eq(:permissive)
         end
       end
 
@@ -60,7 +60,7 @@ describe Security::SelinuxConfig do
         let(:selinux_enforcing) { :missing }
 
         it "returns :disabled" do
-          expect(subject.initial_policy).to eq(:disabled)
+          expect(subject.initial_mode).to eq(:disabled)
         end
       end
     end
@@ -68,63 +68,63 @@ describe Security::SelinuxConfig do
     context "during installation" do
       let(:installation_mode) { true }
 
-      it "returns the default proposed policy" do
-        expect(subject.initial_policy).to eq(default_policy.to_sym)
+      it "returns the default proposed mode" do
+        expect(subject.initial_mode).to eq(default_mode.to_sym)
       end
     end
   end
 
-  describe "initial_policy" do
-    include_examples "initial policy"
+  describe "initial_mode" do
+    include_examples "initial mode"
   end
 
-  describe "#policy" do
-    context "when policy has not been changed yet" do
-      include_examples "initial policy"
+  describe "#mode" do
+    context "when mode has not been changed yet" do
+      include_examples "initial mode"
     end
 
-    context "when policy has been changed" do
+    context "when mode has been changed" do
       before do
-        subject.policy = :disabled
+        subject.mode = :disabled
       end
 
       context "in a running system" do
-        it "returns the chosen policy" do
-          expect(subject.policy).to eq(:disabled)
+        it "returns the chosen mode" do
+          expect(subject.mode).to eq(:disabled)
         end
       end
 
       context "during the installation" do
         let(:installation_mode) { true }
 
-        it "returns the chosen policy" do
-          expect(subject.policy).to eq(:disabled)
+        it "returns the chosen mode" do
+          expect(subject.mode).to eq(:disabled)
         end
       end
     end
 
   end
 
-  describe "#policy=" do
+  describe "#mode=" do
     context "when a symbol or string given" do
-      it "sets it as a current policy" do
-        subject.policy = :permissive
-        expect(subject.policy).to eq(:permissive)
+      it "sets it as a current mode" do
+        subject.mode = :permissive
+        expect(subject.mode).to eq(:permissive)
 
-        subject.policy = "whatever"
-        expect(subject.policy).to eq(:whatever)
+        subject.mode = "whatever"
+        expect(subject.mode).to eq(:whatever)
       end
     end
 
     context "when nil is given" do
-      it "sets current policy as :disabled" do
-        subject.policy = nil
-        expect(subject.policy).to eq(:disabled)
+      it "sets current mode as :disabled" do
+        subject.mode = nil
+        expect(subject.mode).to eq(:disabled)
       end
     end
   end
 
-  describe "#running_policy=" do
+  describe "#running_mode=" do
     let(:getenforce_cmd) { ["/usr/sbin/getenforce", stdout: :capture] }
     let(:cheetah_error) { Cheetah::ExecutionFailed.new([], "", nil, nil) }
 
@@ -134,7 +134,7 @@ describe Security::SelinuxConfig do
       end
 
       it "returns its sanitize output as a symbol" do
-        expect(subject.running_policy).to eq(:enforcing)
+        expect(subject.running_mode).to eq(:enforcing)
       end
     end
 
@@ -147,11 +147,11 @@ describe Security::SelinuxConfig do
       it "logs a debug message" do
         expect(subject.log).to receive(:debug).with(/.*getenforce.*not available/)
 
-        subject.running_policy
+        subject.running_mode
       end
 
       it "returns :disabled" do
-        expect(subject.running_policy).to eq(:disabled)
+        expect(subject.running_mode).to eq(:disabled)
       end
     end
   end
@@ -161,15 +161,15 @@ describe Security::SelinuxConfig do
       allow(Yast::Bootloader).to receive(:Write).and_return(true)
     end
 
-    RSpec.shared_examples "does not change the policy" do
+    RSpec.shared_examples "does not change the mode" do
     end
 
-    context "when working with a known policy" do
+    context "when working with a known mode" do
       context "that is already set" do
         before do
-          subject.policy = :permissive
+          subject.mode = :permissive
           subject.save
-          subject.policy = :permissive
+          subject.mode = :permissive
         end
 
         it "returns false" do
@@ -185,9 +185,9 @@ describe Security::SelinuxConfig do
 
       context "that is not set yet" do
         before do
-          subject.policy = :permissive
+          subject.mode = :permissive
           subject.save
-          subject.policy = :disabled
+          subject.mode = :disabled
         end
 
         it "returns true" do
@@ -220,9 +220,9 @@ describe Security::SelinuxConfig do
       end
     end
 
-    context "when set policy is unknonw" do
+    context "when set mode is unknonw" do
       before do
-        subject.policy = :unknown
+        subject.mode = :unknown
       end
 
       it "returns false" do

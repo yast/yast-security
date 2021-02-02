@@ -30,58 +30,58 @@ module Security
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
 
-    attr_reader :policy
+    attr_reader :mode
 
     # Constructor
     def initialize
-      @policy = initial_policy
+      @mode = initial_mode
     end
 
-    # Return the initial SELinux policy
+    # Return the initial SELinux mode
     #
-    # It can be the proposed one if running in an installation or the configured policy for a
+    # It can be the proposed one if running in an installation or the configured mode for a
     # running system
     #
     # @return [Symbol]
-    def initial_policy
-      return @initial_policy if @initial_policy
+    def initial_mode
+      return @initial_mode if @initial_mode
 
-      propose_policy if Yast::Mode.installation
+      propose_mode if Yast::Mode.installation
 
-      @initial_policy = configured_policy
+      @initial_mode = configured_mode
     end
 
-    # Returns the policy applied in the running system
+    # Returns the mode applied in the running system
     #
-    # @note the system can be booted with a different SELinux policy that the configured one. To
-    #  know the running policy getenforce tool is used.
+    # @note the system can be booted with a different SELinux mode that the configured one. To
+    #  know the running mode getenforce tool is used.
     #
-    # @return [Symbol] running SELinux policy if command executed successfully; :disabled otherwise
-    def running_policy
+    # @return [Symbol] running SELinux mode if command executed successfully; :disabled otherwise
+    def running_mode
       Yast::Execute.locally!(GETENFORCE_PATH, stdout: :capture).chomp.downcase.to_sym
     rescue Cheetah::ExecutionFailed
       log.debug("`#{GETENFORCE_PATH}` not available. SELinux or selinux-tools missing")
       :disabled
     end
 
-    # Returns the available SELinux policies
+    # Returns available SELinux modes
     #
-    # @return [Hash{Symbol=><String, Symbol>}] collection holding available policies' ids and names
-    def available_policies
-      POLICIES.map { |id, policy| { id: id, name: _(policy[:name]) } }
+    # @return [Hash{Symbol=><String, Symbol>}] collection holding available modes ids and names
+    def available_modes
+      MODES.map { |id, mode| { id: id, name: _(mode[:name]) } }
     end
 
-    # Set the policy to given value
+    # Set the mode to given value
     #
-    # @note using nil means to set SELinux policy as disabled.
+    # @note using nil means to set SELinux mode as disabled.
     #
-    # @param id [String, Symbol, nil] a SELinux policy identifier
-    # @return [Symvol] given policy id as a symbol or :disabled
-    def policy=(id)
-      @policy = id&.to_sym || :disabled
+    # @param id [String, Symbol, nil] a SELinux mode identifier
+    # @return [Symvol] given mode id as a symbol or :disabled
+    def mode=(id)
+      @mode = id&.to_sym || :disabled
     end
 
-    # Set current policy options as kernel parameters for the next boot
+    # Set current mode options as kernel parameters for the next boot
     #
     # @note it does not write the changes when running in installation mode, where only sets the
     #   kernel params in memory, since the Yast::Bootloader.Write will be performed at the end of
@@ -89,16 +89,16 @@ module Security
     #
     # @see Yast::Bootloader#modify_kernel_params
     #
-    # @return [Boolean] false if there area not policy options or nothing changed; true otherwise
+    # @return [Boolean] false if there area not mode options or nothing changed; true otherwise
     def save
-      policy_options = find_policy_options(policy)
+      mode_options = find_mode_options(mode)
 
-      unless policy_options
-        log.info("Unknown `#{policy}` SELinux policy")
+      unless mode_options
+        log.info("Unknown `#{mode}` SELinux mode")
         return false
       end
 
-      changed = Yast::Bootloader.modify_kernel_params(**policy_options)
+      changed = Yast::Bootloader.modify_kernel_params(**mode_options)
       changed = Yast::Bootloader.Write if changed && !Yast::Mode.installation
       changed
     end
@@ -109,13 +109,13 @@ module Security
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
 
-    # Known keys for setting a SELinux policy via kernel command line
-    POLICY_KEYS = ["security", "selinux", "enforcing"].freeze
-    private_constant :POLICY_KEYS
+    # Known keys for setting a SELinux mode via kernel command line
+    MODE_KEYS = ["security", "selinux", "enforcing"].freeze
+    private_constant :MODE_KEYS
 
-    # Known SELinux policies
+    # Known SELinux modes
     #
-    # This is _the main_ or _base_ configuration for known SELinux policies. However, note that, for
+    # This is _the main_ or _base_ configuration for known SELinux modes. However, note that, for
     # example, a permissive mode could be set by just setting the "security" module; i.e.,
     # "security=selinux" means "enable SELinux using the permissive mode". Or even setting
     # the enforcing param to a value equal or less than 0; i.e., "security=selinux enforcing=0".
@@ -123,12 +123,12 @@ module Security
     # Additionally, removing the "security" from the kernel params does not mean to use none
     # security module. Instead, it just fallback to the kernel configuration at the compile time,
     # which in SUSE is to use AppArmor according to the CONFIG_LSM variable. So, it could be said
-    # that dropping all policy param to disabling SELinux is safe enough.
+    # that dropping all mode param to disabling SELinux is safe enough.
     #
     # To know more, please visit the LSM Usage documentation at
     # https://www.kernel.org/doc/html/latest/admin-guide/LSM/index.html
     # and/or grep for CONFIG_LSM in /boot/config-*
-    POLICIES = {
+    MODES = {
       disabled: {
         # TRANSLATORS: the name for the disabled SELinux mode
         name: N_("Disabled"),
@@ -145,34 +145,34 @@ module Security
         options: { "security" => "selinux", "selinux" => "1", "enforcing" => "1" }
       }
     }.freeze
-    private_constant :POLICIES
+    private_constant :MODES
 
-    # Returns the options for the requested policy, if exists
+    # Returns the options for the requested mode, if exists
     #
-    # @param key [String, Symbol] the policy identifier
-    # @return [Hash, nil] options for matched policy or nil if none
-    def find_policy_options(key)
-      id = key.to_sym
+    # @param mode_id [String, Symbol] the mode identifier
+    # @return [Hash, nil] options for matched mode or nil if none
+    def find_mode_options(mode_id)
+      id = mode_id.to_sym
 
-      POLICIES[id] && POLICIES[id][:options]
+      MODES[id] && MODES[id][:options]
     end
 
-    # Proposes a policy based on `selinux_policy` value set in the control file
-    def propose_policy
-      policy_key = Yast::ProductFeatures.GetFeature("globals", "selinux_policy").to_sym
+    # Proposes a mode based on `selinux_mode` value set in the control file
+    def propose_mode
+      mode_key = Yast::ProductFeatures.GetFeature("globals", "selinux_mode").to_sym
 
-      log.info "Proposing the `#{policy_key}` SELinux policy"
-      self.policy = policy_key
+      log.info "Proposing the `#{mode_key}` SELinux mode"
+      self.mode = mode_key
       save
     end
 
-    # Returns the configured SELinux policy according to params in kernel command line
+    # Returns the configured SELinux mode according to params in kernel command line
     #
-    # @see #policy_from_kernel_params
+    # @see #mode_from_kernel_params
     #
-    # @return [Symbol] the policy identifier
-    def configured_policy
-      options = policy_from_kernel_params
+    # @return [Symbol] the mode identifier
+    def configured_mode
+      options = mode_from_kernel_params
 
       return :disabled if options.empty?
 
@@ -188,9 +188,9 @@ module Security
 
     # Returns the SELinux configuration based on options set in the kernel command line
     #
-    # @return [Symbol] the policy identifier
-    def policy_from_kernel_params
-      options = Hash[*POLICY_KEYS.flat_map { |key| [key, read_param(key)] }]
+    # @return [Symbol] the mode identifier
+    def mode_from_kernel_params
+      options = Hash[*MODE_KEYS.flat_map { |key| [key, read_param(key)] }]
       options.filter { |_, value| value != :missing }
     end
 
