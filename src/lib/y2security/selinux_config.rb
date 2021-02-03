@@ -20,20 +20,20 @@
 require "yast"
 require "yast2/execute"
 
-module Security
+module Y2Security
   # Class for handling SELinux kernel params
   #
   # @example Querying the currently configured SELinux mode
   #   selinux = SelinuxConfig.new
   #   mode = selinux.mode
-  #   puts mode.id #=> :permissive
-  #   puts mode.name #=> "Permisive"
+  #   mode.id #=> :permissive
+  #   mode.name #=> "Permisive"
   #
   # @example Querying the currently running SELinux mode
   #   selinux= SelinuxConfig.new
   #   mode = selinux.running_mode
-  #   puts mode.id #=> :enforcing
-  #   puts mode.name #=> "Enforcing"
+  #   mode.id #=> :enforcing
+  #   mode.name #=> "Enforcing"
   #
   # @example Enabling SELinux in Permissive mode for next boot
   #   selinux = SelinuxConfig.new
@@ -58,7 +58,7 @@ module Security
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
 
-    # @return [Security::SelinuxConfig::Mode] the last set mode, which can be differrent to the
+    # @return [Y2Security::SelinuxConfig::Mode] the last set mode, which can be differrent to the
     #   {#running_mode} and {#configured_mode}. A call to {#save} is needed to make it the
     #   {#configured_mode} for the next boot.
     attr_reader :mode
@@ -73,7 +73,7 @@ module Security
     # It can be the proposed one if running in an installation or the configured mode for a
     # running system
     #
-    # @return [Security::SelinuxConfig::Mode]
+    # @return [Y2Security::SelinuxConfig::Mode]
     def initial_mode
       @initial_mode ||= Yast::Mode.installation ? propose_mode : configured_mode
     end
@@ -95,7 +95,7 @@ module Security
 
     # Returns a collection holding all known SELinux modes
     #
-    # @return [Array<Security::SelinuxConfig::Mode>] a collection of known SELinux modes
+    # @return [Array<Y2Security::SelinuxConfig::Mode>] a collection of known SELinux modes
     def modes
       Mode.all
     end
@@ -104,7 +104,7 @@ module Security
     #
     # @note using nil means to set SELinux mode as disabled.
     #
-    # @param id [Security::SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
+    # @param id [Y2Security::SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
     # @return [Mode] found SelinuxConfig::Mode by given id; disabled is none found or nil was given
     def mode=(id)
       @mode = Mode.find(id)
