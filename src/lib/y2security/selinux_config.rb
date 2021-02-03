@@ -50,6 +50,16 @@ module Y2Security
   #   selinux.mode = nil
   #   selinux.mode.id  #=> :disabled
   #   selinux.save #=> true
+  #
+  # @example Trying to enable SELinux during an installation set to be configurable
+  #   selinux = SelinuxConfig.new
+  #   selinux.mode = :permissive
+  #   selinux.save #=> true
+  #
+  # @example Trying to enable SELinux during an installation set to not be configurable
+  #   selinux = SelinuxConfig.new
+  #   selinux.mode = :permissive
+  #   selinux.save #=> false
   class SelinuxConfig
     include Yast::Logger
 
@@ -121,11 +131,15 @@ module Y2Security
     #   kernel params in memory since Yast::Bootloader.Write will be performed at the end of
     #   installation.
     #
+    # @see #configurable?
     # @see Yast::Bootloader#modify_kernel_params
     #
-    # @return [Boolean] true if running in installation mode;
+    # @return [Boolean] true if running in installation where selinux is configurable;
+    #                   false if running in installation where selinux is not configurable;
     #                   the Yast::Bootloader#Write return value otherwise
     def save
+      return false unless configurable?
+
       Yast::Bootloader.modify_kernel_params(mode.options)
 
       return true if Yast::Mode.installation
@@ -157,6 +171,17 @@ module Y2Security
     # @return [Symbol] the mode identifier
     def configured_mode
       Mode.match(mode_from_kernel_params)
+    end
+
+    # Whether SELinux configuration can be changed
+    #
+    # @return [Boolean] always true when running in installed system;
+    #                   the value of selinux_configurable global variable in the control file when
+    #                   running during installation (false if not present)
+    def configurable?
+      return true unless Yast::Mode.installation
+
+      Yast::ProductFeatures.GetBooleanFeature("globals", "selinux_configurable")
     end
 
     # Returns the SELinux configuration based on options set in the kernel command line

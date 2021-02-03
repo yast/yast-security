@@ -176,35 +176,63 @@ describe Y2Security::SelinuxConfig do
   describe "#save" do
     let(:write_result) { true }
     let(:enforcing_mode) { Y2Security::SelinuxConfig::Mode.find(:enforcing) }
+    let(:selinux_configurable) { true }
 
     before do
       allow(Yast::Bootloader).to receive(:modify_kernel_params)
       allow(Yast::Bootloader).to receive(:Write).and_return(write_result)
+      allow(Yast::ProductFeatures).to receive(:GetBooleanFeature)
+        .with("globals", "selinux_configurable")
+        .and_return(selinux_configurable)
 
       subject.mode = enforcing_mode
     end
 
-    it "modifies the bootloader kernel params" do
-      expect(Yast::Bootloader).to receive(:modify_kernel_params)
-        .with(enforcing_mode.options)
-
-      subject.save
-    end
-
     context "when running in installation mode" do
       let(:installation_mode) { true }
+
       it "does not write the configuration" do
         expect(Yast::Bootloader).to_not receive(:Write)
 
         subject.save
       end
 
-      it "returns true" do
-        expect(subject.save).to eq(true)
+      context "and SELinux can be configured" do
+        it "modifies the bootloader kernel params" do
+          expect(Yast::Bootloader).to receive(:modify_kernel_params)
+            .with(enforcing_mode.options)
+
+          subject.save
+        end
+
+        it "returns true" do
+          expect(subject.save).to eq(true)
+        end
+      end
+
+      context "but SELinux cannot be configurable" do
+        let(:selinux_configurable) { false }
+
+        it "does not modify the bootloader kernel params" do
+          expect(Yast::Bootloader).to_not receive(:modify_kernel_params)
+
+          subject.save
+        end
+
+        it "returns false" do
+          expect(subject.save).to eq(false)
+        end
       end
     end
 
     context "when running in an installed system" do
+      it "modifies the bootloader kernel params" do
+        expect(Yast::Bootloader).to receive(:modify_kernel_params)
+          .with(enforcing_mode.options)
+
+        subject.save
+      end
+
       context "and configuration has been successfully written" do
         it "returns true" do
           expect(subject.save).to eq(true)
