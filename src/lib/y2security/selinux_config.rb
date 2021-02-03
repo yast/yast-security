@@ -56,7 +56,7 @@ module Y2Security
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
 
-    # @return [Y2Security::SelinuxConfig::Mode] the last set mode, which can be differrent to the
+    # @return [SelinuxConfig::Mode] the last set mode, which can be differrent to the
     #   {#running_mode} and {#configured_mode}. A call to {#save} is needed to make it the
     #   {#configured_mode} for the next boot.
     attr_reader :mode
@@ -71,7 +71,7 @@ module Y2Security
     # It can be the proposed one if running in an installation or the configured mode for a
     # running system
     #
-    # @return [Y2Security::SelinuxConfig::Mode]
+    # @return [SelinuxConfig::Mode]
     def initial_mode
       @initial_mode ||= Yast::Mode.installation ? propose_mode : configured_mode
     end
@@ -93,7 +93,7 @@ module Y2Security
 
     # Returns a collection holding all known SELinux modes
     #
-    # @return [Array<Y2Security::SelinuxConfig::Mode>] a collection of known SELinux modes
+    # @return [Array<SelinuxConfig::Mode>] a collection of known SELinux modes
     def modes
       Mode.all
     end
@@ -102,8 +102,8 @@ module Y2Security
     #
     # @note using nil means to set SELinux mode as disabled.
     #
-    # @param id [Y2Security::SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
-    # @return [Mode] found SelinuxConfig::Mode by given id; disabled is none found or nil was given
+    # @param id [SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
+    # @return [Mode] the SelinuxConfig::Mode by given id or disabled is none found or nil was given
     def mode=(id)
       found_mode = Mode.find(id) || Mode.find(:disabled)
       @mode = found_mode
