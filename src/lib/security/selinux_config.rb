@@ -94,7 +94,7 @@ module Security
     #
     # @return [Boolean] false if mode is not set or nothing changed; true otherwise
     def save
-      Yast::Bootloader.modify_kernel_params(**mode.options)
+      Yast::Bootloader.modify_kernel_params(mode.options)
 
       return true if Yast::Mode.installation
 
