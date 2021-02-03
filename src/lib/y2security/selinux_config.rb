@@ -73,7 +73,7 @@ module Y2Security
     #
     # @return [SelinuxConfig::Mode]
     def initial_mode
-      @initial_mode ||= Yast::Mode.installation ? propose_mode : configured_mode
+      @initial_mode ||= Yast::Mode.installation ? proposed_mode : configured_mode
     end
 
     # Returns the mode applied in the running system
@@ -139,12 +139,12 @@ module Y2Security
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
 
-    # Proposes a mode based on `selinux_mode` value set in the control file
+    # Returns the proposed mode via the `selinux_mode` global variable in the control file
     #
     # @see Mode.find
     #
     # @return [Mode] disabled or found SELinux mode
-    def propose_mode
+    def proposed_mode
       id = Yast::ProductFeatures.GetFeature("globals", "selinux_mode").to_sym
 
       Mode.find(id)
