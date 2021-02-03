@@ -105,8 +105,8 @@ module Y2Security
     # @param id [Y2Security::SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
     # @return [Mode] found SelinuxConfig::Mode by given id; disabled is none found or nil was given
     def mode=(id)
-      @mode = Mode.find(id)
-      @mode ||= Mode.find(:disabled)
+      found_mode = Mode.find(id) || Mode.find(:disabled)
+      @mode = found_mode
       @mode
     end
 
