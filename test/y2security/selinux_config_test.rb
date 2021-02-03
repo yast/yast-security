@@ -25,16 +25,13 @@ describe Y2Security::SelinuxConfig do
   subject { described_class.new }
 
   let(:installation_mode) { false }
-  let(:proposed_mode) { "enforcing" }
 
   before do
     allow(Yast::Mode).to receive(:installation).and_return(installation_mode)
-    allow(Yast::ProductFeatures).to receive(:GetFeature).with("globals", "selinux_mode")
-      .and_return(proposed_mode)
   end
 
-  describe "initial_mode" do
-    let(:mode) { subject.initial_mode }
+  describe "initialize" do
+    let(:mode) { subject.mode }
 
     context "in a running system" do
       before do
@@ -51,7 +48,7 @@ describe Y2Security::SelinuxConfig do
         let(:selinux_param) { "1" }
         let(:enforcing_param) { "0" }
 
-        it "returns the configured mode" do
+        it "sets the proper mode" do
           expect(mode.id).to eq(:permissive)
         end
       end
@@ -61,7 +58,7 @@ describe Y2Security::SelinuxConfig do
         let(:selinux_param) { :missing }
         let(:enforcing_param) { :missing }
 
-        it "returns the :disabled mode" do
+        it "sets the :disabled mode" do
           expect(mode.id).to eq(:disabled)
         end
       end
@@ -70,8 +67,36 @@ describe Y2Security::SelinuxConfig do
     context "during installation" do
       let(:installation_mode) { true }
 
-      it "returns the proposed mode" do
-        expect(mode.id).to eq(proposed_mode.to_sym)
+      before do
+        allow(Yast::ProductFeatures).to receive(:GetFeature)
+          .with("globals", "selinux_mode")
+          .and_return(proposed_mode)
+      end
+
+      context "when 'selinux_mode' is not present" do
+        let(:proposed_mode) { "" }
+
+        it "sets the :disabled mode" do
+          expect(mode.id).to eq(:disabled)
+        end
+      end
+
+      context "when 'selinux_mode' is present" do
+        context "and contains a valid mode id" do
+          let(:proposed_mode) { :enforcing }
+
+          it "sets the proper mode" do
+            expect(mode.id).to eq(:enforcing)
+          end
+        end
+
+        context "but contains a not valid mode id" do
+          let(:proposed_mode) { :enforced }
+
+          it "sets the :disabled mode" do
+            expect(mode.id).to eq(:disabled)
+          end
+        end
       end
     end
   end

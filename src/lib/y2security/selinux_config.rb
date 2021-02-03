@@ -73,17 +73,7 @@ module Y2Security
 
     # Constructor
     def initialize
-      @mode = initial_mode
-    end
-
-    # Returns the initial SELinux mode
-    #
-    # It can be the proposed one if running in an installation or the configured mode for a
-    # running system
-    #
-    # @return [SelinuxConfig::Mode]
-    def initial_mode
-      @initial_mode ||= Yast::Mode.installation ? proposed_mode : configured_mode
+      @mode = Yast::Mode.installation ? proposed_mode : configured_mode
     end
 
     # Returns the mode applied in the running system
@@ -110,19 +100,10 @@ module Y2Security
 
     # Set the mode to given value
     #
-    # @note using nil means to set SELinux mode as disabled.
-    #
-    # @param id [SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
-    # @return [Mode] the SelinuxConfig::Mode by given id or disabled is none found or nil was given
+    # @see #find_mode
     def mode=(id)
-      found_mode = Mode.find(id)
-
-      if found_mode.nil?
-        log.info("Requested SELinux mode `#{id}` not found. Falling back to :disabled.")
-        found_mode = Mode.find(:disabled)
-      end
-
-      @mode = found_mode
+      @mode = find_mode(id)
+      @mode
     end
 
     # Set current mode options as kernel parameters for the next boot
@@ -164,6 +145,23 @@ module Y2Security
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
 
+    # Find SELinux mode by given value
+    #
+    # @note using nil means to set SELinux mode as disabled.
+    #
+    # @param id [SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
+    # @return [Mode] the SelinuxConfig::Mode by given id or disabled is none found or nil was given
+    def find_mode(id)
+      found_mode = Mode.find(id)
+
+      if found_mode.nil?
+        log.info("Requested SELinux mode `#{id}` not found. Falling back to :disabled.")
+        found_mode = Mode.find(:disabled)
+      end
+
+      found_mode
+    end
+
     # Returns the proposed mode via the `selinux_mode` global variable in the control file
     #
     # @see Mode.find
@@ -172,7 +170,9 @@ module Y2Security
     def proposed_mode
       id = Yast::ProductFeatures.GetFeature("globals", "selinux_mode").to_sym
 
-      Mode.find(id)
+      log.info("Proposing `#{id}` SELinux mode.")
+
+      find_mode(id)
     end
 
     # Returns the configured SELinux mode according to params in kernel command line
