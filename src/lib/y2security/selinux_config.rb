@@ -147,6 +147,17 @@ module Y2Security
       Yast::Bootloader.Write
     end
 
+    # Whether SELinux configuration can be changed
+    #
+    # @return [Boolean] always true when running in installed system;
+    #                   the value of selinux_configurable global variable in the control file when
+    #                   running during installation (false if not present)
+    def configurable?
+      return true unless Yast::Mode.installation
+
+      Yast::ProductFeatures.GetBooleanFeature("globals", "selinux_configurable")
+    end
+
     private
 
     # Path to the SELinux getenforce command
@@ -171,17 +182,6 @@ module Y2Security
     # @return [Symbol] the mode identifier
     def configured_mode
       Mode.match(mode_from_kernel_params)
-    end
-
-    # Whether SELinux configuration can be changed
-    #
-    # @return [Boolean] always true when running in installed system;
-    #                   the value of selinux_configurable global variable in the control file when
-    #                   running during installation (false if not present)
-    def configurable?
-      return true unless Yast::Mode.installation
-
-      Yast::ProductFeatures.GetBooleanFeature("globals", "selinux_configurable")
     end
 
     # Returns the SELinux configuration based on options set in the kernel command line

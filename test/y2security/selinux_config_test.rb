@@ -248,6 +248,40 @@ describe Y2Security::SelinuxConfig do
       end
     end
   end
+
+  describe "#configurable?" do
+    let(:selinux_configurable) { true }
+
+    before do
+      allow(Yast::ProductFeatures).to receive(:GetBooleanFeature)
+        .with("globals", "selinux_configurable")
+        .and_return(selinux_configurable)
+    end
+
+    context "when running in an installed system" do
+      it "returns true" do
+        expect(subject.configurable?).to eq(true)
+      end
+    end
+
+    context "when running in installation" do
+      let(:installation_mode) { true }
+
+      context "and 'selinux_configurable' is true" do
+        it "returns true" do
+          expect(subject.configurable?).to eq(true)
+        end
+      end
+
+      context "and 'selinux_configurable' is false" do
+        let(:selinux_configurable) { false }
+
+        it "returns false" do
+          expect(subject.configurable?).to eq(false)
+        end
+      end
+    end
+  end
 end
 
 describe Y2Security::SelinuxConfig::Mode do
