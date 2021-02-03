@@ -132,6 +132,18 @@ module Y2Security
       Yast::Bootloader.Write
     end
 
+    # Allow to save current mode conditionally based on the keep_intact param
+    #
+    # @see #save
+    #
+    # @param keep_intact [Boolean] true if #save method should be called; false when not
+    # @return [Boolean] false if #save method was not called, the return value of #save otherwise
+    def save_or_reject(keep_intact: false)
+      return false if keep_intact
+
+      save
+    end
+
     private
 
     # Path to the SELinux getenforce command

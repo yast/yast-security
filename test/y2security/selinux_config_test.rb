@@ -220,6 +220,30 @@ describe Y2Security::SelinuxConfig do
       end
     end
   end
+
+  describe "#save_or_reject" do
+    context "when keep_intact is false" do
+      it "calls #save" do
+        expect(subject).to receive(:save)
+
+        subject.save_or_reject(keep_intact: false)
+      end
+    end
+
+    context "when keep_intact is true" do
+      it "do not call #save" do
+        expect(subject).to_not receive(:save)
+
+        subject.save_or_reject(keep_intact: true)
+      end
+
+      it "returns false" do
+        result = subject.save_or_reject(keep_intact: true)
+
+        expect(result).to  eq(false)
+      end
+    end
+  end
 end
 
 describe Y2Security::SelinuxConfig::Mode do
