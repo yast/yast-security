@@ -113,7 +113,6 @@ module Y2Security
       end
 
       @mode = found_mode
-      @mode
     end
 
     # Set current mode options as kernel parameters for the next boot
