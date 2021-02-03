@@ -51,8 +51,6 @@ module Y2Security
   #   selinux.mode.id  #=> :disabled
   #   selinux.save #=> true
   class SelinuxConfig
-    extend Yast::I18n
-    include Yast::I18n
     include Yast::Logger
 
     Yast.import "Bootloader"
