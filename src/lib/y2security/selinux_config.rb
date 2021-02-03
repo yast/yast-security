@@ -123,7 +123,8 @@ module Y2Security
     #
     # @see Yast::Bootloader#modify_kernel_params
     #
-    # @return [Boolean] false if mode is not set or nothing changed; true otherwise
+    # @return [Boolean] true if running in installation mode;
+    #                   the Yast::Bootloader#Write return value otherwise
     def save
       Yast::Bootloader.modify_kernel_params(mode.options)
 
