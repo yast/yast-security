@@ -33,7 +33,7 @@ describe Security::SelinuxConfig do
       .and_return(proposed_mode)
   end
 
-  RSpec.shared_examples 'initial mode' do
+  describe "initial_mode" do
     let(:mode) { subject.initial_mode }
 
     context "in a running system" do
@@ -76,70 +76,49 @@ describe Security::SelinuxConfig do
     end
   end
 
-  describe "initial_mode" do
-    include_examples "initial mode"
-  end
-
-  describe "#modes" do
-    it "returns a collection of known SELinux modes" do
-      expect(subject.modes).to all(be_a(Security::SelinuxConfig::Mode))
-    end
-
-    it "contains known mode ids" do
-      expect(subject.modes.map(&:id)).to eq([:disabled, :permissive, :enforcing])
-    end
-
-    it "contains known mode names" do
-      expect(subject.modes.map(&:name)).to eq(["Disabled", "Permissive", "Enforcing"])
-    end
-  end
-
   describe "#mode" do
-    context "when a known SELinux mode is set" do
-      before do
-        subject.mode = :enforcing
-      end
+    let(:enforcing_mode) { Security::SelinuxConfig::Mode.find(:enforcing) }
 
-      it "returns it" do
-        expect(subject.mode).to be_a(Security::SelinuxConfig::Mode)
-        expect(subject.mode.id).to eq(:enforcing)
-      end
+    before do
+      subject.mode = enforcing_mode
     end
 
-    context "when an unknown SELinux was set" do
-      before do
-        subject.mode = :not_known
-      end
-
-      it "returns nil" do
-        expect(subject.mode).to be_nil
-      end
+    it "returns the set mode" do
+      expect(subject.mode).to eq(enforcing_mode)
     end
   end
 
   describe "#mode=" do
-    context "when a known SELinux id is given" do
-      it "sets the new mode" do
-        subject.mode = :permissive
+    let(:disabled_mode) { Security::SelinuxConfig::Mode.find(:disabled) }
+    let(:permissive_mode) { Security::SelinuxConfig::Mode.find(:permissive) }
 
-        expect(subject.mode).to be_a(Security::SelinuxConfig::Mode)
-        expect(subject.mode.id).to eq(:permissive)
+    context "when a known SELinux mode id is given" do
+      it "returns the mode" do
+        expect(subject).to receive(:mode=).with(:permissive).and_return(permissive_mode)
+
+        subject.mode = permissive_mode.id
+      end
+
+      it "sets the mode" do
+        subject.mode = permissive_mode.id
+
+        expect(subject.mode).to eq(permissive_mode)
       end
     end
 
     context "when an unknown SELinux id is given" do
-      it "unsets the mode" do
+      it "uses the disabled mode" do
         subject.mode = :not_now
 
-        expect(subject.mode).to be_nil
+        expect(subject.mode).to eq(disabled_mode)
       end
     end
 
     context "when nil is given" do
-      it "unsets the mode" do
+      it "uses the disabled mode" do
         subject.mode = :not_now
 
-        expect(subject.mode).to be_nil
+        expect(subject.mode).to eq(disabled_mode)
       end
     end
   end
@@ -180,86 +159,64 @@ describe Security::SelinuxConfig do
     end
   end
 
-  describe "#save" do
-    before do
-      allow(Yast::Bootloader).to receive(:Write).and_return(true)
+  describe "#modes" do
+    it "returns a collection of known SELinux modes" do
+      expect(subject.modes).to all(be_a(Security::SelinuxConfig::Mode))
     end
 
-    context "when working with a known mode" do
-      context "that is already set" do
-        before do
-          subject.mode = :permissive
-          subject.save
-          subject.mode = :permissive
+    it "contains known mode ids" do
+      expect(subject.modes.map(&:id)).to eq([:disabled, :permissive, :enforcing])
+    end
+
+    it "contains known mode names" do
+      expect(subject.modes.map(&:name)).to eq(["Disabled", "Permissive", "Enforcing"])
+    end
+  end
+
+  describe "#save" do
+    let(:write_result) { true }
+    let(:enforcing_mode) { Security::SelinuxConfig::Mode.find(:enforcing) }
+
+    before do
+      allow(Yast::Bootloader).to receive(:modify_kernel_params)
+      allow(Yast::Bootloader).to receive(:Write).and_return(write_result)
+
+      subject.mode = enforcing_mode
+    end
+
+    it "modifies the bootloader kernel params" do
+      expect(Yast::Bootloader).to receive(:modify_kernel_params)
+        .with(enforcing_mode.options)
+
+      subject.save
+    end
+
+    context "when running in installation mode" do
+      let(:installation_mode) { true }
+      it "does not write the configuration" do
+        expect(Yast::Bootloader).to_not receive(:Write)
+
+        subject.save
+      end
+
+      it "returns true" do
+        expect(subject.save).to eq(true)
+      end
+    end
+
+    context "when running in an installed system" do
+      context "and configuration has been successfully written" do
+        it "returns true" do
+          expect(subject.save).to eq(true)
         end
+      end
+
+      context "and configuration has not been written" do
+        let(:write_result) { false }
 
         it "returns false" do
           expect(subject.save).to eq(false)
         end
-
-        it "does not write bootloader configuration" do
-          expect(Yast::Bootloader).to_not receive(:Write)
-
-          subject.save
-        end
-      end
-
-      context "that is not set yet" do
-        before do
-          subject.mode = :permissive
-          subject.save
-          subject.mode = :enforcing
-        end
-
-        it "returns true" do
-          expect(subject.save).to eq(true)
-        end
-
-        it "modifies kernel params" do
-          expect(Yast::Bootloader).to receive(:modify_kernel_params)
-
-          subject.save
-        end
-
-        context "in a running system" do
-          it "writes bootloader configuration" do
-            expect(Yast::Bootloader).to receive(:Write)
-
-            subject.save
-          end
-        end
-
-        context "during installation" do
-          let(:installation_mode) { true }
-
-          it "does not write bootloader configuration" do
-            expect(Yast::Bootloader).to_not receive(:Write)
-
-            subject.save
-          end
-        end
-      end
-    end
-
-    context "when set mode is unknonw" do
-      before do
-        subject.mode = :unknown
-      end
-
-      it "returns false" do
-        expect(subject.save).to eq(false)
-      end
-
-      it "does not modify kernel params" do
-        expect(Yast::Bootloader).to_not receive(:modify_kernel_params)
-
-        subject.save
-      end
-
-      it "does not write bootloader configuration" do
-        expect(Yast::Bootloader).to_not receive(:Write)
-
-        subject.save
       end
     end
   end
@@ -271,6 +228,20 @@ describe Security::SelinuxConfig::Mode do
   describe ".all" do
     it "returns a collection of known modes" do
       expect(subject.all).to all(be_an(Security::SelinuxConfig::Mode))
+    end
+  end
+
+  describe ".kernel_options" do
+    it "includes 'security'" do
+      expect(subject.kernel_options).to include("security")
+    end
+
+    it "includes 'selinux'" do
+      expect(subject.kernel_options).to include("selinux")
+    end
+
+    it "includes 'enforcing'" do
+      expect(subject.kernel_options).to include("enforcing")
     end
   end
 
@@ -348,6 +319,30 @@ describe Security::SelinuxConfig::Mode do
           expect(mode.id).to eq(:disabled)
         end
       end
+    end
+  end
+
+  describe "#id" do
+    let(:mode) { described_class.find("enforcing") }
+
+    it "returns the mode id" do
+      expect(mode.id).to eq(:enforcing)
+    end
+  end
+
+  describe "#name" do
+    let(:mode) { described_class.find(:permissive) }
+
+    it "returns the mode name" do
+      expect(mode.name).to eq("Permissive")
+    end
+  end
+
+  describe "#options" do
+    let(:mode) { described_class.find(:disabled) }
+
+    it "returns the mode options" do
+      expect(mode.options).to a_hash_including("security", "selinux", "enforcing")
     end
   end
 end

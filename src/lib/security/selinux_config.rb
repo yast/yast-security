@@ -47,11 +47,7 @@ module Security
     #
     # @return [Security::SelinuxConfig::Mode]
     def initial_mode
-      return @initial_mode if @initial_mode
-
-      propose! if Yast::Mode.installation
-
-      @initial_mode = configured_mode
+      @initial_mode ||= Yast::Mode.installation ? propose_mode : configured_mode
     end
 
     # Returns the mode applied in the running system
@@ -71,7 +67,7 @@ module Security
 
     # Returns a collection holding all known SELinux modes
     #
-    # @return [Array<Security::SelinuxConfig::Mode>] a collection of knwon SELinux modes
+    # @return [Array<Security::SelinuxConfig::Mode>] a collection of known SELinux modes
     def modes
       Mode.all
     end
@@ -80,27 +76,29 @@ module Security
     #
     # @note using nil means to set SELinux mode as disabled.
     #
-    # @param id [String, Symbol, nil] a SELinux mode identifier
-    # @return [Mode, nil] found SelinuxConfig::Mode by given id; nil if none
+    # @param id [Security::SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
+    # @return [Mode] found SelinuxConfig::Mode by given id; disabled is none found or nil was given
     def mode=(id)
       @mode = Mode.find(id)
+      @mode ||= Mode.find(:disabled)
+      @mode
     end
 
     # Set current mode options as kernel parameters for the next boot
     #
     # @note it does not write the changes when running in installation mode, where only sets the
-    #   kernel params in memory, since the Yast::Bootloader.Write will be performed at the end of
+    #   kernel params in memory since Yast::Bootloader.Write will be performed at the end of
     #   installation.
     #
     # @see Yast::Bootloader#modify_kernel_params
     #
     # @return [Boolean] false if mode is not set or nothing changed; true otherwise
     def save
-      return false if mode.nil?
+      Yast::Bootloader.modify_kernel_params(**mode.options)
 
-      changed = Yast::Bootloader.modify_kernel_params(**mode.options)
-      changed = Yast::Bootloader.Write if changed && !Yast::Mode.installation
-      changed
+      return true if Yast::Mode.installation
+
+      Yast::Bootloader.Write
     end
 
     private
@@ -111,21 +109,13 @@ module Security
 
     # Proposes a mode based on `selinux_mode` value set in the control file
     #
-    # If mode is found, it calls #save for setting it.
+    # @see Mode.find
     #
-    # @return [Mode] the configured SELinux mode after trying the proposal
-    def propose!
+    # @return [Mode] disabled or found SELinux mode
+    def propose_mode
       id = Yast::ProductFeatures.GetFeature("globals", "selinux_mode").to_sym
 
-      if Mode.find(id)
-        log.info "Proposing the `#{id}` SELinux mode"
-        self.mode = id
-        save
-      else
-        log.info "Unknown `#{id}` SELinux mode. Skipping the proposal."
-      end
-
-      self.mode
+      Mode.find(id)
     end
 
     # Returns the configured SELinux mode according to params in kernel command line
@@ -141,7 +131,7 @@ module Security
     #
     # @return [Symbol] the mode identifier
     def mode_from_kernel_params
-      params = Mode.keys.flat_map do |key|
+      params = Mode.kernel_options.flat_map do |key|
         value = Array(read_param(key)).last
         next if value == :missing
 
@@ -167,10 +157,6 @@ module Security
       attr_reader :id
       alias_method :to_sym, :id
 
-      # @return [String] the human readable name to represent the mode
-      attr_reader :name
-      alias_method :to_human_string, :name
-
       # @return [Hash{String=><String, :missing>}] options for setting the mode via kernel params
       attr_reader :options
 
@@ -178,21 +164,22 @@ module Security
       #
       # @return [Array<Mode>]
       def self.all
-        ALL.dup
+        ALL
       end
 
       # Returns all known keys for setting a SELinux mode via kernel command line
       #
       # @return [Array<String>]
-      def self.keys
-        OPTIONS_KEYS
+      def self.kernel_options
+        KERNEL_OPTIONS
       end
 
       # Finds a SELinux mode by its id
       #
+      # @param id [Mode, String, Symbol, nil]
       # @return [Mode, nil] found mode or nil if given mode id does not exists
       def self.find(id)
-        ALL.find { |mode| mode.id == id.to_sym }
+        ALL.find { |mode| mode.id == id&.to_sym }
       end
 
       # Finds the SELinux mode which fits better to given options
@@ -215,21 +202,29 @@ module Security
       #
       # Intended to be used internally by the class
       #
-      # @param id [String, Symbol] if of the mode
+      # @param id [String, Symbol] id of the mode
       # @param name [String] the mode name, a string marked for translation
-      # @param enable [Boolean] wether the mode will enable SELinux
+      # @param enable [Boolean] whether the mode will enable SELinux
       # @param enforcing [Boolean] if SELinux should be run enforcing or not
       def initialize(id, name, enable, enforcing)
         textdomain "security"
 
         @id = id.to_sym
-        @name = _(name)
+        @name = name
         @options = {
           "security"  => enable    ? "selinux" : :missing,
           "selinux"   => enable    ? "1"       : :missing,
           "enforcing" => enforcing ? "1"       : :missing
         }
       end
+
+      # Return the human readable name to represent the mode
+      #
+      # @return [String]
+      def name
+        _(@name)
+      end
+      alias_method :to_human_string, :name
 
       private
 
@@ -256,8 +251,8 @@ module Security
       private_constant :ALL
 
       # Known keys for setting a SELinux mode via kernel command line
-      OPTIONS_KEYS = ["security", "selinux", "enforcing"]
-      private_constant :OPTIONS_KEYS
+      KERNEL_OPTIONS = ["security", "selinux", "enforcing"]
+      private_constant :KERNEL_OPTIONS
     end
   end
 end
