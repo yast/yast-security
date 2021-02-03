@@ -22,6 +22,34 @@ require "yast2/execute"
 
 module Security
   # Class for handling SELinux kernel params
+  #
+  # @example Querying the currently configured SELinux mode
+  #   selinux = SelinuxConfig.new
+  #   mode = selinux.mode
+  #   puts mode.id #=> :permissive
+  #   puts mode.name #=> "Permisive"
+  #
+  # @example Querying the currently running SELinux mode
+  #   selinux= SelinuxConfig.new
+  #   mode = selinux.running_mode
+  #   puts mode.id #=> :enforcing
+  #   puts mode.name #=> "Enforcing"
+  #
+  # @example Enabling SELinux in Permissive mode for next boot
+  #   selinux = SelinuxConfig.new
+  #   selinux.mode = :permissive
+  #   selinux.save #=> true
+  #
+  # @example Disabling SELinux for next boot
+  #   selinux = SelinuxConfig.new
+  #   selinux.mode = :disabled
+  #   selinux.save #=> true
+  #
+  # @example Disabling SELinux for next boot (using nil)
+  #   selinux = SelinuxConfig.new
+  #   selinux.mode = nil
+  #   selinux.mode.id  #=> :disabled
+  #   selinux.save #=> true
   class SelinuxConfig
     extend Yast::I18n
     include Yast::I18n
