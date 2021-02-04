@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Feb  3 09:29:36 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Add class for managing SELinux configuration at boot time
+  (jsc#SLE-17427)
+- 4.2.15
+
+-------------------------------------------------------------------
 Tue Oct 27 13:26:57 CET 2020 - schubi@suse.de
 
 - AY-Import: Translate <enable_sysrq> setting to <kernel.sysrq>
