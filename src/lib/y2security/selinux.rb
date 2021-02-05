@@ -185,8 +185,15 @@ module Y2Security
     #                   false if running in installation where selinux is not configurable;
     #                   the Yast::Bootloader#Write return value otherwise
     def save
-      return false unless configurable?
+      unless configurable?
+        log.warn("Do NOT set Mode to: #{mode.id}")
+        log.info("With bootloader kernel params: #{mode.options}")
+        log.warn("Because it has NOT been enabled in the product control file.")
+        return false
+      end
 
+      log.info("Set Mode to: #{mode.id}")
+      log.info("With bootloader kernel params: #{mode.options}")
       Yast::Bootloader.modify_kernel_params(mode.options)
       config_file.selinux = mode.id.to_s
       config_file.save

@@ -32,6 +32,8 @@ require "cfa/shadow_config"
 require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
+require "y2security/selinux_config"
+require "autoinstall/autoinst_issues/invalid_value"
 
 module Yast
   class SecurityClass < Module
@@ -67,7 +69,6 @@ module Yast
       "USERDEL_PRECMD",
       "USERDEL_POSTCMD"
     ].freeze
-
 
     attr_reader :display_manager
 
@@ -155,7 +156,8 @@ module Yast
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "no",
         "SMTPD_LISTEN_REMOTE"                       => "no",
         "MANDATORY_SERVICES"                        => "yes",
-        "EXTRA_SERVICES"                            => "no"
+        "EXTRA_SERVICES"                            => "no",
+        "SELINUX_MODE"                              => ""
       }
 
       @Settings.merge!(@display_manager.default_settings) if @display_manager
@@ -655,6 +657,15 @@ module Yast
       end
     end
 
+    # Set SELinux settings
+    # @return true on success
+    def write_selinux
+      return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
+      selinux = Y2Security::SelinuxConfig.new
+      selinux.mode = @Settings["SELINUX_MODE"]
+      selinux.save
+    end
+
     # Write all security settings
     # @return true on success
     def Write
@@ -670,25 +681,29 @@ module Yast
         " ",
         steps,
         [
-          # Progress stage 1/4
+          # Progress stage 1/5
           _("Write security settings"),
-          # Progress stage 2/4
+          # Progress stage 2/5
           _("Write inittab settings"),
-          # Progress stage 3/4
+          # Progress stage 3/5
           _("Write PAM settings"),
-          # Progress stage 4/4
-          _("Update system settings")
+          # Progress stage 4/5
+          _("Update system settings"),
+          # Progress stage 5/5
+          _("Write SELinux settings")
         ],
         [
-          # Progress step 1/5
+          # Progress step 1/6
           _("Writing security settings..."),
-          # Progress step 2/5
+          # Progress step 2/6
           _("Writing inittab settings..."),
-          # Progress step 3/5
+          # Progress step 3/6
           _("Writing PAM settings..."),
-          # Progress step 4/5
+          # Progress step 4/6
           _("Updating system settings..."),
-          # Progress step 5/5
+          # Progress step 5/6
+          _("Writing  settings..."),
+          # Progress step 6/6
           _("Finished")
         ],
         ""
@@ -727,6 +742,10 @@ module Yast
       activate_changes
 
       return false if Abort()
+      Progress.NextStage
+      write_selinux
+
+      return false if Abort()
       @modified = false
       true
     end
@@ -758,7 +777,6 @@ module Yast
       end
 
       return true if settings == {}
-
       @modified = true
       tmpSettings = {}
       @Settings.each do |k, v|
@@ -779,8 +797,22 @@ module Yast
           end
         end
       end
-      @Settings = tmpSettings
 
+      #Checking value semantic
+      selinux_values = Y2Security::SelinuxConfig.new.modes.map {|m| m.id.to_s}
+      if !selinux_values.include?(settings["SELINUX_MODE"])
+        Yast::AutoInstall.issues_list.add(
+          :invalid_value,
+          "security",
+          "selinux_mode",
+          settings["SELINUX_MODE"],
+          _("Wrong SELinux mode. Possible values: ") +
+          selinux_values.join(", "),
+          :warn
+        )
+      end
+
+      @Settings = tmpSettings
       true
     end
 
