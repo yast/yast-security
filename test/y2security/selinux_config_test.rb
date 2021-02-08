@@ -120,7 +120,7 @@ describe Y2Security::SelinuxConfig do
       let(:release_name) { "SLE Micro OS" }
 
       it "includes 'micro-selinux'" do
-        expect(subject.needed_packages).to include('micro-selinux')
+        expect(subject.needed_packages).to include('microos-selinux')
       end
     end
 

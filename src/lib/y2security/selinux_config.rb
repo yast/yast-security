@@ -165,7 +165,7 @@ module Y2Security
     private_constant :PATTERN
 
     # SLE Micro OS pattern
-    MICRO_OS_PATTERN = "micro-selinux".freeze
+    MICRO_OS_PATTERN = "microos-selinux".freeze
     private_constant :PATTERN
 
     # Find SELinux mode by given value
