@@ -101,6 +101,40 @@ describe Y2Security::SelinuxConfig do
     end
   end
 
+  describe "#needed_packages" do
+    let(:release_name) { "openSUSE Leap" }
+
+    before do
+      allow(Yast::OSRelease).to receive(:ReleaseName).and_return(release_name)
+    end
+
+    it "includes 'selinux-tools'" do
+      expect(subject.needed_packages).to include('selinux-tools')
+    end
+
+    it "includes 'selinux-policy-targeted'" do
+      expect(subject.needed_packages).to include('selinux-policy-targeted')
+    end
+
+    context "when running in a SLE Micro OS" do
+      let(:release_name) { "SLE Micro OS" }
+
+      it "includes 'micro-selinux'" do
+        expect(subject.needed_packages).to include('micro-selinux')
+      end
+    end
+
+    context "when not running in a SLE Micro OS" do
+      it "includes 'selinux'" do
+        expect(subject.needed_packages).to include('selinux')
+      end
+
+      it "does not include 'micro-selinux'" do
+        expect(subject.needed_packages).to_not include('micro-selinux')
+      end
+    end
+  end
+
   describe "#mode" do
     let(:enforcing_mode) { Y2Security::SelinuxConfig::Mode.find(:enforcing) }
 

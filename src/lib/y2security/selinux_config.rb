@@ -64,6 +64,7 @@ module Y2Security
     include Yast::Logger
 
     Yast.import "Bootloader"
+    Yast.import "OSRelease"
     Yast.import "ProductFeatures"
 
     # @return [SelinuxConfig::Mode] the last set mode, which can be differrent to the
@@ -139,11 +140,33 @@ module Y2Security
       Yast::ProductFeatures.GetBooleanFeature("globals", "selinux_configurable")
     end
 
+    def needed_packages
+      pattern = Yast::OSRelease.ReleaseName =~ /micro/i ? MICRO_OS_PATTERN : PATTERN
+
+      [pattern, TOOLS_PACKAGE, POLICY_PACKAGE]
+    end
+
     private
 
     # Path to the SELinux getenforce command
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
+
+    # SELinux policy package
+    POLICY_PACKAGE = "selinux-policy-targeted".freeze
+    private_constant :POLICY_PACKAGE
+
+    # SELinux tools package
+    TOOLS_PACKAGE = "selinux-tools".freeze
+    private_constant :TOOLS_PACKAGE
+
+    # SELinux pattern
+    PATTERN = "selinux".freeze
+    private_constant :PATTERN
+
+    # SLE Micro OS pattern
+    MICRO_OS_PATTERN = "micro-selinux".freeze
+    private_constant :PATTERN
 
     # Find SELinux mode by given value
     #
