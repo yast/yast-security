@@ -19,9 +19,9 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "y2security/selinux_config"
+require "y2security/selinux"
 
-describe Y2Security::SelinuxConfig do
+describe Y2Security::Selinux do
   subject { described_class.new }
 
   let(:installation_mode) { false }
@@ -102,7 +102,7 @@ describe Y2Security::SelinuxConfig do
   end
 
   describe "#mode" do
-    let(:enforcing_mode) { Y2Security::SelinuxConfig::Mode.find(:enforcing) }
+    let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
 
     before do
       subject.mode = enforcing_mode
@@ -114,8 +114,8 @@ describe Y2Security::SelinuxConfig do
   end
 
   describe "#mode=" do
-    let(:disabled_mode) { Y2Security::SelinuxConfig::Mode.find(:disabled) }
-    let(:permissive_mode) { Y2Security::SelinuxConfig::Mode.find(:permissive) }
+    let(:disabled_mode) { Y2Security::Selinux::Mode.find(:disabled) }
+    let(:permissive_mode) { Y2Security::Selinux::Mode.find(:permissive) }
 
     context "when a known SELinux mode id is given" do
       it "returns the mode" do
@@ -160,8 +160,8 @@ describe Y2Security::SelinuxConfig do
           .and_return(getenforce_output)
       end
 
-      it "it returns the running SelinuxConfig::Mode" do
-        expect(subject.running_mode).to be_a(Y2Security::SelinuxConfig::Mode)
+      it "it returns the running Selinux::Mode" do
+        expect(subject.running_mode).to be_a(Y2Security::Selinux::Mode)
         expect(subject.running_mode.id).to eq(:enforcing)
       end
     end
@@ -186,7 +186,7 @@ describe Y2Security::SelinuxConfig do
 
   describe "#modes" do
     it "returns a collection of known SELinux modes" do
-      expect(subject.modes).to all(be_a(Y2Security::SelinuxConfig::Mode))
+      expect(subject.modes).to all(be_a(Y2Security::Selinux::Mode))
     end
 
     it "contains known mode ids" do
@@ -200,7 +200,7 @@ describe Y2Security::SelinuxConfig do
 
   describe "#save" do
     let(:write_result) { true }
-    let(:enforcing_mode) { Y2Security::SelinuxConfig::Mode.find(:enforcing) }
+    let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
     let(:selinux_configurable) { true }
 
     before do
@@ -309,12 +309,12 @@ describe Y2Security::SelinuxConfig do
   end
 end
 
-describe Y2Security::SelinuxConfig::Mode do
+describe Y2Security::Selinux::Mode do
   subject { described_class }
 
   describe ".all" do
     it "returns a collection of known modes" do
-      expect(subject.all).to all(be_an(Y2Security::SelinuxConfig::Mode))
+      expect(subject.all).to all(be_an(Y2Security::Selinux::Mode))
     end
   end
 
@@ -339,7 +339,7 @@ describe Y2Security::SelinuxConfig::Mode do
       let(:mode_id) { "permissive" }
 
       it "returns the mode" do
-        expect(mode).to be_an(Y2Security::SelinuxConfig::Mode)
+        expect(mode).to be_an(Y2Security::Selinux::Mode)
         expect(mode.id).to eq(mode_id.to_sym)
       end
     end
