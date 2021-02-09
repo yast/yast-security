@@ -246,7 +246,7 @@ module Yast
       end
 
       it "writes bootloader settings" do
-        expect_any_instance_of(Y2Security::SelinuxConfig).to receive(:mode=).with(disabled)
+        expect_any_instance_of(Y2Security::SelinuxConfig).to receive(:mode=).with("disabled")
         expect_any_instance_of(Y2Security::SelinuxConfig).to receive(:save)
         Security.write_selinux
       end
