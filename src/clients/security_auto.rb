@@ -30,14 +30,13 @@
 # goes through the configuration and return the setting.
 # Does not do any changes to the configuration.
 
+require "y2security/selinux_config"
+
 # @param function to execute
 # @param map/list of security settings
 # @return [Hash] edited settings, Summary or boolean on success depending on called function
 # @example map mm = $[ "FAIL_DELAY" : "77" ];
 # @example map ret = WFM::CallFunction ("security_auto", [ "Summary", mm ]);
-
-require "y2security/selinux_config"
-
 module Yast
   class SecurityAutoClient < Client
     def main
