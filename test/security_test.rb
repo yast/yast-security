@@ -111,6 +111,7 @@ module Yast
       it "writes and applies all the settings" do
         expect(Security).to receive(:write_to_locations)
         expect(Security).to receive(:write_shadow_config)
+        expect(Security).to receive(:write_selinux)
         expect(Security).to receive(:write_console_shutdown)
         expect(Security).to receive(:write_pam_settings)
         expect(Security).to receive(:write_polkit_settings)
@@ -236,6 +237,18 @@ module Yast
         expect(shadow_config).to receive(:fail_delay=).with("10")
         expect(shadow_config).to receive(:save)
         Security.write_shadow_config
+      end
+    end
+
+    describe "#write_selinux" do
+      before do
+        Security.Settings["SELINUX_MODE"] = "disabled"
+      end
+
+      it "writes bootloader settings" do
+        expect_any_instance_of(Y2Security::SelinuxConfig).to receive(:mode=).with(:disabled)
+        expect_any_instance_of(Y2Security::SelinuxConfig).to receive(save)
+        Security.write_selinix
       end
     end
 
