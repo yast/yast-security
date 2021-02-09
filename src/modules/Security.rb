@@ -565,6 +565,15 @@ module Yast
       shadow_config.save
     end
 
+    # Set SELinux settings
+    # @return true on success
+    def write_selinux
+      return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
+      selinux = Y2Security::SelinuxConfig.new
+      selinux.mode = @Settings["SELINUX_MODE"]
+      selinux.save
+    end
+
     # Write settings related to PAM behavior
     def write_pam_settings
       # use cracklib?
@@ -892,15 +901,6 @@ module Yast
     publish :function => :Overview, :type => "list ()"
 
     protected
-
-    # Set SELinux settings
-    # @return true on success
-    def write_selinux
-      return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
-      selinux = Y2Security::SelinuxConfig.new
-      selinux.mode = @Settings["SELINUX_MODE"]
-      selinux.save
-    end
 
     SELINUX_PACKAGE = "selinux-policy-targeted"
     # Ensure that the needed packge for SELinux will be installed
