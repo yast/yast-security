@@ -7,6 +7,7 @@ cwd_in_user_path = element cwd_in_user_path { text }
 disable_restart_on_update = element disable_restart_on_update { text }
 disable_stop_on_removal = element disable_stop_on_removal { text }
 extra_services = element extra_services { text }
+selinux_mode = element selinux_mode { text }
 displaymanager_remote_access = element displaymanager_remote_access { text }
 displaymanager_root_login_remote = element displaymanager_root_login_remote { text }
 displaymanager_shutdown = element displaymanager_shutdown { text }
@@ -69,6 +70,7 @@ y2_security =
   | disable_restart_on_update
   | disable_stop_on_removal
   | extra_services
+  | selinux_mode
   | displaymanager_remote_access
   | displaymanager_root_login_remote
   | displaymanager_xserver_tcp_port_6000_open
