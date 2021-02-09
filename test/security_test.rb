@@ -737,9 +737,10 @@ module Yast
     end
 
     describe "#read_selinux_settings" do
+      let(:mode) { Y2Security::SelinuxConfig.new }
+      
       context "SELinux is available" do
         before do
-          mode = Y2Security::SelinuxConfig.new
           mode.mode = "permissive"
           allow_any_instance_of(Y2Security::SelinuxConfig).to receive(:running_mode).
             and_return(mode.mode)
@@ -752,7 +753,6 @@ module Yast
 
       context "SELinux is NOT available" do
         before do
-          mode = Y2Security::SelinuxConfig.new
           mode.mode = "disabled"          
           allow_any_instance_of(Y2Security::SelinuxConfig).to receive(:running_mode).
             and_return(mode.mode)
