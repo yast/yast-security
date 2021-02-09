@@ -739,8 +739,10 @@ module Yast
     describe "#read_selinux_settings" do
       context "SELinux is available" do
         before do
+          mode = Y2Security::SelinuxConfig.new
+          mode.mode = "permissive"
           allow_any_instance_of(Y2Security::SelinuxConfig).to receive(:running_mode).
-            and_return(:permissive)
+            and_return(mode.mode)
         end
         it "reads \"permissive\" value" do
           Security.read_selinux_settings
@@ -750,8 +752,10 @@ module Yast
 
       context "SELinux is NOT available" do
         before do
+          mode = Y2Security::SelinuxConfig.new
+          mode.mode = "disabled"          
           allow_any_instance_of(Y2Security::SelinuxConfig).to receive(:running_mode).
-            and_return(:disabled)
+            and_return(mode.mode)
         end
         it "removes SELINUX_MODE from hash" do
           Security.read_selinux_settings
