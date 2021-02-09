@@ -35,6 +35,9 @@
 # @return [Hash] edited settings, Summary or boolean on success depending on called function
 # @example map mm = $[ "FAIL_DELAY" : "77" ];
 # @example map ret = WFM::CallFunction ("security_auto", [ "Summary", mm ]);
+
+require "y2security/selinux_config"
+
 module Yast
   class SecurityAutoClient < Client
     def main
@@ -47,6 +50,7 @@ module Yast
 
       Yast.import "Map"
       Yast.import "Security"
+      Yast.import "AutoInstall"
 
       Yast.include self, "security/routines.rb"
       Yast.include self, "security/wizards.rb"
@@ -80,6 +84,23 @@ module Yast
         @ret = SecurityAutoSequence()
       # Import Data
       elsif @func == "Import"
+
+        #Checking value semantic
+        if @param.has_key?("selinux_mode")
+          selinux_values = Y2Security::SelinuxConfig.new.modes.map {|m| m.id.to_s}
+          if !selinux_values.include?(@param["selinux_mode"])
+            Yast::AutoInstall.issues_list.add(
+              :invalid_value,
+              "security",
+              "selinux_mode",
+              @param["selinux_mode"],
+              _("Wrong SELinux mode. Possible values: ") +
+              selinux_values.join(", "),
+              :warn
+            )
+          end
+        end
+
         # Compat
         if Builtins.haskey(@param, "encryption")
           Ops.set(
