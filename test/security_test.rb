@@ -736,6 +736,30 @@ module Yast
       end
     end
 
+    describe "#read_selinux_settings" do
+      context "SELinux is available" do
+        before do
+          allow_any_instance_of(Y2Security::SelinuxConfig).to receive(:running_mode).
+            and_return(:permissive)
+        end
+        it "reads \"permissive\" value" do
+          Security.read_shadow_config
+          expect(Security.Settings["SELINUX_MODE"]).to eq("permissive")
+        end
+      end
+
+      context "SELinux is NOT available" do
+        before do
+          allow_any_instance_of(Y2Security::SelinuxConfig).to receive(:running_mode).
+            and_return(:disabled)
+        end
+        it "removes SELINUX_MODE from hash" do
+          Security.read_shadow_config
+          expect(Security.Settings.has_key?("SELINUX_MODE")).to eq(false)
+        end
+      end
+    end
+
     describe "#Read" do
       it "reads settings and returns true" do
         expect(Security).to receive(:read_from_locations)
