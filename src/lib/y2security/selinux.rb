@@ -69,11 +69,8 @@ module Y2Security
     # @return [Selinux::Mode] the last set mode, which can be differrent to the
     #   {#running_mode} and {#configured_mode}. A call to {#save} is needed to make it the
     #   {#configured_mode} for the next boot.
-    attr_reader :mode
-
-    # Constructor
-    def initialize
-      @mode = Yast::Mode.installation ? proposed_mode : configured_mode
+    def mode
+      @mode ||= make_proposal || configured_mode
     end
 
     # Returns the mode applied in the running system
@@ -160,6 +157,17 @@ module Y2Security
       end
 
       found_mode
+    end
+
+    # Sets the mode to the proposed one via `selinux_mode` global variable in the control file
+    #
+    # @see #proposed_mode
+    #
+    # @return [Mode] disabled or found SELinux mode
+    def make_proposal
+      return unless Yast::Mode.installation
+
+      proposed_mode
     end
 
     # Returns the proposed mode via the `selinux_mode` global variable in the control file

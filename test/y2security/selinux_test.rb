@@ -30,86 +30,88 @@ describe Y2Security::Selinux do
     allow(Yast::Mode).to receive(:installation).and_return(installation_mode)
   end
 
-  describe "initialize" do
+  describe "#mode" do
+    let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
+
     let(:mode) { subject.mode }
 
-    context "in a running system" do
+    context "when mode is set" do
       before do
-        allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "security")
-          .and_return(security_param)
-        allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "selinux")
-          .and_return(selinux_param)
-        allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "enforcing")
-          .and_return(enforcing_param)
+        subject.mode = :enforcing
       end
 
-      context "with a SELinux configuration" do
-        let(:security_param) { "selinux" }
-        let(:selinux_param) { "1" }
-        let(:enforcing_param) { "0" }
-
-        it "sets the proper mode" do
-          expect(mode.id).to eq(:permissive)
-        end
-      end
-
-      context "without a SELinux configuration" do
-        let(:security_param) { "apparmor" }
-        let(:selinux_param) { :missing }
-        let(:enforcing_param) { :missing }
-
-        it "sets the :disabled mode" do
-          expect(mode.id).to eq(:disabled)
-        end
+      it "returns the set mode" do
+        expect(subject.mode).to eq(enforcing_mode)
       end
     end
 
-    context "during installation" do
-      let(:installation_mode) { true }
-
-      before do
-        allow(Yast::ProductFeatures).to receive(:GetFeature)
-          .with("globals", "selinux_mode")
-          .and_return(proposed_mode)
-      end
-
-      context "when 'selinux_mode' is not present" do
-        let(:proposed_mode) { "" }
-
-        it "sets the :disabled mode" do
-          expect(mode.id).to eq(:disabled)
+    context "when mode is not set yet" do
+      context "in a running system" do
+        before do
+          allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "security")
+            .and_return(security_param)
+          allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "selinux")
+            .and_return(selinux_param)
+          allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "enforcing")
+            .and_return(enforcing_param)
         end
-      end
 
-      context "when 'selinux_mode' is present" do
-        context "and contains a valid mode id" do
-          let(:proposed_mode) { :enforcing }
+        context "with a SELinux configuration" do
+          let(:security_param) { "selinux" }
+          let(:selinux_param) { "1" }
+          let(:enforcing_param) { "0" }
 
-          it "sets the proper mode" do
-            expect(mode.id).to eq(:enforcing)
+          it "returns the configured mode" do
+            expect(mode.id).to eq(:permissive)
           end
         end
 
-        context "but contains a not valid mode id" do
-          let(:proposed_mode) { :enforced }
+        context "without a SELinux configuration" do
+          let(:security_param) { "apparmor" }
+          let(:selinux_param) { :missing }
+          let(:enforcing_param) { :missing }
 
-          it "sets the :disabled mode" do
+          it "returns the :disabled mode" do
             expect(mode.id).to eq(:disabled)
           end
         end
       end
-    end
-  end
 
-  describe "#mode" do
-    let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
+      context "during installation" do
+        let(:installation_mode) { true }
 
-    before do
-      subject.mode = enforcing_mode
-    end
+        before do
+          allow(Yast::ProductFeatures).to receive(:GetFeature)
+            .with("globals", "selinux_mode")
+            .and_return(proposed_mode)
+        end
 
-    it "returns the set mode" do
-      expect(subject.mode).to eq(enforcing_mode)
+        context "when 'selinux_mode' is not present" do
+          let(:proposed_mode) { "" }
+
+          it "returns the :disabled mode" do
+            expect(mode.id).to eq(:disabled)
+          end
+        end
+
+        context "when 'selinux_mode' is present" do
+          context "and contains a valid mode id" do
+            let(:proposed_mode) { :enforcing }
+
+            it "returns the proper mode" do
+              expect(mode.id).to eq(:enforcing)
+            end
+          end
+
+          context "but contains a not valid mode id" do
+            let(:proposed_mode) { :enforced }
+
+            it "returns the :disabled mode" do
+              expect(mode.id).to eq(:disabled)
+            end
+          end
+        end
+      end
     end
   end
 
