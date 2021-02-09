@@ -743,7 +743,7 @@ module Yast
             and_return(:permissive)
         end
         it "reads \"permissive\" value" do
-          Security.read_shadow_config
+          Security.read_selinux_settings
           expect(Security.Settings["SELINUX_MODE"]).to eq("permissive")
         end
       end
@@ -754,7 +754,7 @@ module Yast
             and_return(:disabled)
         end
         it "removes SELINUX_MODE from hash" do
-          Security.read_shadow_config
+          Security.read_selinux_settings
           expect(Security.Settings.has_key?("SELINUX_MODE")).to eq(false)
         end
       end
