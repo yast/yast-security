@@ -33,7 +33,6 @@ require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
 require "y2security/selinux_config"
-require "autoinstall/autoinst_issues/invalid_value"
 
 module Yast
   class SecurityClass < Module
@@ -804,20 +803,6 @@ module Yast
             tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
           end
         end
-      end
-
-      #Checking value semantic
-      selinux_values = Y2Security::SelinuxConfig.new.modes.map {|m| m.id.to_s}
-      if !selinux_values.include?(settings["SELINUX_MODE"])
-        Yast::AutoInstall.issues_list.add(
-          :invalid_value,
-          "security",
-          "selinux_mode",
-          settings["SELINUX_MODE"],
-          _("Wrong SELinux mode. Possible values: ") +
-          selinux_values.join(", "),
-          :warn
-        )
       end
 
       @Settings = tmpSettings
