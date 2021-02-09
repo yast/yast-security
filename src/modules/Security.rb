@@ -84,10 +84,12 @@ module Yast
       Yast.import "UI"
       Yast.import "FileUtils"
       Yast.import "Package"
+      Yast.import "Pkg"
       Yast.import "Pam"
       Yast.import "Progress"
       Yast.import "Service"
       Yast.import "Directory"
+      Yast.import "Report"
       Yast.include self, "security/levels.rb"
     end
 
@@ -446,6 +448,19 @@ module Yast
         "#{@Settings['HIBERNATE_SYSTEM']}"
     end
 
+    def read_selinux_settings
+      selinux = Y2Security::SelinuxConfig.new
+      current_mode = selinux.running_mode.id.to_s
+      if current_mode != "disabled"
+        @Settings["SELINUX_MODE"] = current_mode
+      else
+        @Settings.delete("SELINUX_MODE") if @Settings.has_key?("SELINUX_MODE")
+      end
+
+      log.debug "SELINUX_MODE (after #{__callee__}): " \
+        "#{@Settings['SELINUX_MODE']}"
+    end
+
     # Read all security settings
     # @return true on success
     def Read
@@ -471,6 +486,8 @@ module Yast
       read_polkit_settings
 
       read_kernel_settings
+
+      read_selinux_settings
 
       # remember the read values
       @Settings_bak = deep_copy(@Settings)
@@ -657,15 +674,6 @@ module Yast
       end
     end
 
-    # Set SELinux settings
-    # @return true on success
-    def write_selinux
-      return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
-      selinux = Y2Security::SelinuxConfig.new
-      selinux.mode = @Settings["SELINUX_MODE"]
-      selinux.save
-    end
-
     # Write all security settings
     # @return true on success
     def Write
@@ -813,6 +821,7 @@ module Yast
       end
 
       @Settings = tmpSettings
+      check_selinux_package # Checking needed packages
       true
     end
 
@@ -898,6 +907,30 @@ module Yast
     publish :function => :Overview, :type => "list ()"
 
     protected
+
+    # Set SELinux settings
+    # @return true on success
+    def write_selinux
+      return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
+      selinux = Y2Security::SelinuxConfig.new
+      selinux.mode = @Settings["SELINUX_MODE"]
+      selinux.save
+    end
+
+    SELINUX_PACKAGE = "selinux-policy-targeted"
+    # Ensure that the needed packge for SELinux will be installed
+    def check_selinux_package
+      return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
+      if !Package.Installed(SELINUX_PACKAGE)
+        if !Package.Available(SELINUX_PACKAGE)
+          # TRANSLATORS: package_name is the name of the missed package.
+          Report.Error(format(_("Missing package for SELinux setup:\n%{package_name}"),
+                              package_name: SELINUX_PACKAGE))
+        else
+          Pkg.PkgInstall(SELINUX_PACKAGE)
+        end
+      end
+    end
 
     # Sets @missing_mandatory_services honoring the systemd aliases
     def read_missing_mandatory_services
