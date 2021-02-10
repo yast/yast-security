@@ -67,11 +67,20 @@ module Y2Security
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
 
-    # @return [Selinux::Mode] the last set mode, which can be differrent to the
-    #   {#running_mode} and {#configured_mode}. A call to {#save} is needed to make it the
-    #   {#configured_mode} for the next boot.
+    # The current set mode
+    #
+    # @note initially, it will be set to the {#proposed_mode}, #{boot_mode}, or
+    # {#configured_mode}, as applicable. When SELinux is enabled (i.e., detected #{boot_mode} was
+    # not "disabled") but the mode was set through neither, a boot kernel param nor configuration
+    # file, the "permissive" mode is assumed.
+    #
+    # @note a #{save} call is needed to make it the SELinux mode starting with the next boot.
+    #
+    # @return [Selinux::Mode] the current set mode, which initially can be the {#proposed_mode},
+    # {#boot_mode} or the {#configured_mode} as applicable. A {#save} call is needed to make it the
+    # for the next boot.
     def mode
-      @mode ||= make_proposal || configured_mode
+      @mode ||= make_proposal || boot_mode || configured_mode || Mode.find(:permissive)
     end
 
     # Returns the configured mode in the SELinux config file
@@ -84,16 +93,40 @@ module Y2Security
     # Returns the mode applied in the running system
     #
     # @note the system can be booted with a different SELinux mode that the configured one. To
-    #  know the running mode getenforce tool is used.
+    #  know the running mode getenforce SELinux tool is used.
     #
-    # @return [Mode] running SELinux mode if command executed successfully; :disabled otherwise
+    # @return [Mode, nil] running SELinux mode if command executed successfully; nil otherwise
     def running_mode
       id = Yast::Execute.locally!(GETENFORCE_PATH, stdout: :capture).chomp.downcase.to_sym
       Mode.find(id)
     rescue Cheetah::ExecutionFailed => e
       log.info(e.message)
 
-      Mode.find(:disabled)
+      nil
+    end
+
+    # Returns the SELinux mode according to boot kernel params
+    #
+    # @see #mode_from_kernel_params
+    #
+    # @return [Mode,nil] the selected mode through boot kernel params or nil if SELinux is enabled
+    #   but there is not enough information to guess the mode because it will depend on the SELINUX
+    #   value in the configuration file (see {#configured_mode} and {#mode}).
+    def boot_mode
+      options = mode_from_kernel_params
+      security_module = options["security"]
+      module_disabled = options["selinux"].to_i <= 0
+
+      return Mode.find(:disabled) if security_module != "selinux" || module_disabled
+
+      # enforcing missing or with a negative value means that SELinux mode will be determined
+      # by the SELINUX value in the configuration file. "permissive" by default. See {#mode}
+      enforcing_mode = options["enforcing"]&.to_i
+      return if enforcing_mode.nil? || enforcing_mode < 0
+
+      # enforcing=0 means that "permissive" mode will be used, despite the SELINUX value used in the
+      # configuration file.
+      enforcing_mode > 0 ? Mode.find(:enforcing) : Mode.find(:permissive)
     end
 
     # Returns a collection holding all known SELinux modes
@@ -217,10 +250,16 @@ module Y2Security
     # @return [Mode] disabled or found SELinux mode
     def proposed_mode
       id = product_feature_settings[:mode]
+      found_mode = Mode.find(id)
+
+      if found_mode.nil?
+        log.info("Proposed SELinux mode `#{id}` not found.")
+
+        return
+      end
 
       log.info("Proposing `#{id}` SELinux mode.")
-
-      find_mode(id)
+      found_mode
     end
 
     # Returns the SELinux configuration based on options set in the kernel command line
@@ -276,22 +315,6 @@ module Y2Security
       # @return [Mode, nil] found mode or nil if given mode id does not exists
       def self.find(id)
         ALL.find { |mode| mode.id == id&.to_sym }
-      end
-
-      # Finds the SELinux mode which fits better to given options
-      #
-      # @return [Mode] proper mode according to values of given options
-      def self.match(options)
-        return find(:disabled) if options.empty?
-
-        security_module = options["security"]
-        module_disabled = options["selinux"].to_i <= 0
-        enforcing_mode  = options["enforcing"].to_i > 0
-
-        return find(:disabled) if security_module != "selinux" || module_disabled
-        return find(:permissive) unless enforcing_mode
-
-        find(:enforcing)
       end
 
       # Constructor

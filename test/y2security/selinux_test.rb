@@ -191,8 +191,8 @@ describe Y2Security::Selinux do
         subject.running_mode
       end
 
-      it "returns the :disabled mode" do
-        expect(subject.running_mode.id).to eq(:disabled)
+      it "returns nil" do
+        expect(subject.running_mode).to be_nil
       end
     end
   end
@@ -367,62 +367,6 @@ describe Y2Security::Selinux::Mode do
 
       it "returns nil" do
         expect(mode).to be_nil
-      end
-    end
-  end
-
-  describe ".match" do
-    let(:security_param) { nil }
-    let(:selinux_param) { nil }
-    let(:enforcing_param) { nil }
-
-    let(:params) do
-      {  "security" => security_param, "selinux" => selinux_param, "enforcing" => enforcing_param  }
-    end
-
-    let(:mode) { subject.match(params) }
-
-    context "when 'security' is not 'selinux'" do
-      let(:security_param) { "apparmor" }
-      let(:selinux_param) { "1" }
-
-      it "returns the :disabled mode" do
-        expect(mode.id).to eq(:disabled)
-      end
-    end
-
-    context "when 'security' is 'selinux'" do
-      let(:security_param) { "selinux" }
-
-      context "and 'selinux' is missing" do
-        it "returns the :disabled mode" do
-          expect(mode.id).to eq(:disabled)
-        end
-      end
-
-      context "and 'selinux' is a number greater than zero" do
-        let(:selinux_param) { "1" }
-
-        it "returns the :permissive mode" do
-          expect(mode.id).to eq(:permissive)
-        end
-
-        context "but 'enforcing' is a number greater than zero" do
-          let(:enforcing_param) { "1" }
-
-          it "returns the :enforcing mode" do
-            expect(mode.id).to eq(:enforcing)
-          end
-        end
-      end
-
-      context "but 'selinux' is zero" do
-        let(:selinux_param) { "0" }
-        let(:enforcing_param) { "1" }
-
-        it "returns the :disabled mode" do
-          expect(mode.id).to eq(:disabled)
-        end
       end
     end
   end
