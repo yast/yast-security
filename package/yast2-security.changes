@@ -1,4 +1,9 @@
 -------------------------------------------------------------------
+Wed Feb 10 08:23:04 UTC 2021 - Stefan Schubert <schubi@suse.de>
+
+- Added new AY value "selinux_mode" for defining SELinux mode.
+
+-------------------------------------------------------------------
 Wed Feb  3 09:29:36 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Add class for managing SELinux configuration at boot time
