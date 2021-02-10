@@ -26,7 +26,22 @@ describe Y2Security::Selinux do
 
   let(:installation_mode) { false }
 
+  let(:product_features) do
+    {
+      "globals" => {
+        "selinux" => {
+          "mode" => selinux_mode,
+          "configurable" => selinux_configurable
+        }
+      }
+    }
+  end
+
+  let(:selinux_mode) { "enforcing" }
+  let(:selinux_configurable) { false }
+
   before do
+    Yast::ProductFeatures.Import(product_features)
     allow(Yast::Mode).to receive(:installation).and_return(installation_mode)
   end
 
@@ -80,31 +95,25 @@ describe Y2Security::Selinux do
       context "during installation" do
         let(:installation_mode) { true }
 
-        before do
-          allow(Yast::ProductFeatures).to receive(:GetFeature)
-            .with("globals", "selinux_mode")
-            .and_return(proposed_mode)
-        end
-
-        context "when 'selinux_mode' is not present" do
-          let(:proposed_mode) { "" }
+        context "when globals => selinux => mode feature is not set" do
+          let(:selinux_mode) { "" }
 
           it "returns the :disabled mode" do
             expect(mode.id).to eq(:disabled)
           end
         end
 
-        context "when 'selinux_mode' is present" do
-          context "and contains a valid mode id" do
-            let(:proposed_mode) { :enforcing }
+        context "when globals => selinux => mode is set" do
+          context "and contains a valid mode" do
+            let(:selinux_mode) { "enforcing" }
 
-            it "returns the proper mode" do
+            it "returns the defined mode" do
               expect(mode.id).to eq(:enforcing)
             end
           end
 
-          context "but contains a not valid mode id" do
-            let(:proposed_mode) { :enforced }
+          context "but contains a not valid mode" do
+            let(:selinux_mode) { "enforced" }
 
             it "returns the :disabled mode" do
               expect(mode.id).to eq(:disabled)
@@ -208,9 +217,6 @@ describe Y2Security::Selinux do
     before do
       allow(Yast::Bootloader).to receive(:modify_kernel_params)
       allow(Yast::Bootloader).to receive(:Write).and_return(write_result)
-      allow(Yast::ProductFeatures).to receive(:GetBooleanFeature)
-        .with("globals", "selinux_configurable")
-        .and_return(selinux_configurable)
 
       subject.mode = enforcing_mode
     end
@@ -277,14 +283,6 @@ describe Y2Security::Selinux do
   end
 
   describe "#configurable?" do
-    let(:selinux_configurable) { true }
-
-    before do
-      allow(Yast::ProductFeatures).to receive(:GetBooleanFeature)
-        .with("globals", "selinux_configurable")
-        .and_return(selinux_configurable)
-    end
-
     context "when running in an installed system" do
       it "returns true" do
         expect(subject.configurable?).to eq(true)
@@ -295,14 +293,14 @@ describe Y2Security::Selinux do
       let(:installation_mode) { true }
 
       context "and 'selinux_configurable' is true" do
+        let(:selinux_configurable) { true }
+
         it "returns true" do
           expect(subject.configurable?).to eq(true)
         end
       end
 
       context "and 'selinux_configurable' is false" do
-        let(:selinux_configurable) { false }
-
         it "returns false" do
           expect(subject.configurable?).to eq(false)
         end

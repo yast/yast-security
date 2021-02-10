@@ -127,12 +127,12 @@ module Y2Security
     # Whether SELinux configuration can be changed
     #
     # @return [Boolean] always true when running in installed system;
-    #                   the value of selinux_configurable global variable in the control file when
-    #                   running during installation (false if not present)
+    #                   the value of 'configurable' selinux settings in the control file when
+    #                   running during installation or false if not present
     def configurable?
       return true unless Yast::Mode.installation
 
-      Yast::ProductFeatures.GetBooleanFeature("globals", "selinux_configurable")
+      product_feature_settings[:configurable] || false
     end
 
     private
@@ -140,6 +140,21 @@ module Y2Security
     # Path to the SELinux getenforce command
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
+
+    # Returns the values for the SELinux setting from the product features
+    #
+    # @return [Hash{Symbol => String, Boolean, nil}] e.g., { mode: "enforcing", configurable: false }
+    #   a hash holding the defined SELinux options in the control file;
+    #   an empty object if no settings are defined
+    def product_feature_settings
+      @product_feature_settings unless @product_feature_settings.nil?
+
+      settings = Yast::ProductFeatures.GetFeature("globals", "selinux")
+      settings = {} if settings.empty?
+      settings.transform_keys!(&:to_sym)
+
+      @product_feature_settings = settings
+    end
 
     # Find SELinux mode by given value
     #
@@ -175,7 +190,7 @@ module Y2Security
     #
     # @return [Mode] disabled or found SELinux mode
     def proposed_mode
-      id = Yast::ProductFeatures.GetFeature("globals", "selinux_mode").to_sym
+      id = product_feature_settings[:mode]
 
       log.info("Proposing `#{id}` SELinux mode.")
 
