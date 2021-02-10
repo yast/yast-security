@@ -19,6 +19,7 @@
 
 require "yast"
 require "yast2/execute"
+require "cfa/selinux"
 
 module Y2Security
   # Class for handling SELinux kernel params
@@ -73,6 +74,13 @@ module Y2Security
       @mode ||= make_proposal || configured_mode
     end
 
+    # Returns the configured mode in the SELinux config file
+    #
+    # @return [Mode, nil] the SELinux mode set in the config file; nil if unknown or not set
+    def configured_mode
+      Mode.find(config_file.selinux)
+    end
+
     # Returns the mode applied in the running system
     #
     # @note the system can be booted with a different SELinux mode that the configured one. To
@@ -118,6 +126,8 @@ module Y2Security
       return false unless configurable?
 
       Yast::Bootloader.modify_kernel_params(mode.options)
+      config_file.selinux = mode.id.to_s
+      config_file.save
 
       return true if Yast::Mode.installation
 
@@ -163,6 +173,15 @@ module Y2Security
       @product_feature_settings = settings
     end
 
+    # Returns a CFA::Selinux object for handling the config file
+    #
+    # @return [CFA::Selinux]
+    def config_file
+      return @config_file if @config_file
+
+      @config_file = CFA::Selinux.load
+    end
+
     # Find SELinux mode by given value
     #
     # @note using nil means to set SELinux mode as disabled.
@@ -202,15 +221,6 @@ module Y2Security
       log.info("Proposing `#{id}` SELinux mode.")
 
       find_mode(id)
-    end
-
-    # Returns the configured SELinux mode according to params in kernel command line
-    #
-    # @see #mode_from_kernel_params
-    #
-    # @return [Symbol] the mode identifier
-    def configured_mode
-      Mode.match(mode_from_kernel_params)
     end
 
     # Returns the SELinux configuration based on options set in the kernel command line
