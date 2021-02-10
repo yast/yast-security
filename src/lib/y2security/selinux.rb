@@ -100,7 +100,6 @@ module Y2Security
     # @see #find_mode
     def mode=(id)
       @mode = find_mode(id)
-      @mode
     end
 
     # Set current mode options as kernel parameters for the next boot
