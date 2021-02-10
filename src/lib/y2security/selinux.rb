@@ -138,9 +138,19 @@ module Y2Security
 
     # Set the mode to given value
     #
-    # @see #find_mode
+    # @note using nil means to set SELinux mode as disabled.
+    #
+    # @param id [Selinux::Mode, String, Symbol, nil] a SELinux mode or its identifier
+    # @return [Mode] the Selinux::Mode by given id or disabled is none found or nil was given
     def mode=(id)
-      @mode = find_mode(id)
+      found_mode = Mode.find(id)
+
+      if found_mode.nil?
+        log.info("Requested SELinux mode `#{id}` not found. Falling back to :disabled.")
+        found_mode = Mode.find(:disabled)
+      end
+
+      @mode = found_mode
     end
 
     # Set current mode options as kernel parameters for the next boot
@@ -213,23 +223,6 @@ module Y2Security
       return @config_file if @config_file
 
       @config_file = CFA::Selinux.load
-    end
-
-    # Find SELinux mode by given value
-    #
-    # @note using nil means to set SELinux mode as disabled.
-    #
-    # @param id [Selinux::Mode, String, Symbol, nil] a SELinux mode or its identifier
-    # @return [Mode] the Selinux::Mode by given id or disabled is none found or nil was given
-    def find_mode(id)
-      found_mode = Mode.find(id)
-
-      if found_mode.nil?
-        log.info("Requested SELinux mode `#{id}` not found. Falling back to :disabled.")
-        found_mode = Mode.find(:disabled)
-      end
-
-      found_mode
     end
 
     # Sets the mode to the proposed one via `selinux_mode` global variable in the control file
