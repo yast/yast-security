@@ -124,6 +124,13 @@ module Y2Security
       Yast::Bootloader.Write
     end
 
+    # Returns needed patterns defined in the product features
+    #
+    # @return [String] defined patterns in product features to have SELinux working as expected
+    def needed_patterns
+      product_feature_settings[:patterns].to_s
+    end
+
     # Whether SELinux configuration can be changed
     #
     # @return [Boolean] always true when running in installed system;

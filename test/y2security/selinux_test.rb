@@ -30,8 +30,9 @@ describe Y2Security::Selinux do
     {
       "globals" => {
         "selinux" => {
-          "mode" => selinux_mode,
-          "configurable" => selinux_configurable
+          "mode"         => selinux_mode,
+          "configurable" => selinux_configurable,
+          "patterns"     => selinux_patterns
         }
       }
     }
@@ -39,6 +40,7 @@ describe Y2Security::Selinux do
 
   let(:selinux_mode) { "enforcing" }
   let(:selinux_configurable) { false }
+  let(:selinux_patterns) { nil }
 
   before do
     Yast::ProductFeatures.Import(product_features)
@@ -278,6 +280,22 @@ describe Y2Security::Selinux do
         it "returns false" do
           expect(subject.save).to eq(false)
         end
+      end
+    end
+  end
+
+  describe "#needed_patterns" do
+    context "when globals => selinux => patterns is set" do
+      let(:selinux_patterns) { "a-recommended-selinux-pattern" }
+
+      it "returns defined patterns" do
+        expect(subject.needed_patterns).to eq(selinux_patterns)
+      end
+    end
+
+    context "when globals => selinux => patterns is not set" do
+      it "returns an empty string" do
+        expect(subject.needed_patterns).to eq("")
       end
     end
   end
