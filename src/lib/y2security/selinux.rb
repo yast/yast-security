@@ -153,14 +153,17 @@ module Y2Security
       @mode = found_mode
     end
 
-    # Set current mode options as kernel parameters for the next boot
+    # Set current mode for the next boot
     #
-    # @note it does not write the changes when running in installation mode, where only sets the
-    #   kernel params in memory since Yast::Bootloader.Write will be performed at the end of
+    # Setting both, the boot kernel parameters and the SELinux configuration file
+    #
+    # @note it does not write the Bootloader changes when running in installation mode, where only
+    #   sets the kernel params in memory since Yast::Bootloader.Write will be performed at the end of
     #   installation.
     #
     # @see #configurable?
     # @see Yast::Bootloader#modify_kernel_params
+    # @see CFA::Selinux#save
     #
     # @return [Boolean] true if running in installation where selinux is configurable;
     #                   false if running in installation where selinux is not configurable;

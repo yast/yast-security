@@ -215,10 +215,12 @@ describe Y2Security::Selinux do
     let(:write_result) { true }
     let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
     let(:selinux_configurable) { true }
+    let(:config_file) { double("CFA::Selinux", load: true, save: true, :selinux= => true) }
 
     before do
       allow(Yast::Bootloader).to receive(:modify_kernel_params)
       allow(Yast::Bootloader).to receive(:Write).and_return(write_result)
+      allow(subject).to receive(:config_file).and_return(config_file)
 
       subject.mode = enforcing_mode
     end
@@ -226,7 +228,7 @@ describe Y2Security::Selinux do
     context "when running in installation mode" do
       let(:installation_mode) { true }
 
-      it "does not write the configuration" do
+      it "does not write the bootloader configuration" do
         expect(Yast::Bootloader).to_not receive(:Write)
 
         subject.save
@@ -236,6 +238,13 @@ describe Y2Security::Selinux do
         it "modifies the bootloader kernel params" do
           expect(Yast::Bootloader).to receive(:modify_kernel_params)
             .with(enforcing_mode.options)
+
+          subject.save
+        end
+
+        it "changes the mode in the configuration file" do
+          expect(config_file).to receive(:selinux=).with("enforcing")
+          expect(config_file).to receive(:save)
 
           subject.save
         end
@@ -250,6 +259,13 @@ describe Y2Security::Selinux do
 
         it "does not modify the bootloader kernel params" do
           expect(Yast::Bootloader).to_not receive(:modify_kernel_params)
+
+          subject.save
+        end
+
+        it "does not change the mode in the configuration file" do
+          expect(config_file).to_not receive(:selinux=)
+          expect(config_file).to_not receive(:save)
 
           subject.save
         end
