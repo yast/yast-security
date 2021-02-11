@@ -10,7 +10,7 @@ Thu Feb 11 00:25:33 UTC 2021 - David Diaz <dgonzalez@suse.com>
 Wed Feb  3 09:29:36 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Add class for managing SELinux configuration at boot time
-  (jsc#SLE-17427)
+  (jsc#SMO-20, jsc#SLE-17342).
 - 4.2.15
 
 -------------------------------------------------------------------
