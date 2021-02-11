@@ -449,16 +449,13 @@ module Yast
     end
 
     def read_selinux_settings
-      current_mode = Y2Security::Selinux.new.mode.id.to_s
+      @Settings.delete("SELINUX_MODE")
 
-      if current_mode != "disabled"
-        @Settings["SELINUX_MODE"] = current_mode
-      else
-        @Settings.delete("SELINUX_MODE") if @Settings.has_key?("SELINUX_MODE")
+      if selinux_config.mode.id != :disabled
+        @Settings["SELINUX_MODE"] = selinux_config.mode.id.to_s
       end
 
-      log.debug "SELINUX_MODE (after #{__callee__}): " \
-        "#{@Settings['SELINUX_MODE']}"
+      log.debug "SELINUX_MODE (after #{__callee__}): #{@Settings['SELINUX_MODE']}"
     end
 
     # Read all security settings
