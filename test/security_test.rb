@@ -246,8 +246,8 @@ module Yast
       end
 
       it "writes bootloader settings" do
-        expect_any_instance_of(Y2Security::SelinuxConfig).to receive(:mode=).with("disabled")
-        expect_any_instance_of(Y2Security::SelinuxConfig).to receive(:save)
+        expect_any_instance_of(Y2Security::Selinux).to receive(:mode=).with("disabled")
+        expect_any_instance_of(Y2Security::Selinux).to receive(:save)
         Security.write_selinux
       end
     end
@@ -737,12 +737,12 @@ module Yast
     end
 
     describe "#read_selinux_settings" do
-      let(:mode) { Y2Security::SelinuxConfig.new }
-      
+      let(:mode) { Y2Security::Selinux.new }
+
       context "SELinux is available" do
         before do
           mode.mode = "permissive"
-          allow_any_instance_of(Y2Security::SelinuxConfig).to receive(:running_mode).
+          allow_any_instance_of(Y2Security::Selinux).to receive(:running_mode).
             and_return(mode.mode)
         end
         it "reads \"permissive\" value" do
@@ -753,8 +753,8 @@ module Yast
 
       context "SELinux is NOT available" do
         before do
-          mode.mode = "disabled"          
-          allow_any_instance_of(Y2Security::SelinuxConfig).to receive(:running_mode).
+          mode.mode = "disabled"
+          allow_any_instance_of(Y2Security::Selinux).to receive(:running_mode).
             and_return(mode.mode)
         end
         it "removes SELINUX_MODE from hash" do

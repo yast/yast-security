@@ -32,7 +32,7 @@ require "cfa/shadow_config"
 require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
-require "y2security/selinux_config"
+require "y2security/selinux"
 
 module Yast
   class SecurityClass < Module
@@ -448,7 +448,7 @@ module Yast
     end
 
     def read_selinux_settings
-      current_mode = Y2Security::SelinuxConfig.new.running_mode.id.to_s
+      current_mode = Y2Security::Selinux.new.running_mode.id.to_s
       if current_mode != "disabled"
         @Settings["SELINUX_MODE"] = current_mode
       else
@@ -568,7 +568,7 @@ module Yast
     # @return true on success
     def write_selinux
       return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
-      selinux = Y2Security::SelinuxConfig.new
+      selinux = Y2Security::Selinux.new
       selinux.mode = @Settings["SELINUX_MODE"]
       selinux.save
     end
