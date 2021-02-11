@@ -742,7 +742,7 @@ module Yast
       context "SELinux is available" do
         before do
           mode.mode = "permissive"
-          allow_any_instance_of(Y2Security::Selinux).to receive(:running_mode).
+          allow_any_instance_of(Y2Security::Selinux).to receive(:mode).
             and_return(mode.mode)
         end
         it "reads \"permissive\" value" do

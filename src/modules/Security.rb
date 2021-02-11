@@ -449,7 +449,8 @@ module Yast
     end
 
     def read_selinux_settings
-      current_mode = Y2Security::Selinux.new.running_mode.id.to_s
+      current_mode = Y2Security::Selinux.new.mode.id.to_s
+
       if current_mode != "disabled"
         @Settings["SELINUX_MODE"] = current_mode
       else
