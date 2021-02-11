@@ -19,101 +19,167 @@
 
 require "yast"
 require "yast2/execute"
+require "cfa/selinux"
 
 module Y2Security
   # Class for handling SELinux kernel params
   #
   # @example Querying the currently configured SELinux mode
-  #   selinux = SelinuxConfig.new
+  #   selinux = Selinux.new
   #   mode = selinux.mode
   #   mode.id #=> :permissive
   #   mode.name #=> "Permisive"
+  #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => :missing }
   #
   # @example Querying the currently running SELinux mode
-  #   selinux= SelinuxConfig.new
+  #   selinux= Selinux.new
   #   mode = selinux.running_mode
   #   mode.id #=> :enforcing
   #   mode.name #=> "Enforcing"
+  #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => "1" }
+  #
+  # @example Querying the SELinux mode set in the config file
+  #   selinux= Selinux.new
+  #   mode = selinux.configured_mode
+  #   mode.id #=> :permissive
+  #   mode.name #=> "Permisive"
+  #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => :missing }
+  #
+  # @example Querying the SELinux mode set by boot params
+  #   selinux= Selinux.new
+  #   mode = selinux.boot_mode
+  #   mode.id #=> :enforcing
+  #   mode.name #=> "Enforcing"
+  #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => "1" }
   #
   # @example Enabling SELinux in Permissive mode for next boot
-  #   selinux = SelinuxConfig.new
+  #   selinux = Selinux.new
   #   selinux.mode = :permissive
   #   selinux.save #=> true
   #
   # @example Disabling SELinux for next boot
-  #   selinux = SelinuxConfig.new
+  #   selinux = Selinux.new
   #   selinux.mode = :disabled
   #   selinux.save #=> true
   #
   # @example Disabling SELinux for next boot (using nil)
-  #   selinux = SelinuxConfig.new
+  #   selinux = Selinux.new
   #   selinux.mode = nil
   #   selinux.mode.id  #=> :disabled
   #   selinux.save #=> true
   #
   # @example Trying to enable SELinux during an installation set to be configurable
-  #   selinux = SelinuxConfig.new
+  #   selinux = Selinux.new
   #   selinux.mode = :permissive
   #   selinux.save #=> true
   #
   # @example Trying to enable SELinux during an installation set to not be configurable
-  #   selinux = SelinuxConfig.new
+  #   selinux = Selinux.new
   #   selinux.mode = :permissive
   #   selinux.save #=> false
-  class SelinuxConfig
+  class Selinux
     include Yast::Logger
 
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
 
-    # @return [SelinuxConfig::Mode] the last set mode, which can be differrent to the
-    #   {#running_mode} and {#configured_mode}. A call to {#save} is needed to make it the
-    #   {#configured_mode} for the next boot.
-    attr_reader :mode
+    # The current set mode
+    #
+    # @note initially, it will be set to the {#proposed_mode}, #{boot_mode}, or
+    # {#configured_mode}, as applicable. When SELinux is enabled (i.e., detected #{boot_mode} was
+    # not "disabled") but the mode was set through neither, a boot kernel param nor configuration
+    # file, the "permissive" mode is assumed.
+    #
+    # @note a #{save} call is needed to make it the SELinux mode starting with the next boot.
+    #
+    # @return [Selinux::Mode] the current set mode, which initially can be the {#proposed_mode},
+    # {#boot_mode} or the {#configured_mode} as applicable. A {#save} call is needed to make it the
+    # for the next boot.
+    def mode
+      @mode ||= make_proposal || boot_mode || configured_mode || Mode.find(:permissive)
+    end
 
-    # Constructor
-    def initialize
-      @mode = Yast::Mode.installation ? proposed_mode : configured_mode
+    # Returns the configured mode in the SELinux config file
+    #
+    # @return [Mode, nil] the SELinux mode set in the config file; nil if unknown or not set
+    def configured_mode
+      Mode.find(config_file.selinux)
     end
 
     # Returns the mode applied in the running system
     #
     # @note the system can be booted with a different SELinux mode that the configured one. To
-    #  know the running mode getenforce tool is used.
+    #  know the running mode getenforce SELinux tool is used.
     #
-    # @return [Mode] running SELinux mode if command executed successfully; :disabled otherwise
+    # @return [Mode, nil] running SELinux mode if command executed successfully; nil otherwise
     def running_mode
       id = Yast::Execute.locally!(GETENFORCE_PATH, stdout: :capture).chomp.downcase.to_sym
       Mode.find(id)
     rescue Cheetah::ExecutionFailed => e
       log.info(e.message)
 
-      Mode.find(:disabled)
+      nil
+    end
+
+    # Returns the SELinux mode according to boot kernel params
+    #
+    # @see #mode_from_kernel_params
+    #
+    # @return [Mode,nil] the selected mode through boot kernel params or nil if SELinux is enabled
+    #   but there is not enough information to guess the mode because it will depend on the SELINUX
+    #   value in the configuration file (see {#configured_mode} and {#mode}).
+    def boot_mode
+      options = mode_from_kernel_params
+      security_module = options["security"]
+      module_disabled = options["selinux"].to_i <= 0
+
+      return Mode.find(:disabled) if security_module != "selinux" || module_disabled
+
+      # enforcing missing or with a negative value means that SELinux mode will be determined
+      # by the SELINUX value in the configuration file. "permissive" by default. See {#mode}
+      enforcing_mode = options["enforcing"]&.to_i
+      return if enforcing_mode.nil? || enforcing_mode < 0
+
+      # enforcing=0 means that "permissive" mode will be used, despite the SELINUX value used in the
+      # configuration file.
+      enforcing_mode > 0 ? Mode.find(:enforcing) : Mode.find(:permissive)
     end
 
     # Returns a collection holding all known SELinux modes
     #
-    # @return [Array<SelinuxConfig::Mode>] a collection of known SELinux modes
+    # @return [Array<Selinux::Mode>] a collection of known SELinux modes
     def modes
       Mode.all
     end
 
     # Set the mode to given value
     #
-    # @see #find_mode
+    # @note using nil means to set SELinux mode as disabled.
+    #
+    # @param id [Selinux::Mode, String, Symbol, nil] a SELinux mode or its identifier
+    # @return [Mode] the Selinux::Mode by given id or disabled is none found or nil was given
     def mode=(id)
-      @mode = find_mode(id)
-      @mode
+      found_mode = Mode.find(id)
+
+      if found_mode.nil?
+        log.error("Requested SELinux mode `#{id}` not found. Falling back to :disabled.")
+        found_mode = Mode.find(:disabled)
+      end
+
+      @mode = found_mode
     end
 
-    # Set current mode options as kernel parameters for the next boot
+    # Set current mode for the next boot
     #
-    # @note it does not write the changes when running in installation mode, where only sets the
-    #   kernel params in memory since Yast::Bootloader.Write will be performed at the end of
+    # Setting both, the boot kernel parameters and the SELinux configuration file
+    #
+    # @note it does not write the Bootloader changes when running in installation mode, where only
+    #   sets the kernel params in memory since Yast::Bootloader.Write will be performed at the end of
     #   installation.
     #
     # @see #configurable?
     # @see Yast::Bootloader#modify_kernel_params
+    # @see CFA::Selinux#save
     #
     # @return [Boolean] true if running in installation where selinux is configurable;
     #                   false if running in installation where selinux is not configurable;
@@ -122,21 +188,31 @@ module Y2Security
       return false unless configurable?
 
       Yast::Bootloader.modify_kernel_params(mode.options)
+      config_file.selinux = mode.id.to_s
+      config_file.save
 
       return true if Yast::Mode.installation
 
       Yast::Bootloader.Write
     end
 
+    # Returns needed patterns defined in the product features
+    #
+    # @return [Array<Sring>] collection of defined patterns in product features to have
+    #                        SELinux working as expected
+    def needed_patterns
+      product_feature_settings[:patterns].to_s.split
+    end
+
     # Whether SELinux configuration can be changed
     #
     # @return [Boolean] always true when running in installed system;
-    #                   the value of selinux_configurable global variable in the control file when
-    #                   running during installation (false if not present)
+    #                   the value of 'configurable' selinux settings in the control file when
+    #                   running during installation or false if not present
     def configurable?
       return true unless Yast::Mode.installation
 
-      Yast::ProductFeatures.GetBooleanFeature("globals", "selinux_configurable")
+      product_feature_settings[:configurable] || false
     end
 
     private
@@ -145,43 +221,56 @@ module Y2Security
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
 
-    # Find SELinux mode by given value
+    # Returns the values for the SELinux setting from the product features
     #
-    # @note using nil means to set SELinux mode as disabled.
+    # @return [Hash{Symbol => String, Boolean, nil}] e.g., { mode: "enforcing", configurable: false }
+    #   a hash holding the defined SELinux options in the control file;
+    #   an empty object if no settings are defined
+    def product_feature_settings
+      @product_feature_settings unless @product_feature_settings.nil?
+
+      settings = Yast::ProductFeatures.GetFeature("globals", "selinux")
+      settings = {} if settings.empty?
+      settings.transform_keys!(&:to_sym)
+
+      @product_feature_settings = settings
+    end
+
+    # Returns a CFA::Selinux object for handling the config file
     #
-    # @param id [SelinuxConfig::Mode, String, Symbol, nil] a SELinux mode or its identifier
-    # @return [Mode] the SelinuxConfig::Mode by given id or disabled is none found or nil was given
-    def find_mode(id)
-      found_mode = Mode.find(id)
+    # @return [CFA::Selinux]
+    def config_file
+      @config_file ||= CFA::Selinux.load
+    end
 
-      if found_mode.nil?
-        log.info("Requested SELinux mode `#{id}` not found. Falling back to :disabled.")
-        found_mode = Mode.find(:disabled)
-      end
+    # Sets the mode to the proposed one via `selinux_mode` global variable in the control file
+    #
+    # @see #proposed_mode
+    #
+    # @return [Mode] disabled or found SELinux mode
+    def make_proposal
+      return unless Yast::Mode.installation
 
-      found_mode
+      proposed_mode
     end
 
     # Returns the proposed mode via the `selinux_mode` global variable in the control file
     #
     # @see Mode.find
     #
-    # @return [Mode] disabled or found SELinux mode
+    # @return [Mode, nil] found SELinux mode or nil if none
     def proposed_mode
-      id = Yast::ProductFeatures.GetFeature("globals", "selinux_mode").to_sym
+      id = product_feature_settings[:mode]
+      found_mode = Mode.find(id)
+
+      if found_mode.nil?
+        log.error("Proposed SELinux mode `#{id}` not found.")
+
+        return nil
+      end
 
       log.info("Proposing `#{id}` SELinux mode.")
-
-      find_mode(id)
-    end
-
-    # Returns the configured SELinux mode according to params in kernel command line
-    #
-    # @see #mode_from_kernel_params
-    #
-    # @return [Symbol] the mode identifier
-    def configured_mode
-      Mode.match(mode_from_kernel_params)
+      found_mode
     end
 
     # Returns the SELinux configuration based on options set in the kernel command line
@@ -237,22 +326,6 @@ module Y2Security
       # @return [Mode, nil] found mode or nil if given mode id does not exists
       def self.find(id)
         ALL.find { |mode| mode.id == id&.to_sym }
-      end
-
-      # Finds the SELinux mode which fits better to given options
-      #
-      # @return [Mode] proper mode according to values of given options
-      def self.match(options)
-        return find(:disabled) if options.empty?
-
-        security_module = options["security"]
-        module_disabled = options["selinux"].to_i <= 0
-        enforcing_mode  = options["enforcing"].to_i > 0
-
-        return find(:disabled) if security_module != "selinux" || module_disabled
-        return find(:permissive) unless enforcing_mode
-
-        find(:enforcing)
       end
 
       # Constructor
