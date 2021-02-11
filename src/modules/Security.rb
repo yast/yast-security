@@ -994,6 +994,13 @@ module Yast
     end
   end
 
+  # Returns a SELinux configuration handler
+  #
+  # @return [Y2Security::Selinux] the SELinux config handler
+  def selinux_config
+    @selinux_config ||= Y2Security::Selinux.new
+  end
+
   # Checks if the service is allowed (i.e. not considered 'extra')
   #
   # @return [Boolean] true whether the service is expected (mandatory or optional)
