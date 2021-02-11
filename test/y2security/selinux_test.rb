@@ -327,8 +327,13 @@ describe Y2Security::Selinux do
     end
 
     context "when an unknown SELinux id is given" do
+      it "logs an error" do
+        expect(subject.log).to receive(:error).with(/.*not found.*disabled.*/)
+
+        subject.mode = :whatever
+      end
       it "uses the disabled mode" do
-        subject.mode = :not_now
+        subject.mode = :whatever
 
         expect(subject.mode).to eq(disabled_mode)
       end

@@ -162,7 +162,7 @@ module Y2Security
       found_mode = Mode.find(id)
 
       if found_mode.nil?
-        log.info("Requested SELinux mode `#{id}` not found. Falling back to :disabled.")
+        log.error("Requested SELinux mode `#{id}` not found. Falling back to :disabled.")
         found_mode = Mode.find(:disabled)
       end
 
@@ -266,7 +266,7 @@ module Y2Security
       found_mode = Mode.find(id)
 
       if found_mode.nil?
-        log.info("Proposed SELinux mode `#{id}` not found.")
+        log.error("Proposed SELinux mode `#{id}` not found.")
 
         return
       end
