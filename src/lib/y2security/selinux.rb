@@ -266,7 +266,7 @@ module Y2Security
       if found_mode.nil?
         log.error("Proposed SELinux mode `#{id}` not found.")
 
-        return
+        return nil
       end
 
       log.info("Proposing `#{id}` SELinux mode.")
