@@ -260,7 +260,7 @@ module Y2Security
     #
     # @see Mode.find
     #
-    # @return [Mode] disabled or found SELinux mode
+    # @return [Mode, nil] found SELinux mode or nil if none
     def proposed_mode
       id = product_feature_settings[:mode]
       found_mode = Mode.find(id)
