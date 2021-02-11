@@ -60,7 +60,7 @@ module CFA
     #
     # @see CFA::BaseModel#initialize
     def initialize(file_handler: Yast::TargetFile, file_path: PATH)
-      super(AugeasParser.new("semanage.lns"), file_path, file_handler: file_handler)
+      super(AugeasParser.new(LENS), file_path, file_handler: file_handler)
     end
 
     private
@@ -68,5 +68,12 @@ module CFA
     # Default path to the SELinux config file
     PATH = "/etc/selinux/config".freeze
     private_constant :PATH
+
+    # The lens to be used by Augeas parser
+    #
+    # @note uses the simplevars lens instead of semanage because the latest is only available from
+    #   augeas-lenses >= 1.12. See https://github.com/hercules-team/augeas/pull/594/files
+    LENS = "simplevars.lns".freeze
+    private_constant :LENS
   end
 end

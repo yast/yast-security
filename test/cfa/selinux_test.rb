@@ -41,8 +41,8 @@ describe CFA::Selinux do
   end
 
   describe "#initialize" do
-    it "creates an own Augeas instance" do
-      expect(::CFA::AugeasParser).to receive(:new).with("semanage.lns").and_call_original
+    it "creates an own Augeas instance using simplevars lens" do
+      expect(::CFA::AugeasParser).to receive(:new).with("simplevars.lns").and_call_original
 
       described_class.new(file_handler: file_handler)
     end
