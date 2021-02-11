@@ -242,13 +242,35 @@ module Yast
 
     describe "#write_selinux" do
       before do
-        Security.Settings["SELINUX_MODE"] = "disabled"
+        allow(subject.selinux_config).to receive(:mode).and_return(selinux_mode)
+
+        subject.Settings["SELINUX_MODE"] = requested_mode
       end
 
-      it "writes bootloader settings" do
-        expect_any_instance_of(Y2Security::Selinux).to receive(:mode=).with("disabled")
-        expect_any_instance_of(Y2Security::Selinux).to receive(:save)
-        Security.write_selinux
+      context "when SELinux mode is the same than requested" do
+        let(:requested_mode) { "permissive" }
+        let(:selinux_mode) { Y2Security::Selinux::Mode.find(:permissive) }
+
+        it "saves the selinux config" do
+          expect(subject.selinux_config).to receive(:save)
+
+          subject.write_selinux
+        end
+      end
+
+      context "when SELinux mode is NOT the same than requested" do
+        let(:requested_mode) { "whatever" }
+        let(:selinux_mode) { Y2Security::Selinux::Mode.find(:disabled) }
+
+        it "returns false" do
+          expect(subject.write_selinux).to eq(false)
+        end
+
+        it "does not save the selinux config" do
+          expect(subject.selinux_config).to_not receive(:save)
+
+          subject.write_selinux
+        end
       end
     end
 
