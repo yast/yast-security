@@ -240,9 +240,7 @@ module Y2Security
     #
     # @return [CFA::Selinux]
     def config_file
-      return @config_file if @config_file
-
-      @config_file = CFA::Selinux.load
+      @config_file ||= CFA::Selinux.load
     end
 
     # Sets the mode to the proposed one via `selinux_mode` global variable in the control file
