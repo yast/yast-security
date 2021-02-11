@@ -565,13 +565,24 @@ module Yast
     end
 
     # Set SELinux settings
+    #
     # @return true on success
     def write_selinux
-      return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
+      return if @Settings["SELINUX_MODE"].to_s.empty?
+
       selinux = Y2Security::Selinux.new
       selinux.mode = @Settings["SELINUX_MODE"]
-      selinux.save
+
+      # Y2Security::Selinux.mode= fallbacks to the "Disabled" mode when wrong value is given.
+      # In consequence, let's check that the mode still being the same before saving it.
+      if selinux.mode.id.to_s != @Settings["SELINUX_MODE"]
+        log.info("The set SELinux mode does not match with the requested one. Not saving it.")
+        false
+      else
+        selinux.save
+      end
     end
+
 
     # Write settings related to PAM behavior
     def write_pam_settings
