@@ -42,14 +42,30 @@ describe Y2Security::Selinux do
   let(:selinux_configurable) { false }
   let(:selinux_patterns) { nil }
 
+  let(:security_param)  { :missing }
+  let(:selinux_param)   { :missing }
+  let(:enforcing_param) { :missing }
+
+  let(:disabled_mode) { Y2Security::Selinux::Mode.find(:disabled) }
+  let(:permissive_mode) { Y2Security::Selinux::Mode.find(:permissive) }
+  let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
+
+  let(:configured_mode) { enforcing_mode }
+
   before do
     Yast::ProductFeatures.Import(product_features)
+
     allow(Yast::Mode).to receive(:installation).and_return(installation_mode)
+
+    allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "security")
+      .and_return(security_param)
+    allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "selinux")
+      .and_return(selinux_param)
+    allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "enforcing")
+      .and_return(enforcing_param)
   end
 
   describe "#mode" do
-    let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
-
     let(:mode) { subject.mode }
 
     context "when mode is set" do
@@ -65,31 +81,54 @@ describe Y2Security::Selinux do
     context "when mode is not set yet" do
       context "in a running system" do
         before do
-          allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "security")
-            .and_return(security_param)
-          allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "selinux")
-            .and_return(selinux_param)
-          allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "enforcing")
-            .and_return(enforcing_param)
+          allow(subject).to receive(:configured_mode).and_return(configured_mode)
         end
 
-        context "with a SELinux configuration" do
+        context "with selinux enabled" do
           let(:security_param) { "selinux" }
           let(:selinux_param) { "1" }
-          let(:enforcing_param) { "0" }
 
-          it "returns the configured mode" do
-            expect(mode.id).to eq(:permissive)
+          context "and enforcing boot param missing" do
+            let(:configured_mode) { enforcing_mode }
+
+            it "returns the mode set by the config file" do
+              expect(subject.mode).to eq(enforcing_mode)
+            end
+          end
+
+          context "and both missing, the enforcing boot param and the configuration file" do
+            let(:configured_mode) { nil }
+
+            it "returns the permissive mode" do
+              expect(subject.mode).to eq(permissive_mode)
+            end
+          end
+
+          context "and enforcing mode set via boot param" do
+            let(:enforcing_param) { "1" }
+            let(:configured_mode) { permissive_mode }
+
+            it "returns the enforcing mode" do
+              expect(subject.mode).to eq(enforcing_mode)
+            end
+          end
+
+          context "and permissive mode set via boot param" do
+            let(:enforcing_param) { "0" }
+            let(:configured_mode) { enforcing_mode }
+
+            it "returns the permissive mode" do
+              expect(subject.mode).to eq(permissive_mode)
+            end
           end
         end
 
-        context "without a SELinux configuration" do
-          let(:security_param) { "apparmor" }
-          let(:selinux_param) { :missing }
-          let(:enforcing_param) { :missing }
+        context "with selinux disabled" do
+          let(:security_param) { "selinux" }
+          let(:selinux_param) { "0" }
 
-          it "returns the :disabled mode" do
-            expect(mode.id).to eq(:disabled)
+          it "returns the disabled mode" do
+            expect(subject.mode).to eq(disabled_mode)
           end
         end
       end
@@ -126,37 +165,34 @@ describe Y2Security::Selinux do
     end
   end
 
-  describe "#mode=" do
-    let(:disabled_mode) { Y2Security::Selinux::Mode.find(:disabled) }
-    let(:permissive_mode) { Y2Security::Selinux::Mode.find(:permissive) }
+  describe "#configured_mode" do
+    let(:config_file) { double("CFA::Selinux", load: true, selinux: selinux_mode) }
 
-    context "when a known SELinux mode id is given" do
-      it "returns the mode" do
-        expect(subject).to receive(:mode=).with(:permissive).and_return(permissive_mode)
+    before do
+      allow(subject).to receive(:config_file).and_return(config_file)
+    end
 
-        subject.mode = permissive_mode.id
-      end
+    context "when enforcing mode is configured" do
+      let(:selinux_mode) { "enforcing" }
 
-      it "sets the mode" do
-        subject.mode = permissive_mode.id
-
-        expect(subject.mode).to eq(permissive_mode)
+      it "returns the enforcing mode" do
+        expect(subject.configured_mode).to eq(enforcing_mode)
       end
     end
 
-    context "when an unknown SELinux id is given" do
-      it "uses the disabled mode" do
-        subject.mode = :not_now
+    context "when permissive mode is configured" do
+      let(:selinux_mode) { "permissive" }
 
-        expect(subject.mode).to eq(disabled_mode)
+      it "returns the permissive mode" do
+        expect(subject.configured_mode).to eq(permissive_mode)
       end
     end
 
-    context "when nil is given" do
-      it "uses the disabled mode" do
-        subject.mode = :not_now
+    context "when unknown mode is configured" do
+      let(:selinux_mode) { "whatever" }
 
-        expect(subject.mode).to eq(disabled_mode)
+      it "returns nil" do
+        expect(subject.configured_mode).to be_nil
       end
     end
   end
@@ -197,6 +233,116 @@ describe Y2Security::Selinux do
     end
   end
 
+  describe "#boot_mode" do
+    context "when security boot param is not set" do
+      it "returns the disabled mode" do
+        expect(subject.boot_mode).to eq(disabled_mode)
+      end
+    end
+
+    context "when security boot param is not selinux" do
+      let(:security_param) { "smack" }
+
+      it "returns the disabled mode" do
+        expect(subject.boot_mode).to eq(disabled_mode)
+      end
+    end
+
+    context "when security boot param is selinux" do
+      let(:security_param) { "selinux" }
+
+      context "and selinux boot param is zero" do
+        let(:selinux_param) { "0" }
+
+        it "returns the disabled mode" do
+          expect(subject.boot_mode).to eq(disabled_mode)
+        end
+      end
+
+      context "and selinux boot param is a text" do
+        let(:selinux_param) { "whatever" }
+
+        it "returns the disabled mode" do
+          expect(subject.boot_mode).to eq(disabled_mode)
+        end
+      end
+
+      context "and selinux boot param is negative number" do
+        let(:selinux_param) { -1 }
+
+        it "returns the disabled mode" do
+          expect(subject.boot_mode).to eq(disabled_mode)
+        end
+      end
+
+      context "and selinux boot param is greater than zero" do
+        let(:selinux_param) { "1" }
+
+        context "and enforcing param is zero" do
+          let(:enforcing_param) { 0 }
+
+          it "returns the permissive mode" do
+            expect(subject.boot_mode).to eq(permissive_mode)
+          end
+        end
+
+        context "and enforcing param is greater than zero" do
+          let(:enforcing_param) { "1" }
+
+          it "returns the enforcing mode" do
+            expect(subject.boot_mode).to eq(enforcing_mode)
+          end
+        end
+
+        context "but enforcing param is not defined" do
+          it "returns nil" do
+            expect(subject.boot_mode).to be_nil
+          end
+        end
+
+        context "but enforcing param is a negative value" do
+          let(:enforcing_param) { "-15" }
+
+          it "returns nil" do
+            expect(subject.boot_mode).to be_nil
+          end
+        end
+      end
+    end
+  end
+
+  describe "#mode=" do
+    context "when a known SELinux mode id is given" do
+      it "returns the mode" do
+        expect(subject).to receive(:mode=).with(:permissive).and_return(permissive_mode)
+
+        subject.mode = permissive_mode.id
+      end
+
+      it "sets the mode" do
+        subject.mode = permissive_mode.id
+
+        expect(subject.mode).to eq(permissive_mode)
+      end
+    end
+
+    context "when an unknown SELinux id is given" do
+      it "uses the disabled mode" do
+        subject.mode = :not_now
+
+        expect(subject.mode).to eq(disabled_mode)
+      end
+    end
+
+    context "when nil is given" do
+      it "uses the disabled mode" do
+        subject.mode = :not_now
+
+        expect(subject.mode).to eq(disabled_mode)
+      end
+    end
+  end
+
   describe "#modes" do
     it "returns a collection of known SELinux modes" do
       expect(subject.modes).to all(be_a(Y2Security::Selinux::Mode))
@@ -213,7 +359,6 @@ describe Y2Security::Selinux do
 
   describe "#save" do
     let(:write_result) { true }
-    let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
     let(:selinux_configurable) { true }
     let(:config_file) { double("CFA::Selinux", load: true, save: true, :selinux= => true) }
 
