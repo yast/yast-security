@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        4.2.15
+Version:        4.2.16
 Release:        0
 Group:          System/YaST
 License:        GPL-2.0-only
