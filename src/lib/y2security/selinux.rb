@@ -198,9 +198,10 @@ module Y2Security
 
     # Returns needed patterns defined in the product features
     #
-    # @return [String] defined patterns in product features to have SELinux working as expected
+    # @return [Array<Sring>] collection of defined patterns in product features to have
+    #                        SELinux working as expected
     def needed_patterns
-      product_feature_settings[:patterns].to_s
+      product_feature_settings[:patterns].to_s.split
     end
 
     # Whether SELinux configuration can be changed

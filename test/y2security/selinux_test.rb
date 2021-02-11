@@ -447,16 +447,19 @@ describe Y2Security::Selinux do
 
   describe "#needed_patterns" do
     context "when globals => selinux => patterns is set" do
-      let(:selinux_patterns) { "a-recommended-selinux-pattern" }
+      let(:selinux_patterns) { "one-pattern another-pattern" }
 
-      it "returns defined patterns" do
-        expect(subject.needed_patterns).to eq(selinux_patterns)
+      it "returns an array holding defined patterns" do
+        expect(subject.needed_patterns).to eq([
+          "one-pattern",
+          "another-pattern"
+        ])
       end
     end
 
     context "when globals => selinux => patterns is not set" do
-      it "returns an empty string" do
-        expect(subject.needed_patterns).to eq("")
+      it "returns an empty array" do
+        expect(subject.needed_patterns).to eq([])
       end
     end
   end
