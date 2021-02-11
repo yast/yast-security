@@ -32,7 +32,7 @@ BuildRequires:  perl-XML-Writer
 BuildRequires:  update-desktop-files
 BuildRequires:  yast2-pam
 BuildRequires:  yast2-devtools >= 4.2.2
-# Y2Security::SelinuxConfig requires Yast::Bootloader
+# Y2Security::Selinux requires Yast::Bootloader
 BuildRequires:  yast2-bootloader
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:yast-rake) >= 0.2.5
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
@@ -50,8 +50,8 @@ Requires:       yast2-pam >= 2.14.0
 # CFA::SysctlConfig
 Requires:       yast2 >= 4.2.66
 Requires:       yast2-ruby-bindings >= 1.0.0
-# Y2Security::SelinuxConfig requires Yast::Bootloader
-BuildRequires:  yast2-bootloader
+# Y2Security::Selinux requires Yast::Bootloader
+Requires:       yast2-bootloader
 
 Provides:       y2c_sec yast2-config-security
 Provides:       yast2-trans-security y2t_sec
