@@ -29,12 +29,28 @@ module Y2Security
   #   mode = selinux.mode
   #   mode.id #=> :permissive
   #   mode.name #=> "Permisive"
+  #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => :missing }
   #
   # @example Querying the currently running SELinux mode
   #   selinux= Selinux.new
   #   mode = selinux.running_mode
   #   mode.id #=> :enforcing
   #   mode.name #=> "Enforcing"
+  #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => "1" }
+  #
+  # @example Querying the SELinux mode set in the config file
+  #   selinux= Selinux.new
+  #   mode = selinux.configured_mode
+  #   mode.id #=> :permissive
+  #   mode.name #=> "Permisive"
+  #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => :missing }
+  #
+  # @example Querying the SELinux mode set by boot params
+  #   selinux= Selinux.new
+  #   mode = selinux.boot_mode
+  #   mode.id #=> :enforcing
+  #   mode.name #=> "Enforcing"
+  #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => "1" }
   #
   # @example Enabling SELinux in Permissive mode for next boot
   #   selinux = Selinux.new
