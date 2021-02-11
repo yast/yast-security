@@ -89,6 +89,7 @@ module Yast
       Yast.import "Service"
       Yast.import "Directory"
       Yast.import "Report"
+      Yast.import "PackagesProposal"
       Yast.include self, "security/levels.rb"
     end
 
@@ -825,7 +826,7 @@ module Yast
       end
 
       @Settings = tmpSettings
-      check_selinux_package # Checking needed packages
+      set_selinux_patterns # Checking needed packages
       true
     end
 
@@ -912,19 +913,15 @@ module Yast
 
     protected
 
-    SELINUX_PACKAGE = "selinux-policy-targeted"
-    # Ensure that the needed packge for SELinux will be installed
-    def check_selinux_package
-      return if !@Settings["SELINUX_MODE"] || @Settings["SELINUX_MODE"].empty?
-      if !Package.Installed(SELINUX_PACKAGE)
-        if !Package.Available(SELINUX_PACKAGE)
-          # TRANSLATORS: package_name is the name of the missed package.
-          Report.Error(format(_("Missing package for SELinux setup:\n%{package_name}"),
-                              package_name: SELINUX_PACKAGE))
-        else
-          Pkg.PkgInstall(SELINUX_PACKAGE)
-        end
-      end
+    # Ensures needed patterns for SELinux will be installed
+    def set_selinux_patterns
+      return if @Settings["SELINUX_MODE"].to_s.empty?
+
+      patterns = selinux_config.needed_patterns
+
+      return if patterns.empty?
+
+      PackagesProposal.SetResolvables("selinux_patterns", :pattern, patterns)
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases
