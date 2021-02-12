@@ -201,6 +201,8 @@ module Y2Security
     # @return [Array<Sring>] collection of defined patterns in product features to have
     #                        SELinux working as expected
     def needed_patterns
+      return [] if mode.to_sym == :disabled
+
       product_feature_settings[:patterns].to_s.split
     end
 
