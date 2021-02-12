@@ -567,7 +567,7 @@ module Yast
     #
     # @return true on success
     def write_selinux
-      return if @Settings["SELINUX_MODE"].empty?
+      return if @Settings["SELINUX_MODE"].to_s.empty?
 
       selinux_config.mode = @Settings["SELINUX_MODE"]
 
