@@ -451,6 +451,12 @@ describe Y2Security::Selinux do
   end
 
   describe "#needed_patterns" do
+    let(:mode) { permissive_mode }
+
+    before do
+      allow(subject).to receive(:mode).and_return(mode)
+    end
+
     context "when globals => selinux => patterns is set" do
       let(:selinux_patterns) { "one-pattern another-pattern" }
 
@@ -459,6 +465,13 @@ describe Y2Security::Selinux do
           "one-pattern",
           "another-pattern"
         ])
+      end
+
+      context "but selected Disabled SELinux mode" do
+        let(:mode) { disabled_mode }
+        it "returns an empty array" do
+          expect(subject.needed_patterns).to eq([])
+        end
       end
     end
 

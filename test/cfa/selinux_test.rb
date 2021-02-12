@@ -33,10 +33,34 @@ describe CFA::Selinux do
 
 
   describe ".load" do
-    it "loads the file content" do
-      file = described_class.load(file_path: file_path, file_handler: file_handler)
+    context "when file exist" do
+      it "creates an own Augeas instance using simplevars lens" do
+        expect(::CFA::AugeasParser).to receive(:new).with("simplevars.lns").and_call_original
 
-      expect(file.loaded?).to eq(true)
+        described_class.load(file_path: file_path, file_handler: file_handler)
+      end
+
+      it "loads the file content" do
+        file = described_class.load(file_path: file_path, file_handler: file_handler)
+
+        expect(file.loaded?).to eq(true)
+      end
+    end
+
+    context "when file does not exist" do
+      let(:file_path) { "/file/not/created/yet" }
+
+      it "creates an own Augeas instance using simplevars lens" do
+        expect(::CFA::AugeasParser).to receive(:new).with("simplevars.lns").and_call_original
+
+        described_class.load(file_path: file_path, file_handler: file_handler)
+      end
+
+      it "does not load the file content" do
+        file = described_class.load(file_path: file_path, file_handler: file_handler)
+
+        expect(file.loaded?).to eq(false)
+      end
     end
   end
 

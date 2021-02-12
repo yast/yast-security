@@ -38,11 +38,14 @@ module CFA
   #   file = CFA::Selinux.load
   #   file.selinux #=> "enforcing"
   class Selinux < BaseModel
+    extend Yast::Logger
+    include Yast::Logger
+
     attributes(
       selinux: "SELINUX"
     )
 
-    # Instantiates and loads a file
+    # Instantiates and loads a file when possible
     #
     # This method is basically a shortcut to instantiate and load the content in just one call.
     #
@@ -50,7 +53,12 @@ module CFA
     # @param file_path    [String] File path
     # @return [Selinux] File with the already loaded content
     def self.load(file_handler: Yast::TargetFile, file_path: PATH)
-      new(file_path: file_path, file_handler: file_handler).tap(&:load)
+      file = new(file_path: file_path, file_handler: file_handler)
+      file.tap(&:load)
+    rescue Errno::ENOENT
+      log.info("#{file_path} couldn't be loaded. Probably the file does not exist yet.")
+
+      file
     end
 
     # Constructor
@@ -61,6 +69,13 @@ module CFA
     # @see CFA::BaseModel#initialize
     def initialize(file_handler: Yast::TargetFile, file_path: PATH)
       super(AugeasParser.new(LENS), file_path, file_handler: file_handler)
+    end
+
+    def save
+      super
+    rescue Errno::EACCES
+      log.info("Permission denied when writting to #{@file_path}")
+      false
     end
 
     private
