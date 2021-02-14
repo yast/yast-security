@@ -899,15 +899,11 @@ module Yast
 
     protected
 
-    # Ensures needed patterns for SELinux will be installed
+    # Ensures needed patterns for SELinux, if any, will be installed
     def set_selinux_patterns
-      return if @Settings["SELINUX_MODE"].to_s.empty?
+      selinux_config.mode = @Settings["SELINUX_MODE"] unless @Settings["SELINUX_MODE"].to_s.empty?
 
-      patterns = selinux_config.needed_patterns
-
-      return if patterns.empty?
-
-      PackagesProposal.SetResolvables("selinux_patterns", :pattern, patterns)
+      PackagesProposal.SetResolvables("selinux_patterns", :pattern, selinux_config.needed_patterns)
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases

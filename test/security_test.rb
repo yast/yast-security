@@ -782,6 +782,8 @@ module Yast
     end
 
     describe "#Import" do
+      let(:selinux_patterns) { ["example-selinux-patterns"] }
+
       before do
         # GENERAL
         Security.Settings["FAIL_DELAY"]       = "5"
@@ -795,12 +797,20 @@ module Yast
         Security.Settings["SYS_UID_MIN"] = 200
         Security.Settings["SYS_GID_MIN"] = 200
 
+        allow(subject.selinux_config).to receive(:needed_patterns).and_return(selinux_patterns)
       end
 
       it "doest not touch current Settings if given settings are empty" do
         current = Security.Settings.dup
         expect(Security.Import({})).to eql(true)
         expect(Security.Settings).to eql(current)
+      end
+
+      it "sets resolvables for needed SELinux patterns" do
+        expect(Yast::PackagesProposal).to receive(:SetResolvables)
+          .with(anything, :pattern, selinux_patterns)
+
+        expect(Security.Import({"SELINUX_MODE" => "permissive"}))
       end
 
       context "when Settings keys exists in given settings" do
@@ -837,9 +847,7 @@ module Yast
 
           expect(Security.Settings["FAIL_DELAY"]).to eql("5")
         end
-
       end
-
     end
   end
 end
