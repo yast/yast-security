@@ -448,12 +448,11 @@ module Yast
         "#{@Settings['HIBERNATE_SYSTEM']}"
     end
 
+    # Sets the SELINUX_MODE setting
+    #
+    # @see Y2Security::Selinux
     def read_selinux_settings
-      @Settings.delete("SELINUX_MODE")
-
-      if selinux_config.mode.id != :disabled
-        @Settings["SELINUX_MODE"] = selinux_config.mode.id.to_s
-      end
+      @Settings["SELINUX_MODE"] = selinux_config.mode.id.to_s
 
       log.debug "SELINUX_MODE (after #{__callee__}): #{@Settings['SELINUX_MODE']}"
     end

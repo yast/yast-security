@@ -759,28 +759,24 @@ module Yast
     end
 
     describe "#read_selinux_settings" do
+      let(:mode) { double("Y2Security::Selinux::Mode", id: :enforcing) }
+
       before do
         allow(subject.selinux_config).to receive(:mode).and_return(mode)
       end
 
-      context "when SELinux is enable" do
-        let(:mode) { Y2Security::Selinux::Mode.find(:permissive) }
+      it "reads the selinux mode" do
+        expect(subject.selinux_config).to receive(:mode)
 
-        it "reads its mode id as string" do
-          Security.read_selinux_settings
-
-          expect(Security.Settings["SELINUX_MODE"]).to eq(mode.id.to_s)
-        end
+        subject.read_selinux_settings
       end
 
-      context "when SELinux is NOT enable" do
-        let(:mode) { Y2Security::Selinux::Mode.find(:disabled) }
+      it "sets the SELINUX_MODE setting" do
+        expect(Security.Settings["SELINUX_MODE"]).to eq("")
 
-        it "ensures SELINUX_MODE is removed from hash settings" do
-          Security.read_selinux_settings
+        Security.read_selinux_settings
 
-          expect(Security.Settings).to_not have_key("SELINUX_MODE")
-        end
+        expect(Security.Settings["SELINUX_MODE"]).to eq(mode.id.to_s)
       end
     end
 
@@ -792,6 +788,7 @@ module Yast
         expect(Security).to receive(:read_pam_settings)
         expect(Security).to receive(:read_permissions)
         expect(Security).to receive(:read_polkit_settings)
+        expect(Security).to receive(:read_selinux_settings)
 
         expect(Security.Read).to eql(true)
       end
