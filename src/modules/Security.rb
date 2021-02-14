@@ -566,18 +566,8 @@ module Yast
     #
     # @return true on success
     def write_selinux
-      return if @Settings["SELINUX_MODE"].to_s.empty?
-
       selinux_config.mode = @Settings["SELINUX_MODE"]
-
-      # Y2Security::Selinux.mode= fallbacks to the "Disabled" mode when wrong value is given.
-      # In consequence, let's check that the mode still being the same before saving it.
-      if selinux_config.mode.id.to_s != @Settings["SELINUX_MODE"]
-        log.info("The set SELinux mode does not match with the requested one. Not saving it.")
-        false
-      else
-        selinux_config.save
-      end
+      selinux_config.save
     end
 
 
