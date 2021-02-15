@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 15 11:35:59 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
+
+- Adapted unit test to recent changes in Yast::Report (related to
+  bsc#1179893).
+- 4.3.8
+
+-------------------------------------------------------------------
 Tue Dec 15 12:33:52 UTC 2020 - schubi <schubi@localhost>
 
 - Removed old code for sysvinit configuration (bsc#1175494).
