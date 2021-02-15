@@ -32,6 +32,7 @@ require "cfa/shadow_config"
 require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
+require "y2security/selinux"
 
 module Yast
   class SecurityClass < Module
@@ -68,7 +69,6 @@ module Yast
       "USERDEL_POSTCMD"
     ].freeze
 
-
     attr_reader :display_manager
 
     def main
@@ -83,10 +83,13 @@ module Yast
       Yast.import "UI"
       Yast.import "FileUtils"
       Yast.import "Package"
+      Yast.import "Pkg"
       Yast.import "Pam"
       Yast.import "Progress"
       Yast.import "Service"
       Yast.import "Directory"
+      Yast.import "Report"
+      Yast.import "PackagesProposal"
       Yast.include self, "security/levels.rb"
     end
 
@@ -155,7 +158,8 @@ module Yast
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "no",
         "SMTPD_LISTEN_REMOTE"                       => "no",
         "MANDATORY_SERVICES"                        => "yes",
-        "EXTRA_SERVICES"                            => "no"
+        "EXTRA_SERVICES"                            => "no",
+        "SELINUX_MODE"                              => ""
       }
 
       @Settings.merge!(@display_manager.default_settings) if @display_manager
@@ -444,6 +448,15 @@ module Yast
         "#{@Settings['HIBERNATE_SYSTEM']}"
     end
 
+    # Sets the SELINUX_MODE setting
+    #
+    # @see Y2Security::Selinux
+    def read_selinux_settings
+      @Settings["SELINUX_MODE"] = selinux_config.mode.id.to_s
+
+      log.debug "SELINUX_MODE (after #{__callee__}): #{@Settings['SELINUX_MODE']}"
+    end
+
     # Read all security settings
     # @return true on success
     def Read
@@ -469,6 +482,8 @@ module Yast
       read_polkit_settings
 
       read_kernel_settings
+
+      read_selinux_settings
 
       # remember the read values
       @Settings_bak = deep_copy(@Settings)
@@ -546,6 +561,15 @@ module Yast
       shadow_config.encrypt_method = encr if encr != @Settings_bak["PASSWD_ENCRYPTION"]
       shadow_config.save
     end
+
+    # Set SELinux settings
+    #
+    # @return true on success
+    def write_selinux
+      selinux_config.mode = @Settings["SELINUX_MODE"]
+      selinux_config.save
+    end
+
 
     # Write settings related to PAM behavior
     def write_pam_settings
@@ -670,25 +694,29 @@ module Yast
         " ",
         steps,
         [
-          # Progress stage 1/4
+          # Progress stage 1/5
           _("Write security settings"),
-          # Progress stage 2/4
+          # Progress stage 2/5
           _("Write inittab settings"),
-          # Progress stage 3/4
+          # Progress stage 3/5
           _("Write PAM settings"),
-          # Progress stage 4/4
-          _("Update system settings")
+          # Progress stage 4/5
+          _("Update system settings"),
+          # Progress stage 5/5
+          _("Write SELinux settings")
         ],
         [
-          # Progress step 1/5
+          # Progress step 1/6
           _("Writing security settings..."),
-          # Progress step 2/5
+          # Progress step 2/6
           _("Writing inittab settings..."),
-          # Progress step 3/5
+          # Progress step 3/6
           _("Writing PAM settings..."),
-          # Progress step 4/5
+          # Progress step 4/6
           _("Updating system settings..."),
-          # Progress step 5/5
+          # Progress step 5/6
+          _("Writing  settings..."),
+          # Progress step 6/6
           _("Finished")
         ],
         ""
@@ -727,6 +755,10 @@ module Yast
       activate_changes
 
       return false if Abort()
+      Progress.NextStage
+      write_selinux
+
+      return false if Abort()
       @modified = false
       true
     end
@@ -758,7 +790,6 @@ module Yast
       end
 
       return true if settings == {}
-
       @modified = true
       tmpSettings = {}
       @Settings.each do |k, v|
@@ -779,8 +810,9 @@ module Yast
           end
         end
       end
-      @Settings = tmpSettings
 
+      @Settings = tmpSettings
+      set_selinux_patterns # Checking needed packages
       true
     end
 
@@ -867,6 +899,13 @@ module Yast
 
     protected
 
+    # Ensures needed patterns for SELinux, if any, will be installed
+    def set_selinux_patterns
+      selinux_config.mode = @Settings["SELINUX_MODE"] unless @Settings["SELINUX_MODE"].to_s.empty?
+
+      PackagesProposal.SetResolvables("selinux_patterns", :pattern, selinux_config.needed_patterns)
+    end
+
     # Sets @missing_mandatory_services honoring the systemd aliases
     def read_missing_mandatory_services
       log.info("Checking mandatory services")
@@ -934,6 +973,13 @@ module Yast
     def shadow_config
       @shadow_config ||= CFA::ShadowConfig.load
     end
+  end
+
+  # Returns a SELinux configuration handler
+  #
+  # @return [Y2Security::Selinux] the SELinux config handler
+  def selinux_config
+    @selinux_config ||= Y2Security::Selinux.new
   end
 
   # Checks if the service is allowed (i.e. not considered 'extra')

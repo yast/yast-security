@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Sun Feb 14 21:13:17 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- AutoYaST: add support for SELinux configuration (jsc#SMO-20,
+  jsc#SLE-17342).
+- 4.2.18
+
+-------------------------------------------------------------------
 Fri Feb 12 09:12:11 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Avoid crashing when the SELinux configuration file does not
