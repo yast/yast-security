@@ -241,6 +241,8 @@ module Yast
 
     describe "#write_kernel_settings" do
       before do
+        # there are some failure with running uname in chroot without root perms
+        allow(Yast::Report).to receive(:Error)
         change_scr_root(File.join(DATA_PATH, "system"))
         Security.read_kernel_settings
         stub_scr_write
@@ -520,6 +522,8 @@ module Yast
 
     describe "#read_kernel_settings" do
       before do
+        # there are some failure with running uname in chroot without root perms
+        allow(Yast::Report).to receive(:Error)
         change_scr_root(File.join(DATA_PATH, "system"))
         Security.Settings["kernel.sysrq"]                 = nil
         Security.Settings["net.ipv4.tcp_syncookies"]      = nil
