@@ -1,4 +1,5 @@
 -------------------------------------------------------------------
+
 Mon Feb 15 11:35:59 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Adapted unit test to recent changes in Yast::Report (related to

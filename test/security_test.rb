@@ -111,6 +111,7 @@ module Yast
       it "writes and applies all the settings" do
         expect(Security).to receive(:write_to_locations)
         expect(Security).to receive(:write_shadow_config)
+        expect(Security).to receive(:write_selinux)
         expect(Security).to receive(:write_console_shutdown)
         expect(Security).to receive(:write_pam_settings)
         expect(Security).to receive(:write_polkit_settings)
@@ -236,6 +237,27 @@ module Yast
         expect(shadow_config).to receive(:fail_delay=).with("10")
         expect(shadow_config).to receive(:save)
         Security.write_shadow_config
+      end
+    end
+
+    describe "#write_selinux" do
+      let(:requested_mode) { "enforcing" }
+
+      before do
+        allow(subject.selinux_config).to receive(:save)
+        subject.Settings["SELINUX_MODE"] = requested_mode
+      end
+
+      it "sets the SELinux mode" do
+        expect(subject.selinux_config).to receive(:mode=).with(requested_mode)
+
+        subject.write_selinux
+      end
+
+      it "saves the selinux config" do
+        expect(subject.selinux_config).to receive(:save)
+
+        subject.write_selinux
       end
     end
 
@@ -622,6 +644,28 @@ module Yast
       end
     end
 
+    describe "#read_selinux_settings" do
+      let(:mode) { double("Y2Security::Selinux::Mode", id: :enforcing) }
+
+      before do
+        allow(subject.selinux_config).to receive(:mode).and_return(mode)
+      end
+
+      it "reads the selinux mode" do
+        expect(subject.selinux_config).to receive(:mode)
+
+        subject.read_selinux_settings
+      end
+
+      it "sets the SELINUX_MODE setting" do
+        expect(Security.Settings["SELINUX_MODE"]).to eq("")
+
+        Security.read_selinux_settings
+
+        expect(Security.Settings["SELINUX_MODE"]).to eq(mode.id.to_s)
+      end
+    end
+
     describe "#Read" do
       it "reads settings and returns true" do
         expect(Security).to receive(:read_from_locations)
@@ -630,12 +674,15 @@ module Yast
         expect(Security).to receive(:read_pam_settings)
         expect(Security).to receive(:read_permissions)
         expect(Security).to receive(:read_polkit_settings)
+        expect(Security).to receive(:read_selinux_settings)
 
         expect(Security.Read).to eql(true)
       end
     end
 
     describe "#Import" do
+      let(:selinux_patterns) { ["example-selinux-patterns"] }
+
       before do
         # GENERAL
         Security.Settings["FAIL_DELAY"]         = "5"
@@ -649,12 +696,20 @@ module Yast
         Security.Settings["SYS_UID_MIN"] = 200
         Security.Settings["SYS_GID_MIN"] = 200
 
+        allow(subject.selinux_config).to receive(:needed_patterns).and_return(selinux_patterns)
       end
 
       it "doest not touch current Settings if given settings are empty" do
         current = Security.Settings.dup
         expect(Security.Import({})).to eql(true)
         expect(Security.Settings).to eql(current)
+      end
+
+      it "sets resolvables for needed SELinux patterns" do
+        expect(Yast::PackagesProposal).to receive(:SetResolvables)
+          .with(anything, :pattern, selinux_patterns)
+
+        expect(Security.Import({"SELINUX_MODE" => "permissive"}))
       end
 
       context "when Settings keys exists in given settings" do
@@ -691,9 +746,7 @@ module Yast
 
           expect(Security.Settings["FAIL_DELAY"]).to eql("5")
         end
-
       end
-
     end
   end
 end
