@@ -449,7 +449,6 @@ module Yast
         "#{@Settings['HIBERNATE_SYSTEM']}"
     end
 
-
     # The name of the PAM module to deal with password quality. Either
     # "pwquality" or "cracklib". See bug #1171318 why this is needed.
     def pwquality_module
@@ -552,7 +551,6 @@ module Yast
       selinux_config.mode = @Settings["SELINUX_MODE"]
       selinux_config.save
     end
-
 
     # Write settings related to PAM behavior
     def write_pam_settings
@@ -786,6 +784,7 @@ module Yast
       end
 
       return true if settings == {}
+
       @modified = true
       tmpSettings = {}
       @Settings.each do |k, v|

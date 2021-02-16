@@ -142,7 +142,7 @@ module Y2Security
 
       # enforcing=0 means that "permissive" mode will be used, despite the SELINUX value used in the
       # configuration file.
-      enforcing_mode > 0 ? Mode.find(:enforcing) : Mode.find(:permissive)
+      (enforcing_mode > 0) ? Mode.find(:enforcing) : Mode.find(:permissive)
     end
 
     # Returns a collection holding all known SELinux modes
@@ -217,7 +217,7 @@ module Y2Security
       product_feature_settings[:configurable] || false
     end
 
-    private
+  private
 
     # Path to the SELinux getenforce command
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
@@ -358,8 +358,6 @@ module Y2Security
       end
       alias_method :to_human_string, :name
 
-      private
-
       # All known SELinux modes
       #
       # This is _the main_ or _base_ configuration for known SELinux modes. However, note that, for
@@ -378,12 +376,12 @@ module Y2Security
       ALL = [
         new(:disabled,   N_("Disabled"),   false, false),
         new(:permissive, N_("Permissive"), true,  false),
-        new(:enforcing,  N_("Enforcing"),  true,  true),
+        new(:enforcing,  N_("Enforcing"),  true,  true)
       ].freeze
       private_constant :ALL
 
       # Known keys for setting a SELinux mode via kernel command line
-      KERNEL_OPTIONS = ["security", "selinux", "enforcing"]
+      KERNEL_OPTIONS = ["security", "selinux", "enforcing"].freeze
       private_constant :KERNEL_OPTIONS
     end
   end

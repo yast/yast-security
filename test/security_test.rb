@@ -335,7 +335,7 @@ module Yast
             it "sets settings for shutdown as 'reboot'" do
               allow(FileUtils).to receive(:Exists).with(ctrl_alt_del_file) { false }
 
-              Security.ReadConsoleShutdown              
+              Security.ReadConsoleShutdown
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("reboot")
             end
           end
@@ -357,7 +357,7 @@ module Yast
               allow(SCR).to receive(:Read).with(path(".target.symlink"), ctrl_alt_del_file)
                 .and_return(target_link)
 
-              Security.ReadConsoleShutdown              
+              Security.ReadConsoleShutdown
               expect(Security.Settings["CONSOLE_SHUTDOWN"]).to eql("halt")
             end
 
@@ -709,7 +709,7 @@ module Yast
         expect(Yast::PackagesProposal).to receive(:SetResolvables)
           .with(anything, :pattern, selinux_patterns)
 
-        expect(Security.Import({"SELINUX_MODE" => "permissive"}))
+        expect(Security.Import("SELINUX_MODE" => "permissive"))
       end
 
       context "when Settings keys exists in given settings" do

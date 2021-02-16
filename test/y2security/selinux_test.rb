@@ -202,7 +202,7 @@ describe Y2Security::Selinux do
     let(:cheetah_error) { Cheetah::ExecutionFailed.new([], "", nil, nil) }
 
     context "when getenforce tool is available" do
-      let(:getenforce_output) { "Enforcing\n"  }
+      let(:getenforce_output) { "Enforcing\n" }
 
       before do
         allow(Yast::Execute).to receive(:locally!).with(*getenforce_cmd)
@@ -461,14 +461,12 @@ describe Y2Security::Selinux do
       let(:selinux_patterns) { "one-pattern another-pattern" }
 
       it "returns an array holding defined patterns" do
-        expect(subject.needed_patterns).to eq([
-          "one-pattern",
-          "another-pattern"
-        ])
+        expect(subject.needed_patterns).to eq(["one-pattern", "another-pattern"])
       end
 
       context "but selected Disabled SELinux mode" do
         let(:mode) { disabled_mode }
+
         it "returns an empty array" do
           expect(subject.needed_patterns).to eq([])
         end

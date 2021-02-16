@@ -29,8 +29,7 @@ describe CFA::Selinux do
 
   let(:selinux_path) { "config" }
   let(:file_handler) { File }
-  let(:file_path) { File.join(DATA_PATH, "system/etc/selinux/config")  }
-
+  let(:file_path) { File.join(DATA_PATH, "system/etc/selinux/config") }
 
   describe ".load" do
     context "when file exist" do

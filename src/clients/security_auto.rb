@@ -84,9 +84,9 @@ module Yast
       # Import Data
       elsif @func == "Import"
 
-        #Checking value semantic
-        if @param.has_key?("selinux_mode")
-          selinux_values = Y2Security::Selinux.new.modes.map {|m| m.id.to_s}
+        # Checking value semantic
+        if @param.key?("selinux_mode")
+          selinux_values = Y2Security::Selinux.new.modes.map { |m| m.id.to_s }
           if !selinux_values.include?(@param["selinux_mode"])
             Yast::AutoInstall.issues_list.add(
               :invalid_value,
@@ -151,7 +151,7 @@ module Yast
       Builtins.y2milestone("Security auto finished")
       Builtins.y2milestone("----------------------------------------")
 
-      deep_copy(@ret) 
+      deep_copy(@ret)
 
       # EOF
     end

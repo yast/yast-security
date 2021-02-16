@@ -78,8 +78,6 @@ module CFA
       false
     end
 
-    private
-
     # Default path to the SELinux config file
     PATH = "/etc/selinux/config".freeze
     private_constant :PATH
