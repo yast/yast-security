@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        4.3.8
+Version:        4.3.9
 Release:        0
 Group:          System/YaST
 License:        GPL-2.0-only
@@ -33,10 +33,14 @@ BuildRequires:  update-desktop-files
 # Pam.List
 BuildRequires:  yast2-pam >= 4.3.1
 BuildRequires:  yast2-devtools >= 4.2.2
+# Y2Security::Selinux requires Yast::Bootloader
+BuildRequires:  yast2-bootloader
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:yast-rake) >= 0.2.5
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 # CFA::SysctlConfig
 BuildRequires:  yast2 >= 4.2.66
+# CFA::Selinux
+BuildRequires:  augeas-lenses
 # Unfortunately we cannot move this to macros.yast,
 # bcond within macros are ignored by osc/OBS.
 %bcond_with yast_run_ci_tests
@@ -51,6 +55,10 @@ Requires:       yast2 >= 4.2.66
 Requires:       yast2-ruby-bindings >= 1.0.0
 # Pam.List
 Requires:       yast2-pam >= 4.3.1
+# Y2Security::Selinux requires Yast::Bootloader
+Requires:       yast2-bootloader
+# CFA::Selinux
+Requires:       augeas-lenses
 
 Provides:       y2c_sec yast2-config-security
 Provides:       yast2-trans-security y2t_sec

@@ -50,6 +50,7 @@ module Yast
         change_scr_root(File.join(DATA_PATH, "system"))
         stub_scr_write
         allow(Package).to receive(:Installed).with("systemd").and_return true
+        allow(Security.selinux_config).to receive(:save)
       end
 
       after do
