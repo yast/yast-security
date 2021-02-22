@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Feb 22 13:45:58 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Move SELinux .autorelabel file from / to /etc/selinux if root
+  filesystem will be mounted as read only (jsc#SLE-17307).
+- 4.2.19
+
+-------------------------------------------------------------------
 Sun Feb 14 21:13:17 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - AutoYaST: add support for SELinux configuration (jsc#SMO-20,
