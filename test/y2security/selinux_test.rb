@@ -420,6 +420,12 @@ describe Y2Security::Selinux do
           subject.save
         end
 
+        it "does not write the bootloader configuration" do
+          expect(Yast::Bootloader).to_not receive(:Write)
+
+          subject.save
+        end
+
         it "returns false" do
           expect(subject.save).to eq(false)
         end
@@ -430,6 +436,19 @@ describe Y2Security::Selinux do
       it "modifies the bootloader kernel params" do
         expect(Yast::Bootloader).to receive(:modify_kernel_params)
           .with(enforcing_mode.options)
+
+        subject.save
+      end
+
+      it "writes the bootloader configuration" do
+        expect(Yast::Bootloader).to receive(:Write)
+
+        subject.save
+      end
+
+      it "changes the mode in the configuration file" do
+        expect(config_file).to receive(:selinux=).with("enforcing")
+        expect(config_file).to receive(:save)
 
         subject.save
       end
