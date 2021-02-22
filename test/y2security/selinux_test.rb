@@ -52,6 +52,8 @@ describe Y2Security::Selinux do
 
   let(:configured_mode) { enforcing_mode }
 
+  let(:read_only_root_fs) { false }
+
   before do
     Yast::ProductFeatures.Import(product_features)
 
@@ -63,6 +65,7 @@ describe Y2Security::Selinux do
       .and_return(selinux_param)
     allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "enforcing")
       .and_return(enforcing_param)
+    allow(subject).to receive(:read_only_root_fs?).and_return(read_only_root_fs)
   end
 
   describe "#mode" do
@@ -365,12 +368,16 @@ describe Y2Security::Selinux do
   describe "#save" do
     let(:write_result) { true }
     let(:selinux_configurable) { true }
+    let(:mode) { enforcing_mode }
     let(:config_file) { double("CFA::Selinux", load: true, save: true, :selinux= => true) }
+    let(:executor) { double("Yast::Execute", on_target!: "") }
 
     before do
       allow(Yast::Bootloader).to receive(:modify_kernel_params)
       allow(Yast::Bootloader).to receive(:Write).and_return(write_result)
+      allow(Yast::Execute).to receive(:stdout).and_return(executor)
       allow(subject).to receive(:config_file).and_return(config_file)
+      allow(subject).to receive(:mode).and_return(mode)
 
       subject.mode = enforcing_mode
     end
@@ -399,6 +406,37 @@ describe Y2Security::Selinux do
           subject.save
         end
 
+        context "and root filesystem will be mounted read-only" do
+          let(:read_only_root_fs) { true }
+
+          it "touches .autorelable file" do
+            expect(executor).to receive(:on_target!).with(/rm/, /autorelabel/)
+            expect(executor).to receive(:on_target!).with(/touch/, /autorelabel/)
+
+            subject.save
+          end
+
+          context "but SELinux is disabled" do
+            let(:mode) { disabled_mode }
+
+            it "does not touch .autorelable file" do
+              expect(executor).to_not receive(:on_target!).with(/rm/, /autorelabel/)
+              expect(executor).to_not receive(:on_target!).with(/touch/, /autorelabel/)
+
+              subject.save
+            end
+          end
+        end
+
+        context "and root filesystem will not be mounted as read-only" do
+          it "does not touch the .autorelable file" do
+            expect(executor).to_not receive(:on_target!).with(/rm/, /autorelabel/)
+            expect(executor).to_not receive(:on_target!).with(/touch/, /autorelabel/)
+
+            subject.save
+          end
+        end
+
         it "returns true" do
           expect(subject.save).to eq(true)
         end
@@ -416,6 +454,13 @@ describe Y2Security::Selinux do
         it "does not change the mode in the configuration file" do
           expect(config_file).to_not receive(:selinux=)
           expect(config_file).to_not receive(:save)
+
+          subject.save
+        end
+
+        it "does not touch the .autorelable file" do
+          expect(executor).to_not receive(:on_target!).with(/rm/, /autorelabel/)
+          expect(executor).to_not receive(:on_target!).with(/touch/, /autorelabel/)
 
           subject.save
         end
@@ -449,6 +494,13 @@ describe Y2Security::Selinux do
       it "changes the mode in the configuration file" do
         expect(config_file).to receive(:selinux=).with("enforcing")
         expect(config_file).to receive(:save)
+
+        subject.save
+      end
+
+      it "does not touch the .autorelable file" do
+        expect(executor).to_not receive(:on_target!).with(/rm/, /autorelabel/)
+        expect(executor).to_not receive(:on_target!).with(/touch/, /autorelabel/)
 
         subject.save
       end
