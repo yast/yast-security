@@ -187,12 +187,16 @@ module Y2Security
     def save
       return false unless configurable?
 
+      log.info("Modifying Bootlooader kernel params using #{mode.options}")
       Yast::Bootloader.modify_kernel_params(mode.options)
+
+      log.info("Saving SELinux config file to set #{mode.id} mode")
       config_file.selinux = mode.id.to_s
       config_file.save
 
       return true if Yast::Mode.installation
 
+      log.info("Saving Bootloader configuration")
       Yast::Bootloader.Write
     end
 
