@@ -19,6 +19,7 @@
 
 require "yast"
 require "yast2/execute"
+require "y2storage/storage_manager"
 require "cfa/selinux"
 
 module Y2Security
@@ -181,18 +182,28 @@ module Y2Security
     # @see Yast::Bootloader#modify_kernel_params
     # @see CFA::Selinux#save
     #
-    # @return [Boolean] true if running in installation where selinux is configurable;
-    #                   false if running in installation where selinux is not configurable;
+    # @return [Boolean] true if running in installation where SELinux is configurable;
+    #                   false if running in installation where SELinux is not configurable;
     #                   the Yast::Bootloader#Write return value otherwise
     def save
       return false unless configurable?
 
+      log.info("Modifying Bootlooader kernel params using #{mode.options}")
       Yast::Bootloader.modify_kernel_params(mode.options)
+
+      log.info("Saving SELinux config file to set #{mode.id} mode")
       config_file.selinux = mode.id.to_s
       config_file.save
 
+      if relocate_autorelabel_file?
+        log.info("Detected a read-only root fs: relocating .autorelabel file")
+
+        relocate_autorelabel_file
+      end
+
       return true if Yast::Mode.installation
 
+      log.info("Saving Bootloader configuration")
       Yast::Bootloader.Write
     end
 
@@ -222,6 +233,22 @@ module Y2Security
     # Path to the SELinux getenforce command
     GETENFORCE_PATH = "/usr/sbin/getenforce".freeze
     private_constant :GETENFORCE_PATH
+
+    # Path to .autorelabel file in root
+    ROOT_AUTORELABEL_PATH = "/.autorelabel".freeze
+    private_constant :ROOT_AUTORELABEL_PATH
+
+    # Path to .autorelabel file in /etc
+    ETC_AUTORELABEL_PATH = "/etc/selinux/.autorelabel".freeze
+    private_constant :ETC_AUTORELABEL_PATH
+
+    # Path to `rm` command
+    RM_COMMAND = "/usr/bin/rm".freeze
+    private_constant :RM_COMMAND
+
+    # Path to `touch` command
+    TOUCH_COMMAND = "/usr/bin/touch".freeze
+    private_constant :TOUCH_COMMAND
 
     # Returns the values for the SELinux setting from the product features
     #
@@ -294,6 +321,41 @@ module Y2Security
     # @see Yast::Bootloader#kernel_param
     def read_param(key)
       Yast::Bootloader.kernel_param(:common, key.to_s)
+    end
+
+    # Whether the .autorelabel file should be relocated
+    #
+    # @see https://jira.suse.com/browse/SLE-17307
+    #
+    # @return [Booelan] true if root fs will mounted as read only, SELinux is not disabled,
+    #                   and running in the installation mode; false otherwise
+    def relocate_autorelabel_file?
+      mode.to_sym != :disabled && Yast::Mode.installation && read_only_root_fs?
+    end
+
+    # Relocates the .autorelabel file from #{ROOT_AUTORELABEL_PATH} to #{ETC_AUTORELABEL_PATH} by
+    # removing the first and touching the latter.
+    #
+    # @see #save
+    # @see https://jira.suse.com/browse/SLE-17307
+    def relocate_autorelabel_file
+      log.info("Deleting #{ROOT_AUTORELABEL_PATH} file")
+      Yast::Execute.stdout.on_target!(RM_COMMAND, ROOT_AUTORELABEL_PATH)
+
+      log.info("Touching #{ETC_AUTORELABEL_PATH} file")
+      Yast::Execute.stdout.on_target!(TOUCH_COMMAND, ETC_AUTORELABEL_PATH)
+    end
+
+    # Whether the root file system will be mounted as read only
+    #
+    # @return [Booelan] true if "ro" is one of the root fs mount options; false otherwise
+    def read_only_root_fs?
+      staging_graph = Y2Storage::StorageManager.instance.staging
+      root_fs = staging_graph.filesystems.find(&:root?)
+
+      return false unless root_fs
+
+      root_fs.mount_options.include?("ro")
     end
 
     # Model that represents a SELinux mode

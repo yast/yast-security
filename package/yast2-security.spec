@@ -41,6 +41,8 @@ BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
 BuildRequires:  yast2 >= 4.2.66
 # CFA::Selinux
 BuildRequires:  augeas-lenses
+# Y2Storage::StorageManager
+BuildRequires:  yast2-storage-ng
 # Unfortunately we cannot move this to macros.yast,
 # bcond within macros are ignored by osc/OBS.
 %bcond_with yast_run_ci_tests
@@ -59,6 +61,8 @@ Requires:       yast2-pam >= 4.3.1
 Requires:       yast2-bootloader
 # CFA::Selinux
 Requires:       augeas-lenses
+# Y2Storage::StorageManager
+Requires:       yast2-storage-ng
 
 Provides:       y2c_sec yast2-config-security
 Provides:       yast2-trans-security y2t_sec
