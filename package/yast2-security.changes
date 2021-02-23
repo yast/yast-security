@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Feb 23 15:04:15 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Move SELinux .autorelabel file from / to /etc/selinux if root
+  filesystem will be mounted as read only (jsc#SLE-17307).
+- 4.3.10
+
+-------------------------------------------------------------------
 Tue Feb 16 13:36:34 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - jsc#SMO-20, jsc#SLE-17342:
