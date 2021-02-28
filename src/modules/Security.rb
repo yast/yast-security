@@ -903,7 +903,7 @@ module Yast
     def set_selinux_patterns
       selinux_config.mode = @Settings["SELINUX_MODE"] unless @Settings["SELINUX_MODE"].to_s.empty?
 
-      PackagesProposal.SetResolvables("selinux_patterns", :pattern, selinux_config.needed_patterns)
+      PackagesProposal.SetResolvables("SELinux", :pattern, selinux_config.needed_patterns)
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases
