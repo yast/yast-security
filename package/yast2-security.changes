@@ -1,4 +1,12 @@
 -------------------------------------------------------------------
+Mon Mar  1 11:33:59 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Change the SELinux resolvable unique id used in auto-installation
+  to be consistent with the one used by normal installation
+  (related to jsc#SLE-17342).
+- 4.3.12
+
+-------------------------------------------------------------------
 Mon Mar  1 10:21:28 UTC 2021 - Josef Reidinger <jreidinger@suse.com>
 
 - Move security_finish client to yast2-installation (bsc#1182821)
