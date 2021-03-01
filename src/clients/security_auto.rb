@@ -30,6 +30,8 @@
 # goes through the configuration and return the setting.
 # Does not do any changes to the configuration.
 
+require "y2security/selinux"
+
 # @param function to execute
 # @param map/list of security settings
 # @return [Hash] edited settings, Summary or boolean on success depending on called function
@@ -47,6 +49,7 @@ module Yast
 
       Yast.import "Map"
       Yast.import "Security"
+      Yast.import "AutoInstall"
 
       Yast.include self, "security/routines.rb"
       Yast.include self, "security/wizards.rb"
@@ -80,6 +83,23 @@ module Yast
         @ret = SecurityAutoSequence()
       # Import Data
       elsif @func == "Import"
+
+        # Checking value semantic
+        if @param.key?("selinux_mode")
+          selinux_values = Y2Security::Selinux.new.modes.map { |m| m.id.to_s }
+          if !selinux_values.include?(@param["selinux_mode"])
+            Yast::AutoInstall.issues_list.add(
+              :invalid_value,
+              "security",
+              "selinux_mode",
+              @param["selinux_mode"],
+              _("Wrong SELinux mode. Possible values: ") +
+              selinux_values.join(", "),
+              :warn
+            )
+          end
+        end
+
         # Compat
         if Builtins.haskey(@param, "encryption")
           Ops.set(
@@ -131,7 +151,7 @@ module Yast
       Builtins.y2milestone("Security auto finished")
       Builtins.y2milestone("----------------------------------------")
 
-      deep_copy(@ret) 
+      deep_copy(@ret)
 
       # EOF
     end
