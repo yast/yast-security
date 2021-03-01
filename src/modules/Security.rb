@@ -903,7 +903,7 @@ module Yast
       selinux_config.mode = @Settings["SELINUX_MODE"] unless @Settings["SELINUX_MODE"].to_s.empty?
 
       # Please, keep the unique id synced with the one used in normal installation
-      # See https://github.com/yast/yast-firewall/blob/c3ae49a1009dbf324fa3558dff6c5e147c495268/src/lib/y2firewall/clients/proposal.rb#L229-L230
+      # See https://github.com/yast/yast-installation/blob/7c19909e9700242209645cf12a4daffe1cd54194/src/lib/installation/clients/security_proposal.rb#L244-L247
       PackagesProposal.SetResolvables("SELinux", :pattern, selinux_config.needed_patterns)
     end
 
