@@ -902,7 +902,9 @@ module Yast
     def set_selinux_patterns
       selinux_config.mode = @Settings["SELINUX_MODE"] unless @Settings["SELINUX_MODE"].to_s.empty?
 
-      PackagesProposal.SetResolvables("selinux_patterns", :pattern, selinux_config.needed_patterns)
+      # Please, keep the unique id synced with the one used in normal installation
+      # See https://github.com/yast/yast-installation/blob/7c19909e9700242209645cf12a4daffe1cd54194/src/lib/installation/clients/security_proposal.rb#L244-L247
+      PackagesProposal.SetResolvables("SELinux", :pattern, selinux_config.needed_patterns)
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases
