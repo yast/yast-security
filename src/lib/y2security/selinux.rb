@@ -83,6 +83,7 @@ module Y2Security
 
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
+    Yast.import "Stage"
 
     # The current set mode
     #
@@ -201,7 +202,8 @@ module Y2Security
         relocate_autorelabel_file
       end
 
-      return true if Yast::Mode.installation
+      # in insts-sys bootloader write is done by bootloader_finish client
+      return true if Yast::Stage.initial
 
       log.info("Saving Bootloader configuration")
       Yast::Bootloader.Write
@@ -223,7 +225,7 @@ module Y2Security
     #                   the value of 'configurable' selinux settings in the control file when
     #                   running during installation or false if not present
     def configurable?
-      return true unless Yast::Mode.installation
+      return true unless Yast::Stage.initial
 
       product_feature_settings[:configurable] || false
     end
@@ -272,13 +274,13 @@ module Y2Security
       @config_file ||= CFA::Selinux.load
     end
 
-    # Sets the mode to the proposed one via `selinux_mode` global variable in the control file
+    # Sets the mode to the proposed one via selinux mode global variable in the control file
     #
     # @see #proposed_mode
     #
     # @return [Mode] disabled or found SELinux mode
     def make_proposal
-      return unless Yast::Mode.installation
+      return unless Yast::Stage.initial
 
       proposed_mode
     end
@@ -328,9 +330,9 @@ module Y2Security
     # @see https://jira.suse.com/browse/SLE-17307
     #
     # @return [Booelan] true if root fs will mounted as read only, SELinux is not disabled,
-    #                   and running in the installation mode; false otherwise
+    #                   and running in initial stage; false otherwise
     def relocate_autorelabel_file?
-      mode.to_sym != :disabled && Yast::Mode.installation && read_only_root_fs?
+      mode.to_sym != :disabled && Yast::Stage.initial && read_only_root_fs?
     end
 
     # Relocates the .autorelabel file from #{ROOT_AUTORELABEL_PATH} to #{ETC_AUTORELABEL_PATH} by
