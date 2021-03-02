@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar  2 17:47:22 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Ensure defined SELinux patterns are set (bsc#1182543).
+- 4.3.14
+
+-------------------------------------------------------------------
 Tue Mar  2 15:31:39 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Do not write bootloader in insts-sys (bsc#1182894).
