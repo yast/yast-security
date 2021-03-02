@@ -83,6 +83,7 @@ module Y2Security
 
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
+    Yast.import "Stage"
 
     # The current set mode
     #
@@ -201,7 +202,8 @@ module Y2Security
         relocate_autorelabel_file
       end
 
-      return true if Yast::Mode.installation
+      # in insts-sys bootloader write is done by bootloader_finish client
+      return true if Yast::Stage.initial
 
       log.info("Saving Bootloader configuration")
       Yast::Bootloader.Write
