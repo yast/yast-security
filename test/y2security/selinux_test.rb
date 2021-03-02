@@ -57,7 +57,7 @@ describe Y2Security::Selinux do
   before do
     Yast::ProductFeatures.Import(product_features)
 
-    allow(Yast::Mode).to receive(:installation).and_return(installation_mode)
+    allow(Yast::Stage).to receive(:initial).and_return(installation_mode)
 
     allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "security")
       .and_return(security_param)
