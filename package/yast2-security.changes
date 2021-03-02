@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Mar  2 15:31:39 UTC 2021 - David Diaz <dgonzalez@suse.com>
+
+- Do not write bootloader in insts-sys (bsc#1182894).
+- 4.2.21
+
+-------------------------------------------------------------------
 Mon Mar  1 11:33:59 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Change the SELinux resolvable unique id used in auto-installation
