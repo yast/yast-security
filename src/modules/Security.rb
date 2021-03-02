@@ -783,6 +783,8 @@ module Yast
         settings["PASSWD_USE_PWQUALITY"] = settings.delete("PASSWD_USE_CRACKLIB")
       end
 
+      set_selinux_patterns # Checking needed packages
+
       return true if settings == {}
 
       @modified = true
@@ -807,7 +809,6 @@ module Yast
       end
 
       @Settings = tmpSettings
-      set_selinux_patterns # Checking needed packages
       true
     end
 
