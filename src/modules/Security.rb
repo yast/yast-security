@@ -789,7 +789,10 @@ module Yast
         end
       end
 
+      set_selinux_patterns # Checking needed packages
+
       return true if settings == {}
+
       @modified = true
       tmpSettings = {}
       @Settings.each do |k, v|
@@ -812,7 +815,6 @@ module Yast
       end
 
       @Settings = tmpSettings
-      set_selinux_patterns # Checking needed packages
       true
     end
 
