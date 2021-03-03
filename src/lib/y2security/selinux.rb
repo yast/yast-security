@@ -81,6 +81,7 @@ module Y2Security
   class Selinux
     include Yast::Logger
 
+    Yast.import "Arch"
     Yast.import "Bootloader"
     Yast.import "ProductFeatures"
     Yast.import "Stage"
@@ -221,10 +222,12 @@ module Y2Security
 
     # Whether SELinux configuration can be changed
     #
-    # @return [Boolean] always true when running in installed system;
-    #                   the value of 'configurable' selinux settings in the control file when
-    #                   running during installation or false if not present
+    # @return [Boolean] false if running on Windows Subsystem for Linux (WSL);
+    #                   the value of 'configurable' selinux settings in the control file if
+    #                   running in initial stage (false if value is not present);
+    #                   always true when running in an installed system
     def configurable?
+      return false if Yast::Arch.is_wsl
       return true unless Yast::Stage.initial
 
       product_feature_settings[:configurable] || false
