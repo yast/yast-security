@@ -38,6 +38,8 @@ describe Y2Security::Selinux do
     }
   end
 
+  let(:wsl) { false }
+
   let(:selinux_mode) { "enforcing" }
   let(:selinux_configurable) { false }
   let(:selinux_patterns) { nil }
@@ -57,6 +59,7 @@ describe Y2Security::Selinux do
   before do
     Yast::ProductFeatures.Import(product_features)
 
+    allow(Yast::Arch).to receive(:is_wsl).and_return(wsl)
     allow(Yast::Stage).to receive(:initial).and_return(installation_mode)
 
     allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "security")
@@ -554,6 +557,14 @@ describe Y2Security::Selinux do
   end
 
   describe "#configurable?" do
+    context "when running in a WSL environment" do
+      let(:wsl) { true }
+
+      it "returns false" do
+        expect(subject.configurable?).to eq(false)
+      end
+    end
+
     context "when running in an installed system" do
       it "returns true" do
         expect(subject.configurable?).to eq(true)
