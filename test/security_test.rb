@@ -244,18 +244,18 @@ module Yast
       let(:requested_mode) { "enforcing" }
 
       before do
-        allow(subject.selinux_config).to receive(:save)
+        allow(subject.selinux).to receive(:save)
         subject.Settings["SELINUX_MODE"] = requested_mode
       end
 
       it "sets the SELinux mode" do
-        expect(subject.selinux_config).to receive(:mode=).with(requested_mode)
+        expect(subject.selinux).to receive(:mode=).with(requested_mode)
 
         subject.write_selinux
       end
 
       it "saves the selinux config" do
-        expect(subject.selinux_config).to receive(:save)
+        expect(subject.selinux).to receive(:save)
 
         subject.write_selinux
       end
@@ -646,23 +646,45 @@ module Yast
 
     describe "#read_selinux_settings" do
       let(:mode) { double("Y2Security::Selinux::Mode", id: :enforcing) }
+      let(:configurable) { true }
 
       before do
-        allow(subject.selinux_config).to receive(:mode).and_return(mode)
+        allow(subject.selinux).to receive(:mode).and_return(mode)
+        allow(subject.selinux).to receive(:configurable?).and_return(configurable)
       end
 
-      it "reads the selinux mode" do
-        expect(subject.selinux_config).to receive(:mode)
+      context "when SELinux is configurable" do
+        it "reads the selinux mode" do
+          expect(subject.selinux).to receive(:mode)
 
-        subject.read_selinux_settings
+          subject.read_selinux_settings
+        end
+
+        it "sets the SELINUX_MODE setting" do
+          expect(Security.Settings["SELINUX_MODE"]).to eq("")
+
+          Security.read_selinux_settings
+
+          expect(Security.Settings["SELINUX_MODE"]).to eq(mode.id.to_s)
+        end
       end
 
-      it "sets the SELINUX_MODE setting" do
-        expect(Security.Settings["SELINUX_MODE"]).to eq("")
+      context "when SELinux is not configurable" do
+        let(:configurable) { false }
 
-        Security.read_selinux_settings
+        it "does not read the selinux mode" do
+          expect(subject.selinux).to_not receive(:mode)
 
-        expect(Security.Settings["SELINUX_MODE"]).to eq(mode.id.to_s)
+          subject.read_selinux_settings
+        end
+
+        it "does not set the SELINUX_MODE setting" do
+          expect(Security.Settings["SELINUX_MODE"]).to eq("")
+
+          Security.read_selinux_settings
+
+          expect(Security.Settings["SELINUX_MODE"]).to eq("")
+        end
       end
     end
 
@@ -696,7 +718,7 @@ module Yast
         Security.Settings["SYS_UID_MIN"] = 200
         Security.Settings["SYS_GID_MIN"] = 200
 
-        allow(subject.selinux_config).to receive(:needed_patterns).and_return(selinux_patterns)
+        allow(subject.selinux).to receive(:needed_patterns).and_return(selinux_patterns)
       end
 
       it "doest not touch current Settings if given settings are empty" do
