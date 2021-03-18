@@ -452,6 +452,8 @@ module Yast
     #
     # @see Y2Security::Selinux
     def read_selinux_settings
+      return unless selinux_config.configurable?
+
       @Settings["SELINUX_MODE"] = selinux_config.mode.id.to_s
 
       log.debug "SELINUX_MODE (after #{__callee__}): #{@Settings['SELINUX_MODE']}"
