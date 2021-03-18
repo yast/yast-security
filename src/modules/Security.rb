@@ -452,7 +452,9 @@ module Yast
     #
     # @see Y2Security::Selinux
     def read_selinux_settings
-      @Settings["SELINUX_MODE"] = selinux_config.mode.id.to_s
+      return unless selinux.configurable?
+
+      @Settings["SELINUX_MODE"] = selinux.mode.id.to_s
 
       log.debug "SELINUX_MODE (after #{__callee__}): #{@Settings['SELINUX_MODE']}"
     end
@@ -566,8 +568,8 @@ module Yast
     #
     # @return true on success
     def write_selinux
-      selinux_config.mode = @Settings["SELINUX_MODE"]
-      selinux_config.save
+      selinux.mode = @Settings["SELINUX_MODE"]
+      selinux.save
     end
 
 
@@ -903,11 +905,11 @@ module Yast
 
     # Ensures needed patterns for SELinux, if any, will be installed
     def set_selinux_patterns
-      selinux_config.mode = @Settings["SELINUX_MODE"] unless @Settings["SELINUX_MODE"].to_s.empty?
+      selinux.mode = @Settings["SELINUX_MODE"] unless @Settings["SELINUX_MODE"].to_s.empty?
 
       # Please, keep the unique id synced with the one used in normal installation
       # See https://github.com/yast/yast-firewall/blob/c3ae49a1009dbf324fa3558dff6c5e147c495268/src/lib/y2firewall/clients/proposal.rb#L229-L230
-      PackagesProposal.SetResolvables("SELinux", :pattern, selinux_config.needed_patterns)
+      PackagesProposal.SetResolvables("SELinux", :pattern, selinux.needed_patterns)
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases
@@ -982,8 +984,8 @@ module Yast
   # Returns a SELinux configuration handler
   #
   # @return [Y2Security::Selinux] the SELinux config handler
-  def selinux_config
-    @selinux_config ||= Y2Security::Selinux.new
+  def selinux
+    @selinux ||= Y2Security::Selinux.new
   end
 
   # Checks if the service is allowed (i.e. not considered 'extra')
