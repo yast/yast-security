@@ -37,14 +37,14 @@ module Yast
 
   describe Security do
     let(:sysctl_config) { CFA::SysctlConfig.new }
-    let(:shadow_config) { CFA::ShadowConfig.new }
+    let(:login_defs) { CFA::LoginDefs.new }
     let(:bash_path) { Yast::Path.new(".target.bash") }
 
     before do
       allow(CFA::SysctlConfig).to receive(:new).and_return(sysctl_config)
       allow(sysctl_config).to receive(:save)
-      allow(CFA::ShadowConfig).to receive(:load).and_return(shadow_config)
-      allow(shadow_config).to receive(:save)
+      allow(CFA::LoginDefs).to receive(:load).and_return(login_defs)
+      allow(login_defs).to receive(:save)
       Security.main
     end
 
@@ -234,8 +234,8 @@ module Yast
       end
 
       it "writes login.defs configuration" do
-        expect(shadow_config).to receive(:fail_delay=).with("10")
-        expect(shadow_config).to receive(:save)
+        expect(login_defs).to receive(:fail_delay=).with("10")
+        expect(login_defs).to receive(:save)
         Security.write_shadow_config
       end
     end
@@ -736,7 +736,7 @@ module Yast
 
     describe "#read_shadow_config" do
       before do
-        allow(shadow_config).to receive(:fail_delay).and_return("10")
+        allow(login_defs).to receive(:fail_delay).and_return("10")
       end
 
       it "reads login.defs configuration" do

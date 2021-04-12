@@ -28,7 +28,7 @@
 require "yast"
 require "yast2/systemd/service"
 require "cfa/sysctl_config"
-require "cfa/shadow_config"
+require "cfa/login_defs"
 require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
@@ -976,8 +976,9 @@ module Yast
       sysctl_config.public_send(SYSCTL_KEY_TO_METH[key].to_s + "=", value)
     end
 
+    # Rely on /etc/login.defs in SLE 15 SP2 (see bsc#1184131).
     def shadow_config
-      @shadow_config ||= CFA::ShadowConfig.load
+      @shadow_config ||= CFA::LoginDefs.load
     end
   end
 
