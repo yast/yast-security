@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Apr 12 20:29:34 UTC 2021 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Write shadow configuration to /etc/login.defs ignoring the
+  /etc/login.defs.d (bsc#1184131).
+- 4.2.25
+
+-------------------------------------------------------------------
 Thu Mar 18 11:43:42 UTC 2021 - David Diaz <dgonzalez@suse.com>
 
 - Do not set SELinux mode when it is not configurable (bsc#1182940)
