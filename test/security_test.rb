@@ -37,7 +37,7 @@ module Yast
 
   describe Security do
     let(:sysctl_config) { CFA::SysctlConfig.new }
-    let(:login_defs) { CFA::LoginDefs.new }
+    let(:login_defs) { CFA::LoginDefs.new(file_path: "/etc/login.defs") }
     let(:bash_path) { Yast::Path.new(".target.bash") }
 
     before do

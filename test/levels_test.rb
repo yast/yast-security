@@ -24,7 +24,7 @@ module Yast
     let(:tester) { LevelsTester.new }
     subject(:settings) { tester.Levels }
 
-    let(:shadow_config) { CFA::LoginDefs.new }
+    let(:shadow_config) { CFA::LoginDefs.new(file_path: "/etc/login.defs") }
     let(:sysctl_config) { CFA::SysctlConfig.new }
 
     before do
