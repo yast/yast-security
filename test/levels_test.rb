@@ -1,7 +1,7 @@
 #!/usr/bin/env rspec
 
 require_relative 'test_helper'
-require "cfa/shadow_config"
+require "cfa/login_defs"
 require "cfa/sysctl_config"
 
 module Yast
@@ -24,12 +24,12 @@ module Yast
     let(:tester) { LevelsTester.new }
     subject(:settings) { tester.Levels }
 
-    let(:shadow_config) { CFA::ShadowConfig.new }
+    let(:shadow_config) { CFA::LoginDefs.new(file_path: "/etc/login.defs") }
     let(:sysctl_config) { CFA::SysctlConfig.new }
 
     before do
       tester
-      allow(CFA::ShadowConfig).to receive(:load).and_return(shadow_config)
+      allow(CFA::LoginDefs).to receive(:load).and_return(shadow_config)
       allow(shadow_config).to receive(:save)
       allow(Security).to receive(:sysctl_config).and_return(sysctl_config)
       allow(sysctl_config).to receive(:conflict?)

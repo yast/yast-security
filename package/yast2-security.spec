@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        4.2.24
+Version:        4.2.25
 Release:        0
 Group:          System/YaST
 License:        GPL-2.0-only
@@ -36,8 +36,8 @@ BuildRequires:  yast2-devtools >= 4.2.2
 BuildRequires:  yast2-bootloader
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:yast-rake) >= 0.2.5
 BuildRequires:  rubygem(%{rb_default_ruby_abi}:rspec)
-# CFA::SysctlConfig
-BuildRequires:  yast2 >= 4.2.66
+# Removed ShadowConfig class; LoginDefs::new default values
+BuildRequires:  yast2 >= 4.2.93
 # CFA::Selinux
 BuildRequires:  augeas-lenses
 # Y2Storage::StorageManager
