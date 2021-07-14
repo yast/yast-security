@@ -702,6 +702,46 @@ module Yast
       end
     end
 
+    describe "#SafeRead" do
+      it "reads settings" do
+        expect(Security).to receive(:Read).and_return(true)
+
+        Security.SafeRead
+      end
+
+      context "when there is no error reading the settings" do
+        before do
+          allow(Security).to receive(:Read).and_return(true)
+        end
+
+        it "returns true" do
+          expect(Security.SafeRead).to eq(true)
+        end
+
+        it "does not store a read error" do
+          Security.SafeRead
+
+          expect(Security.read_error).to be_nil
+        end
+      end
+
+      context "when there is an error reading the settings" do
+        before do
+          allow(Security).to receive(:Read).and_raise "read error"
+        end
+
+        it "returns false" do
+          expect(Security.SafeRead).to eq(false)
+        end
+
+        it "stores a read error" do
+          Security.SafeRead
+
+          expect(Security.read_error).to eq("read error")
+        end
+      end
+    end
+
     describe "#Import" do
       let(:selinux_patterns) { ["example-selinux-patterns"] }
 

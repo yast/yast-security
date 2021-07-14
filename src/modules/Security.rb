@@ -463,7 +463,9 @@ module Yast
     end
 
     # Read all security settings
-    # @return true on success
+    #
+    # @raise [Exception] if there is an issue while reading the settings
+    # @return [Boolean] true on success
     def Read
       @Settings = {}
       @modified = false
@@ -495,6 +497,23 @@ module Yast
 
       log.info "Settings after Read: #{@Settings}"
       true
+    end
+
+    # Reads all security settings without raising exceptions
+    #
+    # This method saves any error produced while reading the settings instead of raising an
+    # exception. This is needed when the module is used from a perl module because the exceptions
+    # are not propagated to perl code.
+    #
+    # @return [Boolean] true on success. When false, the error message can be check by calling to
+    #   Security#read_error.
+    def SafeRead
+      @read_error = nil
+      self.Read
+      true
+    rescue StandardError => e
+      @read_error = e.message
+      false
     end
 
     # Write the value of ctrl-alt-delete behavior
@@ -888,11 +907,13 @@ module Yast
     publish :variable => :modified, :type => "boolean"
     publish :variable => :proposal_valid, :type => "boolean"
     publish :variable => :write_only, :type => "boolean"
+    publish :variable => :read_error, :type => "string"
     publish :function => :GetModified, :type => "boolean ()"
     publish :function => :SetModified, :type => "void ()"
     publish :function => :Modified, :type => "boolean ()"
     publish :function => :ReadServiceSettings, :type => "void ()"
     publish :function => :Read, :type => "boolean ()"
+    publish :function => :SafeRead, :type => "boolean ()"
     publish :function => :Write, :type => "boolean ()"
     publish :function => :Import, :type => "boolean (map)"
     publish :function => :Export, :type => "map ()"
