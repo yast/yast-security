@@ -35,7 +35,7 @@ require "security/display_manager"
 require "y2security/selinux"
 
 module Yast
-  class SecurityClass < Module
+  class SecurityClass < Module # rubocop:disable Metrics/ClassLength
     DEFAULT_ENCRYPT_METHOD = "sha512".freeze
     private_constant :DEFAULT_ENCRYPT_METHOD
 
