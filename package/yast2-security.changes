@@ -1,8 +1,8 @@
 -------------------------------------------------------------------
 Wed Jul 14 13:51:18 UTC 2021 - José Iván López González <jlopez@suse.com>
 
-- Add Security#SafeRead to allow to detect read errors when calling
-  it from perl modules (releated to bsc#1177183).
+- Add Security#SafeRead to allow detecting read errors when calling
+  it from perl modules (related to bsc#1177183).
 - 4.3.17
 
 -------------------------------------------------------------------
