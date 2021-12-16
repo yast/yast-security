@@ -1,0 +1,5 @@
+require "y2security/lsm/base"
+require "y2security/lsm/config"
+require "y2security/lsm/none"
+require "y2security/lsm/app_armor"
+require "y2security/lsm/selinux"
