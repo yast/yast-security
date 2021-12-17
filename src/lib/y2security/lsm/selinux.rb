@@ -23,6 +23,9 @@ require "y2storage/storage_manager"
 require "cfa/selinux"
 require "y2security/lsm/base"
 
+Yast.import "Bootloader"
+Yast.import "Stage"
+
 module Y2Security
   module LSM
     # Class for handling SELinux kernel params
@@ -81,11 +84,6 @@ module Y2Security
     #   selinux.mode = :permissive
     #   selinux.save #=> false
     class Selinux < Base
-      Yast.import "Arch"
-      Yast.import "Bootloader"
-      Yast.import "ProductFeatures"
-      Yast.import "Stage"
-
       def id
         :selinux
       end

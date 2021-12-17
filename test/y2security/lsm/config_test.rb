@@ -23,30 +23,31 @@ require_relative "../../test_helper"
 require "y2security/lsm"
 
 describe Y2Security::LSM::Config do
-  let(:product_features) do
+  let(:globals_section) { { "globals" => { "lsm" => lsm_section } } }
+  let(:lsm_section) do
     {
-      "globals" => {
-        "lsm" => {
-          "default" => "selinux",
-          "selinux" => {
-            "mode"         => selinux_mode,
-            "configurable" => selinux_configurable,
-            "selectable"   => selinux_selectable,
-            "patterns"     => selinux_patterns
-          }
-        }
+      "default"      => "selinux",
+      "configurable" => lsm_configurable,
+      "selinux"      => {
+        "mode"         => selinux_mode,
+        "configurable" => selinux_configurable,
+        "selectable"   => selinux_selectable,
+        "patterns"     => selinux_patterns
       }
     }
   end
 
+  let(:default) { "selinux" }
+  let(:lsm_configurable) { true }
   let(:selinux_mode) { "enforcing" }
   let(:selinux_configurable) { false }
   let(:selinux_selectable) { true }
   let(:selinux_patterns) { nil }
+  subject { described_class.instance }
 
   before do
-    described_class.reset
-    Yast::ProductFeatures.Import(product_features)
+    subject.reset
+    Yast::ProductFeatures.Import(globals_section)
     allow(Yast::Stage).to receive(:initial).and_return(true)
   end
 
@@ -60,7 +61,7 @@ describe Y2Security::LSM::Config do
     end
 
     it "returns an array with all the supported and active LSM" do
-      active = described_class.active
+      active = subject.active
       expect(active.size).to eql(1)
       expect(active.first.id).to eql(:selinux)
     end
@@ -69,7 +70,7 @@ describe Y2Security::LSM::Config do
       let(:active_modules) { "lockdown,capabilities,tomoyo" }
 
       it "returns an empty array" do
-        expect(described_class.active).to eq([])
+        expect(subject.active).to eq([])
       end
     end
   end
@@ -84,23 +85,23 @@ describe Y2Security::LSM::Config do
     end
 
     it "returns the first supported and active LSM" do
-      expect(described_class.from_system.id).to eq(:apparmor)
+      expect(subject.from_system.id).to eq(:apparmor)
     end
   end
 
   describe ".supported" do
     it "returns an array with an instance of all the supported LSM" do
-      supported = described_class.supported
+      supported = subject.supported
       expect(supported.map(&:id).sort).to eql([:apparmor, :none, :selinux])
     end
   end
 
   describe ".reset" do
     it "resets the memoized object state" do
-      supported = described_class.supported
-      expect(supported).to eql(described_class.supported)
-      described_class.reset
-      expect(supported).to_not eql(described_class.supported)
+      supported = subject.supported
+      expect(supported).to eql(subject.supported)
+      subject.reset
+      expect(supported).to_not eql(subject.supported)
     end
   end
 
@@ -139,6 +140,70 @@ describe Y2Security::LSM::Config do
 
     it "saves the selected LSM configuration" do
       subject.select(:selinux)
+      expect(subject.selected).to receive(:save).and_return(true)
+      expect(subject.save).to eql(true)
+    end
+
+    context "when no LSM is selected" do
+      it "returns false" do
+        expect(subject.selected).to eq(nil)
+        expect(subject.save).to eql(false)
+      end
+    end
+  end
+
+  describe "#propose_default" do
+    it "selects the LSM to be used based on the control file" do
+      expect { subject.propose_default }.to change { subject.selected&.id }.from(nil).to(:selinux)
+    end
+
+    context "when no default LSM is declared in the control file" do
+      let(:lsm_section) { { "configurable" => lsm_configurable } }
+
+      it "fallbacks to :apparmor" do
+        expect { subject.propose_default }
+          .to change { subject.selected&.id }.from(nil).to(:apparmor)
+      end
+    end
+  end
+
+  describe "#configurable?" do
+    context "when LSM is declared in the profile as not configurable" do
+      let(:lsm_configurable) { false }
+
+      it "returns false" do
+        expect(subject.configurable?).to eql(false)
+      end
+    end
+
+    it "returns true" do
+      expect(subject.configurable?).to eql(true)
+    end
+  end
+
+  describe "needed_patterns" do
+    let(:lsm_section) do
+      {
+        "default"  => "apparmor",
+        "apparmor" => {
+          "patterns" => "microos_apparmor"
+        }
+      }
+    end
+
+    it "returns the needed patterns for the selected LSM" do
+      subject.propose_default
+      expect(subject.needed_patterns).to eql(["microos_apparmor"])
+    end
+
+    it "returns an empty array if no LSM is selected" do
+      expect(subject.needed_patterns).to eql([])
+    end
+  end
+
+  describe "#save" do
+    it "saves the selected LSM configuration" do
+      subject.propose_default
       expect(subject.selected).to receive(:save).and_return(true)
       expect(subject.save).to eql(true)
     end

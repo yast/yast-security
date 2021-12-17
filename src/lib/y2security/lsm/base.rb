@@ -42,6 +42,11 @@ module Y2Security
       #   params
       abstract_method :kernel_params
 
+      # @return [Boolean] whether the LSM can be select during the installation or not
+      attr_accessor :selectable
+      # @return [Boolean] whether the LSM can be configured during the installation or not
+      attr_accessor :configurable
+
       # Known keys for selecting a LSM via kernel command line
       KERNEL_OPTIONS = ["security", "lsm"].freeze
       private_constant :KERNEL_OPTIONS
@@ -73,7 +78,7 @@ module Y2Security
       # @return [Array<Sring>] collection of defined patterns in product features to have
       #                        AppArmor working as expected
       def needed_patterns
-        product_feature_settings[:patterns].to_s.split
+        @needed_patterns ||= product_feature_settings[:patterns].to_s.split
       end
 
       # Whether the Module configuration can be changed
@@ -83,10 +88,11 @@ module Y2Security
       #                   file if running in initial stage (false if value is not present);
       #                   always true when running in an installed system
       def configurable?
+        return @configurable unless @configurable.nil?
         return false if Yast::Arch.is_wsl
         return true unless Yast::Stage.initial
 
-        product_feature_settings.fetch(:configurable, false)
+        @configurable = product_feature_settings.fetch(:configurable, false)
       end
 
       # Whether the Module can be selected to be activated
@@ -97,10 +103,15 @@ module Y2Security
       #                   always true when running in an installed system
 
       def selectable?
+        return @selectable unless @selectable.nil?
         return false if Yast::Arch.is_wsl
         return true unless Yast::Stage.initial
 
-        product_feature_settings.fetch(:selectable, true)
+        @selectable = product_feature_settings.fetch(:selectable, true)
+      end
+
+      def patterns=(value)
+        @needed_patterns = value ? value.split(",") : nil
       end
 
       # Modify the bootloader kernel parameters enabling the selected Linux Security Module

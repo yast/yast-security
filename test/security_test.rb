@@ -244,18 +244,18 @@ module Yast
       let(:requested_mode) { "enforcing" }
 
       before do
-        allow(subject.selinux).to receive(:save)
+        allow(subject.lsm_config.selinux).to receive(:save)
         subject.Settings["SELINUX_MODE"] = requested_mode
       end
 
       it "sets the SELinux mode" do
-        expect(subject.selinux).to receive(:mode=).with(requested_mode)
+        expect(subject.lsm_config.selinux).to receive(:mode=).with(requested_mode)
 
         subject.write_selinux
       end
 
       it "saves the selinux config" do
-        expect(subject.selinux).to receive(:save)
+        expect(subject.lsm_config.selinux).to receive(:save)
 
         subject.write_selinux
       end
@@ -645,17 +645,17 @@ module Yast
     end
 
     describe "#read_selinux_settings" do
-      let(:mode) { double("Y2Security::Selinux::Mode", id: :enforcing) }
+      let(:mode) { double("Y2Security::LSM::Selinux::Mode", id: :enforcing) }
       let(:configurable) { true }
 
       before do
-        allow(subject.selinux).to receive(:mode).and_return(mode)
-        allow(subject.selinux).to receive(:configurable?).and_return(configurable)
+        allow(subject.lsm_config.selinux).to receive(:mode).and_return(mode)
+        allow(subject.lsm_config.selinux).to receive(:configurable?).and_return(configurable)
       end
 
       context "when SELinux is configurable" do
         it "reads the selinux mode" do
-          expect(subject.selinux).to receive(:mode)
+          expect(subject.lsm_config.selinux).to receive(:mode)
 
           subject.read_selinux_settings
         end
@@ -673,7 +673,7 @@ module Yast
         let(:configurable) { false }
 
         it "does not read the selinux mode" do
-          expect(subject.selinux).to_not receive(:mode)
+          expect(subject.lsm_config.selinux).to_not receive(:mode)
 
           subject.read_selinux_settings
         end
@@ -758,7 +758,7 @@ module Yast
         Security.Settings["SYS_UID_MIN"] = 200
         Security.Settings["SYS_GID_MIN"] = 200
 
-        allow(subject.selinux).to receive(:needed_patterns).and_return(selinux_patterns)
+        allow(subject.lsm_config.selinux).to receive(:needed_patterns).and_return(selinux_patterns)
       end
 
       it "doest not touch current Settings if given settings are empty" do
@@ -771,7 +771,7 @@ module Yast
         expect(Yast::PackagesProposal).to receive(:SetResolvables)
           .with(anything, :pattern, selinux_patterns)
 
-        expect(Security.Import("SELINUX_MODE" => "permissive"))
+        expect(Security.Import("selinux_mode" => "permissive"))
       end
 
       context "when Settings keys exists in given settings" do

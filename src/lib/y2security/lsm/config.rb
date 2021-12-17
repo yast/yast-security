@@ -25,23 +25,34 @@ require "y2security/lsm/none"
 require "y2security/lsm/selinux"
 
 Yast.import "Stage"
+Yast.import "ProductFeatures"
 
 module Y2Security
   module LSM
     # This class allows to check and select one of the supported Linux Security Modules (LSM)
     class Config
       include Yast::Logger
+      include Singleton
+
       RUNNING_PATH = "/sys/kernel/security/lsm".freeze
       SUPPORTED = [None, Selinux, AppArmor].freeze
 
       # @return [AppArmor,Selinux, nil] selected module
       attr_accessor :selected
+      # @returb [Boolean] Whether LSM can be configured by the user or not
+      attr_accessor :configurable
 
-      # Constructor
-      #
-      # @param selected [Y2Security::LSM::Base]
-      def initialize(selected = nil)
-        @selected = selected
+      def initialize
+        supported.each { |m| self.class.send(:define_method, m.id) { m } }
+      end
+
+      # Select the LSM to be used based in the one defined in the control file using apparmor as
+      # fallback in case that no one is selected
+      def propose_default
+        log.info("The settings are #{product_feature_settings.inspect}")
+        selected = product_feature_settings.fetch(:default, "apparmor")
+
+        select(selected)
       end
 
       # Select the module with the given id when it is selectable.
@@ -53,18 +64,20 @@ module Y2Security
         @selected
       end
 
-      # Convenience method to obtain a list of the supported modules
-      #
-      # @return [Array<Y2Security::LSM::Base] array of supported LSMs
-      def supported
-        self.class.supported
-      end
-
       # Convenience method to obtain a list of the supported and selectable modules
       #
       # @return [Array<Y2Security::LSM::Base] array of supported and selectable LSMs
       def selectable
         supported.select(&:selectable?)
+      end
+
+      # Returns the needed patterns for the selected LSM or an empty array if no one is selected
+      #
+      # @return [Array<Sting>]
+      def needed_patterns
+        return [] unless selected
+
+        selected.needed_patterns
       end
 
       # Convenience method to save the configuration for the selected LSM
@@ -74,38 +87,65 @@ module Y2Security
         selected.save
       end
 
-      class << self
-        # Obtains the supported and active Linux Security Major Module from the running system
-        #
-        # @return [Y2Security::LSM::Base]
-        def from_system
-          active.first
-        end
+      # Obtains the supported and active Linux Security Major Module from the running system
+      #
+      # @return [Y2Security::LSM::Base]
+      def from_system
+        active.first
+      end
 
-        # Return an array with the supported and active Linux Security Major Modules
-        #
-        # @return [Array<Y2Security::LSM::Base>]
-        def active
-          return [] unless Yast::Stage.normal
+      # Return an array with the supported and active Linux Security Major Modules
+      #
+      # @return [Array<Y2Security::LSM::Base>]
+      def active
+        return [] unless Yast::Stage.normal
 
-          modules = Yast::SCR.Read(Yast.path(".target.string"), RUNNING_PATH)
-          modules.split(",").each_with_object([]) do |name, result|
-            supported_module = supported.find { |m| m.id.to_s == name }
-            result << supported_module if supported_module
-          end
+        modules = Yast::SCR.Read(Yast.path(".target.string"), RUNNING_PATH)
+        modules.split(",").each_with_object([]) do |name, result|
+          supported_module = supported.find { |m| m.id.to_s == name }
+          result << supported_module if supported_module
         end
+      end
 
-        # Obtains and memoize all the Linux Security Supported Modules
-        #
-        # @return [Array<Y2Security::LSM::Base>]
-        def supported
-          @supported ||= SUPPORTED.map(&:new)
-        end
+      # Returns whether the LSM is configurable during installation or not based in the control file
+      # declaration. It returns false in case it is WSL
+      #
+      # @return [Boolean] true if LSM is configurable during the installation; false otherwise
+      def configurable?
+        return @configurable unless @configurable.nil?
+        return false if Yast::Arch.is_wsl
 
-        # Resets the memoized configuration
-        def reset
-          @supported = nil
-        end
+        @configurable = product_feature_settings[:configurable] || false
+      end
+
+      # Returns the values for the LSM setting from the product features
+      #
+      # @return [Hash{Symbol => Object}] e.g., { default: :selinux, selinux: { "selectable" => true }}
+      #   a hash holding the LSM options defined in the control file;
+      #   an empty object if no settings are defined
+      def product_feature_settings
+        return @product_feature_settings unless @product_feature_settings.nil?
+
+        settings = Yast::ProductFeatures.GetFeature("globals", "lsm").dup
+        settings = {} if settings.empty?
+        settings.transform_keys!(&:to_sym)
+
+        @product_feature_settings = settings
+      end
+
+      # Obtains and memoize all the Linux Security Supported Modules
+      #
+      # @return [Array<Y2Security::LSM::Base>]
+      def supported
+        @supported ||= SUPPORTED.map(&:new)
+      end
+
+      # Resets the memoized configuration
+      def reset
+        @selected = nil
+        @supported = nil
+        @product_feature_settings = nil
+        @configurable = nil
       end
     end
   end
