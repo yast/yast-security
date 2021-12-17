@@ -22,7 +22,7 @@ require "y2security/autoinst_profile/lsm_section"
 
 module Y2Security
   module AutoinstProfile
-    # This class represents an AutoYaST <security> section although by now it only handle
+    # This class represents an AutoYaST <security> section although by now it only handles
     # LSM related attributes
     #
     # <security>
@@ -49,7 +49,7 @@ module Y2Security
       define_attr_accessors
 
       # @!attribute selinux_mode
-      #   @return [STRING]
+      #   @return [String] SELinux mode to be used
       #   @deprecated
       #
       # @!attribute lsm

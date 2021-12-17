@@ -55,7 +55,8 @@ module Yast
         allow(Service).to receive(:enabled?) do |service|
           service_names.include?(service)
         end
-        allow(Yast2::Systemd::Service).to receive(:all).and_return services_for(service_names, aliases)
+        allow(Yast2::Systemd::Service)
+          .to receive(:all).and_return services_for(service_names, aliases)
         Security.ReadServiceSettings
       end
 

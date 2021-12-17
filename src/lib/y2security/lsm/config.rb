@@ -120,7 +120,7 @@ module Y2Security
 
       # Returns the values for the LSM setting from the product features
       #
-      # @return [Hash{Symbol => Object}] e.g., { default: :selinux, selinux: { "selectable" => true }}
+      # @return [Hash{Symbol => Object}] e.g., { selinux: { "selectable" => true } }
       #   a hash holding the LSM options defined in the control file;
       #   an empty object if no settings are defined
       def product_feature_settings

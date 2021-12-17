@@ -116,7 +116,8 @@ describe Y2Security::LSM::Config do
 
   describe "#select" do
     it "selects the LSM for the given id" do
-      expect { subject.select(:apparmor) }.to change { subject.selected&.id }.from(nil).to(:apparmor)
+      expect { subject.select(:apparmor) }
+        .to change { subject.selected&.id }.from(nil).to(:apparmor)
     end
 
     context "when no LSM with the given id exists" do

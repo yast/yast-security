@@ -102,8 +102,8 @@ module Y2Security
       # @note a #{save} call is needed to make it the SELinux mode starting with the next boot.
       #
       # @return [Selinux::Mode] the current set mode, which initially can be the {#proposed_mode},
-      # {#boot_mode} or the {#configured_mode} as applicable. A {#save} call is needed to make it the
-      # for the next boot.
+      # {#boot_mode} or the {#configured_mode} as applicable. A {#save} call is needed to make it
+      # the for the next boot.
       def mode
         @mode ||= make_proposal || boot_mode || configured_mode || Mode.find(:permissive)
       end
@@ -134,9 +134,9 @@ module Y2Security
       #
       # @see #options_from_kernel_params
       #
-      # @return [Mode,nil] the selected mode through boot kernel params or nil if SELinux is enabled
-      #   but there is not enough information to guess the mode because it will depend on the SELINUX
-      #   value in the configuration file (see {#configured_mode} and {#mode}).
+      # @return [Mode,nil] the selected mode through boot kernel params or nil if SELinux is
+      #   enabled but there is not enough information to guess the mode because it will depend on
+      #   the SELinux value in the configuration file (see {#configured_mode} and {#mode}).
       def boot_mode
         options = options_from_kernel_params
         selinux_module = [options["security"], options["lsm"]].include?("selinux")
@@ -149,8 +149,8 @@ module Y2Security
         enforcing_mode = options["enforcing"]&.to_i
         return if enforcing_mode.nil? || enforcing_mode < 0
 
-        # enforcing=0 means that "permissive" mode will be used, despite the SELINUX value used in the
-        # configuration file.
+        # enforcing=0 means that "permissive" mode will be used, despite the SELINUX value used in
+        # the configuration file.
         (enforcing_mode > 0) ? Mode.find(:enforcing) : Mode.find(:permissive)
       end
 
@@ -190,9 +190,9 @@ module Y2Security
       #
       # Setting both, the boot kernel parameters and the SELinux configuration file
       #
-      # @note it does not write the Bootloader changes when running in installation mode, where only
-      #   sets the kernel params in memory since Yast::Bootloader.Write will be performed at the end of
-      #   installation.
+      # @note it does not write the Bootloader changes when running in installation mode, where
+      #   only sets the kernel params in memory since Yast::Bootloader.Write will be performed at
+      #   the end of installation.
       #
       # @see #configurable?
       # @see Yast::Bootloader#modify_kernel_params
@@ -407,15 +407,15 @@ module Y2Security
 
         # All known SELinux modes
         #
-        # This is _the main_ or _base_ configuration for known SELinux modes. However, note that, for
-        # example, a permissive mode could be set by just setting the "security" module; i.e.,
-        # "security=selinux" means "enable SELinux using the permissive mode". Or even setting
-        # the enforcing param to a value equal or less than 0; i.e., "security=selinux enforcing=0".
+        # This is _the main_ or _base_ configuration for known SELinux modes. However, note that,
+        # for example, a permissive mode could be set by just setting the "security" module; i.e.,
+        # "security=selinux" means "enable SELinux using the permissive mode". Or even setting the
+        # enforcing param to a value equal or less than 0; i.e., "security=selinux enforcing=0".
         #
         # Additionally, removing the "security" from the kernel params does not mean to use none
-        # security module. Instead, it just fallback to the kernel configuration at the compile time,
-        # which in SUSE is to use AppArmor according to the CONFIG_LSM variable. So, it could be said
-        # that dropping all mode param to disabling SELinux is safe enough.
+        # security module. Instead, it just fallback to the kernel configuration at the compile
+        # time, which in SUSE is to use AppArmor according to the CONFIG_LSM variable. So, it
+        # could be said that dropping all mode param to disabling SELinux is safe enough.
         #
         # To know more, please visit the LSM Usage documentation at
         # https://www.kernel.org/doc/html/latest/admin-guide/LSM/index.html
