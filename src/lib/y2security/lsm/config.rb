@@ -50,7 +50,7 @@ module Y2Security
       # fallback in case that no one is selected
       def propose_default
         log.info("The settings are #{product_feature_settings.inspect}")
-        selected = product_feature_settings.fetch(:default, "apparmor")
+        selected = product_feature_settings.fetch(:select, "apparmor")
 
         select(selected)
       end
