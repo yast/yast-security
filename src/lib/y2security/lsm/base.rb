@@ -27,16 +27,19 @@ Yast.import "Bootloader"
 
 module Y2Security
   module LSM
-    # Base class for representing
+    # Base class for representing and Linux Security Module configuration
     class Base
       include Yast::Logger
       include Yast::I18n
 
+      # Constructor
       def initialize
         textdomain "security"
       end
 
+      # @return [Symbol] Linux Security module id
       abstract_method :id
+      # @return [String] Linux Security module label
       abstract_method :label
       # @return  [Hash{String=><String>}] options for selecting the LSM to be activated via kernel
       #   params
@@ -75,8 +78,8 @@ module Y2Security
 
       # Returns needed patterns defined in the product features
       #
-      # @return [Array<Sring>] collection of defined patterns in product features to have
-      #                        AppArmor working as expected
+      # @return [Array<Sring>] collection of defined patterns in product features to have the
+      #                        selected Linux Security Module working as expected
       def needed_patterns
         @needed_patterns ||= product_feature_settings[:patterns].to_s.split
       end
@@ -98,10 +101,9 @@ module Y2Security
       # Whether the Module can be selected to be activated
       #
       # @return [Boolean] false if running on Windows Subsystem for Linux (WSL);
-      #                   the value of 'configurable' LSM specific module settings in the control
+      #                   the value of 'selectable' LSM specific module settings in the control
       #                   file if running in initial stage (false if value is not present);
       #                   always true when running in an installed system
-
       def selectable?
         return @selectable unless @selectable.nil?
         return false if Yast::Arch.is_wsl
@@ -110,8 +112,11 @@ module Y2Security
         @selectable = product_feature_settings.fetch(:selectable, true)
       end
 
+      # Sets the needed patterns according to the given value
+      #
+      # @param value [String]
       def patterns=(value)
-        @needed_patterns = value ? value.split(",") : nil
+        @needed_patterns = value.split(",") if value
       end
 
       # Modify the bootloader kernel parameters enabling the selected Linux Security Module

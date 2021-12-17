@@ -21,7 +21,7 @@ require "installation/autoinst_profile/section_with_attributes"
 
 module Y2Security
   module AutoinstProfile
-    # This class represents an AutoYaST <selinux> section under <lsm>
+    # This class represents an AutoYaST <apparmor> section under <lsm>
     #
     # <apparmor>
     #   <configurable config:type="boolean">true</configurable>

@@ -26,7 +26,7 @@ module Y2Security
     # LSM related attributes
     #
     # <security>
-    #   <selinux_mode></selinux_mode> # Deprecated
+    #   <!-- <selinux_mode></selinux_mode> # Deprecated -->
     #   <lsm>
     #     <apparmor>
     #       <selectable config:type="boolean">false</selectable>
