@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Wed Dec 22 23:06:57 UTC 2021 - Knut Anderssen <kanderssen@suse.com>
+
+- Add support for selecting and configuring other Linux Security
+  Modules (jsc#SLE-22069)
+- 4.4.2
+
+-------------------------------------------------------------------
 Wed Jul 14 13:51:18 UTC 2021 - José Iván López González <jlopez@suse.com>
 
 - Add Security#SafeRead to allow detecting read errors when calling
