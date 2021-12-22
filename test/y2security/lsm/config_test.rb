@@ -26,7 +26,7 @@ describe Y2Security::LSM::Config do
   let(:globals_section) { { "globals" => { "lsm" => lsm_section } } }
   let(:lsm_section) do
     {
-      "default"      => "selinux",
+      "select"       => "selinux",
       "configurable" => lsm_configurable,
       "selinux"      => {
         "mode"         => selinux_mode,
@@ -37,7 +37,7 @@ describe Y2Security::LSM::Config do
     }
   end
 
-  let(:default) { "selinux" }
+  let(:select) { "selinux" }
   let(:lsm_configurable) { true }
   let(:selinux_mode) { "enforcing" }
   let(:selinux_configurable) { false }
@@ -135,6 +135,44 @@ describe Y2Security::LSM::Config do
     end
   end
 
+  describe "#read" do
+    let(:normal) { true }
+    let(:from_system) { subject.supported.find { |m| m.id == :selinux } }
+
+    before do
+      allow(Yast::Stage).to receive(:normal).and_return(normal)
+      allow(subject).to receive(:from_system).and_return(from_system)
+      allow(from_system).to receive(:read) if from_system
+    end
+
+    context "when called in running system" do
+      it "selects the active module" do
+        expect { subject.read }.to change { subject.selected&.id }.from(nil).to(:selinux)
+      end
+
+      it "reads the selected LSM config" do
+        expect(from_system).to receive(:read)
+        subject.read
+      end
+
+      context "and no module is selected" do
+        let(:from_system) { nil }
+
+        it "returns false" do
+          expect(subject.read).to eql(false)
+        end
+      end
+
+      context "when called not in the running system" do
+        let(:normal) { false }
+
+        it "returns false" do
+          expect(subject.read).to eql(false)
+        end
+      end
+    end
+  end
+
   describe "#save" do
     let(:selinux_selectable) { true }
     let(:selinux_mode) { "permissive" }
@@ -185,7 +223,7 @@ describe Y2Security::LSM::Config do
   describe "needed_patterns" do
     let(:lsm_section) do
       {
-        "default"  => "apparmor",
+        "select"   => "apparmor",
         "apparmor" => {
           "patterns" => "microos_apparmor"
         }

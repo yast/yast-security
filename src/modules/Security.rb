@@ -156,8 +156,7 @@ module Yast
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "no",
         "SMTPD_LISTEN_REMOTE"                       => "no",
         "MANDATORY_SERVICES"                        => "yes",
-        "EXTRA_SERVICES"                            => "no",
-        "SELINUX_MODE"                              => ""
+        "EXTRA_SERVICES"                            => "no"
       }
 
       @Settings.merge!(@display_manager.default_settings) if @display_manager
@@ -371,17 +370,8 @@ module Yast
       log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
-    # Sets the SELINUX_MODE setting
-    #
-    # @see Y2Security::Selinux
-    def read_selinux_settings
-      selinux = lsm_config.selinux
-      return unless lsm_config.selected&.id == :selinux
-      return unless selinux.configurable?
-
-      @Settings["SELINUX_MODE"] = selinux.mode.id.to_s
-
-      log.debug "SELINUX_MODE (after #{__callee__}): #{@Settings['SELINUX_MODE']}"
+    def read_lsm_config
+      lsm_config.read
     end
 
     def read_encryption_method
@@ -492,7 +482,7 @@ module Yast
 
       read_kernel_settings
 
-      read_selinux_settings
+      read_lsm_config
 
       # remember the read values
       @Settings_bak = deep_copy(@Settings)
@@ -570,12 +560,8 @@ module Yast
     # Set SELinux settings
     #
     # @return true on success
-    def write_selinux
-      selinux = lsm_config.selinux
-      return unless lsm_config.selected&.id == :selinux
-
-      selinux.mode = @Settings["SELINUX_MODE"]
-      selinux.save
+    def write_lsm_config
+      lsm_config.save
     end
 
     # Write settings related to PAM behavior
@@ -771,7 +757,7 @@ module Yast
       return false if Abort()
 
       Progress.NextStage
-      write_selinux
+      write_lsm_config
 
       return false if Abort()
 

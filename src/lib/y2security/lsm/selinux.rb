@@ -84,12 +84,25 @@ module Y2Security
     #   selinux.mode = :permissive
     #   selinux.save #=> false
     class Selinux < Base
+      # @see Base#id
       def id
         :selinux
       end
 
+      # @see Base#label
       def label
         _("SELinux")
+      end
+
+      # Forces the read of the SELinux mode
+      #
+      # @see Base#read
+      #
+      # @return [Boolean]
+      def read
+        mode
+
+        true
       end
 
       # The current set mode
@@ -178,6 +191,12 @@ module Y2Security
         @mode = found_mode
       end
 
+      # Returns the known keys for selection a specific Linux Security Module adding also the
+      # SELinux options for selecting a specific mode.
+      #
+      # @see Base#kernel_options
+      #
+      # @return [Array<String>]
       def kernel_options
         super + Mode.kernel_options
       end

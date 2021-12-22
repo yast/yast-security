@@ -89,6 +89,18 @@ describe Y2Security::LSM::Selinux do
     end
   end
 
+  describe "#read" do
+    it "forces a read of the current SELinux mode" do
+      expect(subject).to receive(:mode)
+
+      subject.read
+    end
+
+    it "returns true" do
+      expect(subject.read).to eql(true)
+    end
+  end
+
   describe "#mode" do
     let(:mode) { subject.mode }
 

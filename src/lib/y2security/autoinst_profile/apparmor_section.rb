@@ -44,12 +44,7 @@ module Y2Security
       # @!attribute selectable
       #   @return [Boolean]
       # @!attribute patterns
-      #   @return Array<String>
-      def initialize(*_args)
-        super
-
-        @patterns = []
-      end
+      #   @return [String]
     end
   end
 end

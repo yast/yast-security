@@ -54,14 +54,15 @@ module Y2Security
       KERNEL_OPTIONS = ["security", "lsm"].freeze
       private_constant :KERNEL_OPTIONS
 
-      # Returns all known keys for selecting a specific LSM via the kernel command line
+      # Returns all known keys for selecting a specific Linux Security Module via the kernel
+      # command line
       #
       # @return [Array<String>]
       def kernel_options
         KERNEL_OPTIONS + [id.to_s]
       end
 
-      # Returns the values for the LSM setting from the product features
+      # Returns the values for the Linux Security Module settings from the product features
       #
       # @return [Hash{Symbol => Object}] e.g., { selected: :selinux, selinux: SelinuxConfig.new }
       #   a hash holding the LSM options defined in the control file;
@@ -69,7 +70,7 @@ module Y2Security
       def product_feature_settings
         return @product_feature_settings unless @product_feature_settings.nil?
 
-        settings = (Yast::ProductFeatures.GetFeature("globals", "lsm") || {}).dup
+        settings = (Yast::ProductFeatures.GetFeature("globals", "lsm") || {})
         settings = settings.empty? ? {} : settings.fetch(id.to_s, {})
         settings.transform_keys!(&:to_sym)
 
@@ -117,6 +118,13 @@ module Y2Security
       # @param value [String]
       def patterns=(value)
         @needed_patterns = value.split(",") if value
+      end
+
+      # Reads the configuration for the selected Linux Security Module
+      #
+      # @return [Boolean] whether the configuration was read or not;
+      def read
+        true
       end
 
       # Modify the bootloader kernel parameters enabling the selected Linux Security Module

@@ -94,6 +94,20 @@ module Y2Security
         active.first
       end
 
+      # Reads which Linux Security module is active and its configuration if needed but only in a
+      # running system as during the installation there is no active module at all returning false
+      # in that case
+      #
+      # @return [Boolean] whether the configuration was read or not
+      def read
+        return false unless Yast::Stage.normal
+
+        @selected = from_system
+        return false unless @selected
+
+        @selected.read
+      end
+
       # Return an array with the supported and active Linux Security Major Modules
       #
       # @return [Array<Y2Security::LSM::Base>]
@@ -126,7 +140,7 @@ module Y2Security
       def product_feature_settings
         return @product_feature_settings unless @product_feature_settings.nil?
 
-        settings = Yast::ProductFeatures.GetFeature("globals", "lsm").dup
+        settings = Yast::ProductFeatures.GetFeature("globals", "lsm")
         settings = {} if settings.empty?
         settings.transform_keys!(&:to_sym)
 
