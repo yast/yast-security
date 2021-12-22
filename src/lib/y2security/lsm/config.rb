@@ -84,6 +84,7 @@ module Y2Security
       def save
         return false unless selected
 
+        supported.each(&:reset_kernel_params)
         selected.save
       end
 

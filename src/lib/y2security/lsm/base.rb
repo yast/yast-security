@@ -144,6 +144,11 @@ module Y2Security
         Yast::Bootloader.Write
       end
 
+      def reset_kernel_params
+        kernel_params = kernel_options.each_with_object({}) { |o, r| r[o] = :missing }
+        Yast::Bootloader.modify_kernel_params(kernel_params)
+      end
+
       # TODO: Add help per module
       def help
         ""

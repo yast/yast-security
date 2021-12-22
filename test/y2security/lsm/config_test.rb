@@ -173,24 +173,6 @@ describe Y2Security::LSM::Config do
     end
   end
 
-  describe "#save" do
-    let(:selinux_selectable) { true }
-    let(:selinux_mode) { "permissive" }
-
-    it "saves the selected LSM configuration" do
-      subject.select(:selinux)
-      expect(subject.selected).to receive(:save).and_return(true)
-      expect(subject.save).to eql(true)
-    end
-
-    context "when no LSM is selected" do
-      it "returns false" do
-        expect(subject.selected).to eq(nil)
-        expect(subject.save).to eql(false)
-      end
-    end
-  end
-
   describe "#propose_default" do
     it "selects the LSM to be used based on the control file" do
       expect { subject.propose_default }.to change { subject.selected&.id }.from(nil).to(:selinux)
@@ -241,10 +223,22 @@ describe Y2Security::LSM::Config do
   end
 
   describe "#save" do
+    before do
+      allow_any_instance_of(Y2Security::LSM::Base).to receive(:reset_kernel_params)
+    end
+
+    it "resets the kernel parameters of all supported modules" do
+      subject.propose_default
+      allow(subject.selected).to receive(:save)
+      subject.supported.each { |m| expect(m).to receive(:reset_kernel_params) }
+
+      subject.save
+    end
+
     it "saves the selected LSM configuration" do
       subject.propose_default
       expect(subject.selected).to receive(:save).and_return(true)
-      expect(subject.save).to eql(true)
+      subject.save
     end
 
     context "when no LSM is selected" do

@@ -710,7 +710,7 @@ module Yast
         Security.Settings["SYS_UID_MIN"] = 200
         Security.Settings["SYS_GID_MIN"] = 200
 
-        allow(subject.lsm_config.selinux).to receive(:needed_patterns).and_return(selinux_patterns)
+        Security.lsm_config.reset
       end
 
       it "doest not touch current Settings if given settings are empty" do
@@ -719,11 +719,15 @@ module Yast
         expect(Security.Settings).to eql(current)
       end
 
-      it "sets resolvables for needed SELinux patterns" do
-        expect(Yast::PackagesProposal).to receive(:SetResolvables)
-          .with(anything, :pattern, selinux_patterns)
-
-        expect(Security.Import("selinux_mode" => "permissive"))
+      context "when a LSM is selected" do
+        it "sets resolvables for needed patterns" do
+          allow_any_instance_of(Y2Security::LSM::Base).to receive(:needed_patterns)
+            .and_return(selinux_patterns)
+          expect(Yast::PackagesProposal).to receive(:SetResolvables)
+            .with(anything, :pattern, selinux_patterns)
+  
+          Security.Import("selinux_mode" => "permissive")
+        end
       end
 
       context "when Settings keys exists in given settings" do

@@ -35,28 +35,28 @@ module Y2Security
     #   mode = selinux.mode
     #   mode.id #=> :permissive
     #   mode.name #=> "Permisive"
-    #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => :missing }
+    #   mode.options ~=> { "lsm" => "selinux", "selinux" => "1", "enforcing" => :missing }
     #
     # @example Querying the currently running SELinux mode
     #   selinux= Selinux.new
     #   mode = selinux.running_mode
     #   mode.id #=> :enforcing
     #   mode.name #=> "Enforcing"
-    #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => "1" }
+    #   mode.options ~=> { "lsm" => "selinux", "selinux" => "1", "enforcing" => "1" }
     #
     # @example Querying the SELinux mode set in the config file
     #   selinux= Selinux.new
     #   mode = selinux.configured_mode
     #   mode.id #=> :permissive
     #   mode.name #=> "Permisive"
-    #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => :missing }
+    #   mode.options ~=> { "lsm" => "selinux", "selinux" => "1", "enforcing" => :missing }
     #
     # @example Querying the SELinux mode set by boot params
     #   selinux= Selinux.new
     #   mode = selinux.boot_mode
     #   mode.id #=> :enforcing
     #   mode.name #=> "Enforcing"
-    #   mode.options ~=> { "security" => "selinux", "selinux" => "1", "enforcing" => "1" }
+    #   mode.options ~=> { "lsm" => "selinux", "selinux" => "1", "enforcing" => "1" }
     #
     # @example Enabling SELinux in Permissive mode for next boot
     #   selinux = Selinux.new
@@ -152,10 +152,10 @@ module Y2Security
       #   the SELinux value in the configuration file (see {#configured_mode} and {#mode}).
       def boot_mode
         options = options_from_kernel_params
-        selinux_module = [options["security"], options["lsm"]].include?("selinux")
-        module_disabled = options["selinux"].to_i <= 0
+        return if options.empty?
 
-        return Mode.find(:disabled) if !selinux_module || module_disabled
+        disabled_mode = options.fetch("selinux", 1).to_i <= 0
+        return Mode.find(:disabled) if disabled_mode
 
         # enforcing missing or with a negative value means that SELinux mode will be determined
         # by the SELINUX value in the configuration file. "permissive" by default. See {#mode}
@@ -235,16 +235,6 @@ module Y2Security
         end
 
         true
-      end
-
-      # Returns needed patterns defined in the product features
-      #
-      # @return [Array<Sring>] collection of defined patterns in product features to have
-      #                        SELinux working as expected
-      def needed_patterns
-        return [] if mode.to_sym == :disabled
-
-        super
       end
 
     private
@@ -402,17 +392,17 @@ module Y2Security
         #
         # @param id [String, Symbol] id of the mode
         # @param name [String] the mode name, a string marked for translation
-        # @param enable [Boolean] whether the mode will enable SELinux
+        # @param disable [Boolean] whether the mode will be disabled or not
         # @param enforcing [Boolean] if SELinux should be run enforcing or not
-        def initialize(id, name, enable, enforcing)
+        def initialize(id, name, disable, enforcing)
           textdomain "security"
 
           @id = id.to_sym
           @name = name
           @options = {
-            "security"  => enable    ? "selinux" : :missing,
-            "selinux"   => enable    ? "1"       : :missing,
-            "enforcing" => enforcing ? "1"       : :missing
+            "lsm"       => "selinux",
+            "selinux"   => disable   ? "0" : :missing,
+            "enforcing" => enforcing ? "1" : :missing
           }
         end
 
@@ -427,12 +417,12 @@ module Y2Security
         # All known SELinux modes
         #
         # This is _the main_ or _base_ configuration for known SELinux modes. However, note that,
-        # for example, a permissive mode could be set by just setting the "security" module; i.e.,
-        # "security=selinux" means "enable SELinux using the permissive mode". Or even setting the
-        # enforcing param to a value equal or less than 0; i.e., "security=selinux enforcing=0".
+        # for example, a permissive mode could be set by just setting the Linux Security Module;
+        # i.e., "lsm=selinux" means "enable SELinux using the permissive mode". Or even setting the
+        # enforcing param to a value equal or less than 0; i.e., "lsm=selinux enforcing=0".
         #
-        # Additionally, removing the "security" from the kernel params does not mean to use none
-        # security module. Instead, it just fallback to the kernel configuration at the compile
+        # Additionally, removing the "lsm" from the kernel params does not mean to use none
+        # LSM module. Instead, it just fallback to the kernel configuration at the compile
         # time, which in SUSE is to use AppArmor according to the CONFIG_LSM variable. So, it
         # could be said that dropping all mode param to disabling SELinux is safe enough.
         #
@@ -440,9 +430,9 @@ module Y2Security
         # https://www.kernel.org/doc/html/latest/admin-guide/LSM/index.html
         # and/or grep for CONFIG_LSM in /boot/config-*
         ALL = [
-          new(:disabled,   N_("Disabled"),   false, false),
-          new(:permissive, N_("Permissive"), true,  false),
-          new(:enforcing,  N_("Enforcing"),  true,  true)
+          new(:disabled,   N_("Disabled"),   true,  false),
+          new(:permissive, N_("Permissive"), false, false),
+          new(:enforcing,  N_("Enforcing"),  false, true)
         ].freeze
         private_constant :ALL
 
