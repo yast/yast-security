@@ -39,7 +39,7 @@ module Y2Security
 
       # @return [None, AppArmor,Selinux, nil] selected module
       attr_accessor :selected
-      # @returb [Boolean] Whether LSM can be configured by the user or not
+      # @return [Boolean] Whether LSM can be configured by the user or not
       attr_accessor :configurable
 
       def initialize

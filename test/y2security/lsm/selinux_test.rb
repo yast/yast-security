@@ -56,6 +56,7 @@ describe Y2Security::LSM::Selinux do
   let(:permissive_mode) { Y2Security::LSM::Selinux::Mode.find(:permissive) }
   let(:enforcing_mode) { Y2Security::LSM::Selinux::Mode.find(:enforcing) }
 
+  let(:config_file) { double("CFA::Selinux", load: true, selinux: configured_mode) }
   let(:configured_mode) { enforcing_mode }
 
   let(:read_only_root_fs) { false }
@@ -75,6 +76,7 @@ describe Y2Security::LSM::Selinux do
     allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "lsm")
       .and_return(lsm_param)
     allow(subject).to receive(:read_only_root_fs?).and_return(read_only_root_fs)
+    allow(subject).to receive(:config_file).and_return(config_file)
   end
 
   describe "#id" do
@@ -176,7 +178,7 @@ describe Y2Security::LSM::Selinux do
           let(:selinux_mode) { "" }
 
           it "returns the mode set by the config file" do
-            expect(subject.mode).to eq(enforcing_mode)
+            expect(subject.mode).to eq(configured_mode)
           end
         end
 
@@ -203,10 +205,6 @@ describe Y2Security::LSM::Selinux do
 
   describe "#configured_mode" do
     let(:config_file) { double("CFA::Selinux", load: true, selinux: selinux_mode) }
-
-    before do
-      allow(subject).to receive(:config_file).and_return(config_file)
-    end
 
     context "when enforcing mode is configured" do
       let(:selinux_mode) { "enforcing" }
