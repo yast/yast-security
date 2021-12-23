@@ -37,7 +37,7 @@ module Y2Security
       RUNNING_PATH = "/sys/kernel/security/lsm".freeze
       SUPPORTED = [None, Selinux, AppArmor].freeze
 
-      # @return [AppArmor,Selinux, nil] selected module
+      # @return [None, AppArmor,Selinux, nil] selected module
       attr_accessor :selected
       # @returb [Boolean] Whether LSM can be configured by the user or not
       attr_accessor :configurable

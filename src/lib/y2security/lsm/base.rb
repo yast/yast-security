@@ -70,7 +70,7 @@ module Y2Security
       def product_feature_settings
         return @product_feature_settings unless @product_feature_settings.nil?
 
-        settings = (Yast::ProductFeatures.GetFeature("globals", "lsm") || {})
+        settings = Yast::ProductFeatures.GetFeature("globals", "lsm") || {}
         settings = settings.empty? ? {} : settings.fetch(id.to_s, {})
         settings.transform_keys!(&:to_sym)
 
@@ -129,9 +129,7 @@ module Y2Security
 
       # Modify the bootloader kernel parameters enabling the selected Linux Security Module
       #
-      # # @return [Boolean] true if running in installation where the selected LSM is configurable;
-      #                   false if running in installation where the selected LSM is not
-      #                   configurable;
+      # # @return [Boolean] true if running in installation
       #                   the Yast::Bootloader#Write return value otherwise
       def save
         log.info("Modifying Bootlooader kernel params using #{kernel_params}")
