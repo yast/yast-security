@@ -26,7 +26,7 @@ module Y2Security
     # <apparmor>
     #   <configurable config:type="boolean">true</configurable>
     #   <selectable config:type="boolean">true</selectable>
-    #   <patterns>selinux</patterns>
+    #   <patterns>apparmor</patterns>
     # </apparmor>
     class ApparmorSection < ::Installation::AutoinstProfile::SectionWithAttributes
       def self.attributes

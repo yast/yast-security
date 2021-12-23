@@ -37,20 +37,20 @@ module Y2Security
         textdomain "security"
       end
 
-      # @return [Symbol] Linux Security module id
+      # @return [Symbol] Linux Security Module id
       abstract_method :id
-      # @return [String] Linux Security module label
+      # @return [String] Linux Security Module label
       abstract_method :label
-      # @return  [Hash{String=><String>}] options for selecting the LSM to be activated via kernel
+      # @return  [Hash<String, String>] options for selecting the LSM to be activated via kernel
       #   params
       abstract_method :kernel_params
 
-      # @return [Boolean] whether the LSM can be select during the installation or not
+      # @return [Boolean] whether the LSM can be selected during the installation or not
       attr_accessor :selectable
       # @return [Boolean] whether the LSM can be configured during the installation or not
       attr_accessor :configurable
 
-      # Known keys for selecting a LSM via kernel command line
+      # Known keys for selecting a specific Linux Security Module via kernel command line
       KERNEL_OPTIONS = ["security", "lsm"].freeze
       private_constant :KERNEL_OPTIONS
 
@@ -129,7 +129,7 @@ module Y2Security
 
       # Modify the bootloader kernel parameters enabling the selected Linux Security Module
       #
-      # # @return [Boolean] true if running in installation
+      # @return [Boolean] true if running in installation
       #                   the Yast::Bootloader#Write return value otherwise
       def save
         log.info("Modifying Bootlooader kernel params using #{kernel_params}")
@@ -142,14 +142,15 @@ module Y2Security
         Yast::Bootloader.Write
       end
 
+      # Resets kernel params by setting all known {#kernel_options} to :missing value
+      #
+      # Useful for not having leftovers when changing from one LSM to another.
+      #
+      # @see Yast::Bootloader#modify_kernel_params
+      # @see Y2Security::LSM::Config#save
       def reset_kernel_params
         kernel_params = kernel_options.each_with_object({}) { |o, r| r[o] = :missing }
         Yast::Bootloader.modify_kernel_params(kernel_params)
-      end
-
-      # TODO: Add help per module
-      def help
-        ""
       end
     end
   end

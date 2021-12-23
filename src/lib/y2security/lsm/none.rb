@@ -28,18 +28,22 @@ module Y2Security
         textdomain "security"
       end
 
+      # @see Base#id
       def id
         :none
       end
 
+      # @see Base#label
       def label
         _("None")
       end
 
+      # @see Base#kernel_params
       def kernel_params
         { "lsm" => "" }
       end
 
+      # @see Base#kernel_options
       def kernel_options
         KERNEL_OPTIONS
       end

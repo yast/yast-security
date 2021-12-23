@@ -370,6 +370,7 @@ module Yast
       log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
+    # Reads the Linux Security Module configuration
     def read_lsm_config
       lsm_config.read
     end
@@ -557,9 +558,10 @@ module Yast
       shadow_config.save
     end
 
-    # Set SELinux settings
+    # Writes the current Linux Security Module Configuration
     #
-    # @return true on success
+    # @see Y2Security:.LSM::Config#save
+    # @return [Boolean] whether the configuration was saved or not
     def write_lsm_config
       lsm_config.save
     end
@@ -887,6 +889,9 @@ module Yast
       DEFAULT_ENCRYPT_METHOD
     end
 
+    # Convenience method to obtain a Linux Security Module Config instance
+    #
+    # @return [Y2Security::LSM::Config]
     def lsm_config
       Y2Security::LSM::Config.instance
     end
@@ -919,6 +924,10 @@ module Yast
 
     protected
 
+    # It sets the LSM configuration according to the one provided in the profile and ensures
+    # needed patterns for the selected LSM
+    #
+    # @param settings [Hash] profile security settings to be imported.
     def import_lsm_config(settings)
       section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
       Y2Security::Autoinst::LSMConfigReader.new(section.lsm).read

@@ -35,9 +35,11 @@ module Y2Security
       include Singleton
 
       RUNNING_PATH = "/sys/kernel/security/lsm".freeze
+      private_constant :RUNNING_PATH
       SUPPORTED = [None, Selinux, AppArmor].freeze
+      private_constant :SUPPORTED
 
-      # @return [None, AppArmor,Selinux, nil] selected module
+      # @return [None, AppArmor,Selinux, nil] selected module if any or nil otherwise
       attr_accessor :selected
       # @return [Boolean] Whether LSM can be configured by the user or not
       attr_accessor :configurable
@@ -66,7 +68,7 @@ module Y2Security
 
       # Convenience method to obtain a list of the supported and selectable modules
       #
-      # @return [Array<Y2Security::LSM::Base] array of supported and selectable LSMs
+      # @return [Array<Y2Security::LSM::Base>] array of supported and selectable LSMs
       def selectable
         supported.select(&:selectable?)
       end
@@ -81,6 +83,12 @@ module Y2Security
       end
 
       # Convenience method to save the configuration for the selected LSM
+      #
+      # @note: all LSM kernel options are reset before save the selected one.
+      #   See {Y2Security::LSM::Base#reset_kernel_params}
+      #
+      # @return [Boolean] true if a module is selected and its config is successfully saved;
+      #   false otherwise
       def save
         return false unless selected
 
@@ -95,11 +103,12 @@ module Y2Security
         active.first
       end
 
-      # Reads which Linux Security module is active and its configuration if needed but only in a
-      # running system as during the installation there is no active module at all returning false
-      # in that case
+      # In a running system it reads which Linux Security Module is active and its configuration
       #
-      # @return [Boolean] whether the configuration was read or not
+      # @note: during the installation there is **no** active LSM
+      #
+      # @return [Boolean] false during installation;
+      #                   whether the configuration was read or not otherwise.
       def read
         return false unless Yast::Stage.normal
 
@@ -125,7 +134,8 @@ module Y2Security
       # Returns whether the LSM is configurable during installation or not based in the control file
       # declaration. It returns false in case it is WSL
       #
-      # @return [Boolean] true if LSM is configurable during the installation; false otherwise
+      # @return [Boolean] false when running in a WSL
+      #                   whether LSM is configurable during the installation or not
       def configurable?
         return @configurable unless @configurable.nil?
         return false if Yast::Arch.is_wsl

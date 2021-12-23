@@ -719,7 +719,7 @@ module Yast
         expect(Security.Settings).to eql(current)
       end
 
-      context "when a LSM is selected" do
+      context "when a specific Linux Security Module is selected" do
         it "sets resolvables for needed patterns" do
           allow_any_instance_of(Y2Security::LSM::Base).to receive(:needed_patterns)
             .and_return(selinux_patterns)

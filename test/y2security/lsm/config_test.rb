@@ -162,13 +162,13 @@ describe Y2Security::LSM::Config do
           expect(subject.read).to eql(false)
         end
       end
+    end
 
-      context "when called not in the running system" do
-        let(:normal) { false }
+    context "when not called in a running system" do
+      let(:normal) { false }
 
-        it "returns false" do
-          expect(subject.read).to eql(false)
-        end
+      it "returns false" do
+        expect(subject.read).to eql(false)
       end
     end
   end

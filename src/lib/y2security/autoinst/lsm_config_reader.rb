@@ -25,14 +25,14 @@ module Y2Security
     # This class is responsible of reading the Linux Security Module configuration declared in
     # the AutoYaST profile
     class LSMConfigReader
-      # @return [AutoinstProfile::SecuritySection]
+      # @return [AutoinstProfile::LSMSection]
       attr_reader :section
       # @return [AutoinstProfile::SelinuxSection, AutoinstProfile::ApparmorSection, nil]
       attr_reader :module_section
 
       # Constructor
       #
-      # @param section [AutoinstProfile::LSM::LsmSection]
+      # @param section [AutoinstProfile::LSMSection]
       def initialize(section)
         @section = section
       end
@@ -64,7 +64,7 @@ module Y2Security
 
       def assign(lsm_module, option)
         value = module_section.public_send(option)
-        lsm_module.public_send("#{option}=", value)
+        lsm_module.public_send("#{option}=", value) unless value.nil?
       end
 
       def config

@@ -28,14 +28,17 @@ module Y2Security
         textdomain "security"
       end
 
+      # @see Base#id
       def id
         :apparmor
       end
 
+      # @see Base#label
       def label
         _("AppArmor")
       end
 
+      # @see Base#kernel_params
       def kernel_params
         { "lsm" => "apparmor" }
       end

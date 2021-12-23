@@ -201,6 +201,7 @@ module Y2Security
         super + Mode.kernel_options
       end
 
+      # @see Base#kernel_params
       def kernel_params
         mode.options
       end
