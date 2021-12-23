@@ -61,7 +61,7 @@ module Y2Security
         super
 
         @selinux = SelinuxSection.new_from_hashes(hash["selinux"], self) if hash["selinux"]
-        @apparmor = AppArmorSection.new_from_hashes(hash["selinux"], self) if hash["apparmor"]
+        @apparmor = ApparmorSection.new_from_hashes(hash["selinux"], self) if hash["apparmor"]
 
         nil
       end

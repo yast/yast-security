@@ -795,6 +795,8 @@ module Yast
         settings["PASSWD_USE_PWQUALITY"] = settings.delete("PASSWD_USE_CRACKLIB")
       end
 
+      settings["lsm"] = settings.delete("LSM") if settings.key?("LSM")
+
       import_lsm_config(settings)
 
       return true if settings == {}
