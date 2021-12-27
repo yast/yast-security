@@ -18,10 +18,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper"
-require "y2security/selinux"
+require_relative "../../test_helper"
+require "y2security/lsm/selinux"
 
-describe Y2Security::Selinux do
+describe Y2Security::LSM::Selinux do
   subject { described_class.new }
 
   let(:installation_mode) { false }
@@ -29,10 +29,13 @@ describe Y2Security::Selinux do
   let(:product_features) do
     {
       "globals" => {
-        "selinux" => {
-          "mode"         => selinux_mode,
-          "configurable" => selinux_configurable,
-          "patterns"     => selinux_patterns
+        "lsm" => {
+          "default" => "selinux",
+          "selinux" => {
+            "mode"         => selinux_mode,
+            "configurable" => selinux_configurable,
+            "patterns"     => selinux_patterns
+          }
         }
       }
     }
@@ -47,11 +50,13 @@ describe Y2Security::Selinux do
   let(:security_param)  { :missing }
   let(:selinux_param)   { :missing }
   let(:enforcing_param) { :missing }
+  let(:lsm_param)       { :missing }
 
-  let(:disabled_mode) { Y2Security::Selinux::Mode.find(:disabled) }
-  let(:permissive_mode) { Y2Security::Selinux::Mode.find(:permissive) }
-  let(:enforcing_mode) { Y2Security::Selinux::Mode.find(:enforcing) }
+  let(:disabled_mode) { Y2Security::LSM::Selinux::Mode.find(:disabled) }
+  let(:permissive_mode) { Y2Security::LSM::Selinux::Mode.find(:permissive) }
+  let(:enforcing_mode) { Y2Security::LSM::Selinux::Mode.find(:enforcing) }
 
+  let(:config_file) { double("CFA::Selinux", load: true, selinux: configured_mode) }
   let(:configured_mode) { enforcing_mode }
 
   let(:read_only_root_fs) { false }
@@ -68,7 +73,34 @@ describe Y2Security::Selinux do
       .and_return(selinux_param)
     allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "enforcing")
       .and_return(enforcing_param)
+    allow(Yast::Bootloader).to receive(:kernel_param).with(:common, "lsm")
+      .and_return(lsm_param)
     allow(subject).to receive(:read_only_root_fs?).and_return(read_only_root_fs)
+    allow(subject).to receive(:config_file).and_return(config_file)
+  end
+
+  describe "#id" do
+    it "returns :selinux" do
+      expect(subject.id).to eql(:selinux)
+    end
+  end
+
+  describe "#label" do
+    it "returns 'SELinux'" do
+      expect(subject.label).to eql("SELinux")
+    end
+  end
+
+  describe "#read" do
+    it "forces a read of the current SELinux mode" do
+      expect(subject).to receive(:mode)
+
+      subject.read
+    end
+
+    it "returns true" do
+      expect(subject.read).to eql(true)
+    end
   end
 
   describe "#mode" do
@@ -90,7 +122,7 @@ describe Y2Security::Selinux do
           allow(subject).to receive(:configured_mode).and_return(configured_mode)
         end
 
-        context "with selinux enabled" do
+        context "with selinux enabled through boot param" do
           let(:security_param) { "selinux" }
           let(:selinux_param) { "1" }
 
@@ -145,8 +177,8 @@ describe Y2Security::Selinux do
         context "when globals => selinux => mode feature is not set" do
           let(:selinux_mode) { "" }
 
-          it "returns the :disabled mode" do
-            expect(mode.id).to eq(:disabled)
+          it "returns the mode set by the config file" do
+            expect(subject.mode).to eq(configured_mode)
           end
         end
 
@@ -162,8 +194,8 @@ describe Y2Security::Selinux do
           context "but contains a not valid mode" do
             let(:selinux_mode) { "enforced" }
 
-            it "returns the :disabled mode" do
-              expect(mode.id).to eq(:disabled)
+            it "returns the mode set by the config file" do
+              expect(subject.mode).to eq(enforcing_mode)
             end
           end
         end
@@ -173,10 +205,6 @@ describe Y2Security::Selinux do
 
   describe "#configured_mode" do
     let(:config_file) { double("CFA::Selinux", load: true, selinux: selinux_mode) }
-
-    before do
-      allow(subject).to receive(:config_file).and_return(config_file)
-    end
 
     context "when enforcing mode is configured" do
       let(:selinux_mode) { "enforcing" }
@@ -216,7 +244,7 @@ describe Y2Security::Selinux do
       end
 
       it "it returns the running Selinux::Mode" do
-        expect(subject.running_mode).to be_a(Y2Security::Selinux::Mode)
+        expect(subject.running_mode).to be_a(Y2Security::LSM::Selinux::Mode)
         expect(subject.running_mode.id).to eq(:enforcing)
       end
     end
@@ -239,18 +267,31 @@ describe Y2Security::Selinux do
     end
   end
 
+  describe "#reset_kernel_params" do
+    before do
+      allow(Yast::Bootloader).to receive(:modify_kernel_params)
+    end
+
+    it "resets the kernel params it knows" do
+      expect(Yast::Bootloader).to receive(:modify_kernel_params)
+        .with("lsm" => :missing, "security" => :missing,
+                "enforcing" => :missing, "selinux" => :missing)
+      subject.reset_kernel_params
+    end
+  end
+
   describe "#boot_mode" do
-    context "when security boot param is not set" do
-      it "returns the disabled mode" do
-        expect(subject.boot_mode).to eq(disabled_mode)
+    context "when security or lsm boot param are not set" do
+      it "returns nil" do
+        expect(subject.boot_mode).to eq(nil)
       end
     end
 
     context "when security boot param is not selinux" do
       let(:security_param) { "smack" }
 
-      it "returns the disabled mode" do
-        expect(subject.boot_mode).to eq(disabled_mode)
+      it "returns nil" do
+        expect(subject.boot_mode).to be_nil
       end
     end
 
@@ -356,7 +397,7 @@ describe Y2Security::Selinux do
 
   describe "#modes" do
     it "returns a collection of known SELinux modes" do
-      expect(subject.modes).to all(be_a(Y2Security::Selinux::Mode))
+      expect(subject.modes).to all(be_a(Y2Security::LSM::Selinux::Mode))
     end
 
     it "contains known mode ids" do
@@ -537,14 +578,6 @@ describe Y2Security::Selinux do
       it "returns an array holding defined patterns" do
         expect(subject.needed_patterns).to eq(["one-pattern", "another-pattern"])
       end
-
-      context "but selected Disabled SELinux mode" do
-        let(:mode) { disabled_mode }
-
-        it "returns an empty array" do
-          expect(subject.needed_patterns).to eq([])
-        end
-      end
     end
 
     context "when globals => selinux => patterns is not set" do
@@ -589,24 +622,16 @@ describe Y2Security::Selinux do
   end
 end
 
-describe Y2Security::Selinux::Mode do
+describe Y2Security::LSM::Selinux::Mode do
   subject { described_class }
 
   describe ".all" do
     it "returns a collection of known modes" do
-      expect(subject.all).to all(be_an(Y2Security::Selinux::Mode))
+      expect(subject.all).to all(be_an(Y2Security::LSM::Selinux::Mode))
     end
   end
 
   describe ".kernel_options" do
-    it "includes 'security'" do
-      expect(subject.kernel_options).to include("security")
-    end
-
-    it "includes 'selinux'" do
-      expect(subject.kernel_options).to include("selinux")
-    end
-
     it "includes 'enforcing'" do
       expect(subject.kernel_options).to include("enforcing")
     end
@@ -619,7 +644,7 @@ describe Y2Security::Selinux::Mode do
       let(:mode_id) { "permissive" }
 
       it "returns the mode" do
-        expect(mode).to be_an(Y2Security::Selinux::Mode)
+        expect(mode).to be_an(Y2Security::LSM::Selinux::Mode)
         expect(mode.id).to eq(mode_id.to_sym)
       end
     end
@@ -653,7 +678,7 @@ describe Y2Security::Selinux::Mode do
     let(:mode) { described_class.find(:disabled) }
 
     it "returns the mode options" do
-      expect(mode.options).to a_hash_including("security", "selinux", "enforcing")
+      expect(mode.options).to a_hash_including("lsm", "selinux", "enforcing")
     end
   end
 end

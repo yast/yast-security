@@ -32,7 +32,7 @@ require "cfa/shadow_config"
 require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
-require "y2security/selinux"
+require "y2security/autoinst/lsm_config_reader"
 
 module Yast
   class SecurityClass < Module # rubocop:disable Metrics/ClassLength
@@ -156,8 +156,7 @@ module Yast
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => "no",
         "SMTPD_LISTEN_REMOTE"                       => "no",
         "MANDATORY_SERVICES"                        => "yes",
-        "EXTRA_SERVICES"                            => "no",
-        "SELINUX_MODE"                              => ""
+        "EXTRA_SERVICES"                            => "no"
       }
 
       @Settings.merge!(@display_manager.default_settings) if @display_manager
@@ -371,15 +370,9 @@ module Yast
       log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
-    # Sets the SELINUX_MODE setting
-    #
-    # @see Y2Security::Selinux
-    def read_selinux_settings
-      return unless selinux.configurable?
-
-      @Settings["SELINUX_MODE"] = selinux.mode.id.to_s
-
-      log.debug "SELINUX_MODE (after #{__callee__}): #{@Settings['SELINUX_MODE']}"
+    # Reads the Linux Security Module configuration
+    def read_lsm_config
+      lsm_config.read
     end
 
     def read_encryption_method
@@ -490,7 +483,7 @@ module Yast
 
       read_kernel_settings
 
-      read_selinux_settings
+      read_lsm_config
 
       # remember the read values
       @Settings_bak = deep_copy(@Settings)
@@ -565,12 +558,12 @@ module Yast
       shadow_config.save
     end
 
-    # Set SELinux settings
+    # Writes the current Linux Security Module Configuration
     #
-    # @return true on success
-    def write_selinux
-      selinux.mode = @Settings["SELINUX_MODE"]
-      selinux.save
+    # @see Y2Security:.LSM::Config#save
+    # @return [Boolean] whether the configuration was saved or not
+    def write_lsm_config
+      lsm_config.save
     end
 
     # Write settings related to PAM behavior
@@ -766,7 +759,7 @@ module Yast
       return false if Abort()
 
       Progress.NextStage
-      write_selinux
+      write_lsm_config
 
       return false if Abort()
 
@@ -804,7 +797,9 @@ module Yast
         settings["PASSWD_USE_PWQUALITY"] = settings.delete("PASSWD_USE_CRACKLIB")
       end
 
-      set_selinux_patterns # Checking needed packages
+      settings["lsm"] = settings.delete("LSM") if settings.key?("LSM")
+
+      import_lsm_config(settings)
 
       return true if settings == {}
 
@@ -894,6 +889,13 @@ module Yast
       DEFAULT_ENCRYPT_METHOD
     end
 
+    # Convenience method to obtain a Linux Security Module Config instance
+    #
+    # @return [Y2Security::LSM::Config]
+    def lsm_config
+      Y2Security::LSM::Config.instance
+    end
+
     publish :variable => :mandatory_services, :type => "const list <list <string>>"
     publish :variable => :optional_services, :type => "const list <string>"
     publish :function => :MissingMandatoryServices, :type => "list <list <string>> ()"
@@ -922,13 +924,15 @@ module Yast
 
     protected
 
-    # Ensures needed patterns for SELinux, if any, will be installed
-    def set_selinux_patterns
-      selinux.mode = @Settings["SELINUX_MODE"] unless @Settings["SELINUX_MODE"].to_s.empty?
+    # It sets the LSM configuration according to the one provided in the profile and ensures
+    # needed patterns for the selected LSM
+    #
+    # @param settings [Hash] profile security settings to be imported.
+    def import_lsm_config(settings)
+      section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
+      Y2Security::Autoinst::LSMConfigReader.new(section.lsm).read
 
-      # Please, keep the unique id synced with the one used in normal installation
-      # See https://github.com/yast/yast-installation/blob/7c19909e9700242209645cf12a4daffe1cd54194/src/lib/installation/clients/security_proposal.rb#L244-L247
-      PackagesProposal.SetResolvables("SELinux", :pattern, selinux.needed_patterns)
+      PackagesProposal.SetResolvables("LSM", :pattern, lsm_config.needed_patterns)
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases
@@ -999,13 +1003,6 @@ module Yast
     def shadow_config
       @shadow_config ||= CFA::ShadowConfig.load
     end
-  end
-
-  # Returns a SELinux configuration handler
-  #
-  # @return [Y2Security::Selinux] the SELinux config handler
-  def selinux
-    @selinux ||= Y2Security::Selinux.new
   end
 
   # Checks if the service is allowed (i.e. not considered 'extra')

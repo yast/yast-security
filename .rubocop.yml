@@ -200,7 +200,11 @@ Metrics/CyclomaticComplexity:
 # Configuration parameters: AutoCorrect, AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
 Metrics/LineLength:
-  Max: 587
+  Exclude:
+    - 'src/include/security/dialogs.rb'
+    - 'src/include/security/helps.rb'
+    - 'src/lib/y2security/autoinst_profile/security_section.rb'
+    - 'src/modules/Security.rb'
 
 # Offense count: 22
 # Configuration parameters: CountComments, ExcludedMethods.

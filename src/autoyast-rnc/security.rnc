@@ -127,4 +127,34 @@ y2_security =
   | sec_ip_forward
   | displaymanager_shutdown
   | passwd_remember_history
+  | lsm
 security = element security { MAP, y2_security* }
+
+configurable = element configurable  { BOOLEAN }
+selectable = element selectable  { BOOLEAN }
+
+lsm = element lsm { MAP,
+  (
+    lsm_select? &
+    configurable? &
+    selinux? &
+    apparmor?
+  )
+}
+
+lsm_select = element select { STRING }
+lsm_module =
+  configurable
+  | selectable
+  | element patterns { STRING }
+
+apparmor = element apparmor { MAP,
+  lsm_module*
+}
+
+selinux = element selinux { MAP,
+  (
+    lsm_module*
+    | element mode { STRING }?
+  )*
+}

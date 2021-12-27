@@ -55,7 +55,8 @@ module Yast
         allow(Service).to receive(:enabled?) do |service|
           service_names.include?(service)
         end
-        allow(Yast2::Systemd::Service).to receive(:all).and_return services_for(service_names, aliases)
+        allow(Yast2::Systemd::Service)
+          .to receive(:all).and_return services_for(service_names, aliases)
         Security.ReadServiceSettings
       end
 
@@ -111,7 +112,7 @@ module Yast
       it "writes and applies all the settings" do
         expect(Security).to receive(:write_to_locations)
         expect(Security).to receive(:write_shadow_config)
-        expect(Security).to receive(:write_selinux)
+        expect(Security).to receive(:write_lsm_config)
         expect(Security).to receive(:write_console_shutdown)
         expect(Security).to receive(:write_pam_settings)
         expect(Security).to receive(:write_polkit_settings)
@@ -240,24 +241,11 @@ module Yast
       end
     end
 
-    describe "#write_selinux" do
-      let(:requested_mode) { "enforcing" }
+    describe "#write_lsm_config" do
+      it "saves the LSM config" do
+        expect(subject.lsm_config).to receive(:save)
 
-      before do
-        allow(subject.selinux).to receive(:save)
-        subject.Settings["SELINUX_MODE"] = requested_mode
-      end
-
-      it "sets the SELinux mode" do
-        expect(subject.selinux).to receive(:mode=).with(requested_mode)
-
-        subject.write_selinux
-      end
-
-      it "saves the selinux config" do
-        expect(subject.selinux).to receive(:save)
-
-        subject.write_selinux
+        subject.write_lsm_config
       end
     end
 
@@ -644,47 +632,11 @@ module Yast
       end
     end
 
-    describe "#read_selinux_settings" do
-      let(:mode) { double("Y2Security::Selinux::Mode", id: :enforcing) }
-      let(:configurable) { true }
+    describe "#read_lsm_config" do
+      it "reads lsm configuration" do
+        expect(Security.lsm_config).to receive(:read)
 
-      before do
-        allow(subject.selinux).to receive(:mode).and_return(mode)
-        allow(subject.selinux).to receive(:configurable?).and_return(configurable)
-      end
-
-      context "when SELinux is configurable" do
-        it "reads the selinux mode" do
-          expect(subject.selinux).to receive(:mode)
-
-          subject.read_selinux_settings
-        end
-
-        it "sets the SELINUX_MODE setting" do
-          expect(Security.Settings["SELINUX_MODE"]).to eq("")
-
-          Security.read_selinux_settings
-
-          expect(Security.Settings["SELINUX_MODE"]).to eq(mode.id.to_s)
-        end
-      end
-
-      context "when SELinux is not configurable" do
-        let(:configurable) { false }
-
-        it "does not read the selinux mode" do
-          expect(subject.selinux).to_not receive(:mode)
-
-          subject.read_selinux_settings
-        end
-
-        it "does not set the SELINUX_MODE setting" do
-          expect(Security.Settings["SELINUX_MODE"]).to eq("")
-
-          Security.read_selinux_settings
-
-          expect(Security.Settings["SELINUX_MODE"]).to eq("")
-        end
+        Security.read_lsm_config
       end
     end
 
@@ -696,7 +648,7 @@ module Yast
         expect(Security).to receive(:read_pam_settings)
         expect(Security).to receive(:read_permissions)
         expect(Security).to receive(:read_polkit_settings)
-        expect(Security).to receive(:read_selinux_settings)
+        expect(Security).to receive(:read_lsm_config)
 
         expect(Security.Read).to eql(true)
       end
@@ -758,7 +710,7 @@ module Yast
         Security.Settings["SYS_UID_MIN"] = 200
         Security.Settings["SYS_GID_MIN"] = 200
 
-        allow(subject.selinux).to receive(:needed_patterns).and_return(selinux_patterns)
+        Security.lsm_config.reset
       end
 
       it "doest not touch current Settings if given settings are empty" do
@@ -767,11 +719,15 @@ module Yast
         expect(Security.Settings).to eql(current)
       end
 
-      it "sets resolvables for needed SELinux patterns" do
-        expect(Yast::PackagesProposal).to receive(:SetResolvables)
-          .with(anything, :pattern, selinux_patterns)
-
-        expect(Security.Import("SELINUX_MODE" => "permissive"))
+      context "when a specific Linux Security Module is selected" do
+        it "sets resolvables for needed patterns" do
+          allow_any_instance_of(Y2Security::LSM::Base).to receive(:needed_patterns)
+            .and_return(selinux_patterns)
+          expect(Yast::PackagesProposal).to receive(:SetResolvables)
+            .with(anything, :pattern, selinux_patterns)
+  
+          Security.Import("selinux_mode" => "permissive")
+        end
       end
 
       context "when Settings keys exists in given settings" do
