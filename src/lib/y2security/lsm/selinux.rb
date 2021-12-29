@@ -402,7 +402,7 @@ module Y2Security
           @name = name
           @options = {
             "lsm"       => "selinux",
-            "selinux"   => disable   ? "0" : :missing,
+            "selinux"   => disable   ? "0" : "1",
             "enforcing" => enforcing ? "1" : :missing
           }
         end
