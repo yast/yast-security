@@ -130,23 +130,29 @@ y2_security =
   | lsm
 security = element security { MAP, y2_security* }
 
-configurable = element configurable  { BOOLEAN }
-selectable = element selectable  { BOOLEAN }
+## Whether the module can be proposed/configured during installation
+lsm_configurable = element configurable  { BOOLEAN }
+## Whether the module can be selected during installation
+lsm_selectable = element selectable  { BOOLEAN }
+## Space-separated list of required/suggested patterns for the selected module
+lsm_patterns =  element patterns { text }
 
 lsm = element lsm { MAP,
   (
     lsm_select? &
-    configurable? &
+    lsm_configurable? &
+    lsm_selectable? &
     selinux? &
     apparmor?
   )
 }
 
-lsm_select = element select { STRING }
+# Linux Security Major Module to be activated after installation
+lsm_select = element select { "apparmor" | "selinux" | "none" }
 lsm_module =
-  configurable
-  | selectable
-  | element patterns { STRING }
+  lsm_configurable
+  | lsm_selectable
+  | lsm_patterns
 
 apparmor = element apparmor { MAP,
   lsm_module*
