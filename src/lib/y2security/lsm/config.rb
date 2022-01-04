@@ -51,6 +51,7 @@ module Y2Security
       # Select the LSM to be used based in the one defined in the control file using apparmor as
       # fallback in case that no one is selected
       def propose_default
+        return unless configurable?
         log.info("The settings are #{product_feature_settings.inspect}")
         selected = product_feature_settings.fetch(:select, "apparmor")
 
