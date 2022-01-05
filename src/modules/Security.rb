@@ -932,6 +932,8 @@ module Yast
       section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
       Y2Security::Autoinst::LSMConfigReader.new(section.lsm).read
 
+      return unless lsm_config.configurable?
+
       PackagesProposal.SetResolvables("LSM", :pattern, lsm_config.needed_patterns)
     end
 

@@ -720,13 +720,23 @@ module Yast
       end
 
       context "when a specific Linux Security Module is selected" do
-        it "sets resolvables for needed patterns" do
-          allow_any_instance_of(Y2Security::LSM::Base).to receive(:needed_patterns)
-            .and_return(selinux_patterns)
-          expect(Yast::PackagesProposal).to receive(:SetResolvables)
-            .with(anything, :pattern, selinux_patterns)
-  
-          Security.Import("selinux_mode" => "permissive")
+        context "and LSM is configurable" do
+          it "sets resolvables for needed patterns" do
+            allow_any_instance_of(Y2Security::LSM::Base).to receive(:needed_patterns)
+              .and_return(selinux_patterns)
+            expect(Yast::PackagesProposal).to receive(:SetResolvables)
+              .with(anything, :pattern, selinux_patterns)
+
+            Security.Import("selinux_mode" => "permissive")
+          end
+        end
+
+        context "and LSM is declared as no configurable" do
+          it "does not touch resolvables" do
+            expect(Yast::PackagesProposal).to_not receive(:SetResolvables)
+
+            Security.Import("lsm" => { "configurable" => false })
+          end
         end
       end
 

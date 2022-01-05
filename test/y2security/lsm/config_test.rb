@@ -174,16 +174,26 @@ describe Y2Security::LSM::Config do
   end
 
   describe "#propose_default" do
-    it "selects the LSM to be used based on the control file" do
-      expect { subject.propose_default }.to change { subject.selected&.id }.from(nil).to(:selinux)
+    context "when Linux Security module is declared as configurable in the control file" do
+      it "selects the LSM to be used based on the control file" do
+        expect { subject.propose_default }.to change { subject.selected&.id }.from(nil).to(:selinux)
+      end
+
+      context "when no default LSM is declared in the control file" do
+        let(:lsm_section) { { "configurable" => lsm_configurable } }
+
+        it "fallbacks to :apparmor" do
+          expect { subject.propose_default }
+            .to change { subject.selected&.id }.from(nil).to(:apparmor)
+        end
+      end
     end
 
-    context "when no default LSM is declared in the control file" do
-      let(:lsm_section) { { "configurable" => lsm_configurable } }
+    context "when Linux Security module is not declared as configurable in the control file" do
+      let(:lsm_configurable) { false }
 
-      it "fallbacks to :apparmor" do
-        expect { subject.propose_default }
-          .to change { subject.selected&.id }.from(nil).to(:apparmor)
+      it "does not select any module by default" do
+        expect { subject.propose_default }.to_not(change { subject.selected })
       end
     end
   end

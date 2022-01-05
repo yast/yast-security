@@ -51,6 +51,8 @@ module Y2Security
       # Select the LSM to be used based in the one defined in the control file using apparmor as
       # fallback in case that no one is selected
       def propose_default
+        return unless configurable?
+
         log.info("The settings are #{product_feature_settings.inspect}")
         selected = product_feature_settings.fetch(:select, "apparmor")
 
@@ -140,7 +142,7 @@ module Y2Security
         return @configurable unless @configurable.nil?
         return false if Yast::Arch.is_wsl
 
-        @configurable = product_feature_settings[:configurable] || false
+        @configurable = product_feature_settings.fetch(:configurable, true)
       end
 
       # Returns the values for the LSM setting from the product features
