@@ -401,7 +401,7 @@ module Y2Security
           @id = id.to_sym
           @name = name
           @options = {
-            "lsm"       => "selinux",
+            "security"  => "selinux",
             "selinux"   => disable   ? "0" : "1",
             "enforcing" => enforcing ? "1" : :missing
           }

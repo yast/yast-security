@@ -39,8 +39,8 @@ describe Y2Security::LSM::AppArmor do
       expect(subject.kernel_params).to be_a(Hash)
     end
 
-    it "includes the key 'lsm' with the 'apparmor' value" do
-      expect(subject.kernel_params).to include("lsm" => "apparmor")
+    it "includes the key 'security' with the 'apparmor' value" do
+      expect(subject.kernel_params).to include("security" => "apparmor")
     end
   end
 end

@@ -678,7 +678,7 @@ describe Y2Security::LSM::Selinux::Mode do
     let(:mode) { described_class.find(:disabled) }
 
     it "returns the mode options" do
-      expect(mode.options).to a_hash_including("lsm", "selinux", "enforcing")
+      expect(mode.options).to a_hash_including("security", "selinux", "enforcing")
     end
   end
 end
