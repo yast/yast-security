@@ -30,7 +30,7 @@
 # goes through the configuration and return the setting.
 # Does not do any changes to the configuration.
 
-require "y2security/selinux"
+require "y2security/lsm"
 
 # @param function to execute
 # @param map/list of security settings
@@ -86,7 +86,7 @@ module Yast
 
         # Checking value semantic
         if @param.key?("selinux_mode")
-          selinux_values = Y2Security::Selinux.new.modes.map { |m| m.id.to_s }
+          selinux_values = Y2Security::LSM::Selinux.new.modes.map { |m| m.id.to_s }
           if !selinux_values.include?(@param["selinux_mode"])
             Yast::AutoInstall.issues_list.add(
               :invalid_value,
