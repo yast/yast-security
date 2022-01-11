@@ -142,6 +142,7 @@ lsm = element lsm { MAP,
     lsm_select? &
     lsm_configurable? &
     lsm_selectable? &
+    none? &
     selinux? &
     apparmor?
   )
@@ -153,6 +154,10 @@ lsm_module =
   lsm_configurable
   | lsm_selectable
   | lsm_patterns
+
+none = element none { MAP,
+  lsm_selectable?
+}
 
 apparmor = element apparmor { MAP,
   lsm_module*
