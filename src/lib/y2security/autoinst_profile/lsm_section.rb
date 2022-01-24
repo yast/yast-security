@@ -30,6 +30,9 @@ module Y2Security
     #   <apparmor>
     #     <selectable config:type="boolean">false</selectable>
     #   </apparmor>
+    #   <none>
+    #     <selectable config:type="boolean">false</selectable>
+    #   </none>
     #   <selinux>
     #     <mode>permissive</mode>
     #     <configurable config:type="boolean">true</configurable>
@@ -42,7 +45,8 @@ module Y2Security
           { name: :select },
           { name: :configurable },
           { name: :selinux },
-          { name: :apparmor }
+          { name: :apparmor },
+          { name: :none }
         ]
       end
 
@@ -61,7 +65,8 @@ module Y2Security
         super
 
         @selinux = SelinuxSection.new_from_hashes(hash["selinux"], self) if hash["selinux"]
-        @apparmor = ApparmorSection.new_from_hashes(hash["selinux"], self) if hash["apparmor"]
+        @apparmor = ApparmorSection.new_from_hashes(hash["apparmor"], self) if hash["apparmor"]
+        @none = ApparmorSection.new_from_hashes(hash["none"], self) if hash["none"]
 
         nil
       end
