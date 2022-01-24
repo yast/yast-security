@@ -33,6 +33,14 @@ describe Y2Security::Autoinst::LSMConfigReader do
           "configurable" => false,
           "selectable"   => true,
           "patterns"     => "selinux_pattern"
+        },
+        "apparmor"     => {
+          "configurable" => true,
+          "selectable"   => false,
+          "patterns"     => "apparmor_pattern"
+        },
+        "none"         => {
+          "selectable" => false
         }
       }
     }
@@ -58,6 +66,15 @@ describe Y2Security::Autoinst::LSMConfigReader do
         expect(selinux.configurable).to eql(false)
         expect(selinux.selectable).to eql(true)
         expect(selinux.needed_patterns).to eql(["selinux_pattern"])
+
+        apparmor = lsm.apparmor
+
+        expect(apparmor.configurable).to eql(true)
+        expect(apparmor.selectable).to eql(false)
+        expect(apparmor.needed_patterns).to eql(["apparmor_pattern"])
+
+        none = lsm.none
+        expect(none.selectable).to eql(false)
       end
     end
   end

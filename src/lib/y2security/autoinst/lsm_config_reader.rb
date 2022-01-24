@@ -50,14 +50,16 @@ module Y2Security
     private
 
       def configure_supported_modules
-        [:selinux, :apparmor].each do |id|
+        [:selinux, :apparmor, :none].each do |id|
           lsm_module = config.public_send(id)
           @module_section = section.public_send(id)
           next unless module_section
 
           assign(lsm_module, :mode) if id == :selinux
-          assign(lsm_module, :configurable)
           assign(lsm_module, :selectable)
+          next if id == :none
+
+          assign(lsm_module, :configurable)
           assign(lsm_module, :patterns)
         end
       end
