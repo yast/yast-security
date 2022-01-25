@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Jan 25 15:43:01 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Use Package module instead of PackageSystem (bsc#1194886).
+- 4.4.9
+
+-------------------------------------------------------------------
 Mon Jan 24 09:45:55 UTC 2022 - Knut Anderssen <kanderssen@suse.com>
 
 - Related to jsc#SLE-22069:
