@@ -27,14 +27,14 @@ module Security
     include Yast::Logger
     Yast.import "SCR"
     Yast.import "Arch"
-    Yast.import "PackageSystem"
+    Yast.import "Package"
     Yast.import "FileUtils"
 
     SYSTEMD_FILE = "/etc/systemd/system/ctrl-alt-del.target"
 
     class << self
       def systemd?
-        Yast::PackageSystem.Installed("systemd")
+        Yast::Package.Installed("systemd")
       end
 
       def default
