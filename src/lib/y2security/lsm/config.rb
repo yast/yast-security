@@ -145,6 +145,16 @@ module Y2Security
         @configurable = product_feature_settings.fetch(:configurable, true)
       end
 
+      # Export AutoYaST LSM configuration
+      #
+      # @return [Hash<String, String]
+      def export
+        config = {}
+        config["lsm_select"] = selected&.id.to_s if selected
+        config["selinux_mode"] = selinux.mode.id.to_s if selected&.id == :selinux
+        config
+      end
+
       # Returns the values for the LSM setting from the product features
       #
       # @return [Hash{Symbol => Object}] e.g., { selinux: { "selectable" => true } }

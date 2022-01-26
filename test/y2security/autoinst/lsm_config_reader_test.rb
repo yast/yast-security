@@ -21,30 +21,9 @@ require_relative "../../test_helper"
 require "y2security/autoinst/lsm_config_reader"
 
 describe Y2Security::Autoinst::LSMConfigReader do
-  subject { described_class.new(section.lsm) }
+  subject { described_class.new(section) }
   let(:lsm) { Y2Security::LSM::Config.instance }
-  let(:profile) do
-    {
-      "lsm" => {
-        "select"       => "selinux",
-        "configurable" => true,
-        "selinux"      => {
-          "mode"         => "enforcing",
-          "configurable" => false,
-          "selectable"   => true,
-          "patterns"     => "selinux_pattern"
-        },
-        "apparmor"     => {
-          "configurable" => true,
-          "selectable"   => false,
-          "patterns"     => "apparmor_pattern"
-        },
-        "none"         => {
-          "selectable" => false
-        }
-      }
-    }
-  end
+  let(:profile) { { "lsm_select" => "apparmor" } }
   let(:section) { Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(profile) }
 
   before do
@@ -52,29 +31,22 @@ describe Y2Security::Autoinst::LSMConfigReader do
   end
 
   describe "#read" do
-    it "modifies the LSMConfig based on the lsm section" do
-      expect { subject.read }.to change { lsm.selected&.id }.from(nil).to(:selinux)
-        .and change { lsm.configurable }.from(nil).to(true)
+    context "when a LSM is selected" do
+      it "selects the desired LSM accordingly" do
+        expect { subject.read }.to change { lsm.selected&.id }.from(nil).to(:apparmor)
+      end
     end
 
-    context "when it contains a section for some of the supported modules" do
-      it "modifies the module internal configuration" do
+    context "when a LSM is not selected explicitly but selinux_mode is given" do
+      let(:profile) { { "selinux_mode" => "disabled" } }
+
+      it "selects SELinux as the desired LSM" do
+        expect { subject.read }.to change { lsm.selected&.id }.from(nil).to(:selinux)
+      end
+
+      it "sets the SELinux mode" do
         subject.read
-        selinux = lsm.selinux
-
-        expect(selinux.mode.id.to_s).to eql("enforcing")
-        expect(selinux.configurable).to eql(false)
-        expect(selinux.selectable).to eql(true)
-        expect(selinux.needed_patterns).to eql(["selinux_pattern"])
-
-        apparmor = lsm.apparmor
-
-        expect(apparmor.configurable).to eql(true)
-        expect(apparmor.selectable).to eql(false)
-        expect(apparmor.needed_patterns).to eql(["apparmor_pattern"])
-
-        none = lsm.none
-        expect(none.selectable).to eql(false)
+        expect(lsm.selinux.mode.id).to eql(:disabled)
       end
     end
   end

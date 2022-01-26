@@ -654,6 +654,19 @@ module Yast
       end
     end
 
+    describe "#Export" do
+      it "merges LSM settings" do
+        settings = Security.Export
+        expect(settings).to_not include("selinux_mode")
+        expect(settings).to_not include("lsm_select")
+        Security.lsm_config.selinux.mode = :permissive
+        Security.lsm_config.select("selinux")
+        settings = Security.Export
+        expect(settings["lsm_select"]).to eq("selinux")
+        expect(settings["selinux_mode"]).to eq("permissive")
+      end
+    end
+
     describe "#SafeRead" do
       it "reads settings" do
         expect(Security).to receive(:Read).and_return(true)
@@ -731,11 +744,12 @@ module Yast
           end
         end
 
-        context "and LSM is declared as no configurable" do
+        context "and LSM is declared in the control file as no configurable" do
           it "does not touch resolvables" do
+            Security.lsm_config.configurable = false
             expect(Yast::PackagesProposal).to_not receive(:SetResolvables)
 
-            Security.Import("lsm" => { "configurable" => false })
+            Security.Import("selinux_mode" => "permissive")
           end
         end
       end

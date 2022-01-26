@@ -18,21 +18,18 @@
 # find current contact information at www.suse.com.
 
 require "y2security/lsm/config"
-require "y2security/autoinst_profile"
+require "y2security/autoinst_profile/security_section"
 
 module Y2Security
   module Autoinst
     # This class is responsible of reading the Linux Security Module configuration declared in
     # the AutoYaST profile
     class LSMConfigReader
-      # @return [AutoinstProfile::LSMSection]
+      # @return [AutoinstProfile::SecuritySection]
       attr_reader :section
-      # @return [AutoinstProfile::SelinuxSection, AutoinstProfile::ApparmorSection, nil]
-      attr_reader :module_section
-
       # Constructor
       #
-      # @param section [AutoinstProfile::LSMSection]
+      # @param section [AutoinstProfile::SecuritySection]
       def initialize(section)
         @section = section
       end
@@ -40,33 +37,28 @@ module Y2Security
       # Reads the Linux Security Module configuration defined in the profile modifying it
       # accordingly
       def read
-        return unless section
+        return unless section.lsm_select || section.selinux_mode
 
-        config.configurable = section.configurable
-        config.select(section.select) if section.select
-        configure_supported_modules
+        select_module
+        configure_selinux if selinux?
       end
 
     private
 
-      def configure_supported_modules
-        [:selinux, :apparmor, :none].each do |id|
-          lsm_module = config.public_send(id)
-          @module_section = section.public_send(id)
-          next unless module_section
+      def selinux?
+        return true if section.lsm_select == "selinux"
+        return true if !section.lsm_select && section.selinux_mode
 
-          assign(lsm_module, :mode) if id == :selinux
-          assign(lsm_module, :selectable)
-          next if id == :none
-
-          assign(lsm_module, :configurable)
-          assign(lsm_module, :patterns)
-        end
+        false
       end
 
-      def assign(lsm_module, option)
-        value = module_section.public_send(option)
-        lsm_module.public_send("#{option}=", value) unless value.nil?
+      def configure_selinux
+        config.selinux.mode = section.selinux_mode
+      end
+
+      def select_module
+        selected = selinux? ? "selinux" : section.lsm_select
+        config.select(selected)
       end
 
       def config
