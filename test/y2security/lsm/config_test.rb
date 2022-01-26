@@ -273,7 +273,7 @@ describe Y2Security::LSM::Config do
       end
 
       context "and it is SELinux" do
-        it "exports the SELInux mode" do
+        it "also exports the SELInux mode" do
           subject.select("selinux")
           subject.selinux.mode = :enforcing
           settings = subject.export

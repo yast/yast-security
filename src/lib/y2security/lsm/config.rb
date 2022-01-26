@@ -147,10 +147,10 @@ module Y2Security
 
       # Export AutoYaST LSM configuration
       #
-      # @return [Hash<String, String]
+      # @return [Hash<String, String>]
       def export
         config = {}
-        config["lsm_select"] = selected&.id.to_s if selected
+        config["lsm_select"] = selected.id.to_s if selected
         config["selinux_mode"] = selinux.mode.id.to_s if selected&.id == :selinux
         config
       end

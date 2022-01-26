@@ -26,7 +26,7 @@ module Y2Security
     #
     # <security>
     #   <selinux_mode>enforcing</selinux_mode>
-    #   <lsm_select>apparmor</lsm_select>
+    #   <lsm_select>selinux</lsm_select>
     # </security>
     class SecuritySection < ::Installation::AutoinstProfile::SectionWithAttributes
       def self.attributes

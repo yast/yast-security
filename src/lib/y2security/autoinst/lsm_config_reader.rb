@@ -47,9 +47,8 @@ module Y2Security
 
       def selinux?
         return true if section.lsm_select == "selinux"
-        return true if !section.lsm_select && section.selinux_mode
 
-        false
+        !section.lsm_select && section.selinux_mode
       end
 
       def configure_selinux

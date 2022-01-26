@@ -22,14 +22,12 @@ require "y2security/autoinst_profile/security_section"
 
 describe Y2Security::AutoinstProfile::SecuritySection do
   describe ".new_from_hashes" do
-    context "when only 'selinux_mode' attribute is given" do
-      let(:profile) { { "selinux_mode" => "enforcing", "lsm_select" => "selinux" } }
+    let(:profile) { { "selinux_mode" => "enforcing", "lsm_select" => "selinux" } }
 
-      it "sets the supported attributes" do
-        section = described_class.new_from_hashes(profile)
-        expect(section.selinux_mode).to eql("enforcing")
-        expect(section.lsm_select).to eql("selinux")
-      end
+    it "sets the supported attributes" do
+      section = described_class.new_from_hashes(profile)
+      expect(section.selinux_mode).to eql("enforcing")
+      expect(section.lsm_select).to eql("selinux")
     end
   end
 end
