@@ -18,7 +18,6 @@
 # find current contact information at www.suse.com.
 
 require "installation/autoinst_profile/section_with_attributes"
-require "y2security/autoinst_profile/lsm_section"
 
 module Y2Security
   module AutoinstProfile
@@ -26,23 +25,14 @@ module Y2Security
     # LSM related attributes
     #
     # <security>
-    #   <!-- <selinux_mode></selinux_mode> # Deprecated -->
-    #   <lsm>
-    #     <apparmor>
-    #       <selectable config:type="boolean">false</selectable>
-    #     </apparmor>
-    #     <selinux>
-    #       <mode>permissive</mode>
-    #       <configurable config:type="boolean">true</configurable>
-    #       <patterns>selinux</patterns>
-    #     </selinux>
-    #   </lsm>
+    #   <selinux_mode>enforcing</selinux_mode>
+    #   <lsm_select>selinux</lsm_select>
     # </security>
     class SecuritySection < ::Installation::AutoinstProfile::SectionWithAttributes
       def self.attributes
         [
-          { name: :selinux_mode }, # Deprecated
-          { name: :lsm }
+          { name: :selinux_mode },
+          { name: :lsm_select }
         ]
       end
 
@@ -50,21 +40,9 @@ module Y2Security
 
       # @!attribute selinux_mode
       #   @return [String] SELinux mode to be used
-      #   @deprecated
-      #
-      # @!attribute lsm
-      #   @return [LSMSection]
-
-      def init_from_hashes(hash)
-        super
-
-        # backward compatible with option 'selinux_mode'
-        hash["lsm"] ||= { "select" => "selinux", "selinux" => { "mode" => @selinux_mode } } if @selinux_mode
-
-        @lsm = LSMSection.new_from_hashes(hash["lsm"], self) if hash["lsm"]
-
-        nil
-      end
+      # @!attribute lsm_select
+      #   @return [String] Major Linux Security Module to be used.
+      #     Possible values: apparmor, selinux, none
     end
   end
 end

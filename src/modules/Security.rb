@@ -797,7 +797,8 @@ module Yast
         settings["PASSWD_USE_PWQUALITY"] = settings.delete("PASSWD_USE_CRACKLIB")
       end
 
-      settings["lsm"] = settings.delete("LSM") if settings.key?("LSM")
+      settings["lsm_select"] = settings.delete("LSM_SELECT") if settings.key?("LSM_SELECT")
+      settings["selinux_mode"] = settings.delete("SELINUX_MODE") if settings.key?("SELINUX_MODE")
 
       import_lsm_config(settings)
 
@@ -844,7 +845,7 @@ module Yast
         settings["PASSWD_USE_CRACKLIB"] = settings.delete("PASSWD_USE_PWQUALITY")
       end
 
-      settings
+      settings.merge(lsm_config.export)
     end
 
     # Create a textual summary and a list of unconfigured cards
@@ -930,7 +931,7 @@ module Yast
     # @param settings [Hash] profile security settings to be imported.
     def import_lsm_config(settings)
       section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
-      Y2Security::Autoinst::LSMConfigReader.new(section.lsm).read
+      Y2Security::Autoinst::LSMConfigReader.new(section).read
 
       return unless lsm_config.configurable?
 

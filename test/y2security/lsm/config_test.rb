@@ -258,4 +258,29 @@ describe Y2Security::LSM::Config do
       end
     end
   end
+
+  describe "#export" do
+    context "when there is no LSM selected" do
+      it "returns an empty hash" do
+        expect(subject.export).to eql({})
+      end
+    end
+
+    context "when a LSM is selected" do
+      it "exports the selected LSM" do
+        subject.select("apparmor")
+        expect(subject.export).to eql("lsm_select" => "apparmor")
+      end
+
+      context "and it is SELinux" do
+        it "also exports the SELInux mode" do
+          subject.select("selinux")
+          subject.selinux.mode = :enforcing
+          settings = subject.export
+          expect(settings["lsm_select"]).to eql("selinux")
+          expect(settings["selinux_mode"]).to eql("enforcing")
+        end
+      end
+    end
+  end
 end

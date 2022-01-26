@@ -9,7 +9,9 @@ cwd_in_user_path = element cwd_in_user_path { STRING }
 disable_restart_on_update = element disable_restart_on_update { STRING }
 disable_stop_on_removal = element disable_stop_on_removal { STRING }
 extra_services = element extra_services { STRING }
-selinux_mode = element selinux_mode { STRING }
+selinux_mode = element selinux_mode { "permissive" | "enforcing" | "disabled" }
+# Major Linux Security Module to be activated after installation
+lsm_select = element lsm_select { "apparmor" | "selinux" | "none" }
 displaymanager_remote_access = element displaymanager_remote_access { STRING }
 displaymanager_root_login_remote = element displaymanager_root_login_remote { STRING }
 displaymanager_shutdown = element displaymanager_shutdown { STRING }
@@ -74,6 +76,7 @@ y2_security =
   | disable_stop_on_removal
   | extra_services
   | selinux_mode
+  | lsm_select
   | displaymanager_remote_access
   | displaymanager_root_login_remote
   | displaymanager_xserver_tcp_port_6000_open
@@ -127,45 +130,4 @@ y2_security =
   | sec_ip_forward
   | displaymanager_shutdown
   | passwd_remember_history
-  | lsm
 security = element security { MAP, y2_security* }
-
-## Whether the module can be proposed/configured during installation
-lsm_configurable = element configurable  { BOOLEAN }
-## Whether the module can be selected during installation
-lsm_selectable = element selectable  { BOOLEAN }
-## Space-separated list of required/suggested patterns for the selected module
-lsm_patterns =  element patterns { text }
-
-lsm = element lsm { MAP,
-  (
-    lsm_select? &
-    lsm_configurable? &
-    lsm_selectable? &
-    none? &
-    selinux? &
-    apparmor?
-  )
-}
-
-# Linux Security Major Module to be activated after installation
-lsm_select = element select { "apparmor" | "selinux" | "none" }
-lsm_module =
-  lsm_configurable
-  | lsm_selectable
-  | lsm_patterns
-
-none = element none { MAP,
-  lsm_selectable?
-}
-
-apparmor = element apparmor { MAP,
-  lsm_module*
-}
-
-selinux = element selinux { MAP,
-  (
-    lsm_module*
-    | element mode { STRING }?
-  )*
-}
