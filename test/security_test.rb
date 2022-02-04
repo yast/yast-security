@@ -655,6 +655,10 @@ module Yast
     end
 
     describe "#Export" do
+      before do
+        Security.lsm_config.reset
+      end
+
       it "merges LSM settings" do
         settings = Security.Export
         expect(settings).to_not include("selinux_mode")
