@@ -40,7 +40,7 @@ module Y2Security
 
       # @see Base#kernel_params
       def kernel_params
-        { "lsm" => "" }
+        { "security" => "" }
       end
 
       # @see Base#kernel_options
