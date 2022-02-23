@@ -123,7 +123,7 @@ describe Y2Security::LSM::Selinux do
         end
 
         context "with selinux enabled through boot param" do
-          let(:security_param) { "selinux" }
+          let(:lsm_param) { "integrity,selinux" }
           let(:selinux_param) { "1" }
 
           context "and enforcing boot param missing" do
@@ -438,7 +438,7 @@ describe Y2Security::LSM::Selinux do
       context "and SELinux can be configured" do
         it "modifies the bootloader kernel params" do
           expect(Yast::Bootloader).to receive(:modify_kernel_params)
-            .with(enforcing_mode.options)
+            .with({ "lsm" => "integrity,selinux" }.merge(enforcing_mode.options))
 
           subject.save
         end
@@ -524,7 +524,7 @@ describe Y2Security::LSM::Selinux do
     context "when running in an installed system" do
       it "modifies the bootloader kernel params" do
         expect(Yast::Bootloader).to receive(:modify_kernel_params)
-          .with(enforcing_mode.options)
+          .with({ "lsm" => "integrity,selinux" }.merge(enforcing_mode.options))
 
         subject.save
       end
@@ -678,7 +678,7 @@ describe Y2Security::LSM::Selinux::Mode do
     let(:mode) { described_class.find(:disabled) }
 
     it "returns the mode options" do
-      expect(mode.options).to a_hash_including("security", "selinux", "enforcing")
+      expect(mode.options).to a_hash_including("selinux", "enforcing")
     end
   end
 end

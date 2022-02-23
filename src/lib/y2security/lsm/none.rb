@@ -40,7 +40,7 @@ module Y2Security
 
       # @see Base#kernel_params
       def kernel_params
-        { "security" => "" }
+        { "lsm" => MINOR_MODULES.join(",") }
       end
 
       # @see Base#kernel_options

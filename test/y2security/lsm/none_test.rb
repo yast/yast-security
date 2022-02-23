@@ -39,8 +39,8 @@ describe Y2Security::LSM::None do
       expect(subject.kernel_params).to be_a(Hash)
     end
 
-    it "includes the key 'security' with an empty string as the value" do
-      expect(subject.kernel_params).to include("security" => "")
+    it "includes the key 'lsm' with all known minor modules string as the value" do
+      expect(subject.kernel_params).to include("lsm" => "integrity")
     end
   end
 

@@ -37,13 +37,12 @@ module Y2Security
         textdomain "security"
       end
 
+      MINOR_MODULES = ["integrity"].freeze
+
       # @return [Symbol] Linux Security Module id
       abstract_method :id
       # @return [String] Linux Security Module label
       abstract_method :label
-      # @return  [Hash<String, String>] options for selecting the LSM to be activated via kernel
-      #   params
-      abstract_method :kernel_params
 
       # @return [Boolean] whether the LSM can be selected during the installation or not
       attr_accessor :selectable
@@ -60,6 +59,12 @@ module Y2Security
       # @return [Array<String>]
       def kernel_options
         KERNEL_OPTIONS + [id.to_s]
+      end
+
+      # @return  [Hash<String, String>] options for selecting the LSM to be activated via kernel
+      #   params
+      def kernel_params
+        { "lsm" => (MINOR_MODULES + [id.to_s]).join(",") }
       end
 
       # Returns the values for the Linux Security Module settings from the product features

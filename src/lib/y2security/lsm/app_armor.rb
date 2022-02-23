@@ -37,11 +37,6 @@ module Y2Security
       def label
         _("AppArmor")
       end
-
-      # @see Base#kernel_params
-      def kernel_params
-        { "security" => "apparmor" }
-      end
     end
   end
 end

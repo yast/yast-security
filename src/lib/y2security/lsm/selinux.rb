@@ -203,7 +203,7 @@ module Y2Security
 
       # @see Base#kernel_params
       def kernel_params
-        mode.options
+        super.merge(mode.options)
       end
 
       # Set current mode for the next boot
@@ -401,7 +401,6 @@ module Y2Security
           @id = id.to_sym
           @name = name
           @options = {
-            "security"  => "selinux",
             "selinux"   => disable   ? "0" : "1",
             "enforcing" => enforcing ? "1" : :missing
           }
