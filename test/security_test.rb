@@ -311,7 +311,7 @@ module Yast
 
       context "when systemd is installed" do
         before do
-          allow(Package).to receive(:Installed).with("systemd") { true }
+          allow(Package).to receive(:Installed).with("systemd", target: :system) { true }
         end
 
         context "on a non s390 architecture" do
