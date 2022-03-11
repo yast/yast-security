@@ -1,7 +1,7 @@
 -------------------------------------------------------------------
 Fri Mar 11 13:13:09 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Always fheck for the package in the underlying system when
+- Always check for the package in the underlying system when
   trying to detect if running on systemd (bsc#1196963).
 - 4.4.13
 
