@@ -34,7 +34,7 @@ module Security
 
     class << self
       def systemd?
-        Yast::Package.Installed("systemd")
+        Yast::Package.Installed("systemd", target: :system)
       end
 
       def default
