@@ -1,5 +1,4 @@
-#!/usr/bin/env rspec
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -18,17 +17,30 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "y2security/autoinst_profile/security_section"
+require_relative "../test_helper"
+require "y2security/security_policy_validator"
+require "y2security/security_policy"
+require "y2security/stig_validator"
 
-describe Y2Security::AutoinstProfile::SecuritySection do
-  describe ".new_from_hashes" do
-    let(:profile) { { "selinux_mode" => "enforcing", "lsm_select" => "selinux" } }
+describe Y2Security::SecurityPolicyValidator do
+  let(:policy) { Y2Security::SecurityPolicy.find(:stig) }
 
-    it "sets the supported attributes" do
-      section = described_class.new_from_hashes(profile)
-      expect(section.selinux_mode).to eql("enforcing")
-      expect(section.lsm_select).to eql("selinux")
+  describe ".for" do
+    it "returns the validator for the given policy" do
+      validator = described_class.for(policy)
+      expect(validator).to be_a(Y2Security::StigValidator)
+    end
+  end
+
+  describe ".errors" do
+    it "returns an empty error" do
+      expect(subject.errors).to eq([])
+    end
+  end
+
+  describe ".valid?" do
+    it "returns true" do
+      expect(subject).to be_valid
     end
   end
 end

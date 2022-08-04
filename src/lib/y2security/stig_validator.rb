@@ -1,5 +1,4 @@
-#!/usr/bin/env rspec
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -18,17 +17,11 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../../test_helper"
-require "y2security/autoinst_profile/security_section"
+require "yast"
+require "y2security/security_policy_validator"
 
-describe Y2Security::AutoinstProfile::SecuritySection do
-  describe ".new_from_hashes" do
-    let(:profile) { { "selinux_mode" => "enforcing", "lsm_select" => "selinux" } }
-
-    it "sets the supported attributes" do
-      section = described_class.new_from_hashes(profile)
-      expect(section.selinux_mode).to eql("enforcing")
-      expect(section.lsm_select).to eql("selinux")
-    end
+module Y2Security
+  class StigValidator < SecurityPolicyValidator
+    include Yast::Logger
   end
 end
