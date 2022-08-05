@@ -19,9 +19,39 @@
 
 require "yast"
 require "y2security/security_policy_validator"
+require "y2security/security_policy_issues"
+require "y2network/connection_config/wireless"
+
+Yast.import "Lan"
 
 module Y2Security
+  # Validator for the STIG security policy
   class StigValidator < SecurityPolicyValidator
-    include Yast::Logger
+    # Returns the issues found for the given scope
+    #
+    # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
+    def issues(scope)
+      found_issues = send("#{scope}_issues")
+      SecurityPolicyIssues.new(found_issues)
+    end
+
+  private
+
+    def network_issues
+      return [] if Yast::Lan.yast_config.nil?
+
+      wireless = Yast::Lan.yast_config.connections.select do |conn|
+        conn.is_a?(Y2Network::ConnectionConfig::Wireless) &&
+          conn.startmode&.name != "off"
+      end
+      return [] if wireless.empty?
+
+      [
+        Y2Issues::Issue.new(
+          "No wireless connections are allowed", severity: :error,
+          location: Y2Issues::Location.new("proposal", "network")
+        )
+      ]
+    end
   end
 end
