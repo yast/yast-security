@@ -19,6 +19,7 @@
 #
 require "installation/proposal_client"
 require "y2security/security_policy"
+require "y2security/security_policy_issues"
 
 module Y2Security
   module Clients
@@ -94,13 +95,16 @@ module Y2Security
       end
 
       def warning_message
-        return nil if !stig_policy.enabled? || stig_policy.valid?
+        return nil unless stig_policy.enabled?
 
-        Yast::HTML.List(stig_policy.errors)
+        issues = stig_policy.issues
+        return nil if issues.empty?
+
+        Yast::HTML.List(issues.map(&:message))
       end
 
       def warning_level
-        :warning
+        :error
       end
 
       def stig_policy
