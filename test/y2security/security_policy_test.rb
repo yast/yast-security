@@ -21,7 +21,6 @@ require_relative "../test_helper"
 require "y2security/security_policy"
 
 describe Y2Security::SecurityPolicy do
-  before { described_class.reset }
   subject { described_class.new(:dummy, "Dummy Policy") }
 
   describe ".all" do

@@ -41,37 +41,11 @@ module Y2Security
         all.find { |a| a.id == id }
       end
 
-      # Enables a security policy
-      # 
-      # @fixme: perhaps policy could be a SecurityPolicy or a Symbol
-      #
-      # @param [SecurityPolicy] Security policy to enable
-      def enable(policy)
-        return if enabled.include?(policy)
-
-        enabled << policy
-      end
 
       # Returns the enabled policies
+      # @return [Array<SecurityPolicy>] List of enabled security policies
       def enabled
-        @enabled ||= []
-      end
-
-      # Returns whether the policy is enabled or not
-      def enabled?(policy)
-        enabled.include?(policy)
-      end
-
-      # Disables a security policy
-      #
-      # @param [SecurityPolicy] Security policy to disable
-      def disable(policy)
-        enabled.filter! { |p| p != policy }
-      end
-
-      # Disables all security policies
-      def reset
-        enabled.clear
+        all.select(&:enabled)
       end
     end
 
@@ -80,6 +54,7 @@ module Y2Security
     def initialize(id, name)
       @id = id
       @name = name
+      @enabled = false
     end
 
     # @fixme I am not sure about this API. We need a way (e.g., passing a 'force' argument, adding a
@@ -92,16 +67,21 @@ module Y2Security
       validator.errors
     end
 
+    # Enables the policy
     def enable
-      self.class.enable(self)
+      @enabled = true
     end
 
+    # Disables the policy
     def disable
-      self.class.disable(self)
+      @enabled = false
     end
 
+    # Determines whether the policy is enabled or not
+    #
+    # @return [Boolean] true if it is enabled; false otherwise
     def enabled?
-      self.class.enabled?(self)
+      @enabled
     end
 
   private
