@@ -31,6 +31,19 @@ describe Y2Security::SecurityPolicy do
     end
   end
 
+  describe ".enabled" do
+    let(:stig) { Y2Security::SecurityPolicy.find(:stig) }
+
+    it "returns the list of enabled policies" do
+      stig.enable
+      expect(described_class.enabled).to eq([stig])
+    end
+
+    after do
+      stig.disable
+    end
+  end
+
   describe "#validate" do
     let(:validator) do
       instance_double(Y2Security::SecurityPolicyValidator)

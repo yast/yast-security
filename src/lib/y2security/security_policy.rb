@@ -58,7 +58,7 @@ module Y2Security
       #
       # @return [Array<SecurityPolicy>] List of enabled security policies
       def enabled
-        all.select(&:enabled)
+        all.select(&:enabled?)
       end
     end
 
