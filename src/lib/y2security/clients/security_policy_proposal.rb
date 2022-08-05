@@ -62,7 +62,7 @@ module Y2Security
       end
 
       def preformatted_proposal
-        if stig_policy.enabled?
+        link = if stig_policy.enabled?
           _(
             "STIG is enabled (<a href=\"%s\">disable</a>)"
           ) % LINK_DISABLE
@@ -71,6 +71,7 @@ module Y2Security
             "STIG is not enabled (<a href=\"%s\">enable</a>)"
           ) % LINK_ENABLE
         end
+        Yast::HTML.List([link])
       end
 
       def ask_user(param)
