@@ -18,8 +18,21 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policy_validator"
+require "y2security/security_policy_issues"
 
 module Y2Security
+  # This class represents a security policy
+  #
+  # It offers an API to get the security policies and run validations.
+  #
+  # @example Get all known security policies
+  #   SecurityPolicy.all #=> [#<Y2Security::SecurityPolicy...>]
+  #   SecurityPolicy.all.map(&:name) #=> ["STIG"]
+  #
+  # @example Run STIG networking validation
+  #   policy = SecurityPolicy.find(:stig)
+  #   policy.validate(:network)
+  #   policy.issues.map(&:to_message) #=> ["Wireless devices are not allowed"]
   class SecurityPolicy
     # @return [Symbol] Security policy ID
     attr_reader :id
@@ -34,15 +47,15 @@ module Y2Security
         @all ||= [STIG]
       end
 
-      # Returns the known security policy with the given ID
+      # Returns the security policy with the given ID
       #
       # @param id [Symbol] Security policy ID
       def find(id)
         all.find { |a| a.id == id }
       end
 
-
       # Returns the enabled policies
+      #
       # @return [Array<SecurityPolicy>] List of enabled security policies
       def enabled
         all.select(&:enabled)
@@ -57,14 +70,26 @@ module Y2Security
       @enabled = false
     end
 
-    # @fixme I am not sure about this API. We need a way (e.g., passing a 'force' argument, adding a
-    # #reload method, using a different validator -from outside-) to re-run the validation again.
-    def valid?
-      validator.valid?
+    # Runs the validation for the given scope
+    #
+    # It updates the list of issues with the results from validating
+    # the given scope.
+    #
+    # @example Run validation for the storage settings
+    #   policy = SecurityPolicy.find(:stig)
+    #   policy.validate(:storage)
+    #   policy.issues.map(&:to_message) #=> ["root device should be encrypted"]
+    #
+    # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
+    def validate(scope)
+      issues.update(validator.issues(scope))
     end
 
-    def errors
-      validator.errors
+    # Return the list of validation issues
+    #
+    # @return [SecurityPolicyIssues] List of validation issues
+    def issues
+      @issues ||= SecurityPolicyIssues.new
     end
 
     # Enables the policy
@@ -86,6 +111,9 @@ module Y2Security
 
   private
 
+    # Returns the associated validator
+    #
+    # @return [SecurityPolicyValidator]
     def validator
       @validator ||= SecurityPolicyValidator.for(self)
     end

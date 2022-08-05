@@ -19,6 +19,7 @@
 
 require_relative "../test_helper"
 require "y2security/security_policy"
+require "y2issues/issue"
 
 describe Y2Security::SecurityPolicy do
   subject { described_class.new(:dummy, "Dummy Policy") }
@@ -30,32 +31,22 @@ describe Y2Security::SecurityPolicy do
     end
   end
 
-  describe ".enable" do
-    let(:policy) { described_class.all.first }
-
-    it "enables a security policy" do
-      expect(described_class.enabled).to eq([])
-      described_class.enable(policy)
-      expect(described_class.enabled).to eq([policy])
+  describe "#validate" do
+    let(:validator) do
+      instance_double(Y2Security::SecurityPolicyValidator)
     end
-  end
-
-  describe ".valid?" do
-    let(:validator) { instance_double(Y2Security::SecurityPolicyValidator) }
+    let(:issue) { Y2Issues::Issue.new("networking issue") }
+    let(:issues_list) { Y2Security::SecurityPolicyIssues.new([issue]) }
 
     before do
-      allow(Y2Security::SecurityPolicyValidator).to receive(:for).with(subject.id)
-        .and_return(validator)
+      allow(Y2Security::SecurityPolicyValidator).to receive(:for)
+        .with(subject).and_return(validator)
     end
 
-    it "returns whether the validation passed according to the validator" do
-      expect(validator).to receive(:valid?).and_return(true)
-      expect(subject.valid?).to eq(true)
-    end
-
-    it "returns the errors from the validation" do
-      expect(validator).to receive(:errors).and_return(["error1"])
-      expect(subject.errors).to eq(["error1"])
+    it "registers the issues from the validation" do
+      expect(validator).to receive(:issues).with(:network).and_return(issues_list)
+      subject.validate(:network)
+      expect(subject.issues.to_a).to eq([issue])
     end
   end
 end

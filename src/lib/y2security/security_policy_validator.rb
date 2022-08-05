@@ -38,21 +38,9 @@ module Y2Security
       end
     end
 
-    # Returns whether the validation was successful
+    # Returns the issues found for the given scope
     #
-    # @return [Boolean] true if the validation did not find any error;
-    #   false otherwise
-    def valid?
-      errors.empty?
-    end
-
-    # List of validation errors
-    #
-    # @fixme we could return more than strings
-    #
-    # @return [Array<String>]
-    def errors
-      []
-    end
+    # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
+    def issues(_scope); end
   end
 end

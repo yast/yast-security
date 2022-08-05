@@ -31,16 +31,4 @@ describe Y2Security::SecurityPolicyValidator do
       expect(validator).to be_a(Y2Security::StigValidator)
     end
   end
-
-  describe ".errors" do
-    it "returns an empty error" do
-      expect(subject.errors).to eq([])
-    end
-  end
-
-  describe ".valid?" do
-    it "returns true" do
-      expect(subject).to be_valid
-    end
-  end
 end
