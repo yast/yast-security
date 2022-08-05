@@ -25,9 +25,7 @@ module Y2Security
     class << self
       # Returns a validator for the given policy
       #
-      # @fixme should we allow an id?
-      #
-      # @param [SecurityPolicy] Security policy to build the validator for
+      # @param policy [SecurityPolicy] Security policy to build the validator for
       def for(policy)
         require "y2security/#{policy.id}_validator"
         klass = Module.const_get("Y2Security::#{policy.id.capitalize}Validator")
@@ -39,7 +37,7 @@ module Y2Security
 
     # Returns the issues found for the given scope
     #
-    # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
+    # @param _scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
     def issues(_scope); end
   end
 end
