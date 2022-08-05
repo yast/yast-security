@@ -20,9 +20,8 @@
 require "yast"
 
 module Y2Security
+  # Base class for security policies validators
   class SecurityPolicyValidator
-    include Yast::Logger
-
     class << self
       # Returns a validator for the given policy
       #

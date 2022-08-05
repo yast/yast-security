@@ -51,7 +51,7 @@ describe Y2Security::StigValidator do
       it "returns an issue per each active wireless connection" do
         issues = subject.issues(:network)
         expect(issues.size).to eq(1)
-        expect(issues.first.message).to match /No wireless/
+        expect(issues.first.message).to match(/No wireless/)
       end
     end
   end

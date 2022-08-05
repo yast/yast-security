@@ -48,8 +48,8 @@ module Y2Security
 
       [
         Y2Issues::Issue.new(
-          "No wireless connections are allowed", severity: :error,
-          location: Y2Issues::Location.new("proposal", "network")
+          "No wireless connections are allowed",
+          severity: :error, location: "proposal:network"
         )
       ]
     end

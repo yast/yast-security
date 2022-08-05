@@ -23,13 +23,14 @@ require "y2security/security_policy_issues"
 
 module Y2Security
   module Clients
+    # Proposal client to enable/disable security policies
     class SecurityPolicyProposal < ::Installation::ProposalClient
       include Yast::I18n
       include Yast::Logger
 
       LINKS = [
         LINK_ENABLE = "security-policy--enable".freeze,
-        LINK_DISABLE = "security-policy--disable".freeze,
+        LINK_DISABLE = "security-policy--disable".freeze
       ].freeze
 
       LINK_DIALOG = "security_policy".freeze
@@ -52,22 +53,22 @@ module Y2Security
       end
 
       def make_proposal(_attrs)
-        {  
+        {
           "preformatted_proposal" => preformatted_proposal,
-          "warning_level" => warning_level,
-          "links" => LINKS,
-          "warning" => warning_message
+          "warning_level"         => warning_level,
+          "links"                 => LINKS,
+          "warning"               => warning_message
         }
       end
 
       def preformatted_proposal
         if stig_policy.enabled?
           _(
-            "STIG is enabled (<a href=\"%s\">disable</a>)",
+            "STIG is enabled (<a href=\"%s\">disable</a>)"
           ) % LINK_DISABLE
         else
           _(
-            "STIG is not enabled (<a href=\"%s\">enable</a>)",
+            "STIG is not enabled (<a href=\"%s\">enable</a>)"
           ) % LINK_ENABLE
         end
       end
