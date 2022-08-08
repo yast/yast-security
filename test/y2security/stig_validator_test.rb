@@ -57,6 +57,53 @@ describe Y2Security::StigValidator do
         expect(message).to_not include("wlan1")
       end
     end
+
+    context "when validating the storage scope" do
+      context "when a file system is not encrypted" do
+        before do
+          fake_storage_scenario("plain.yml")
+        end
+
+        it "returns an issue listing the unencrypted file systems" do
+          issues = subject.issues(:storage)
+          expect(issues.size).to eq(1)
+          message = issues.first.message
+          expect(message).to include "/"
+          expect(message).to include "swap"
+        end
+      end
+
+      context "when all file systems are encrypted" do
+        before do
+          fake_storage_scenario("gpt_encryption.yml")
+        end
+
+        it "returns no issue" do
+          issues = subject.issues(:storage)
+          expect(issues).to be_empty
+        end
+      end
+
+      context "when all file systems are encrypted except /boot/efi" do
+        before do
+          fake_storage_scenario("efi.yml")
+        end
+
+        it "returns no issues" do
+          issues = subject.issues(:storage)
+          expect(issues).to be_empty
+        end
+      end
+
+      context "when the file system is included in an encrypted LVM VG" do
+        before do
+          fake_storage_scenario("encrypted_lvm.yml")
+        end
+
+        it "returns no issues" do
+          issues = subject.issues(:storage)
+          expect(issues).to be_empty
+        end
       end
     end
   end

@@ -63,5 +63,49 @@ module Y2Security
         )
       ]
     end
+
+    # List of mount points that are not expected to be encrypted
+    PLAIN_MOUNT_POINTS = ["/boot/efi"].freeze
+    private_constant :PLAIN_MOUNT_POINTS
+
+    # Returns the issues in the partitioning proposal
+    #
+    # * Full disk encryption is required
+    #
+    # @return [Array<Y2Issues::Issue>]
+    def storage_issues
+      staging = Y2Storage::StorageManager.instance.staging
+      plain_filesystems = staging.filesystems.select do |fs|
+        mp = fs.mount_point
+        next if mp.nil? || PLAIN_MOUNT_POINTS.include?(mp.path)
+
+        plain_filesystem?(fs)
+      end
+
+      return [] if plain_filesystems.empty?
+
+      mount_paths = plain_filesystems.map(&:mount_path)
+      [
+        Y2Issues::Issue.new(
+          format(
+            # TRANSLATORS: %s is a list of mount points
+            _("The following file systems are not encrypted: %s"), mount_paths.join(", ")
+          ),
+          severity: :error, location: "proposal:storage"
+        )
+      ]
+    end
+
+    # Determines whether the file system is encrypted or plain
+    #
+    # A file system might not be encrypted by itself, but belong to
+    # something that it is (like a LVM volume group).
+    #
+    # @param filesystem [Y2Storage::Filesystems::Base] Determines whether a file system is encrypted
+    #   or not
+    # @return [Boolean] true if the file system is plain; false otherwise
+    def plain_filesystem?(filesystem)
+      filesystem.ancestors.none? { |d| d.respond_to?(:encrypted?) && d.encrypted? }
+    end
   end
 end
