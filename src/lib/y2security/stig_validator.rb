@@ -21,6 +21,7 @@ require "yast"
 require "y2security/security_policy_validator"
 require "y2security/security_policy_issues"
 require "y2network/connection_config/wireless"
+require "installation/security_settings"
 
 Yast.import "Lan"
 
@@ -106,6 +107,24 @@ module Y2Security
     # @return [Boolean] true if the file system is plain; false otherwise
     def plain_filesystem?(filesystem)
       filesystem.ancestors.none? { |d| d.respond_to?(:encrypted?) && d.encrypted? }
+    end
+
+    # Returns the issues in the firewall proposal
+    #
+    # * Firewall must be enabled
+    #
+    # @return [Array<Y2Issues::Issue>]
+    def firewall_issues
+      settings = Installation::SecuritySettings.instance
+
+      return [] if !!settings.enable_firewall
+
+      [
+        Y2Issues::Issue.new(
+          _("Firewall is not enabled"),
+          severity: :error, location: "proposal:firewall"
+        )
+      ]
     end
   end
 end

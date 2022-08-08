@@ -107,4 +107,30 @@ describe Y2Security::StigValidator do
       end
     end
   end
+
+  context "when validating the firewall scope" do
+    let(:security_settings) { Installation::SecuritySettings.instance }
+    let(:enabled) { true }
+
+    before do
+      security_settings.enable_firewall = enabled
+    end
+
+    context "and the firewall is enabled" do
+      it "returns no issues" do
+        issues = subject.issues(:firewall)
+        expect(issues).to be_empty
+      end
+    end
+
+    context "and the firewall is not enabled " do
+      let(:enabled) { false }
+
+      it "returns an issue pointing that the firewall is not enabled" do
+        issues = subject.issues(:firewall)
+        expect(issues.size).to eq(1)
+        expect(issues.first.message).to include("Firewall is not enabled")
+      end
+    end
+  end
 end
