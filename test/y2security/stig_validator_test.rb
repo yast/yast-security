@@ -109,11 +109,11 @@ describe Y2Security::StigValidator do
   end
 
   context "when validating the firewall scope" do
-    let(:security_settings) { Installation::SecuritySettings.instance }
+    let(:security_settings) { double("Installation::SecuritySettings", enable_firewall: enabled) }
     let(:enabled) { true }
 
     before do
-      security_settings.enable_firewall = enabled
+      allow(subject).to receive(:security_settings).and_return(security_settings)
     end
 
     context "and the firewall is enabled" do

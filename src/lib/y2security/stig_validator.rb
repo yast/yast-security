@@ -21,7 +21,6 @@ require "yast"
 require "y2security/security_policy_validator"
 require "y2security/security_policy_issues"
 require "y2network/connection_config/wireless"
-require "installation/security_settings"
 
 Yast.import "Lan"
 
@@ -115,9 +114,7 @@ module Y2Security
     #
     # @return [Array<Y2Issues::Issue>]
     def firewall_issues
-      settings = Installation::SecuritySettings.instance
-
-      return [] if !!settings.enable_firewall
+      return [] if !!security_settings.enable_firewall
 
       [
         Y2Issues::Issue.new(
@@ -125,6 +122,13 @@ module Y2Security
           severity: :error, location: "proposal:firewall"
         )
       ]
+    end
+
+    # Convenience method to obtain an Installation::SecuritySettings instance
+    #
+    # @return [Installation::SecuritySettings]
+    def security_settings
+      Installation::SecuritySettings.instance
     end
   end
 end
