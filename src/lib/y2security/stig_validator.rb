@@ -27,6 +27,8 @@ Yast.import "Lan"
 module Y2Security
   # Validator for the STIG security policy
   class StigValidator < SecurityPolicyValidator
+    include Yast::I18n
+
     # Returns the issues found for the given scope
     #
     # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
@@ -37,6 +39,11 @@ module Y2Security
 
   private
 
+    # Returns the issues in the network configuration
+    #
+    # * Wireless devices are not supported
+    #
+    # @return [Array<Y2Issues::Issue>]
     def network_issues
       return [] if Yast::Lan.yast_config.nil?
 
@@ -48,7 +55,10 @@ module Y2Security
 
       [
         Y2Issues::Issue.new(
-          "No wireless connections are allowed",
+          format(
+            _("Wireless connections are not allowed: %s"),
+            wireless.map(&:name).join(", ")
+          ),
           severity: :error, location: "proposal:network"
         )
       ]
