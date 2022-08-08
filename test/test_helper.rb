@@ -23,9 +23,11 @@ ENV["Y2DIR"] = SRC_PATH
 
 require "yast"
 require "yast/rspec"
-require_relative 'SCRStub'
+require_relative "SCRStub"
+require_relative "support/storage_helpers"
 
 ::RSpec.configure do |config|
+  config.include Y2Security::RSpec::StorageHelpers
   config.include SCRStub
 
   config.mock_with :rspec do |mocks|
