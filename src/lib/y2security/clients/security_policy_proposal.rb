@@ -52,6 +52,7 @@ module Y2Security
       end
 
       def make_proposal(_attrs)
+        check_security_policy
         {
           "preformatted_proposal" => preformatted_proposal,
           "warning_level"         => warning_level,
@@ -62,13 +63,19 @@ module Y2Security
 
       def preformatted_proposal
         link = if stig_policy.enabled?
-          _(
-            "STIG is enabled (<a href=\"%s\">disable</a>)"
-          ) % LINK_DISABLE
+          format(
+            # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
+            _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
+            policy: stig_policy.name,
+            link: LINK_DISABLE + Yast::HTML.List(stig_issues.map(&:message))
+          )
         else
-          _(
-            "STIG is not enabled (<a href=\"%s\">enable</a>)"
-          ) % LINK_ENABLE
+          format(
+            # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
+            _("%{policy} is disabled (<a href=\"%{link}\">enable</a>)"),
+            policy: stig_policy.name,
+            link: LINK_ENABLE
+          )
         end
         Yast::HTML.List([link])
       end
@@ -87,6 +94,8 @@ module Y2Security
 
     private
 
+      attr_reader :stig_issues
+
       def enable_stig
         stig_policy.enable
       end
@@ -101,11 +110,15 @@ module Y2Security
         issues = stig_policy.issues
         return nil if issues.empty?
 
-        Yast::HTML.List(issues.map(&:message))
+        _("The system does not comply with the security policy.")
       end
 
       def warning_level
-        :error
+        :blocker
+      end
+
+      def check_security_policy
+        @stig_issues = stig_policy.enabled? ? stig_policy.validate : Y2Issues::List.new
       end
 
       def stig_policy

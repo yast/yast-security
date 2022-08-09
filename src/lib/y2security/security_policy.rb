@@ -101,6 +101,6 @@ module Y2Security
       @validator ||= SecurityPolicyValidator.for(self)
     end
 
-    STIG = new(:stig, "STIG")
+    STIG = new(:stig, "Defense Information Systems Agency STIG")
   end
 end
