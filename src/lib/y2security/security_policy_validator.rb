@@ -45,6 +45,6 @@ module Y2Security
     #
     # @param _scopes [Symbol] Scopes to validate (:network, :storage, :bootloader, etc.)
     #   If not scopes are given, it runs through all of them.
-    def validate(*_scope); end
+    def validate(*_scopes); end
   end
 end
