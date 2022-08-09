@@ -33,8 +33,10 @@ module Y2Security
     #
     # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
     def issues(scope)
-      found_issues = send("#{scope}_issues")
-      SecurityPolicyIssues.new(found_issues)
+      all_issues = [:firewall, :network, :storage].reduce([]) do |all, scope|
+        all += send("#{scope}_issues")
+      end
+      SecurityPolicyIssues.new(all_issues)
     end
 
   private

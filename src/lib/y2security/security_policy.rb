@@ -82,7 +82,7 @@ module Y2Security
     #
     # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
     def validate(scope)
-      issues.update(validator.issues(scope))
+      @issues = validator.issues
     end
 
     # Return the list of validation issues
