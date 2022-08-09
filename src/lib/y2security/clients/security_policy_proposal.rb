@@ -67,8 +67,8 @@ module Y2Security
             # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
             _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
             policy: stig_policy.name,
-            link:   LINK_DISABLE + Yast::HTML.List(stig_issues.map(&:message))
-          )
+            link:   LINK_DISABLE
+          ) + Yast::HTML.List(stig_issues.map(&:message))
         else
           format(
             # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
