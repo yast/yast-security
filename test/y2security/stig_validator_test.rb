@@ -49,7 +49,7 @@ describe Y2Security::StigValidator do
       let(:network_config) { Y2Network::Config.new(source: :wicked, connections: connections) }
 
       it "returns an issue per each active wireless connection" do
-        issues = subject.issues(:network)
+        issues = subject.validate(:network)
         expect(issues.size).to eq(1)
         message = issues.first.message
         expect(message).to match(/Wireless connections/)
@@ -65,7 +65,7 @@ describe Y2Security::StigValidator do
         end
 
         it "returns an issue listing the unencrypted file systems" do
-          issues = subject.issues(:storage)
+          issues = subject.validate(:storage)
           expect(issues.size).to eq(1)
           message = issues.first.message
           expect(message).to include "/"
@@ -79,7 +79,7 @@ describe Y2Security::StigValidator do
         end
 
         it "returns no issue" do
-          issues = subject.issues(:storage)
+          issues = subject.validate(:storage)
           expect(issues).to be_empty
         end
       end
@@ -90,7 +90,7 @@ describe Y2Security::StigValidator do
         end
 
         it "returns no issues" do
-          issues = subject.issues(:storage)
+          issues = subject.validate(:storage)
           expect(issues).to be_empty
         end
       end
@@ -101,7 +101,7 @@ describe Y2Security::StigValidator do
         end
 
         it "returns no issues" do
-          issues = subject.issues(:storage)
+          issues = subject.validate(:storage)
           expect(issues).to be_empty
         end
       end
@@ -118,7 +118,7 @@ describe Y2Security::StigValidator do
 
     context "and the firewall is enabled" do
       it "returns no issues" do
-        issues = subject.issues(:firewall)
+        issues = subject.validate(:firewall)
         expect(issues).to be_empty
       end
     end
@@ -127,7 +127,7 @@ describe Y2Security::StigValidator do
       let(:enabled) { false }
 
       it "returns an issue pointing that the firewall is not enabled" do
-        issues = subject.issues(:firewall)
+        issues = subject.validate(:firewall)
         expect(issues.size).to eq(1)
         expect(issues.first.message).to include("Firewall is not enabled")
       end

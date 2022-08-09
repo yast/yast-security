@@ -49,7 +49,7 @@ describe Y2Security::SecurityPolicy do
       instance_double(Y2Security::SecurityPolicyValidator)
     end
     let(:issue) { Y2Issues::Issue.new("networking issue") }
-    let(:issues_list) { Y2Security::SecurityPolicyIssues.new([issue]) }
+    let(:issues_list) { Y2Issues::List.new([issue]) }
 
     before do
       allow(Y2Security::SecurityPolicyValidator).to receive(:for)
@@ -57,9 +57,9 @@ describe Y2Security::SecurityPolicy do
     end
 
     it "registers the issues from the validation" do
-      expect(validator).to receive(:issues).with(:network).and_return(issues_list)
-      subject.validate(:network)
-      expect(subject.issues.to_a).to eq([issue])
+      expect(validator).to receive(:validate).and_return(issues_list)
+      issues = subject.validate
+      expect(issues.to_a).to eq([issue])
     end
   end
 end

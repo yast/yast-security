@@ -31,8 +31,7 @@ module Y2Security
   #
   # @example Run STIG networking validation
   #   policy = SecurityPolicy.find(:stig)
-  #   policy.validate(:network)
-  #   policy.issues.map(&:to_message) #=> ["Wireless devices are not allowed"]
+  #   policy.validate.map(&:to_message) #=> ["Wireless devices are not allowed"]
   class SecurityPolicy
     # @return [Symbol] Security policy ID
     attr_reader :id
@@ -70,26 +69,11 @@ module Y2Security
       @enabled = false
     end
 
-    # Runs the validation for the given scope
+    # Validates whether the current configuration matches the policy
     #
-    # It updates the list of issues with the results from validating
-    # the given scope.
-    #
-    # @example Run validation for the storage settings
-    #   policy = SecurityPolicy.find(:stig)
-    #   policy.validate(:storage)
-    #   policy.issues.map(&:to_message) #=> ["root device should be encrypted"]
-    #
-    # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
-    def validate(scope)
-      issues.update(validator.issues(scope))
-    end
-
-    # Return the list of validation issues
-    #
-    # @return [SecurityPolicyIssues] List of validation issues
-    def issues
-      @issues ||= SecurityPolicyIssues.new
+    # @return [Y2Issues::List] List of validation issues
+    def validate
+      validator.validate
     end
 
     # Enables the policy

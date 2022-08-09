@@ -37,7 +37,8 @@ module Y2Security
 
     # Returns the issues found for the given scope
     #
-    # @param _scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
-    def issues(_scope); end
+    # @param _scopes [Symbol] Scopes to validate (:network, :storage, :bootloader, etc.)
+    #   If not scopes are given, it runs through all of them.
+    def validate(*_scope); end
   end
 end

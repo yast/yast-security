@@ -19,7 +19,7 @@
 
 require "yast"
 require "y2security/security_policy_validator"
-require "y2security/security_policy_issues"
+require "y2issues/list"
 require "y2network/connection_config/wireless"
 
 Yast.import "Lan"
@@ -29,12 +29,18 @@ module Y2Security
   class StigValidator < SecurityPolicyValidator
     include Yast::I18n
 
+    KNOWN_SCOPES = [:firewall, :network, :storage]
+    private_constant :KNOWN_SCOPES
+
     # Returns the issues found for the given scope
     #
-    # @param scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
-    def issues(scope)
-      found_issues = send("#{scope}_issues")
-      SecurityPolicyIssues.new(found_issues)
+    # @return [Y2Issues::List] List of found issues
+    def validate(*scopes)
+      scopes_to_validate = scopes.empty? ? KNOWN_SCOPES : KNOWN_SCOPES & scopes
+      all_issues = scopes_to_validate.reduce([]) do |all, scope|
+        all += send("#{scope}_issues")
+      end
+      Y2Issues::List.new(all_issues)
     end
 
   private
