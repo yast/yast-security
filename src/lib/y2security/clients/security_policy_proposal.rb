@@ -65,7 +65,7 @@ module Y2Security
         link = if stig_policy.enabled?
           _(
             "STIG is enabled (<a href=\"%s\">disable</a>)"
-          ) % LINK_DISABLE
+          ) % LINK_DISABLE + Yast::HTML.List(stig_policy.issues.map(&:message))
         else
           _(
             "STIG is not enabled (<a href=\"%s\">enable</a>)"
@@ -102,7 +102,7 @@ module Y2Security
         issues = stig_policy.issues
         return nil if issues.empty?
 
-        Yast::HTML.List(issues.map(&:message))
+        _("The system does not comply with the STIG policy.")
       end
 
       def warning_level
