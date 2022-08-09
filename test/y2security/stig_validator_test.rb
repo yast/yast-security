@@ -133,4 +133,64 @@ describe Y2Security::StigValidator do
       end
     end
   end
+
+  context "when validating the bootloader scope" do
+    let(:bootloader) { Bootloader::NoneBootloader.new }
+
+    before do
+      Bootloader::BootloaderFactory.current = bootloader
+    end
+
+    context "and no Grub based bootloader is selected" do
+      it "returns no issues" do
+        issues = subject.validate(:bootloader)
+        expect(issues).to be_empty
+      end
+    end
+
+    context "and a Grub based bootloader is selected" do
+      let(:bootloader) { Bootloader::Grub2.new }
+      let(:password) { nil }
+      let(:unrestricted) { false }
+
+      before do
+        unless password.nil?
+          bootloader.password.password = password
+          bootloader.password.used = true
+          bootloader.password.unrestricted = unrestricted
+        end
+      end
+
+      context "when a password is not set" do
+        it "returns an issue pointing that the bootloader password must be set" do
+          issues = subject.validate(:bootloader)
+          expect(issues.size).to eq(2)
+          expect(issues.first.message).to include("Bootloader password must be set")
+        end
+      end
+
+      context "when a password is set" do
+        let(:password) { "test.pass" }
+
+        context "and the menu editing is restricted" do
+          it "returns no issues" do
+            issues = subject.validate(:bootloader)
+            expect(issues).to be_empty
+          end
+        end
+
+        context "and the menu editing is not restricted" do
+          let(:unrestricted) { true }
+
+          it "returns an issue pointing that the bootloader menu editing" \
+             " must be set as restricted" do
+            issues = subject.validate(:bootloader)
+            expect(issues.size).to eq(1)
+            expect(issues.first.message)
+              .to include("Bootloader menu editing must be set as restricted")
+          end
+        end
+      end
+    end
+  end
 end

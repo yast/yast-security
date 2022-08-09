@@ -21,6 +21,8 @@ require "yast"
 require "y2security/security_policy_validator"
 require "y2issues/list"
 require "y2network/connection_config/wireless"
+require "bootloader/bootloader_factory"
+require "bootloader/grub2base"
 
 Yast.import "Lan"
 
@@ -29,7 +31,7 @@ module Y2Security
   class StigValidator < SecurityPolicyValidator
     include Yast::I18n
 
-    KNOWN_SCOPES = [:firewall, :network, :storage].freeze
+    KNOWN_SCOPES = [:bootloader, :firewall, :network, :storage].freeze
     private_constant :KNOWN_SCOPES
 
     def initialize
@@ -138,7 +140,41 @@ module Y2Security
     #
     # @return [Installation::SecuritySettings]
     def security_settings
-      Installation::SecuritySettings.instance
+      ::Installation::SecuritySettings.instance
+    end
+
+    def bootloader
+      ::Bootloader::BootloaderFactory.current
+    end
+
+    # Returns the issues in the bootloader proposal
+    #
+    # * Bootloader password must be set
+    # * Bootloader menu editing must be set as restricted
+    #
+    # @return [Array<Y2Issues::Issue>]
+    def bootloader_issues
+      issues = []
+      # When there is no Bootloader selected then the user will be in charge of configuring it
+      # himself therefore we will not add any issue there. (e.g. Bootloader::NoneBootloader)
+      return issues unless bootloader.is_a?(Bootloader::Grub2Base)
+
+      password = bootloader.password
+      unless password&.used?
+        issues << Y2Issues::Issue.new(
+          _("Bootloader password must be set"),
+          severity: :error, location: "proposal:bootloader"
+        )
+      end
+
+      if !password || password.unrestricted
+        issues << Y2Issues::Issue.new(
+          _("Bootloader menu editing must be set as restricted"),
+          severity: :error, location: "proposal:bootloader"
+        )
+      end
+
+      issues
     end
   end
 end
