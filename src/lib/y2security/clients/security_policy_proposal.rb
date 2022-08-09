@@ -67,14 +67,14 @@ module Y2Security
             # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
             _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
             policy: stig_policy.name,
-            link: LINK_DISABLE + Yast::HTML.List(stig_issues.map(&:message))
+            link:   LINK_DISABLE + Yast::HTML.List(stig_issues.map(&:message))
           )
         else
           format(
             # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
             _("%{policy} is disabled (<a href=\"%{link}\">enable</a>)"),
             policy: stig_policy.name,
-            link: LINK_ENABLE
+            link:   LINK_ENABLE
           )
         end
         Yast::HTML.List([link])
@@ -96,19 +96,10 @@ module Y2Security
 
       attr_reader :stig_issues
 
-      def enable_stig
-        stig_policy.enable
-      end
-
-      def disable_stig
-        stig_policy.disable
-      end
-
       def warning_message
         return nil unless stig_policy.enabled?
 
-        issues = stig_policy.issues
-        return nil if issues.empty?
+        return nil if stig_issues.empty?
 
         _("The system does not comply with the security policy.")
       end

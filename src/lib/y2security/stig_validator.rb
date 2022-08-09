@@ -29,7 +29,7 @@ module Y2Security
   class StigValidator < SecurityPolicyValidator
     include Yast::I18n
 
-    KNOWN_SCOPES = [:firewall, :network, :storage]
+    KNOWN_SCOPES = [:firewall, :network, :storage].freeze
     private_constant :KNOWN_SCOPES
 
     # Returns the issues found for the given scope
@@ -38,7 +38,7 @@ module Y2Security
     def validate(*scopes)
       scopes_to_validate = scopes.empty? ? KNOWN_SCOPES : KNOWN_SCOPES & scopes
       all_issues = scopes_to_validate.reduce([]) do |all, scope|
-        all += send("#{scope}_issues")
+        all + send("#{scope}_issues")
       end
       Y2Issues::List.new(all_issues)
     end
