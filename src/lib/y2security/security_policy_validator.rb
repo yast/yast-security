@@ -38,6 +38,6 @@ module Y2Security
     # Returns the issues found for the given scope
     #
     # @param _scope [Symbol] Scope to validate (:network, :storage, :bootloader, etc.)
-    def issues(_scope); end
+    def issues; end
   end
 end
