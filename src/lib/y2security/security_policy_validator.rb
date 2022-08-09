@@ -22,6 +22,8 @@ require "yast"
 module Y2Security
   # Base class for security policies validators
   class SecurityPolicyValidator
+    include Yast::I18n
+
     class << self
       # Returns a validator for the given policy
       #
@@ -33,6 +35,10 @@ module Y2Security
       rescue LoadError, NameError => e
         log.info "Could not load a validator for #{policy}: #{e.message}"
       end
+    end
+
+    def initialize
+      textdomain "security"
     end
 
     # Returns the issues found for the given scope

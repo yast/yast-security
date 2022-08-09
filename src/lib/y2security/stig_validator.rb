@@ -32,6 +32,10 @@ module Y2Security
     KNOWN_SCOPES = [:firewall, :network, :storage].freeze
     private_constant :KNOWN_SCOPES
 
+    def initialize
+      textdomain "security"
+    end
+
     # Returns the issues found for the given scope
     #
     # @return [Y2Issues::List] List of found issues
