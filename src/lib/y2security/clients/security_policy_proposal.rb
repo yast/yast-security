@@ -19,7 +19,6 @@
 #
 require "installation/proposal_client"
 require "y2security/security_policy"
-require "y2security/security_policy_issues"
 
 module Y2Security
   module Clients

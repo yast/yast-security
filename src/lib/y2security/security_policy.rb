@@ -18,7 +18,6 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policy_validator"
-require "y2security/security_policy_issues"
 
 module Y2Security
   # This class represents a security policy
