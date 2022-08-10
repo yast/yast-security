@@ -155,7 +155,6 @@ describe Y2Security::DisaStigValidator do
 
       before do
         unless password.nil?
-          bootloader.password.password = password
           bootloader.password.used = true
           bootloader.password.unrestricted = unrestricted
         end
