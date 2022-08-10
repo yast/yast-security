@@ -62,18 +62,18 @@ module Y2Security
       end
 
       def preformatted_proposal
-        link = if stig_policy.enabled?
+        link = if disa_stig_policy.enabled?
           format(
             # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
             _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
-            policy: stig_policy.name,
+            policy: disa_stig_policy.name,
             link:   LINK_DISABLE
-          ) + Yast::HTML.List(stig_issues.map(&:message))
+          ) + Yast::HTML.List(disa_stig_issues.map(&:message))
         else
           format(
             # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
             _("%{policy} is disabled (<a href=\"%{link}\">enable</a>)"),
-            policy: stig_policy.name,
+            policy: disa_stig_policy.name,
             link:   LINK_ENABLE
           )
         end
@@ -84,9 +84,9 @@ module Y2Security
         chosen_link = param["chosen_id"]
         case chosen_link
         when LINK_DISABLE
-          stig_policy.disable
+          disa_stig_policy.disable
         when LINK_ENABLE
-          stig_policy.enable
+          disa_stig_policy.enable
         end
 
         { "workflow_result" => :again }
@@ -94,12 +94,12 @@ module Y2Security
 
     private
 
-      attr_reader :stig_issues
+      attr_reader :disa_stig_issues
 
       def warning_message
-        return nil unless stig_policy.enabled?
+        return nil unless disa_stig_policy.enabled?
 
-        return nil if stig_issues.empty?
+        return nil if disa_stig_issues.empty?
 
         _("The system does not comply with the security policy.")
       end
@@ -109,11 +109,11 @@ module Y2Security
       end
 
       def check_security_policy
-        @stig_issues = stig_policy.enabled? ? stig_policy.validate : Y2Issues::List.new
+        @disa_stig_issues = disa_stig_policy.enabled? ? disa_stig_policy.validate : Y2Issues::List.new
       end
 
-      def stig_policy
-        @stig_policy ||= Y2Security::SecurityPolicy.find(:stig)
+      def disa_stig_policy
+        @disa_stig_policy ||= Y2Security::SecurityPolicy.find(:disa_stig)
       end
     end
   end

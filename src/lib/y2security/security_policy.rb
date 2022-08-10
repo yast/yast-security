@@ -26,10 +26,10 @@ module Y2Security
   #
   # @example Get all known security policies
   #   SecurityPolicy.all #=> [#<Y2Security::SecurityPolicy...>]
-  #   SecurityPolicy.all.map(&:name) #=> ["STIG"]
+  #   SecurityPolicy.all.map(&:name) #=> ["Defense Information Systems Agency STIG"]
   #
-  # @example Run STIG networking validation
-  #   policy = SecurityPolicy.find(:stig)
+  # @example Run DISA STIG networking validation
+  #   policy = SecurityPolicy.find(:disa_stig)
   #   policy.validate.map(&:to_message) #=> ["Wireless devices are not allowed"]
   class SecurityPolicy
     # @return [Symbol] Security policy ID
@@ -42,7 +42,7 @@ module Y2Security
       #
       # @return [Array<SecurityPolicy>]
       def all
-        @all ||= [STIG]
+        @all ||= [DISA_STIG]
       end
 
       # Returns the security policy with the given ID
@@ -101,6 +101,6 @@ module Y2Security
       @validator ||= SecurityPolicyValidator.for(self)
     end
 
-    STIG = new(:stig, "Defense Information Systems Agency STIG")
+    DISA_STIG = new(:disa_stig, "Defense Information Systems Agency STIG")
   end
 end

@@ -27,20 +27,20 @@ describe Y2Security::SecurityPolicy do
   describe ".all" do
     it "returns the list of known policies" do
       policies = described_class.all
-      expect(policies.map(&:id)).to eq([:stig])
+      expect(policies.map(&:id)).to eq([:disa_stig])
     end
   end
 
   describe ".enabled" do
-    let(:stig) { Y2Security::SecurityPolicy.find(:stig) }
+    let(:disa_stig) { Y2Security::SecurityPolicy.find(:disa_stig) }
 
     it "returns the list of enabled policies" do
-      stig.enable
-      expect(described_class.enabled).to eq([stig])
+      disa_stig.enable
+      expect(described_class.enabled).to eq([disa_stig])
     end
 
     after do
-      stig.disable
+      disa_stig.disable
     end
   end
 

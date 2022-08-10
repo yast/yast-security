@@ -23,6 +23,7 @@ module Y2Security
   # Base class for security policies validators
   class SecurityPolicyValidator
     include Yast::I18n
+    include Yast::Logger
 
     class << self
       # Returns a validator for the given policy
@@ -30,7 +31,8 @@ module Y2Security
       # @param policy [SecurityPolicy] Security policy to build the validator for
       def for(policy)
         require "y2security/#{policy.id}_validator"
-        klass = Module.const_get("Y2Security::#{policy.id.capitalize}Validator")
+        klass_prefix = policy.id.to_s.split("_").map(&:capitalize).join
+        klass = Y2Security.const_get("#{klass_prefix}Validator")
         klass.new
       rescue LoadError, NameError => e
         log.info "Could not load a validator for #{policy}: #{e.message}"

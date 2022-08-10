@@ -20,15 +20,15 @@
 require_relative "../test_helper"
 require "y2security/security_policy_validator"
 require "y2security/security_policy"
-require "y2security/stig_validator"
+require "y2security/disa_stig_validator"
 
 describe Y2Security::SecurityPolicyValidator do
-  let(:policy) { Y2Security::SecurityPolicy.find(:stig) }
+  let(:policy) { Y2Security::SecurityPolicy.find(:disa_stig) }
 
   describe ".for" do
     it "returns the validator for the given policy" do
       validator = described_class.for(policy)
-      expect(validator).to be_a(Y2Security::StigValidator)
+      expect(validator).to be_a(Y2Security::DisaStigValidator)
     end
   end
 end

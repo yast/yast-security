@@ -24,22 +24,22 @@ require "y2security/clients/security_policy_proposal"
 describe Y2Security::Clients::SecurityPolicyProposal do
   subject(:client) { described_class.new }
 
-  let(:stig_policy) do
+  let(:disa_stig_policy) do
     instance_double(
       Y2Security::SecurityPolicy,
       name:     "DISA STIG",
       validate: Y2Issues::List.new(issues),
-      enabled?: stig_enabled?,
+      enabled?: disa_stig_enabled?,
       enable:   nil,
       disable:  nil
     )
   end
   let(:issues) { [] }
-  let(:stig_enabled?) { false }
+  let(:disa_stig_enabled?) { false }
 
   before do
     allow(Y2Security::SecurityPolicy).to receive(:find)
-      .with(:stig).and_return(stig_policy)
+      .with(:disa_stig).and_return(disa_stig_policy)
   end
 
   describe "#description" do
@@ -53,7 +53,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
   describe "#make_proposal" do
     context "when the DISA STIG policy is enabled" do
-      let(:stig_enabled?) { true }
+      let(:disa_stig_enabled?) { true }
 
       context "and the policy validation fails" do
         let(:issues) { [Y2Issues::Issue.new("Issue #1")] }
@@ -92,7 +92,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
 
       it "does not run the STIG validation" do
-        expect(stig_policy).to_not receive(:validate)
+        expect(disa_stig_policy).to_not receive(:validate)
         subject.make_proposal({})
       end
     end
@@ -101,7 +101,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
   describe "#ask_user" do
     context "when the user asks to enable STIG" do
       it "disables the policy" do
-        expect(stig_policy).to receive(:enable)
+        expect(disa_stig_policy).to receive(:enable)
         subject.ask_user(
           "chosen_id" => Y2Security::Clients::SecurityPolicyProposal::LINK_ENABLE
         )
@@ -117,7 +117,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
     context "when the user asks to disable STIG" do
       it "disables the policy" do
-        expect(stig_policy).to receive(:disable)
+        expect(disa_stig_policy).to receive(:disable)
         subject.ask_user(
           "chosen_id" => Y2Security::Clients::SecurityPolicyProposal::LINK_DISABLE
         )

@@ -18,9 +18,9 @@
 # find current contact information at www.suse.com.
 
 require_relative "../test_helper"
-require "y2security/stig_validator"
+require "y2security/disa_stig_validator"
 
-describe Y2Security::StigValidator do
+describe Y2Security::DisaStigValidator do
   describe "#validate" do
     context "when validating the network scope" do
       before do

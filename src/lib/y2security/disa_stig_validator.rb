@@ -28,7 +28,7 @@ Yast.import "Lan"
 
 module Y2Security
   # Validator for the STIG security policy
-  class StigValidator < SecurityPolicyValidator
+  class DisaStigValidator < SecurityPolicyValidator
     include Yast::I18n
 
     KNOWN_SCOPES = [:bootloader, :firewall, :network, :storage].freeze
