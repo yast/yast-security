@@ -801,6 +801,7 @@ module Yast
       settings["selinux_mode"] = settings.delete("SELINUX_MODE") if settings.key?("SELINUX_MODE")
 
       import_lsm_config(settings)
+      import_security_policies(settings)
 
       return true if settings == {}
 
@@ -936,6 +937,17 @@ module Yast
       return unless lsm_config.configurable?
 
       PackagesProposal.SetResolvables("LSM", :pattern, lsm_config.needed_patterns)
+    end
+
+    def import_security_policies(settings)
+      return unless settings["security_policies"].is_a?(Array)
+
+      settings["security_policies"].each do |policy_id|
+        policy = Y2Security::SecurityPolicy.find(policy_id.to_sym)
+        next unless policy
+
+        policy.enable
+      end
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases
