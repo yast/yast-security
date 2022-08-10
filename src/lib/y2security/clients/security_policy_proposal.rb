@@ -109,7 +109,8 @@ module Y2Security
       end
 
       def check_security_policy
-        @disa_stig_issues = disa_stig_policy.enabled? ? disa_stig_policy.validate : Y2Issues::List.new
+        @disa_stig_issues =
+          disa_stig_policy.enabled? ? disa_stig_policy.validate : Y2Issues::List.new
       end
 
       def disa_stig_policy
