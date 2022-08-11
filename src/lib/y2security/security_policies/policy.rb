@@ -107,7 +107,7 @@ module Y2Security
       end
 
       DISA_STIG = new(:disa_stig, "Defense Information Systems Agency STIG",
-        ["scap_security_guide"])
+        ["scap-security-guide"])
     end
   end
 end

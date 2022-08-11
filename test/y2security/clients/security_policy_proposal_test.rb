@@ -28,7 +28,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
     instance_double(
       Y2Security::SecurityPolicies::Policy,
       name:     "DISA STIG",
-      packages: ["scap_security_guide"],
+      packages: ["scap-security-guide"],
       validate: Y2Issues::List.new(issues),
       enabled?: disa_stig_enabled?,
       enable:   nil,
