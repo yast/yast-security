@@ -37,6 +37,8 @@ module Y2Security
       attr_reader :id
       # @return [String] Security policy name
       attr_reader :name
+      # @return [Array<String>] Security policy packages needed
+      attr_reader :packages
 
       class << self
         # Returns the list of known security policies
@@ -63,10 +65,12 @@ module Y2Security
 
       # @param id [String] Security policy ID (kind of internal identifier)
       # @param name [String] Security policy name
-      def initialize(id, name)
+      # @param packages [Array<String>] Packages needed to apply the policy
+      def initialize(id, name, packages = [])
         @id = id
         @name = name
         @enabled = false
+        @packages = packages
       end
 
       # Validates whether the current configuration matches the policy
@@ -102,7 +106,8 @@ module Y2Security
         @validator ||= Validator.for(self)
       end
 
-      DISA_STIG = new(:disa_stig, "Defense Information Systems Agency STIG")
+      DISA_STIG = new(:disa_stig, "Defense Information Systems Agency STIG",
+        ["scap_security_guide"])
     end
   end
 end

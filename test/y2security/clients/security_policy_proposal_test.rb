@@ -28,6 +28,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
     instance_double(
       Y2Security::SecurityPolicies::Policy,
       name:     "DISA STIG",
+      packages: ["scap_security_guide"],
       validate: Y2Issues::List.new(issues),
       enabled?: disa_stig_enabled?,
       enable:   nil,
@@ -54,6 +55,12 @@ describe Y2Security::Clients::SecurityPolicyProposal do
   describe "#make_proposal" do
     context "when the DISA STIG policy is enabled" do
       let(:disa_stig_enabled?) { true }
+
+      it "adds the packages needed by the policy to the packages proposal" do
+        expect(Yast::PackagesProposal).to receive(:AddResolvables)
+          .with("security", :package, disa_stig_policy.packages)
+        subject.make_proposal({})
+      end
 
       context "and the policy validation fails" do
         let(:issues) { [Y2Issues::Issue.new("Issue #1")] }
@@ -85,6 +92,12 @@ describe Y2Security::Clients::SecurityPolicyProposal do
     end
 
     context "when the STIG policy is not enabled" do
+      it "removes the packages needed by the policy from the packages proposal" do
+        expect(Yast::PackagesProposal).to receive(:RemoveResolvables)
+          .with("security", :package, disa_stig_policy.packages)
+        subject.make_proposal({})
+      end
+
       it "includes a link to enable the policy" do
         expect(subject.make_proposal({})).to include(
           "preformatted_proposal" => %r{<a href=.*>enable</a>}

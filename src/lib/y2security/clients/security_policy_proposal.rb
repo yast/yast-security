@@ -52,6 +52,7 @@ module Y2Security
       end
 
       def make_proposal(_attrs)
+        refresh_packages
         check_security_policy
         {
           "preformatted_proposal" => preformatted_proposal,
@@ -85,8 +86,10 @@ module Y2Security
         case chosen_link
         when LINK_DISABLE
           disa_stig_policy.disable
+          refresh_packages
         when LINK_ENABLE
           disa_stig_policy.enable
+          refresh_packages
         end
 
         { "workflow_result" => :again }
@@ -115,6 +118,13 @@ module Y2Security
 
       def disa_stig_policy
         @disa_stig_policy ||= Y2Security::SecurityPolicies::Policy.find(:disa_stig)
+      end
+
+      # Adds or removes the packages needed by the DISA STIG Policy to or from the Packages Proposal
+      def refresh_packages
+        method = disa_stig_policy.enabled? ? "AddResolvables" : "RemoveResolvables"
+
+        Yast::PackagesProposal.public_send(method, "security", :package, disa_stig_policy.packages)
       end
     end
   end
