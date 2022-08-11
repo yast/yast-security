@@ -26,7 +26,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
   let(:disa_stig_policy) do
     instance_double(
-      Y2Security::SecurityPolicy,
+      Y2Security::SecurityPolicies::Policy,
       name:     "DISA STIG",
       validate: Y2Issues::List.new(issues),
       enabled?: disa_stig_enabled?,
@@ -38,7 +38,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
   let(:disa_stig_enabled?) { false }
 
   before do
-    allow(Y2Security::SecurityPolicy).to receive(:find)
+    allow(Y2Security::SecurityPolicies::Policy).to receive(:find)
       .with(:disa_stig).and_return(disa_stig_policy)
   end
 

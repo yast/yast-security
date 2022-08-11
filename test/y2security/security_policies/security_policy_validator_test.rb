@@ -17,18 +17,18 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper"
-require "y2security/security_policy_validator"
-require "y2security/security_policy"
-require "y2security/disa_stig_validator"
+require_relative "../../test_helper"
+require "y2security/security_policies/validator"
+require "y2security/security_policies/disa_stig_validator"
+require "y2security/security_policies/policy"
 
-describe Y2Security::SecurityPolicyValidator do
-  let(:policy) { Y2Security::SecurityPolicy.find(:disa_stig) }
+describe Y2Security::SecurityPolicies::Validator do
+  let(:policy) { Y2Security::SecurityPolicies::Policy.find(:disa_stig) }
 
   describe ".for" do
     it "returns the validator for the given policy" do
       validator = described_class.for(policy)
-      expect(validator).to be_a(Y2Security::DisaStigValidator)
+      expect(validator).to be_a(Y2Security::SecurityPolicies::DisaStigValidator)
     end
   end
 end

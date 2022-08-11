@@ -17,10 +17,10 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper"
-require "y2security/disa_stig_validator"
+require_relative "../../test_helper"
+require "y2security/security_policies/disa_stig_validator"
 
-describe Y2Security::DisaStigValidator do
+describe Y2Security::SecurityPolicies::DisaStigValidator do
   describe "#validate" do
     context "when validating the network scope" do
       before do

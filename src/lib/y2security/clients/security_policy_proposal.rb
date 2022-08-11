@@ -18,7 +18,7 @@
 # find current contact information at www.suse.com.
 #
 require "installation/proposal_client"
-require "y2security/security_policy"
+require "y2security/security_policies/policy"
 
 module Y2Security
   module Clients
@@ -114,7 +114,7 @@ module Y2Security
       end
 
       def disa_stig_policy
-        @disa_stig_policy ||= Y2Security::SecurityPolicy.find(:disa_stig)
+        @disa_stig_policy ||= Y2Security::SecurityPolicies::Policy.find(:disa_stig)
       end
     end
   end

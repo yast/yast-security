@@ -20,33 +20,35 @@
 require "yast"
 
 module Y2Security
-  # Base class for security policies validators
-  class SecurityPolicyValidator
-    include Yast::I18n
-    include Yast::Logger
+  module SecurityPolicies
+    # Base class for security policies validators
+    class Validator
+      include Yast::I18n
+      include Yast::Logger
 
-    class << self
-      # Returns a validator for the given policy
-      #
-      # @param policy [SecurityPolicy] Security policy to build the validator for
-      def for(policy)
-        require "y2security/#{policy.id}_validator"
-        klass_prefix = policy.id.to_s.split("_").map(&:capitalize).join
-        klass = Y2Security.const_get("#{klass_prefix}Validator")
-        klass.new
-      rescue LoadError, NameError => e
-        log.info "Could not load a validator for #{policy}: #{e.message}"
+      class << self
+        # Returns a validator for the given policy
+        #
+        # @param policy [SecurityPolicy] Security policy to build the validator for
+        def for(policy)
+          require "y2security/security_policies/#{policy.id}_validator"
+          klass_prefix = policy.id.to_s.split("_").map(&:capitalize).join
+          klass = Y2Security::SecurityPolicies.const_get("#{klass_prefix}Validator")
+          klass.new
+        rescue LoadError, NameError => e
+          log.info "Could not load a validator for #{policy}: #{e.message}"
+        end
       end
-    end
 
-    def initialize
-      textdomain "security"
-    end
+      def initialize
+        textdomain "security"
+      end
 
-    # Returns the issues found for the given scope
-    #
-    # @param _scopes [Symbol] Scopes to validate (:network, :storage, :bootloader, etc.)
-    #   If not scopes are given, it runs through all of them.
-    def validate(*_scopes); end
+      # Returns the issues found for the given scope
+      #
+      # @param _scopes [Symbol] Scopes to validate (:network, :storage, :bootloader, etc.)
+      #   If not scopes are given, it runs through all of them.
+      def validate(*_scopes); end
+    end
   end
 end

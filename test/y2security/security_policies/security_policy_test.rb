@@ -17,11 +17,11 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require_relative "../test_helper"
-require "y2security/security_policy"
+require_relative "../../test_helper"
+require "y2security/security_policies/policy"
 require "y2issues/issue"
 
-describe Y2Security::SecurityPolicy do
+describe Y2Security::SecurityPolicies::Policy do
   subject { described_class.new(:dummy, "Dummy Policy") }
 
   describe ".all" do
@@ -32,7 +32,7 @@ describe Y2Security::SecurityPolicy do
   end
 
   describe ".enabled" do
-    let(:disa_stig) { Y2Security::SecurityPolicy.find(:disa_stig) }
+    let(:disa_stig) { described_class.find(:disa_stig) }
 
     it "returns the list of enabled policies" do
       disa_stig.enable
@@ -46,13 +46,13 @@ describe Y2Security::SecurityPolicy do
 
   describe "#validate" do
     let(:validator) do
-      instance_double(Y2Security::SecurityPolicyValidator)
+      instance_double(Y2Security::SecurityPolicies::Validator)
     end
     let(:issue) { Y2Issues::Issue.new("networking issue") }
     let(:issues_list) { Y2Issues::List.new([issue]) }
 
     before do
-      allow(Y2Security::SecurityPolicyValidator).to receive(:for)
+      allow(Y2Security::SecurityPolicies::Validator).to receive(:for)
         .with(subject).and_return(validator)
     end
 
