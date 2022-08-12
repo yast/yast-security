@@ -19,6 +19,8 @@
 
 require "yast"
 require "y2security/security_policies/validator"
+require "y2security/security_policies/issue"
+require "y2security/security_policies/action"
 require "y2issues/list"
 require "y2network/connection_config/wireless"
 require "bootloader/bootloader_factory"
@@ -44,10 +46,9 @@ module Y2Security
       # @return [Y2Issues::List] List of found issues
       def validate(*scopes)
         scopes_to_validate = scopes.empty? ? KNOWN_SCOPES : KNOWN_SCOPES & scopes
-        all_issues = scopes_to_validate.reduce([]) do |all, scope|
+        scopes_to_validate.reduce([]) do |all, scope|
           all + send("#{scope}_issues")
         end
-        Y2Issues::List.new(all_issues)
       end
 
     private
@@ -58,23 +59,33 @@ module Y2Security
       #
       # @return [Array<Y2Issues::Issue>]
       def network_issues
+        conns = find_wireless_connections
+        return [] if conns.empty?
+
+        conns.each_with_object([]) do |conn, all|
+          message = format(
+            _("Wireless connections are not allowed: %s"), conn.name
+          )
+          action = Action.new(_(format("disable %s device", conn.name))) do
+            yast_config = Yast::Lan.yast_config
+            conn = yast_config.connections.by_name(conn.name)
+            conn.startmode = Y2Network::Startmode.create("off")
+            yast_config.add_or_update_connection_config(conn)
+          end
+          all << Issue.new(message, action)
+        end
+      end
+
+      # Returns wireless connections which are not disabled
+      #
+      # @return [Array<Y2Network::ConnectionConfig::Wireless]
+      def find_wireless_connections
         return [] if Yast::Lan.yast_config.nil?
 
-        wireless = Yast::Lan.yast_config.connections.select do |conn|
+        Yast::Lan.yast_config.connections.select do |conn|
           conn.is_a?(Y2Network::ConnectionConfig::Wireless) &&
             conn.startmode&.name != "off"
         end
-        return [] if wireless.empty?
-
-        [
-          Y2Issues::Issue.new(
-            format(
-              _("Wireless connections are not allowed: %s"),
-              wireless.map(&:name).join(", ")
-            ),
-            severity: :error
-          )
-        ]
       end
 
       # List of mount points that are not expected to be encrypted
@@ -99,12 +110,11 @@ module Y2Security
 
         mount_paths = plain_filesystems.map(&:mount_path)
         [
-          Y2Issues::Issue.new(
+          Issue.new(
             format(
               # TRANSLATORS: %s is a list of mount points
               _("The following file systems are not encrypted: %s"), mount_paths.join(", ")
-            ),
-            severity: :error
+            )
           )
         ]
       end
@@ -129,7 +139,14 @@ module Y2Security
       def firewall_issues
         return [] if !!security_settings.enable_firewall
 
-        [Y2Issues::Issue.new(_("Firewall is not enabled"), severity: :error)]
+        [
+          Issue.new(
+            _("Firewall is not enabled"),
+            Action.new(_("enable the firewall")) do
+              security_settings.enable_firewall!
+            end
+          )
+        ]
       end
 
       # Convenience method to obtain an Installation::SecuritySettings instance
@@ -157,13 +174,14 @@ module Y2Security
 
         password = bootloader.password
         unless password&.used?
-          issues << Y2Issues::Issue.new(_("Bootloader password must be set"), severity: :error)
+          issues << Issue.new(
+            _("Bootloader password must be set")
+          )
         end
 
         if !password || password.unrestricted
-          issues << Y2Issues::Issue.new(
-            _("Bootloader menu editing must be set as restricted"),
-            severity: :error
+          issues << Issue.new(
+            _("Bootloader menu editing must be set as restricted")
           )
         end
 

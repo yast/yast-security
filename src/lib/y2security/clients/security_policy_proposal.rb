@@ -72,6 +72,8 @@ module Y2Security
         when "enable"
           find_policy(id).enable
           refresh_packages
+        when "fix"
+          fix_issue(id.to_i)
         end
 
         { "workflow_result" => :again }
@@ -80,10 +82,13 @@ module Y2Security
     private
 
       def links
-        policies.each_with_object([]) do |policy, all|
-          all << "#{LINK_DIALOG}--enable:#{policy.id}"
-          all << "#{LINK_DIALOG}--disable:#{policy.id}"
+        main_links = policies.each_with_object([]) do |policy, all|
+          all << action_link("enable", policy.id)
+          all << action_link("disable", policy.id)
         end
+
+        main_links + all_issues.select(&:action?)
+          .map { |a| action_link("fix", a.id) }
       end
 
       def parse_link(link)
@@ -103,7 +108,7 @@ module Y2Security
       end
 
       def warning_message
-        return nil if policies.none?(&:enabled?) || issues.empty?
+        return nil if policies.none?(&:enabled?) || all_issues.empty?
 
         _("The system does not comply with the security policy.")
       end
@@ -115,7 +120,7 @@ module Y2Security
             _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
             policy: policy.name,
             link:   action_link("disable", policy.id)
-          ) + Yast::HTML.List(policy.issues.map(&:message))
+          ) + issues_list(policy.issues)
         else
           format(
             # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
@@ -126,7 +131,7 @@ module Y2Security
         end
       end
 
-      def issues
+      def all_issues
         policies.map(&:issues).flatten
       end
 
@@ -145,6 +150,27 @@ module Y2Security
 
           Yast::PackagesProposal.public_send(method, "security", :package, policy.packages)
         end
+      end
+
+      def fix_issue(id)
+        issue = all_issues.find { |i| i.id == id }
+        issue&.fix
+      end
+
+      def issues_list(issues)
+        items = issues.map do |issue|
+          next issue.message unless issue.action?
+
+          format(
+            # TRANSLATORS: 'issue' is a security policy issue description;
+            #  'link' is just an HTML-like link
+            _("%{issue} (<a href=\"%{link}\">%{action}</a>)"),
+            issue:  issue.message,
+            link:   action_link("fix", issue.id),
+            action: issue.action.message
+          )
+        end
+        Yast::HTML.List(items)
       end
     end
   end
