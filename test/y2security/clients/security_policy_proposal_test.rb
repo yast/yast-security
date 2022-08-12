@@ -27,10 +27,12 @@ describe Y2Security::Clients::SecurityPolicyProposal do
   let(:disa_stig_policy) do
     instance_double(
       Y2Security::SecurityPolicies::Policy,
+      id:       :disa_stig,
       name:     "DISA STIG",
       packages: ["scap-security-guide"],
-      validate: Y2Issues::List.new(issues),
+      issues:   Y2Issues::List.new(issues),
       enabled?: disa_stig_enabled?,
+      validate: nil,
       enable:   nil,
       disable:  nil
     )
@@ -39,8 +41,8 @@ describe Y2Security::Clients::SecurityPolicyProposal do
   let(:disa_stig_enabled?) { false }
 
   before do
-    allow(Y2Security::SecurityPolicies::Policy).to receive(:find)
-      .with(:disa_stig).and_return(disa_stig_policy)
+    allow(Y2Security::SecurityPolicies::Policy).to receive(:all)
+      .and_return([disa_stig_policy])
   end
 
   describe "#description" do
@@ -116,13 +118,13 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       it "disables the policy" do
         expect(disa_stig_policy).to receive(:enable)
         subject.ask_user(
-          "chosen_id" => Y2Security::Clients::SecurityPolicyProposal::LINK_ENABLE
+          "chosen_id" => "security-policy--enable:#{disa_stig_policy.id}"
         )
       end
 
       it "returns :again as workflow result" do
         result = subject.ask_user(
-          "chosen_id" => Y2Security::Clients::SecurityPolicyProposal::LINK_ENABLE
+          "chosen_id" => "security-policy--enable:#{disa_stig_policy.id}"
         )
         expect(result).to eq("workflow_result" => :again)
       end
@@ -132,13 +134,13 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       it "disables the policy" do
         expect(disa_stig_policy).to receive(:disable)
         subject.ask_user(
-          "chosen_id" => Y2Security::Clients::SecurityPolicyProposal::LINK_DISABLE
+          "chosen_id" => "security-policy--disable:#{disa_stig_policy.id}"
         )
       end
 
       it "returns :again as workflow result" do
         result = subject.ask_user(
-          "chosen_id" => Y2Security::Clients::SecurityPolicyProposal::LINK_DISABLE
+          "chosen_id" => "security-policy--disable:#{disa_stig_policy.id}"
         )
         expect(result).to eq("workflow_result" => :again)
       end

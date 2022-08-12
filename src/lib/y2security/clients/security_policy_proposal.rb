@@ -27,12 +27,7 @@ module Y2Security
       include Yast::I18n
       include Yast::Logger
 
-      LINKS = [
-        LINK_ENABLE = "security-policy--enable".freeze,
-        LINK_DISABLE = "security-policy--disable".freeze
-      ].freeze
-
-      LINK_DIALOG = "security_policy".freeze
+      LINK_DIALOG = "security-policy".freeze
 
       def initialize
         super
@@ -53,42 +48,29 @@ module Y2Security
 
       def make_proposal(_attrs)
         refresh_packages
-        check_security_policy
+        check_security_policies
         {
           "preformatted_proposal" => preformatted_proposal,
           "warning_level"         => warning_level,
-          "links"                 => LINKS,
+          "links"                 => links,
           "warning"               => warning_message
         }
       end
 
       def preformatted_proposal
-        link = if disa_stig_policy.enabled?
-          format(
-            # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
-            _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
-            policy: disa_stig_policy.name,
-            link:   LINK_DISABLE
-          ) + Yast::HTML.List(disa_stig_issues.map(&:message))
-        else
-          format(
-            # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
-            _("%{policy} is disabled (<a href=\"%{link}\">enable</a>)"),
-            policy: disa_stig_policy.name,
-            link:   LINK_ENABLE
-          )
-        end
-        Yast::HTML.List([link])
+        Yast::HTML.List(
+          policies.map { |p| policy_link(p) }
+        )
       end
 
       def ask_user(param)
-        chosen_link = param["chosen_id"]
-        case chosen_link
-        when LINK_DISABLE
-          disa_stig_policy.disable
+        action, id = parse_link(param["chosen_id"])
+        case action
+        when "disable"
+          find_policy(id).disable
           refresh_packages
-        when LINK_ENABLE
-          disa_stig_policy.enable
+        when "enable"
+          find_policy(id).enable
           refresh_packages
         end
 
@@ -97,34 +79,72 @@ module Y2Security
 
     private
 
-      attr_reader :disa_stig_issues
+      def links
+        policies.each_with_object([]) do |policy, all|
+          all << "#{LINK_DIALOG}--enable:#{policy.id}"
+          all << "#{LINK_DIALOG}--disable:#{policy.id}"
+        end
+      end
+
+      def parse_link(link)
+        link.delete_prefix("#{LINK_DIALOG}--").split(":")
+      end
+
+      def action_link(action, id)
+        "#{LINK_DIALOG}--#{action}:#{id}"
+      end
+
+      def find_policy(id)
+        Y2Security::SecurityPolicies::Policy.find(id.to_sym)
+      end
+
+      def policies
+        Y2Security::SecurityPolicies::Policy.all
+      end
 
       def warning_message
-        return nil unless disa_stig_policy.enabled?
-
-        return nil if disa_stig_issues.empty?
+        return nil if policies.none?(&:enabled?) || issues.empty?
 
         _("The system does not comply with the security policy.")
+      end
+
+      def policy_link(policy)
+        if policy.enabled?
+          format(
+            # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
+            _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
+            policy: policy.name,
+            link:   action_link("disable", policy.id)
+          ) + Yast::HTML.List(policy.issues.map(&:message))
+        else
+          format(
+            # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
+            _("%{policy} is disabled (<a href=\"%{link}\">enable</a>)"),
+            policy: policy.name,
+            link:   action_link("enable", policy.id)
+          )
+        end
+      end
+
+      def issues
+        policies.map(&:issues).flatten
       end
 
       def warning_level
         :blocker
       end
 
-      def check_security_policy
-        @disa_stig_issues =
-          disa_stig_policy.enabled? ? disa_stig_policy.validate : Y2Issues::List.new
+      def check_security_policies
+        policies.select(&:enabled?).each(&:validate)
       end
 
-      def disa_stig_policy
-        @disa_stig_policy ||= Y2Security::SecurityPolicies::Policy.find(:disa_stig)
-      end
-
-      # Adds or removes the packages needed by the DISA STIG Policy to or from the Packages Proposal
+      # Adds or removes the packages needed by the policy to or from the Packages Proposal
       def refresh_packages
-        method = disa_stig_policy.enabled? ? "AddResolvables" : "RemoveResolvables"
+        policies.each do |policy|
+          method = policy.enabled? ? "AddResolvables" : "RemoveResolvables"
 
-        Yast::PackagesProposal.public_send(method, "security", :package, disa_stig_policy.packages)
+          Yast::PackagesProposal.public_send(method, "security", :package, policy.packages)
+        end
       end
     end
   end
