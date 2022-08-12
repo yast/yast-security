@@ -73,6 +73,7 @@ module Y2Security
         @name = name
         @enabled = false
         @packages = packages
+        @issues = []
       end
 
       # Validates whether the current configuration matches the policy
