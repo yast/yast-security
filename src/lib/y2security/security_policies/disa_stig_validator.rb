@@ -72,7 +72,7 @@ module Y2Security
               _("Wireless connections are not allowed: %s"),
               wireless.map(&:name).join(", ")
             ),
-            severity: :error, location: "proposal:network"
+            severity: :error
           )
         ]
       end
@@ -104,7 +104,7 @@ module Y2Security
               # TRANSLATORS: %s is a list of mount points
               _("The following file systems are not encrypted: %s"), mount_paths.join(", ")
             ),
-            severity: :error, location: "proposal:storage"
+            severity: :error
           )
         ]
       end
@@ -129,12 +129,7 @@ module Y2Security
       def firewall_issues
         return [] if !!security_settings.enable_firewall
 
-        [
-          Y2Issues::Issue.new(
-            _("Firewall is not enabled"),
-            severity: :error, location: "proposal:firewall"
-          )
-        ]
+        [Y2Issues::Issue.new(_("Firewall is not enabled"), severity: :error)]
       end
 
       # Convenience method to obtain an Installation::SecuritySettings instance
@@ -162,16 +157,13 @@ module Y2Security
 
         password = bootloader.password
         unless password&.used?
-          issues << Y2Issues::Issue.new(
-            _("Bootloader password must be set"),
-            severity: :error, location: "proposal:bootloader"
-          )
+          issues << Y2Issues::Issue.new(_("Bootloader password must be set"), severity: :error)
         end
 
         if !password || password.unrestricted
           issues << Y2Issues::Issue.new(
             _("Bootloader menu editing must be set as restricted"),
-            severity: :error, location: "proposal:bootloader"
+            severity: :error
           )
         end
 
