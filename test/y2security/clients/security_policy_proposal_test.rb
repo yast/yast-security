@@ -20,6 +20,7 @@
 
 require_relative "../../test_helper"
 require "y2security/clients/security_policy_proposal"
+require "y2security/security_policies/issue"
 
 describe Y2Security::Clients::SecurityPolicyProposal do
   subject(:client) { described_class.new }
@@ -30,7 +31,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       id:       :disa_stig,
       name:     "DISA STIG",
       packages: ["scap-security-guide"],
-      issues:   Y2Issues::List.new(issues),
+      issues:   issues,
       enabled?: disa_stig_enabled?,
       validate: nil,
       enable:   nil,
@@ -65,7 +66,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
 
       context "and the policy validation fails" do
-        let(:issues) { [Y2Issues::Issue.new("Issue #1")] }
+        let(:issues) { [Y2Security::SecurityPolicies::Issue.new("Issue #1")] }
 
         it "returns a warning message" do
           expect(subject.make_proposal({})).to include(
@@ -143,6 +144,20 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           "chosen_id" => "security-policy--disable:#{disa_stig_policy.id}"
         )
         expect(result).to eq("workflow_result" => :again)
+      end
+    end
+
+    context "when the user asks to fix an issue" do
+      let(:issue) do
+        instance_double(Y2Security::SecurityPolicies::Issue, id: 1)
+      end
+      let(:issues) { [issue] }
+
+      it "fixes the issue" do
+        expect(issue).to receive(:fix)
+        subject.ask_user(
+          "chosen_id" => "security-policy--fix:#{issue.id}"
+        )
       end
     end
   end
