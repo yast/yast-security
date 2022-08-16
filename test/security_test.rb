@@ -799,14 +799,14 @@ module Yast
 
         it "enables the security policy" do
           expect(policy).to receive(:enable)
-          subject.Import("security_policies" => [policy.id.to_s])
+          subject.Import("SECURITY_POLICIES" => [policy.id.to_s])
         end
 
         context "but it does not exist" do
           it "logs an error" do
             expect(subject.log).to receive(:error)
               .with("The security policy 'dummy' is unknown.")
-            subject.Import("security_policies" => ["dummy"])
+            subject.Import("SECURITY_POLICIES" => ["dummy"])
           end
         end
       end
