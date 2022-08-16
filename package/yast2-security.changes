@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Tue Aug 16 12:15:52 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for security policies validation (jsc#SLE-24764).
+- 4.4.14
+
+-------------------------------------------------------------------
 Fri Mar 11 13:13:09 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Always check for the package in the underlying system when
