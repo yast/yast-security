@@ -153,6 +153,8 @@ module Y2Security
       #
       # @return [Installation::SecuritySettings]
       def security_settings
+        # FIXME: avoid a singular dependency with yast2-installation
+        require "installation/security_settings"
         ::Installation::SecuritySettings.instance
       end
 
