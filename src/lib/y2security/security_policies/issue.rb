@@ -52,7 +52,7 @@ module Y2Security
       end
 
       # @param message [String] Issue message
-      # @param block [Proc] Code to remedy the issue
+      # @param action [Action] Action to remedy the issue
       def initialize(message, action = nil)
         @id = self.class.next_id
         @message = message
