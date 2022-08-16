@@ -33,6 +33,7 @@ require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
 require "y2security/autoinst/lsm_config_reader"
+require "y2security/security_policies"
 
 module Yast
   class SecurityClass < Module # rubocop:disable Metrics/ClassLength
@@ -801,6 +802,7 @@ module Yast
       settings["selinux_mode"] = settings.delete("SELINUX_MODE") if settings.key?("SELINUX_MODE")
 
       import_lsm_config(settings)
+      import_security_policies(settings)
 
       return true if settings == {}
 
@@ -936,6 +938,23 @@ module Yast
       return unless lsm_config.configurable?
 
       PackagesProposal.SetResolvables("LSM", :pattern, lsm_config.needed_patterns)
+    end
+
+    # It enables the security policies according to the profile
+    #
+    # @param settings [Hash] security settings to import from the profile
+    def import_security_policies(settings)
+      return unless settings["security_policies"].is_a?(Array)
+
+      settings["security_policies"].each do |policy_id|
+        policy = Y2Security::SecurityPolicies::Policy.find(policy_id.to_sym)
+        if policy.nil?
+          log.error "The security policy '#{policy_id}' is unknown."
+          next
+        end
+
+        policy.enable
+      end
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases

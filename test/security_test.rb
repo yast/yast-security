@@ -793,6 +793,23 @@ module Yast
           expect(Security.Settings["FAIL_DELAY"]).to eql("5")
         end
       end
+
+      context "when a security policy is expected to be enabled" do
+        let(:policy) { Y2Security::SecurityPolicies::Policy.all.first }
+
+        it "enables the security policy" do
+          expect(policy).to receive(:enable)
+          subject.Import("security_policies" => [policy.id.to_s])
+        end
+
+        context "but it does not exist" do
+          it "logs an error" do
+            expect(subject.log).to receive(:error)
+              .with("The security policy 'dummy' is unknown.")
+            subject.Import("security_policies" => ["dummy"])
+          end
+        end
+      end
     end
   end
 end
