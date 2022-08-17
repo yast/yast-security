@@ -34,27 +34,15 @@ module Y2Security
     #   issue = Issue.new(_("The firewall is not enabled"), action)
     #   issue.fix
     class Issue
-      # TODO: use a real identifier?
-      # @return [Integer] Issue identifier
-      attr_reader :id
-
       # @return [String] Textual description of the issue
       attr_reader :message
 
       # @return [Action] Remediation action
       attr_reader :action
 
-      class << self
-        def next_id
-          @id ||= 0
-          @id += 1
-        end
-      end
-
       # @param message [String] Issue message
       # @param action [Action] Action to remedy the issue
       def initialize(message, action = nil)
-        @id = self.class.next_id
         @message = message
         @action = action
       end

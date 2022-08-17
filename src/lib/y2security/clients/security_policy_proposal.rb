@@ -87,8 +87,9 @@ module Y2Security
           all << action_link("disable", policy.id)
         end
 
-        main_links + all_issues.select(&:action?)
-          .map { |a| action_link("fix", a.id) }
+        main_links + all_issues.each_with_index.map do |issue, idx|
+          issue.action? ? action_link("fix", idx) : nil
+        end.compact
       end
 
       def parse_link(link)
@@ -156,12 +157,12 @@ module Y2Security
       end
 
       def fix_issue(id)
-        issue = all_issues.find { |i| i.id == id }
+        issue = all_issues[id]
         issue&.fix
       end
 
       def issues_list(issues)
-        items = issues.map do |issue|
+        items = issues.each_with_index.map do |issue, idx|
           next issue.message unless issue.action?
 
           format(
@@ -169,7 +170,7 @@ module Y2Security
             #  'link' is just an HTML-like link
             _("%{issue} (<a href=\"%{link}\">%{action}</a>)"),
             issue:  issue.message,
-            link:   action_link("fix", issue.id),
+            link:   action_link("fix", idx),
             action: issue.action.message
           )
         end

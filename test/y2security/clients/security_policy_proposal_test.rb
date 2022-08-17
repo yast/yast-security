@@ -163,7 +163,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       it "fixes the issue" do
         expect(issue).to receive(:fix)
         subject.ask_user(
-          "chosen_id" => "security-policy--fix:#{issue.id}"
+          "chosen_id" => "security-policy--fix:0"
         )
       end
     end
