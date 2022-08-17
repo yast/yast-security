@@ -34,6 +34,7 @@ module Y2Security
         Yast.import "UI"
         Yast.import "HTML"
         textdomain "security"
+        @issues_by_policy = {}
       end
 
       def description
@@ -47,7 +48,6 @@ module Y2Security
       end
 
       def make_proposal(_attrs)
-        refresh_packages
         check_security_policies
         {
           "preformatted_proposal" => preformatted_proposal,
@@ -120,7 +120,7 @@ module Y2Security
             _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
             policy: policy.name,
             link:   action_link("disable", policy.id)
-          ) + issues_list(policy.issues)
+          ) + issues_list(policy_issues(policy))
         else
           format(
             # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
@@ -132,7 +132,7 @@ module Y2Security
       end
 
       def all_issues
-        policies.map(&:issues).flatten
+        @issues_by_policy.values.flatten
       end
 
       def warning_level
@@ -140,7 +140,10 @@ module Y2Security
       end
 
       def check_security_policies
-        policies.select(&:enabled?).each(&:validate)
+        enabled_policies = policies.select(&:enabled?)
+        @issues_by_policy = enabled_policies.each_with_object({}) do |policy, issues|
+          issues[policy.id] = policy.validate
+        end
       end
 
       # Adds or removes the packages needed by the policy to or from the Packages Proposal
@@ -171,6 +174,10 @@ module Y2Security
           )
         end
         Yast::HTML.List(items)
+      end
+
+      def policy_issues(policy)
+        @issues_by_policy.fetch(policy.id, [])
       end
     end
   end

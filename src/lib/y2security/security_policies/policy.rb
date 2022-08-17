@@ -39,8 +39,6 @@ module Y2Security
       attr_reader :name
       # @return [Array<String>] Security policy packages needed
       attr_reader :packages
-      # @return [Array<Issue>] Found security policy issues
-      attr_reader :issues
 
       class << self
         # Returns the list of known security policies
@@ -73,14 +71,13 @@ module Y2Security
         @name = name
         @enabled = false
         @packages = packages
-        @issues = []
       end
 
       # Validates whether the current configuration matches the policy
       #
-      # @return [Y2Issues::List] List of validation issues
+      # @return [Array<Issue>] List of validation issues
       def validate
-        @issues = validator.validate
+        validator.validate
       end
 
       # Enables the policy

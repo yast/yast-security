@@ -19,7 +19,6 @@
 
 require_relative "../../test_helper"
 require "y2security/security_policies/policy"
-require "y2issues/issue"
 
 describe Y2Security::SecurityPolicies::Policy do
   subject { described_class.new(:dummy, "Dummy Policy") }
@@ -48,8 +47,8 @@ describe Y2Security::SecurityPolicies::Policy do
     let(:validator) do
       instance_double(Y2Security::SecurityPolicies::Validator)
     end
-    let(:issue) { Y2Issues::Issue.new("networking issue") }
-    let(:issues_list) { Y2Issues::List.new([issue]) }
+    let(:issue) { Y2Security::SecurityPolicies::Issue.new("networking issue") }
+    let(:issues_list) { [issue] }
 
     before do
       allow(Y2Security::SecurityPolicies::Validator).to receive(:for)
