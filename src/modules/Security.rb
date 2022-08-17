@@ -800,8 +800,9 @@ module Yast
 
       settings["lsm_select"] = settings.delete("LSM_SELECT") if settings.key?("LSM_SELECT")
       settings["selinux_mode"] = settings.delete("SELINUX_MODE") if settings.key?("SELINUX_MODE")
-      settings["security_policies"] =
-        settings.delete("SECURITY_POLICIES") if settings.key?("SECURITY_POLICIES")
+      if settings.key?("SECURITY_POLICIES")
+        settings["security_policies"] = settings.delete("SECURITY_POLICIES")
+      end
 
       import_lsm_config(settings)
       import_security_policies(settings)
