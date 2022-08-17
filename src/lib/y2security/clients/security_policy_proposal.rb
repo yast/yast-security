@@ -22,6 +22,28 @@ require "y2security/security_policies/policy"
 
 module Y2Security
   module Clients
+    # Helper class to keep the list of issues
+    class IssuesCollection
+      def initialize
+        @issues = {}
+      end
+
+      def update(policy, issues)
+        @issues[policy.id] = issues
+      end
+
+      def by_policy(policy)
+        @issues[policy.id]
+      end
+
+      def all
+        @issues.values.flatten
+      end
+
+      def clear
+        @issues.clear
+      end
+    end
     # Proposal client to enable/disable security policies
     class SecurityPolicyProposal < ::Installation::ProposalClient
       include Yast::I18n
@@ -29,12 +51,17 @@ module Y2Security
 
       LINK_DIALOG = "security-policy".freeze
 
+      class << self
+        def issues
+          @issues ||= IssuesCollection.new
+        end
+      end
+
       def initialize
         super
         Yast.import "UI"
         Yast.import "HTML"
         textdomain "security"
-        @issues_by_policy = {}
       end
 
       def description
@@ -133,7 +160,7 @@ module Y2Security
       end
 
       def all_issues
-        @issues_by_policy.values.flatten
+        issues.all
       end
 
       def warning_level
@@ -141,9 +168,10 @@ module Y2Security
       end
 
       def check_security_policies
+        issues.clear
         enabled_policies = policies.select(&:enabled?)
-        @issues_by_policy = enabled_policies.each_with_object({}) do |policy, issues|
-          issues[policy.id] = policy.validate
+        enabled_policies.each do |policy|
+          issues.update(policy, policy.validate)
         end
       end
 
@@ -178,7 +206,11 @@ module Y2Security
       end
 
       def policy_issues(policy)
-        @issues_by_policy.fetch(policy.id, [])
+        issues.by_policy(policy)
+      end
+
+      def issues
+        self.class.issues
       end
     end
   end
