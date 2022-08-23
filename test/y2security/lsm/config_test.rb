@@ -66,6 +66,14 @@ describe Y2Security::LSM::Config do
       expect(active.first.id).to eql(:selinux)
     end
 
+    context "when there are no active LSM modules" do
+      let(:active_modules) { nil }
+
+      it "returns an empty array" do
+        expect(subject.active).to eq([])
+      end
+    end
+
     context "when no supported LSM is active" do
       let(:active_modules) { "lockdown,capabilities,tomoyo" }
 
