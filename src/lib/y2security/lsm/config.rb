@@ -126,7 +126,7 @@ module Y2Security
       def active
         return [] unless Yast::Stage.normal
 
-        modules = Yast::SCR.Read(Yast.path(".target.string"), RUNNING_PATH)
+        modules = Yast::SCR.Read(Yast.path(".target.string"), RUNNING_PATH).to_s
         modules.split(",").each_with_object([]) do |name, result|
           supported_module = supported.find { |m| m.id.to_s == name }
           result << supported_module if supported_module
