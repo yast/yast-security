@@ -950,13 +950,14 @@ module Yast
       return unless settings["security_policies"].is_a?(Array)
 
       settings["security_policies"].each do |policy_id|
-        policy = Y2Security::SecurityPolicies::Policy.find(policy_id.to_sym)
+        policies_manager = Y2Security::SecurityPolicies::Manager.instance
+        policy = policies_manager.find_policy(policy_id.to_sym)
         if policy.nil?
           log.error "The security policy '#{policy_id}' is unknown."
           next
         end
 
-        policy.enable
+        policies_manager.enable_policy(policy)
       end
     end
 

@@ -19,6 +19,43 @@
 
 module Y2Security
   module SecurityPolicies
+    # Helper class to keep the list of issues for each policy
+    class IssuesCollection
+      def initialize
+        @issues = {}
+      end
+
+      # Updates the issues of a policy
+      #
+      # @param policy [Policy]
+      # @param issues [Array<Issue>]
+      def update(policy, issues)
+        @issues[policy] = issues
+      end
+
+      # Issues for the given policy
+      #
+      # @param policy [Policy]
+      # @return [Array<Issue>]
+      def by_policy(policy)
+        @issues[policy] || []
+      end
+
+      # All issues
+      #
+      # @return [Array<Issue>]
+      def all
+        @issues.values.flatten
+      end
+
+      # Hash representation of the collection
+      #
+      # @return [Hash]
+      def to_h
+        @issues.dup
+      end
+    end
+
     # Represents an issue related to a security policy
     #
     # An issue can have an associated action to remedy the issue.

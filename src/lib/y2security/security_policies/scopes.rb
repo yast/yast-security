@@ -17,6 +17,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2security/security_policies/manager"
-require "y2security/security_policies/scopes"
-require "y2security/security_policies/disa_stig_policy"
+module Y2Security
+  module SecurityPolicies
+    # Scopes for the validation of a security policy
+    module Scopes
+    end
+  end
+end
+
+require "y2security/security_policies/scopes/storage"
+require "y2security/security_policies/scopes/bootloader"
+require "y2security/security_policies/scopes/network"
+require "y2security/security_policies/scopes/firewall"
