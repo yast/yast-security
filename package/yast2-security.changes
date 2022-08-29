@@ -2,6 +2,13 @@
 Tue Aug 16 12:15:52 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for security policies validation (jsc#SLE-24764).
+- 4.4.15
+
+-------------------------------------------------------------------
+Tue Aug 23 08:41:45 UTC 2022 - David Diaz <dgonzalez@suse.com>
+
+- Do not crash when reading active LSM modules returns nil
+  (related to jsc#SLE-22069)
 - 4.4.14
 
 -------------------------------------------------------------------
