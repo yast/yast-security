@@ -4,6 +4,7 @@ require_relative "test_helper"
 require "yast2/systemd/service"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
+require "y2security/security_policies/manager"
 
 def services_for(names, aliases = {})
   names.map do |n|
@@ -795,14 +796,16 @@ module Yast
       end
 
       context "when a security policy is expected to be enabled" do
-        let(:policy) { Y2Security::SecurityPolicies::Policy.all.first }
+        let(:policies_manager) { Y2Security::SecurityPolicies::Manager.instance }
+        let(:policy) { policies_manager.find_policy(:disa_stig) }
 
         it "enables the security policy" do
-          expect(policy).to receive(:enable)
           subject.Import("SECURITY_POLICIES" => [policy.id.to_s])
+
+          expect(policies_manager.enabled_policies).to include(policy)
         end
 
-        context "but it does not exist" do
+        context "but the policy does not exist" do
           it "logs an error" do
             expect(subject.log).to receive(:error)
               .with("The security policy 'dummy' is unknown.")

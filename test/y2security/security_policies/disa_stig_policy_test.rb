@@ -18,13 +18,20 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "y2security/security_policies/disa_stig_validator"
+require_relative "./policy_examples"
+require "y2security/security_policies/disa_stig_policy"
 
-describe Y2Security::SecurityPolicies::DisaStigValidator do
+describe Y2Security::SecurityPolicies::DisaStigPolicy do
+  include_examples "Y2Security::SecurityPolicies::Policy"
+
   describe "#validate" do
     context "when validating the network scope" do
-      before do
-        allow(Yast::Lan).to receive(:yast_config).and_return(network_config)
+      let(:scope) { Y2Security::SecurityPolicies::Scopes::Network.new(config: network_config) }
+
+      let(:network_config) { Y2Network::Config.new(source: :wicked, connections: connections) }
+
+      let(:connections) do
+        Y2Network::ConnectionConfigsCollection.new([wlan0_conn, wlan1_conn])
       end
 
       let(:wlan0_conn) do
@@ -43,13 +50,8 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
         end
       end
 
-      let(:connections) do
-        Y2Network::ConnectionConfigsCollection.new([wlan0_conn, wlan1_conn])
-      end
-      let(:network_config) { Y2Network::Config.new(source: :wicked, connections: connections) }
-
       it "returns an issue per each active wireless connection" do
-        issues = subject.validate(:network)
+        issues = subject.validate(scope)
         expect(issues.size).to eq(1)
         message = issues.first.message
         expect(message).to match(/Wireless connections/)
@@ -59,13 +61,17 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
     end
 
     context "when validating the storage scope" do
+      let(:scope) { Y2Security::SecurityPolicies::Scopes::Storage.new(devicegraph: devicegraph) }
+
+      let(:devicegraph) { Y2Storage::StorageManager.instance.staging }
+
       context "when a file system is not encrypted" do
         before do
           fake_storage_scenario("plain.yml")
         end
 
         it "returns an issue listing the unencrypted file systems" do
-          issues = subject.validate(:storage)
+          issues = subject.validate(scope)
           expect(issues.size).to eq(1)
           message = issues.first.message
           expect(message).to include "/"
@@ -79,7 +85,7 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
         end
 
         it "returns no issue" do
-          issues = subject.validate(:storage)
+          issues = subject.validate(scope)
           expect(issues).to be_empty
         end
       end
@@ -90,7 +96,7 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
         end
 
         it "returns no issues" do
-          issues = subject.validate(:storage)
+          issues = subject.validate(scope)
           expect(issues).to be_empty
         end
       end
@@ -101,7 +107,7 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
         end
 
         it "returns no issues" do
-          issues = subject.validate(:storage)
+          issues = subject.validate(scope)
           expect(issues).to be_empty
         end
       end
@@ -109,16 +115,19 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
   end
 
   context "when validating the firewall scope" do
-    let(:security_settings) { double("Installation::SecuritySettings", enable_firewall: enabled) }
-    let(:enabled) { true }
-
-    before do
-      allow(subject).to receive(:security_settings).and_return(security_settings)
+    let(:scope) do
+      Y2Security::SecurityPolicies::Scopes::Firewall.new(security_settings: security_settings)
     end
+
+    let(:security_settings) do
+      instance_double("Installation::SecuritySettings", enable_firewall: enabled)
+    end
+
+    let(:enabled) { true }
 
     context "and the firewall is enabled" do
       it "returns no issues" do
-        issues = subject.validate(:firewall)
+        issues = subject.validate(scope)
         expect(issues).to be_empty
       end
     end
@@ -127,7 +136,7 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
       let(:enabled) { false }
 
       it "returns an issue pointing that the firewall is not enabled" do
-        issues = subject.validate(:firewall)
+        issues = subject.validate(scope)
         expect(issues.size).to eq(1)
         expect(issues.first.message).to include("Firewall is not enabled")
       end
@@ -135,15 +144,13 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
   end
 
   context "when validating the bootloader scope" do
-    let(:bootloader) { Bootloader::NoneBootloader.new }
+    let(:scope) { Y2Security::SecurityPolicies::Scopes::Bootloader.new(bootloader: bootloader) }
 
-    before do
-      Bootloader::BootloaderFactory.current = bootloader
-    end
+    let(:bootloader) { Bootloader::NoneBootloader.new }
 
     context "and no Grub based bootloader is selected" do
       it "returns no issues" do
-        issues = subject.validate(:bootloader)
+        issues = subject.validate(scope)
         expect(issues).to be_empty
       end
     end
@@ -154,7 +161,7 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
       let(:unrestricted) { false }
 
       before do
-        unless password.nil?
+        if password
           bootloader.password.used = true
           bootloader.password.unrestricted = unrestricted
         end
@@ -162,7 +169,7 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
 
       context "when a password is not set" do
         it "returns an issue pointing that the bootloader password must be set" do
-          issues = subject.validate(:bootloader)
+          issues = subject.validate(scope)
           expect(issues.size).to eq(2)
           expect(issues.first.message).to include("Bootloader password must be set")
         end
@@ -173,7 +180,7 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
 
         context "and the menu editing is restricted" do
           it "returns no issues" do
-            issues = subject.validate(:bootloader)
+            issues = subject.validate(scope)
             expect(issues).to be_empty
           end
         end
@@ -183,7 +190,7 @@ describe Y2Security::SecurityPolicies::DisaStigValidator do
 
           it "returns an issue pointing that the bootloader menu editing" \
              " must be set as restricted" do
-            issues = subject.validate(:bootloader)
+            issues = subject.validate(scope)
             expect(issues.size).to eq(1)
             expect(issues.first.message)
               .to include("Bootloader menu editing must be set as restricted")
