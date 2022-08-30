@@ -17,11 +17,15 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
+
 module Y2Security
   module SecurityPolicies
     module Scopes
       # Scope for firewall checks
       class Firewall
+        include Yast::Logger
+
         # Security settings to use with this scope
         #
         # @return [Installation::SecuritySettings, nil] nil if yast2-installation is not available
@@ -51,6 +55,7 @@ module Y2Security
           require "installation/security_settings"
           yield
         rescue LoadError
+          log.warn("Security settings cannot be loaded. Make sure yast2-installation is installed.")
           nil
         end
       end
