@@ -260,8 +260,11 @@ module Y2Security
       end
 
       # Returns the list of issues
+      #
+      # The reason to hold a variable with the list is that issues are identified by its position in
+      # the list, so we need to be sure that the list does not change.
       def all_issues
-        issues.all
+        @all_issues ||= issues.all
       end
     end
   end
