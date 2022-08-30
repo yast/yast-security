@@ -22,7 +22,7 @@ require "y2security/security_policies/manager"
 
 module Y2Security
   module Clients
-    # Proposal client to enable/disable security policies
+    # Proposal client to enable, disable and check security policies
     class SecurityPolicyProposal < ::Installation::ProposalClient
       include Yast::I18n
       include Yast::Logger
@@ -30,6 +30,11 @@ module Y2Security
       LINK_DIALOG = "security-policy".freeze
 
       class << self
+        # Collection of issues found for enabled policies
+        #
+        # The list of issues is shared by SecurityPolicyProposal instances.
+        #
+        # @return [IssuesCollection]
         def issues
           @issues ||= IssuesCollection.new
         end
@@ -44,6 +49,7 @@ module Y2Security
         textdomain "security"
       end
 
+      # @see Installation::ProposalClient#description
       def description
         {
           # Proposal title
@@ -54,6 +60,7 @@ module Y2Security
         }
       end
 
+      # @see Installation::ProposalClient#make_proposal
       def make_proposal(_attrs)
         check_security_policies
         {
@@ -64,12 +71,14 @@ module Y2Security
         }
       end
 
+      # @see Installation::ProposalClient#preformatted_proposal
       def preformatted_proposal
         Yast::HTML.List(
           policies.map { |p| policy_link(p) }
         )
       end
 
+      # @see Installation::ProposalClient#ask_user
       def ask_user(param)
         action, id = parse_link(param["chosen_id"])
         case action
@@ -88,6 +97,11 @@ module Y2Security
 
     private
 
+      # Returns the list of valid links for the proposal
+      #
+      # The list includes links to enable, disable and automatically fix issues.
+      #
+      # @return [Array<String>] 
       def links
         main_links = policies.each_with_object([]) do |policy, all|
           all << action_link("enable", policy.id)
@@ -99,14 +113,27 @@ module Y2Security
         end.compact
       end
 
+      # Parses a link
+      #
+      # @param link [Array<String, String>] An array containing the the action
+      #   and the id of the element to act on
+      # @see #ask_user
       def parse_link(link)
         link.delete_prefix("#{LINK_DIALOG}--").split(":")
       end
 
+      # Builds a link
+      #
+      # @param action [String] Action ("enable", "disable" or "fix")
+      # @param id [#to_s] id of the element to act on
+      # @return [String]
       def action_link(action, id)
         "#{LINK_DIALOG}--#{action}:#{id}"
       end
 
+      # Convenience method to get the instance of the policies manager
+      #
+      # @return [Y2Security::SecurityPolicies::Manager]
       def policies_manager
         Y2Security::SecurityPolicies::Manager.instance
       end
@@ -134,12 +161,21 @@ module Y2Security
         policies_manager.disable_policy(policy) if policy
       end
 
+      # Returns a warning message when policies issues are found
+      #
+      # @return [String,nil] Warning message or nil if no issues were found
       def warning_message
         return nil if policies_manager.enabled_policies.none? || all_issues.empty?
 
         _("The system does not comply with the security policy.")
       end
 
+      # Builds a link to act on a policy
+      #
+      # A policy can be enabled, disabled or fixed (if possible)
+      #
+      # @param policy [Y2Security::SecurityPolicies::Policy]
+      # @return [String]
       def policy_link(policy)
         if policies_manager.enabled_policy?(policy)
           format(
@@ -158,14 +194,21 @@ module Y2Security
         end
       end
 
-      def all_issues
-        issues.all
-      end
-
+      # Returns the warning level
+      #
+      # Always blocker issues
+      #
+      # @return [Symbol] :blocker
       def warning_level
         :blocker
       end
 
+      # Runs the security policies checks
+      #
+      # Calling this method updates the list of issues in
+      # Y2Security::Clients::SecurityProposalProposal.issues.
+      #
+      # @see Y2Security::SecurityPolicies::Manager#issues
       def check_security_policies
         self.class.issues = policies_manager.issues
       end
@@ -180,11 +223,21 @@ module Y2Security
         end
       end
 
-      def fix_issue(id)
-        issue = all_issues[id]
+      # Tries to fix the given issue in the given position
+      #
+      # @param idx [Integer] 
+      # @return [Y2Security::SecurityPolicies::Issue]
+      # @see #all_issues
+      def fix_issue(idx)
+        issue = all_issues[idx]
         issue&.fix
       end
 
+      # Returns the HTML representation of a list of issues
+      #
+      # @param issues [Array<Y2Security::SecurityPolicies::Issue>]
+      # @return [String]
+      # @see Yast::HTML.List
       def issues_list(issues)
         items = issues.each_with_index.map do |issue, idx|
           next issue.message unless issue.action?
@@ -201,8 +254,14 @@ module Y2Security
         Yast::HTML.List(items)
       end
 
+      # Convenience method to access the list of found issues
       def issues
         self.class.issues
+      end
+
+      # Returns the list of issues
+      def all_issues
+        issues.all
       end
     end
   end
