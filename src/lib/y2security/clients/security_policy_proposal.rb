@@ -101,7 +101,7 @@ module Y2Security
       #
       # The list includes links to enable, disable and automatically fix issues.
       #
-      # @return [Array<String>] 
+      # @return [Array<String>]
       def links
         main_links = policies.each_with_object([]) do |policy, all|
           all << action_link("enable", policy.id)
@@ -225,7 +225,7 @@ module Y2Security
 
       # Tries to fix the given issue in the given position
       #
-      # @param idx [Integer] 
+      # @param idx [Integer]
       # @return [Y2Security::SecurityPolicies::Issue]
       # @see #all_issues
       def fix_issue(idx)
