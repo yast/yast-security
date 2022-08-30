@@ -16,9 +16,13 @@
 #
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
-#
+
+require "yast"
 require "installation/proposal_client"
 require "y2security/security_policies/manager"
+require "y2security/security_policies/scopes"
+
+Yast.import "Wizard"
 
 module Y2Security
   module Clients
@@ -90,6 +94,8 @@ module Y2Security
           refresh_packages
         when "fix"
           fix_issue(id.to_i)
+        when "storage"
+          storage_client
         end
 
         { "workflow_result" => :again }
@@ -99,7 +105,7 @@ module Y2Security
 
       # Returns the list of valid links for the proposal
       #
-      # The list includes links to enable, disable and automatically fix issues.
+      # The list includes links to enable, disable and fix issues.
       #
       # @return [Array<String>]
       def links
@@ -109,7 +115,11 @@ module Y2Security
         end
 
         main_links + all_issues.each_with_index.map do |issue, idx|
-          issue.action? ? action_link("fix", idx) : nil
+          if issue.action?
+            action_link("fix", idx)
+          elsif storage_issue?(issue)
+            action_link("storage", idx)
+          end
         end.compact
       end
 
@@ -239,19 +249,50 @@ module Y2Security
       # @return [String]
       # @see Yast::HTML.List
       def issues_list(issues)
-        items = issues.each_with_index.map do |issue, idx|
-          next issue.message unless issue.action?
+        items = issues.each_with_index.map { |issue, idx| issue_html(issue, idx) }
 
-          format(
-            # TRANSLATORS: 'issue' is a security policy issue description;
-            #  'link' is just an HTML-like link
-            _("%{issue} (<a href=\"%{link}\">%{action}</a>)"),
-            issue:  issue.message,
-            link:   action_link("fix", idx),
-            action: issue.action.message
-          )
-        end
         Yast::HTML.List(items)
+      end
+
+      # HTML representation of the issue
+      #
+      # @param issue [Y2Security::SecurityPolicies::Issue]
+      # @param idx [Integer]
+      #
+      # @return [String]
+      def issue_html(issue, idx)
+        message = issue.message
+        link = nil
+        action = nil
+
+        return message if !issue.action? && !storage_issue?(issue)
+
+        if issue.action?
+          link = action_link("fix", idx)
+          action = issue.action.message
+        elsif storage_issue?(issue)
+          link = action_link("storage", idx)
+          action = _("open partitioning")
+        end
+
+        format(
+          # TRANSLATORS: 'issue' is a security policy issue description;
+          #  'link' is just an HTML-like link
+          _("%{issue} (<a href=\"%{link}\">%{action}</a>)"),
+          issue:  message,
+          link:   link,
+          action: action
+        )
+      end
+
+      # Whether the given issue is a storage issue
+      #
+      # @param issue [Y2Security::SecurityPolicies::Issue]
+      # @return [Boolean]
+      def storage_issue?(issue)
+        return false unless issue.scope?
+
+        issue.scope.is_a?(SecurityPolicies::Scopes::Storage)
       end
 
       # Convenience method to access the list of found issues
@@ -265,6 +306,21 @@ module Y2Security
       # the list, so we need to be sure that the list does not change.
       def all_issues
         @all_issues ||= issues.all
+      end
+
+      # Runs the storage client, opening a new wizard dialog with only Cancel and Accept buttons.
+      #
+      # @return [Symbol] client result
+      def storage_client
+        Yast::Wizard.OpenAcceptDialog
+
+        # It is necessary to enable back and next for the Guided Setup wizard
+        Yast::WFM.CallFunction(
+          "inst_disk_proposal",
+          [{ "enable_back" => true, "enable_next" => true }]
+        )
+      ensure
+        Yast::Wizard.CloseDialog
       end
     end
   end

@@ -53,10 +53,13 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
       it "returns an issue per each active wireless connection" do
         issues = subject.validate(scope)
         expect(issues.size).to eq(1)
-        message = issues.first.message
-        expect(message).to match(/Wireless connections/)
-        expect(message).to include("wlan0")
-        expect(message).to_not include("wlan1")
+
+        issue = issues.first
+
+        expect(issue.message).to match(/Wireless connections/)
+        expect(issue.message).to include("wlan0")
+        expect(issue.message).to_not include("wlan1")
+        expect(issue.scope).to eq(scope)
       end
     end
 
@@ -65,50 +68,69 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
 
       let(:devicegraph) { Y2Storage::StorageManager.instance.staging }
 
-      context "when a file system is not encrypted" do
+      context "when there are not-encrypted and mounted file systems" do
         before do
           fake_storage_scenario("plain.yml")
         end
 
-        it "returns an issue listing the unencrypted file systems" do
+        it "returns an issue for missing encryption" do
           issues = subject.validate(scope)
-          expect(issues.size).to eq(1)
-          message = issues.first.message
-          expect(message).to include "/"
-          expect(message).to include "swap"
+
+          expect(issues.map(&:message)).to include(an_object_matching(/not encrypted: \/, swap/))
+          expect(issues.map(&:scope)).to all(eq(scope))
+        end
+
+        it "the issue does not include /boot/efi" do
+          issues = subject.validate(scope)
+
+          expect(issues.map(&:message))
+            .to_not include(an_object_matching(/not encrypted:.*efi.*/))
         end
       end
 
-      context "when all file systems are encrypted" do
+      context "when all mounted file systems are encrypted" do
         before do
           fake_storage_scenario("gpt_encryption.yml")
         end
 
-        it "returns no issue" do
+        it "does not return an issue for missing encryption" do
           issues = subject.validate(scope)
-          expect(issues).to be_empty
+
+          expect(issues.map(&:message))
+            .to_not include(an_object_matching(/not encrypted/))
         end
       end
 
-      context "when all file systems are encrypted except /boot/efi" do
+      context "when /home and/or /var mount points are missing" do
         before do
-          fake_storage_scenario("efi.yml")
+          fake_storage_scenario("plain.yml")
         end
 
-        it "returns no issues" do
+        it "returns an issue for missing mount points" do
           issues = subject.validate(scope)
-          expect(issues).to be_empty
+
+          expect(issues.map(&:message))
+            .to include(an_object_matching(/must be a separate mount point for: \/home, \/var/))
+          expect(issues.map(&:scope)).to all(eq(scope))
         end
       end
 
-      context "when the file system is included in an encrypted LVM VG" do
+      context "when neither /home nor /var mount points are missing" do
         before do
-          fake_storage_scenario("encrypted_lvm.yml")
+          fake_storage_scenario("plain.yml")
+
+          sda1 = devicegraph.find_by_name("/dev/sda1")
+          sda1.mount_point.path = "/home"
+
+          sda3 = devicegraph.find_by_name("/dev/sda3")
+          sda3.mount_point.path = "/var"
         end
 
-        it "returns no issues" do
+        it "does not return an issue for missing mount points" do
           issues = subject.validate(scope)
-          expect(issues).to be_empty
+
+          expect(issues.map(&:message))
+            .to_not include(an_object_matching(/must be a separate mount point/))
         end
       end
     end
@@ -138,7 +160,11 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
       it "returns an issue pointing that the firewall is not enabled" do
         issues = subject.validate(scope)
         expect(issues.size).to eq(1)
-        expect(issues.first.message).to include("Firewall is not enabled")
+
+        issue = issues.first
+
+        expect(issue.message).to include("Firewall is not enabled")
+        expect(issue.scope).to eq(scope)
       end
     end
   end
@@ -171,7 +197,10 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
         it "returns an issue pointing that the bootloader password must be set" do
           issues = subject.validate(scope)
           expect(issues.size).to eq(2)
-          expect(issues.first.message).to include("Bootloader password must be set")
+
+          issue = issues.first
+          expect(issue.message).to include("Bootloader password must be set")
+          expect(issue.scope).to eq(scope)
         end
       end
 
@@ -192,8 +221,11 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
              " must be set as restricted" do
             issues = subject.validate(scope)
             expect(issues.size).to eq(1)
-            expect(issues.first.message)
-              .to include("Bootloader menu editing must be set as restricted")
+
+            issue = issues.first
+
+            expect(issue.message).to include("Bootloader menu editing must be set as restricted")
+            expect(issue.scope).to eq(scope)
           end
         end
       end

@@ -65,8 +65,11 @@ module Y2Security
         id == value.to_sym
       end
 
-      # Validates the rules of the policy and gives the issues found for the given scope (or all
-      # scopes if no scope is given)
+      # Checks the rules of the policy and returns the issues found for the given scope (or for all
+      # scopes if none is given)
+      #
+      # @note Only rules that need to be applied during installation are checked. The rest of rules
+      #   are expected to be checked and fixed by other tools after the installation.
       #
       # @param scope [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall, nil]
       # @return [Array<Issue>]

@@ -58,37 +58,57 @@ module Y2Security
 
     # Represents an issue related to a security policy
     #
-    # An issue can have an associated action to remedy the issue.
+    # An issue can have an associated action to remedy the issue and a scope.
     #
-    # @example Create an issue with no associated action
+    # @example Create an issue without associated action nor scope
     #   issue = Issue.new(_("The bootloader does not have a password"))
-    #   issue.action #=> nil
+    #   issue.action  #=> nil
+    #   issue.scope   #=> nil
     #
-    # @example Create an issue with an associated action
+    # @example Create an issue with an associated action and scope
     #   action = Action.new(_("enable the firewall")) do
     #     Installation::SecuritySettings.enable_firewall!
     #   end
-    #   issue = Issue.new(_("The firewall is not enabled"), action)
+    #   scope = Scopes::Storage.new
+    #   issue = Issue.new(_("The firewall is not enabled"), action: action, scope: scope)
     #   issue.fix
     class Issue
-      # @return [String] Textual description of the issue
+      # Textual description of the issue
+      #
+      # @return [String]
       attr_reader :message
 
-      # @return [Action] Remediation action
+      # Remediation action
+      #
+      # @return [Action]
       attr_reader :action
+
+      # Scope of the issue
+      #
+      # @return [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall, nil]
+      attr_reader :scope
 
       # @param message [String] Issue message
       # @param action [Action] Action to remedy the issue
-      def initialize(message, action = nil)
+      # @param scope [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall, nil]
+      def initialize(message, action: nil, scope: nil)
         @message = message
         @action = action
+        @scope = scope
       end
 
-      # Determines whether the issue has an remediation action
+      # Determines whether the issue has a remediation action
       #
       # @return [Boolean]
       def action?
         !!@action
+      end
+
+      # Whether the issue has a scope
+      #
+      # @return [Boolean]
+      def scope?
+        !!@scope
       end
 
       # Fixes the problem by running the action

@@ -101,7 +101,8 @@ describe Y2Security::SecurityPolicies::Issue do
   describe "#action?" do
     context "when the issue has an associated action" do
       let(:action) { instance_double(Y2Security::SecurityPolicies::Action) }
-      subject { described_class.new("Some issue", action) }
+
+      subject { described_class.new("Some issue", action: action) }
 
       it "returns true" do
         expect(subject.action?).to eq(true)
@@ -113,6 +114,26 @@ describe Y2Security::SecurityPolicies::Issue do
 
       it "returns false" do
         expect(subject.action?).to eq(false)
+      end
+    end
+  end
+
+  describe "#scope?" do
+    context "when the issue has an associated scope" do
+      let(:scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Storage) }
+
+      subject { described_class.new("Some issue", scope: scope) }
+
+      it "returns true" do
+        expect(subject.scope?).to eq(true)
+      end
+    end
+
+    context "when the issue has no associated scope" do
+      subject { described_class.new("Some issue") }
+
+      it "returns false" do
+        expect(subject.scope?).to eq(false)
       end
     end
   end

@@ -21,6 +21,7 @@
 require_relative "../../test_helper"
 require "y2security/clients/security_policy_proposal"
 require "y2security/security_policies"
+require "y2storage/devicegraph"
 
 describe Y2Security::Clients::SecurityPolicyProposal do
   subject(:client) { described_class.new }
@@ -157,7 +158,9 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
       let(:issues) { [issue] }
 
-      let(:issue) { Y2Security::SecurityPolicies::Issue.new("The firewall is disabled", action) }
+      let(:issue) do
+        Y2Security::SecurityPolicies::Issue.new("The firewall is disabled", action: action)
+      end
 
       issue_fixed = false
 
@@ -171,6 +174,32 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           "chosen_id" => "security-policy--fix:0"
         )
         expect(issue_fixed).to eq(true)
+      end
+    end
+
+    context "when the user asks to open the partitioning client" do
+      before do
+        policies_manager.enable_policy(disa_stig_policy)
+
+        allow(disa_stig_policy).to receive(:validate).and_return(issues)
+
+        allow(Yast::Wizard).to receive(:OpenAcceptDialog)
+        allow(Yast::Wizard).to receive(:CloseDialog)
+      end
+
+      let(:issues) { [issue] }
+
+      let(:issue) { Y2Security::SecurityPolicies::Issue.new("Storage issue", scope: scope) }
+
+      let(:scope) { Y2Security::SecurityPolicies::Scopes::Storage.new(devicegraph: devicegraph) }
+
+      let(:devicegraph) { instance_double(Y2Storage::Devicegraph) }
+
+      it "opens the partitioning" do
+        expect(Yast::WFM).to receive(:CallFunction).with("inst_disk_proposal", anything)
+
+        subject.make_proposal({})
+        subject.ask_user("chosen_id" => "security-policy--storage:0")
       end
     end
   end

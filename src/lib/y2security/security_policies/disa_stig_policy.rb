@@ -45,13 +45,13 @@ module Y2Security
       def issues_for(scope)
         case scope
         when Scopes::Network
-          network_issues(scope.config)
+          network_issues(scope)
         when Scopes::Storage
-          storage_issues(scope.devicegraph)
+          storage_issues(scope)
         when Scopes::Firewall
-          firewall_issues(scope.security_settings)
+          firewall_issues(scope)
         when Scopes::Bootloader
-          bootloader_issues(scope.bootloader)
+          bootloader_issues(scope)
         else
           []
         end
@@ -61,8 +61,10 @@ module Y2Security
       #
       # * Wireless devices are not supported
       #
+      # @param scope [Scopes::Network]
       # @return [Array<Issue>]
-      def network_issues(config)
+      def network_issues(scope)
+        config = scope.config
         conns = find_wireless_connections(config)
         return [] if conns.empty?
 
@@ -73,7 +75,7 @@ module Y2Security
             conn.startmode = Y2Network::Startmode.create("off")
             config.add_or_update_connection_config(conn)
           end
-          all << Issue.new(message, action)
+          all << Issue.new(message, action: action, scope: scope)
         end
       end
 
@@ -93,60 +95,81 @@ module Y2Security
       PLAIN_MOUNT_POINTS = ["/boot/efi"].freeze
       private_constant :PLAIN_MOUNT_POINTS
 
+      # List of mount points that should exist
+      SEPARATE_MOUNT_POINTS = ["/home", "/var"].freeze
+      private_constant :SEPARATE_MOUNT_POINTS
+
       # Returns the issues in the partitioning proposal
       #
-      # * Full disk encryption is required
-      #
+      # @param scope [Scopes::Storage]
       # @return [Array<Issue>]
-      def storage_issues(devicegraph)
-        plain_filesystems = devicegraph.filesystems.select do |fs|
-          mp = fs.mount_point
-          next if mp.nil? || PLAIN_MOUNT_POINTS.include?(mp.path)
-
-          plain_filesystem?(fs)
-        end
-
-        return [] if plain_filesystems.empty?
-
-        mount_paths = plain_filesystems.map(&:mount_path)
-        [
-          Issue.new(
-            format(
-              # TRANSLATORS: %s is a list of mount points
-              _("The following file systems are not encrypted: %s"), mount_paths.join(", ")
-            )
-          )
-        ]
+      def storage_issues(scope)
+        [missing_encryptions_issue(scope), missing_mount_points_issue(scope)].compact
       end
 
-      # Determines whether the file system is encrypted or plain
+      # Issue for missing encryption in mounted filesystems
       #
-      # A file system might not be encrypted by itself, but belong to
-      # something that it is (like a LVM volume group).
+      # @param scope [Scopes::Storage]
+      # @return [Issue, nil] nil if no missing encryption
+      def missing_encryptions_issue(scope)
+        blk_filesystems = blk_filesystems_with_missing_encryption(scope.devicegraph)
+        paths = blk_filesystems.map(&:mount_path).uniq.sort
+
+        return nil if paths.none?
+
+        Issue.new(
+          format(_("The following file systems are not encrypted: %s"), paths.join(", ")),
+          scope: scope
+        )
+      end
+
+      # Issue for separate mount points
       #
-      # @param filesystem [Y2Storage::Filesystems::Base] Determines whether a file system is
-      #   encrypted or not
-      # @return [Boolean] true if the file system is plain; false otherwise
-      def plain_filesystem?(filesystem)
-        filesystem.ancestors.none? { |d| d.respond_to?(:encrypted?) && d.encrypted? }
+      # @param scope [Scopes::Storage]
+      # @return [Issue, nil] nil if no missing separate mount points
+      def missing_mount_points_issue(scope)
+        paths = missing_mount_paths(scope.devicegraph).uniq.sort
+
+        return nil if paths.none?
+
+        Issue.new(
+          format(_("There must be a separate mount point for: %s"), paths.join(", ")),
+          scope: scope
+        )
+      end
+
+      def blk_filesystems_with_missing_encryption(devicegraph)
+        devicegraph.blk_filesystems.select { |f| missing_encryption?(f) }
+      end
+
+      def missing_encryption?(blk_filesystem)
+        return false if blk_filesystem.encrypted? || blk_filesystem.mount_point.nil?
+
+        !PLAIN_MOUNT_POINTS.include?(blk_filesystem.mount_path)
+      end
+
+      def missing_mount_paths(devicegraph)
+        mount_paths = devicegraph.mount_points.map(&:path)
+
+        SEPARATE_MOUNT_POINTS - mount_paths
       end
 
       # Returns the issues in the firewall proposal
       #
       # * Firewall must be enabled
       #
+      # @param scope [Scopes::Firewall]
       # @return [Array<Issue>]
-      def firewall_issues(security_settings)
+      def firewall_issues(scope)
+        security_settings = scope.security_settings
+
         return [] if !!security_settings&.enable_firewall
 
-        [
-          Issue.new(
-            _("Firewall is not enabled"),
-            Action.new(_("enable the firewall")) do
-              security_settings.enable_firewall!
-            end
-          )
-        ]
+        action = Action.new(_("enable the firewall")) do
+          security_settings.enable_firewall!
+        end
+
+        [Issue.new(_("Firewall is not enabled"), action: action, scope: scope)]
       end
 
       # Returns the issues in the bootloader proposal
@@ -154,8 +177,10 @@ module Y2Security
       # * Bootloader password must be set
       # * Bootloader menu editing must be set as restricted
       #
+      # @param scope [Scopes::Bootloader]
       # @return [Array<Issue>]
-      def bootloader_issues(bootloader)
+      def bootloader_issues(scope)
+        bootloader = scope.bootloader
         issues = []
         # When there is no Bootloader selected then the user will be in charge of configuring it
         # himself therefore we will not add any issue there. (e.g. Bootloader::NoneBootloader)
@@ -163,15 +188,11 @@ module Y2Security
 
         password = bootloader.password
         unless password&.used?
-          issues << Issue.new(
-            _("Bootloader password must be set")
-          )
+          issues << Issue.new(_("Bootloader password must be set"), scope: scope)
         end
 
         if !password || password.unrestricted
-          issues << Issue.new(
-            _("Bootloader menu editing must be set as restricted")
-          )
+          issues << Issue.new(_("Bootloader menu editing must be set as restricted"), scope: scope)
         end
 
         issues
