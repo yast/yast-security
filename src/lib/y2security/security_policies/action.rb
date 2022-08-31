@@ -29,12 +29,14 @@ module Y2Security
     #       conn.startmode = Y2Network::Startmode.create("off")
     #     end
     #   end
-    #
-    # TODO: undo
     class Action
-      # @return [String] Textual description of the action
+      # Textual description of the action
+      #
+      # @return [String]
       attr_reader :message
 
+      # Constructor
+      #
       # @param message [String] Action message
       # @param block [Proc] Code to remedy the issue
       def initialize(message, &block)

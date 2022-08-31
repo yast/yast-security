@@ -28,7 +28,9 @@ require "bootloader/grub2base"
 
 module Y2Security
   module SecurityPolicies
-    # DISA STIG Security Policy
+    # DISA STIG Security Policy.
+    # DISA = US Defense Information Systems Agency
+    # STIG = Security Technical Implementation Guides
     class DisaStigPolicy < Policy
       include Yast::I18n
 
@@ -36,6 +38,9 @@ module Y2Security
       def initialize
         textdomain "security"
 
+        # TRANSLATORS: This is a security policy name.
+        #   "Defense Information Systems Agency" is from the USA, https://disa.mil/
+        #   STIG = Security Technical Implementation Guides
         super(:disa_stig, _("Defense Information Systems Agency STIG"), ["scap-security-guide"])
       end
 

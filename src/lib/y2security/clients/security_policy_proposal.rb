@@ -235,9 +235,9 @@ module Y2Security
 
       # Tries to fix the given issue in the given position
       #
-      # @param idx [Integer]
-      # @return [Y2Security::SecurityPolicies::Issue]
       # @see #all_issues
+      #
+      # @param idx [Integer]
       def fix_issue(idx)
         issue = all_issues[idx]
         issue&.fix
@@ -245,9 +245,10 @@ module Y2Security
 
       # Returns the HTML representation of a list of issues
       #
+      # @see Yast::HTML.List
+      #
       # @param issues [Array<Y2Security::SecurityPolicies::Issue>]
       # @return [String]
-      # @see Yast::HTML.List
       def issues_list(issues)
         items = issues.each_with_index.map { |issue, idx| issue_html(issue, idx) }
 
@@ -265,7 +266,7 @@ module Y2Security
         link = nil
         action = nil
 
-        return message if !issue.action? && !storage_issue?(issue)
+        return message unless issue.action? || storage_issue?(issue)
 
         if issue.action?
           link = action_link("fix", idx)

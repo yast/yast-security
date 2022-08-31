@@ -20,6 +20,14 @@
 module Y2Security
   module SecurityPolicies
     # Scopes for the validation of a security policy
+    #
+    # Scopes are used to check the policy rules associated to a specific area (e.g., network,
+    # storage, etc). This is useful for clients that are interested in a subset of rules, for
+    # example the storage rules in the Expert Partitioner.
+    #
+    # Note that there is no base class for scopes. For now there is nothing to share among them.
+    # Moreover, the check code of the policies always knows what kind the scope it expects, so there
+    # is no need of a common API for scopes.
     module Scopes
     end
   end

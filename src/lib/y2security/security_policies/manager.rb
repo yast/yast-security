@@ -17,6 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "singleton"
 require "y2security/security_policies/disa_stig_policy"
 require "y2security/security_policies/issue"
@@ -26,6 +27,8 @@ module Y2Security
     # Class to manage security policies
     class Manager
       include Singleton
+
+      include Yast::Logger
 
       # Environment variable to enable security policies
       #
@@ -121,6 +124,9 @@ module Y2Security
       # @return [Policy, nil]
       def policy_from_env(value)
         return find_policy(:disa_stig) if value.match?(/\Adisa_stig\z/i)
+
+        log.warn("Security policy #{value} not found.")
+        nil
       end
 
       # Values indicated with the environment variable ENV_SECURITY_POLICIES
