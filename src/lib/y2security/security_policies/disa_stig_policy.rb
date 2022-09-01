@@ -64,7 +64,8 @@ module Y2Security
 
       # Returns the issues in the network configuration
       #
-      # * Wireless devices are not supported
+      # Rules:
+      #   * Deactivate Wireless Network Interfaces (SLES-15-010380).
       #
       # @param scope [Scopes::Network]
       # @return [Array<Issue>]
@@ -104,6 +105,11 @@ module Y2Security
       private_constant :SEPARATE_MOUNT_POINTS
 
       # Returns the issues in the partitioning proposal
+      #
+      # Rules:
+      #   * All file systems are encrypted (except /boot/efi) (SLES-15-010330).
+      #   * The system has a separate mount point for /home (SLES-15-040200).
+      #   * The system has a separate mount point for /var (SLES-15-040210).
       #
       # @param scope [Scopes::Storage]
       # @return [Array<Issue>]
@@ -160,7 +166,8 @@ module Y2Security
 
       # Returns the issues in the firewall proposal
       #
-      # * Firewall must be enabled
+      # Rules:
+      #   * Verify firewalld is enabled (SLES-15-010220).
       #
       # @param scope [Scopes::Firewall]
       # @return [Array<Issue>]
@@ -178,8 +185,9 @@ module Y2Security
 
       # Returns the issues in the bootloader proposal
       #
-      # * Bootloader password must be set
-      # * Bootloader menu editing must be set as restricted
+      # Rules:
+      #   * A bootloader password for grub2 must be configured and menu editing is restricted (UEFI)
+      #    (SLES-15-010200).
       #
       # @param scope [Scopes::Bootloader]
       # @return [Array<Issue>]
