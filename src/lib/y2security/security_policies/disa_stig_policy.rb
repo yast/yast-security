@@ -71,10 +71,9 @@ module Y2Security
       def network_issues(scope)
         config = scope.config
         conns = find_wireless_connections(config)
-        return [] if conns.empty?
 
         conns.each_with_object([]) do |conn, all|
-          message = format(_("Wireless connections are not allowed: %s"), conn.name)
+          message = format(_("Wireless network interfaces must be deactivated: %s"), conn.name)
           action = Action.new(_(format("disable %s device", conn.name))) do
             conn = config.connections.by_name(conn.name)
             conn.startmode = Y2Network::Startmode.create("off")
@@ -86,7 +85,7 @@ module Y2Security
 
       # Returns wireless connections which are not disabled
       #
-      # @return [Array<Y2Network::ConnectionConfig::Wireless]
+      # @return [Array<Y2Network::ConnectionConfig::Wireless>]
       def find_wireless_connections(config)
         return [] if config.nil?
 

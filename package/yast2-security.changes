@@ -1,7 +1,8 @@
 -------------------------------------------------------------------
 Mon Aug 29 13:14:15 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
-- Add support for security policies validation (jsc#SLE-24764).
+- Add support for DISA STIG security policy validation
+  (jsc#SLE-24764).
 - 4.4.15
 
 -------------------------------------------------------------------

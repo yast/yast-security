@@ -56,7 +56,7 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
 
         issue = issues.first
 
-        expect(issue.message).to match(/Wireless connections/)
+        expect(issue.message).to match(/Wireless network interfaces/)
         expect(issue.message).to include("wlan0")
         expect(issue.message).to_not include("wlan1")
         expect(issue.scope).to eq(scope)
