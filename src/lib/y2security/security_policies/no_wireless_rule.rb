@@ -36,12 +36,15 @@ module Y2Security
         config ||= default_config
         return [] if config.nil?
 
-        conns = find_wireless_connections(config)
-        conns.each_with_object([]) do |conn, all|
-          message = format(_("Wireless network interfaces must be deactivated: %s"), conn.name)
-          action = action_for(config, conn)
-          all << Issue.new(message, action: action, scope: scope)
-        end
+        wireless = find_wireless_connections(config)
+        return nil if wireless.empty?
+
+        names = wireless.map(&:name)
+        Issue.new(
+          format(_("Wireless network interfaces must be deactivated: %s"), names),
+          action: action_for(config, names),
+          scope:  :network
+        )
       end
 
     private
@@ -59,12 +62,16 @@ module Y2Security
       # Build an action to disable a connection
       #
       # @param config [Y2Network::Config] Network configuration
-      # @param conn   [Y2Network::ConnectionConfig]
-      def action_for(config, conn)
-        Action.new(_(format("disable %s device", conn.name))) do
-          conn = config.connections.by_name(conn.name)
-          conn.startmode = Y2Network::Startmode.create("off")
-          config.add_or_update_connection_config(conn)
+      # @param conn   [Array<Y2Network::ConnectionConfig>]
+      def action_for(config, names)
+        Action.new(_(format("disable wireless interfaces"))) do
+          names.each do |name|
+            conn = config.connections.by_name(name)
+            next if conn.nil?
+
+            conn.startmode = Y2Network::Startmode.create("off")
+            config.add_or_update_connection_config(conn)
+          end
         end
       end
 

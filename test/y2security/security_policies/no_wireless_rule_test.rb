@@ -46,10 +46,7 @@ describe Y2Security::SecurityPolicies::NoWirelessRule do
     end
 
     it "returns an issue per each active wireless connection" do
-      issues = subject.validate(network_config)
-      expect(issues.size).to eq(1)
-
-      issue = issues.first
+      issue = subject.validate(network_config)
 
       expect(issue.message).to match(/Wireless network interfaces/)
       expect(issue.message).to include("wlan0")
