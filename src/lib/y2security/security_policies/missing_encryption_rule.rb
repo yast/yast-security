@@ -18,21 +18,21 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policies/rule"
+require "y2security/security_policies/issue"
 require "y2storage"
 
 module Y2Security
   module SecurityPolicies
+    # Rule to check that all file systems are encrypted (except /boot/efi) (SLES-15-010330).
     class MissingEncryptionRule < Rule
-      attr_reader :mount_point
-
       def initialize
-        @mount_point = mount_point
         super("SLES-15-010330", :storage)
       end
 
-      def validate
-        # NOTE: it could be injected
-        devicegraph = Y2Storage::StorageManager.instance.staging
+      # @param devicegraph [Y2Storage::Devicegraph] Devicegraph to check
+      # @see Rule#validate
+      def validate(devicegraph = nil)
+        devicegraph ||= Y2Storage::StorageManager.instance.staging
         blk_filesystems = blk_filesystems_with_missing_encryption(devicegraph)
         paths = blk_filesystems.map(&:mount_path).uniq.sort
 
@@ -62,4 +62,3 @@ module Y2Security
     end
   end
 end
-

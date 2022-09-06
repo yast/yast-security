@@ -21,6 +21,7 @@ require "yast"
 
 module Y2Security
   module SecurityPolicies
+    # Represents a rule for a security policy
     class Rule
       include Yast::I18n
 
@@ -31,7 +32,7 @@ module Y2Security
       attr_reader :scope
 
       # @param id [String] Rule ID (e.g., "SLES-15-010190")
-      # @param scope [Symbol] Scope 
+      # @param scope [Symbol] Scope
       def initialize(id, scope)
         textdomain "security"
 

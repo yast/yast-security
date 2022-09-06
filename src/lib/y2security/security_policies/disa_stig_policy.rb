@@ -54,7 +54,7 @@ module Y2Security
           MissingMountPointRule.new("SLES-15-040210", "/var"),
           MissingMountPointRule.new("SLES-15-030810", "/var/log/audit"),
           NoWirelessRule.new,
-          MissingEncryptionRule.new,
+          MissingEncryptionRule.new
         ]
       end
 

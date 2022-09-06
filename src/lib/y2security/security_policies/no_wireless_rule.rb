@@ -17,22 +17,28 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "yast"
 require "y2security/security_policies/rule"
+require "y2security/security_policies/action"
+require "y2security/security_policies/issue"
 
 module Y2Security
   module SecurityPolicies
+    # Rule to deactivate wireless network interfaces (SLES-15-010380).
     class NoWirelessRule < Rule
       def initialize
-        super("SLES-XXX", :network)
+        super("SLES-15-010380", :network)
       end
 
-      def validate
-        config = Yast::Lan.yast_config
+      # @param config [Y2Network::Config] Network configuration to check
+      # @see Rule#validate
+      def validate(config = nil)
+        config ||= default_config
         return [] if config.nil?
 
         conns = find_wireless_connections(config)
         conns.each_with_object([]) do |conn, all|
-          message = format(_("Wireless connections are not allowed: %s"), conn.name)
+          message = format(_("Wireless network interfaces must be deactivated: %s"), conn.name)
           action = action_for(config, conn)
           all << Issue.new(message, action: action, scope: scope)
         end
@@ -46,16 +52,28 @@ module Y2Security
       def find_wireless_connections(config)
         config.connections.select do |conn|
           conn.is_a?(Y2Network::ConnectionConfig::Wireless) &&
-          conn.startmode&.name != "off"
+            conn.startmode&.name != "off"
         end
       end
 
+      # Build an action to disable a connection
+      #
+      # @param config [Y2Network::Config] Network configuration
+      # @param conn   [Y2Network::ConnectionConfig]
       def action_for(config, conn)
         Action.new(_(format("disable %s device", conn.name))) do
           conn = config.connections.by_name(conn.name)
           conn.startmode = Y2Network::Startmode.create("off")
           config.add_or_update_connection_config(conn)
         end
+      end
+
+      # Default network configuration
+      #
+      # @return [Y2Network::Config,nil]
+      def default_config
+        Yast.import "Lan"
+        Yast::Lan.yast_config
       end
     end
   end

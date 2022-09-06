@@ -18,27 +18,40 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policies/rule"
+require "y2security/security_policies/issue"
 require "y2storage"
 
 module Y2Security
   module SecurityPolicies
+    # Rule to check whether there is a separate mount point for a given path
+    #
+    # @example Check for a separate mount point for /home
+    #   rule = MissingMountPointRule.new("SLES-15-040200", "/home")
+    #   rule.validate(Y2Storage::StorageManager.instance.staging)
+    #
     class MissingMountPointRule < Rule
+      # @return [String] Mount point to check
       attr_reader :mount_point
 
+      # @param id [String] Rule ID
+      # @param mount_point [String] Mount point to check
       def initialize(id, mount_point)
         @mount_point = mount_point
         super(id, :storage)
       end
 
-      def validate
-        devicegraph = Y2Storage::StorageManager.instance.staging
+      # @param devicegraph [Y2Storage::Devicegraph] Devicegraph to check
+      # @see Rule#validate
+      def validate(devicegraph = nil)
+        devicegraph ||= Y2Storage::StorageManager.instance.staging
         paths = devicegraph.mount_points.map(&:path)
-        return [] unless paths.include?(mount_point)
+        return nil if paths.include?(mount_point)
 
         Issue.new(
           format(
-            _("There must be a separate mount point for: %s"), mount_point
-          )
+            _("There must be a separate mount point for %s"), mount_point
+          ),
+          scope: :storage
         )
       end
     end
