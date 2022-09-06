@@ -19,18 +19,11 @@
 
 require "yast"
 require "y2security/security_policies/policy"
-require "y2security/security_policies/action"
-require "y2security/security_policies/scopes"
-require "y2security/security_policies/issue"
-require "y2network/startmode"
-require "y2network/connection_config/wireless"
-require "bootloader/grub2base"
-
-require "y2security/security_policies/missing_mount_point_rule"
-require "y2security/security_policies/missing_encryption_rule"
-require "y2security/security_policies/no_wireless_rule"
-require "y2security/security_policies/firewall_enabled_rule"
 require "y2security/security_policies/bootloader_password_rule"
+require "y2security/security_policies/firewall_enabled_rule"
+require "y2security/security_policies/missing_encryption_rule"
+require "y2security/security_policies/missing_mount_point_rule"
+require "y2security/security_policies/no_wireless_rule"
 
 module Y2Security
   module SecurityPolicies
