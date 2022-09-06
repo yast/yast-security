@@ -35,18 +35,12 @@ module Y2Security
       # @see Rule#validate
       def validate(bootloader = nil)
         bootloader ||= default_bootloader
-        issues = []
-        return issues unless bootloader.is_a?(Bootloader::Grub2Base)
+        return nil unless bootloader.is_a?(Bootloader::Grub2Base)
 
         password = bootloader.password
-        unless password&.used?
-          issues << Issue.new(_("Bootloader password must be set"), scope: scope)
+        if !password&.used? || password&.unrestricted
+          Issue.new(_("Bootloader must be protected by password and menu editing must be restricted"), scope: scope)
         end
-        if !password || password.unrestricted
-          issues << Issue.new(_("Bootloader menu editing must be set as restricted"), scope: scope)
-        end
-
-        issues
       end
 
     private

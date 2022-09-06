@@ -25,8 +25,8 @@ describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
 
   context "and no Grub based bootloader is selected" do
     it "returns no issues" do
-      issues = subject.validate(bootloader)
-      expect(issues).to be_empty
+      issue = subject.validate(bootloader)
+      expect(issue).to be_nil
     end
   end
 
@@ -44,11 +44,8 @@ describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
 
     context "when a password is not set" do
       it "returns an issue pointing that the bootloader password must be set" do
-        issues = subject.validate(bootloader)
-        expect(issues.size).to eq(2)
-
-        issue = issues.first
-        expect(issue.message).to include("Bootloader password must be set")
+        issue = subject.validate(bootloader)
+        expect(issue.message).to match(/Bootloader must be protected/)
         expect(issue.scope).to eq(:bootloader)
       end
     end
@@ -58,8 +55,8 @@ describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
 
       context "and the menu editing is restricted" do
         it "returns no issues" do
-          issues = subject.validate(bootloader)
-          expect(issues).to be_empty
+          issue = subject.validate(bootloader)
+          expect(issue).to be_nil
         end
       end
 
@@ -68,12 +65,8 @@ describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
 
         it "returns an issue pointing that the bootloader menu editing" \
           " must be set as restricted" do
-            issues = subject.validate(bootloader)
-            expect(issues.size).to eq(1)
-
-            issue = issues.first
-
-            expect(issue.message).to include("Bootloader menu editing must be set as restricted")
+            issue = subject.validate(bootloader)
+            expect(issue.message).to match(/Bootloader must be protected/)
             expect(issue.scope).to eq(:bootloader)
           end
       end
