@@ -74,27 +74,20 @@ module Y2Security
       # @param scope [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall, nil]
       # @return [Array<Issue>]
       def validate(scope = nil)
-        scopes = scope ? [scope] : default_scopes
-
-        scopes.map { |s| issues_for(s) }.flatten
+        rules
+          .select { |r| r.enabled? && (scope.nil? || r.scope == scope) }
+          .map(&:validate)
+          .compact
+          .flatten
       end
 
     private
 
       def default_scopes
-        [
-          Scopes::Storage.new,
-          Scopes::Bootloader.new,
-          Scopes::Network.new,
-          Scopes::Firewall.new
-        ]
+        [:storage, :bootloader, :network, :firewall]
       end
 
-      # Issues for a specific scope
-      #
-      # @param _scope [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall, nil]
-      # @return [Array<Issue>]
-      def issues_for(_scope)
+      def rules
         []
       end
     end
