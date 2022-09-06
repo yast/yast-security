@@ -54,30 +54,12 @@ module Y2Security
           MissingMountPointRule.new("SLES-15-040210", "/var"),
           MissingMountPointRule.new("SLES-15-030810", "/var/log/audit"),
           NoWirelessRule.new,
-          MissingEncryptionRule.new
+          MissingEncryptionRule.new,
+          FirewallEnabledRule.new
         ]
       end
 
     private
-
-      # Returns the issues in the firewall proposal
-      #
-      # Rules:
-      #   * Verify firewalld is enabled (SLES-15-010220).
-      #
-      # @param scope [Scopes::Firewall]
-      # @return [Array<Issue>]
-      def firewall_issues(scope)
-        security_settings = scope.security_settings
-
-        return [] if !!security_settings&.enable_firewall
-
-        action = Action.new(_("enable the firewall")) do
-          security_settings.enable_firewall!
-        end
-
-        [Issue.new(_("Firewall is not enabled"), action: action, scope: scope)]
-      end
 
       # Returns the issues in the bootloader proposal
       #

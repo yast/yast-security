@@ -24,45 +24,6 @@ require "y2security/security_policies/disa_stig_policy"
 describe Y2Security::SecurityPolicies::DisaStigPolicy do
   include_examples "Y2Security::SecurityPolicies::Policy"
 
-  describe "#validate" do
-    context "when validating the storage scope" do
-      let(:scope) { Y2Security::SecurityPolicies::Scopes::Storage.new(devicegraph: devicegraph) }
-
-  end
-
-  context "when validating the firewall scope" do
-    let(:scope) do
-      Y2Security::SecurityPolicies::Scopes::Firewall.new(security_settings: security_settings)
-    end
-
-    let(:security_settings) do
-      instance_double("Installation::SecuritySettings", enable_firewall: enabled)
-    end
-
-    let(:enabled) { true }
-
-    context "and the firewall is enabled" do
-      it "returns no issues" do
-        issues = subject.validate(scope)
-        expect(issues).to be_empty
-      end
-    end
-
-    context "and the firewall is not enabled " do
-      let(:enabled) { false }
-
-      it "returns an issue pointing that the firewall is not enabled" do
-        issues = subject.validate(scope)
-        expect(issues.size).to eq(1)
-
-        issue = issues.first
-
-        expect(issue.message).to include("Firewall is not enabled")
-        expect(issue.scope).to eq(scope)
-      end
-    end
-  end
-
   context "when validating the bootloader scope" do
     let(:scope) { Y2Security::SecurityPolicies::Scopes::Bootloader.new(bootloader: bootloader) }
 
