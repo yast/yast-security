@@ -27,8 +27,10 @@ require "y2network/connection_config/wireless"
 require "bootloader/grub2base"
 
 require "y2security/security_policies/missing_mount_point_rule"
-require "y2security/security_policies/no_wireless_rule"
 require "y2security/security_policies/missing_encryption_rule"
+require "y2security/security_policies/no_wireless_rule"
+require "y2security/security_policies/firewall_enabled_rule"
+require "y2security/security_policies/bootloader_password_rule"
 
 module Y2Security
   module SecurityPolicies
@@ -53,39 +55,11 @@ module Y2Security
           MissingMountPointRule.new("SLES-15-040200", "/home"),
           MissingMountPointRule.new("SLES-15-040210", "/var"),
           MissingMountPointRule.new("SLES-15-030810", "/var/log/audit"),
-          NoWirelessRule.new,
           MissingEncryptionRule.new,
-          FirewallEnabledRule.new
+          NoWirelessRule.new,
+          FirewallEnabledRule.new,
+          BootloaderPasswordRule.new
         ]
-      end
-
-    private
-
-      # Returns the issues in the bootloader proposal
-      #
-      # Rules:
-      #   * A bootloader password for grub2 must be configured and menu editing is restricted (UEFI)
-      #    (SLES-15-010200).
-      #
-      # @param scope [Scopes::Bootloader]
-      # @return [Array<Issue>]
-      def bootloader_issues(scope)
-        bootloader = scope.bootloader
-        issues = []
-        # When there is no Bootloader selected then the user will be in charge of configuring it
-        # himself therefore we will not add any issue there. (e.g. Bootloader::NoneBootloader)
-        return issues unless bootloader.is_a?(Bootloader::Grub2Base)
-
-        password = bootloader.password
-        unless password&.used?
-          issues << Issue.new(_("Bootloader password must be set"), scope: scope)
-        end
-
-        if !password || password.unrestricted
-          issues << Issue.new(_("Bootloader menu editing must be set as restricted"), scope: scope)
-        end
-
-        issues
       end
     end
   end
