@@ -28,15 +28,16 @@ module Y2Security
       # @return [String]
       attr_reader :id
 
+      attr_reader :description
+
       # @return [Symbol]
       attr_reader :scope
 
       # @param id [String] Rule ID (e.g., "SLES-15-010190")
       # @param scope [Symbol] Scope
-      def initialize(id, scope)
-        textdomain "security"
-
+      def initialize(id, description, scope)
         @id = id
+        @description = description
         @scope = scope
         @enabled = true
       end
@@ -53,11 +54,15 @@ module Y2Security
         @enabled
       end
 
-      def validate
+      def pass?(_target_config)
         true
       end
 
-      def action
+      def fixable?
+        false
+      end
+
+      def fix(_target_config)
         nil
       end
     end

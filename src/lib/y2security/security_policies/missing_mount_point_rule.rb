@@ -18,7 +18,6 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policies/rule"
-require "y2security/security_policies/issue"
 require "y2storage"
 
 module Y2Security
@@ -36,23 +35,19 @@ module Y2Security
       # @param id [String] Rule ID
       # @param mount_point [String] Mount point to check
       def initialize(id, mount_point)
+        textdomain "security"
+
         @mount_point = mount_point
-        super(id, :storage)
+        super(id, format(_("There must be a separate mount point for %s"), mount_point), :storage)
       end
 
       # @param devicegraph [Y2Storage::Devicegraph] Devicegraph to check
       # @see Rule#validate
-      def validate(devicegraph = nil)
-        devicegraph ||= Y2Storage::StorageManager.instance.staging
+      def pass?(target_config)
+        devicegraph = target_config.storage
         paths = devicegraph.mount_points.map(&:path)
-        return nil if paths.include?(mount_point)
 
-        Issue.new(
-          format(
-            _("There must be a separate mount point for %s"), mount_point
-          ),
-          scope: :storage
-        )
+        paths.include?(mount_point)
       end
     end
   end

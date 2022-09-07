@@ -17,10 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "yast"
 require "y2security/security_policies/rule"
-require "y2security/security_policies/issue"
-require "bootloader/bootloader_factory"
 
 module Y2Security
   module SecurityPolicies
@@ -28,28 +25,24 @@ module Y2Security
     #  (SLES-15-010200).
     class BootloaderPasswordRule < Rule
       def initialize
-        super("SLES-15-010200", :bootloader)
+        textdomain "security"
+
+        super(
+          "SLES-15-010200",
+          _("Bootloader must be protected by password and menu editing must be restricted"),
+          :bootloader
+        )
       end
 
       # @param bootloader [Bootloader::BootloaderFactory] Bootloader configuration
       # @see Rule#validate
-      def validate(bootloader = nil)
-        bootloader ||= default_bootloader
-        return nil unless bootloader.is_a?(Bootloader::Grub2Base)
+      def pass?(target_config)
+        bootloader = target_config.bootloader
+
+        return true unless bootloader.is_a?(Bootloader::Grub2Base)
 
         password = bootloader.password
-        if !password&.used? || password&.unrestricted
-          Issue.new(_("Bootloader must be protected by password and menu editing must be restricted"), scope: scope)
-        end
-      end
-
-    private
-
-      # Default bootloader to use
-      #
-      # @return [Bootloader::BootloaderFactory]
-      def default_bootloader
-        ::Bootloader::BootloaderFactory.current
+        password&.used? && password&.unrestricted
       end
     end
   end

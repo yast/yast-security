@@ -18,33 +18,27 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policies/rule"
-require "y2security/security_policies/issue"
-require "y2security/security_policies/action"
-require "installation/security_settings"
 
 module Y2Security
   module SecurityPolicies
     # Rule to verify that the firewall is enabled (SLES-15-010220).
     class FirewallEnabledRule < Rule
       def initialize
-        super("SLES-15-010220", :security)
+        textdomain "security"
+
+        super("SLES-15-010220", _("Firewall must be enabled"), :security)
       end
 
-      def validate(security_settings = nil)
-        security_settings ||= default_security_settings
-        return nil if !!security_settings&.enable_firewall
-
-        action = Action.new(_("enable the firewall")) do
-          security_settings.enable_firewall!
-        end
-
-        Issue.new(_("Firewall is not enabled"), action: action, scope: scope)
+      def pass?(target_config)
+        !!target_config.security&.enable_firewall
       end
 
-    private
+      def fixable?
+        true
+      end
 
-      def default_security_settings
-        ::Installation::SecuritySettings.instance
+      def fix(target_config)
+        target_config.security.enable_firewall!
       end
     end
   end

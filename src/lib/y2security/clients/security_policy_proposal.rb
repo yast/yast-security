@@ -20,7 +20,7 @@
 require "yast"
 require "installation/proposal_client"
 require "y2security/security_policies/manager"
-require "y2security/security_policies/scopes"
+require "y2security/security_policies/target_config"
 
 Yast.import "Wizard"
 
@@ -31,7 +31,7 @@ module Y2Security
       include Yast::I18n
       include Yast::Logger
 
-      LINK_DIALOG = "security-policy".freeze
+      PROPOSAL_ID = "security-policy".freeze
 
       class << self
         # Collection of issues found for enabled policies
@@ -39,11 +39,11 @@ module Y2Security
         # The list of issues is shared by SecurityPolicyProposal instances.
         #
         # @return [IssuesCollection]
-        def issues
-          @issues ||= IssuesCollection.new
+        def failing_rules
+          @failing_rules ||= {}
         end
 
-        attr_writer :issues
+        attr_writer :failing_rules
       end
 
       def initialize
@@ -51,6 +51,8 @@ module Y2Security
         Yast.import "UI"
         Yast.import "HTML"
         textdomain "security"
+
+        @links_builder = LinksBuilder.new(PROPOSAL_ID)
       end
 
       # @see Installation::ProposalClient#description
@@ -60,7 +62,7 @@ module Y2Security
           "rich_text_title" => _("Security Policy"),
           # Menu entry label
           "menu_title"      => _("&Security Policy"),
-          "id"              => LINK_DIALOG
+          "id"              => PROPOSAL_ID
         }
       end
 
@@ -69,36 +71,45 @@ module Y2Security
         check_security_policies
         {
           "preformatted_proposal" => preformatted_proposal,
-          "warning_level"         => warning_level,
           "links"                 => links,
+          "warning_level"         => warning_level,
           "warning"               => warning_message
         }
-      end
-
-      # @see Installation::ProposalClient#preformatted_proposal
-      def preformatted_proposal
-        Yast::HTML.List(
-          policies.map { |p| policy_link(p) }
-        )
       end
 
       # @see Installation::ProposalClient#ask_user
       def ask_user(param)
         action, id = parse_link(param["chosen_id"])
         case action
-        when "disable"
-          disable_policy(id.to_sym)
+        when "toggle-policy"
+          toggle_policy(id.to_sym)
           refresh_packages
-        when "enable"
-          enable_policy(id.to_sym)
-          refresh_packages
-        when "fix"
-          fix_issue(id.to_i)
+        when "toggle-rule"
+          toggle_rule(id)
+        when "fix-rule"
+          fix_rule(id)
         when "storage"
           storage_client
         end
 
         { "workflow_result" => :again }
+      end
+
+      attr_reader :links_builder
+
+      # @see Installation::ProposalClient#preformatted_proposal
+      def preformatted_proposal
+        formatted_policies = policies.map do |policy|
+          enabled = policies_manager.enabled_policy?(policy)
+          rules = failing_rules[policy]
+
+          presenter = PolicyPresenter.new(policy,
+            enabled: enabled, failing_rules: rules, links_builder: links_builder)
+
+          presenter.to_html
+        end
+
+        Yast::HTML.List(formatted_policies)
       end
 
     private
@@ -109,99 +120,10 @@ module Y2Security
       #
       # @return [Array<String>]
       def links
-        main_links = policies.each_with_object([]) do |policy, all|
-          all << action_link("enable", policy.id)
-          all << action_link("disable", policy.id)
-        end
+        links = policies.map { |p| links_builder.links_for_policy(p) } +
+          failing_rules.values.flatten.map { |r| links_builder.links_for_rule(r) }
 
-        main_links + all_issues.each_with_index.map do |issue, idx|
-          if issue.action?
-            action_link("fix", idx)
-          elsif storage_issue?(issue)
-            action_link("storage", idx)
-          end
-        end.compact
-      end
-
-      # Parses a link
-      #
-      # @param link [Array<String, String>] An array containing the the action
-      #   and the id of the element to act on
-      # @see #ask_user
-      def parse_link(link)
-        link.delete_prefix("#{LINK_DIALOG}--").split(":")
-      end
-
-      # Builds a link
-      #
-      # @param action [String] Action ("enable", "disable" or "fix")
-      # @param id [#to_s] id of the element to act on
-      # @return [String]
-      def action_link(action, id)
-        "#{LINK_DIALOG}--#{action}:#{id}"
-      end
-
-      # Convenience method to get the instance of the policies manager
-      #
-      # @return [Y2Security::SecurityPolicies::Manager]
-      def policies_manager
-        Y2Security::SecurityPolicies::Manager.instance
-      end
-
-      # All policies
-      #
-      # @return [Array<Y2Security::SecurityPolicies::Policy>]
-      def policies
-        policies_manager.policies
-      end
-
-      # Enables the policy with the given id
-      #
-      # @param id [Symbol] Policy id
-      def enable_policy(id)
-        policy = policies_manager.find_policy(id)
-        policies_manager.enable_policy(policy) if policy
-      end
-
-      # Disables the policy with the given id
-      #
-      # @param id [Symbol] Policy id
-      def disable_policy(id)
-        policy = policies_manager.find_policy(id)
-        policies_manager.disable_policy(policy) if policy
-      end
-
-      # Returns a warning message when policies issues are found
-      #
-      # @return [String,nil] Warning message or nil if no issues were found
-      def warning_message
-        return nil if policies_manager.enabled_policies.none? || all_issues.empty?
-
-        _("The system does not comply with the security policy.")
-      end
-
-      # Builds a link to act on a policy
-      #
-      # A policy can be enabled, disabled or fixed (if possible)
-      #
-      # @param policy [Y2Security::SecurityPolicies::Policy]
-      # @return [String]
-      def policy_link(policy)
-        if policies_manager.enabled_policy?(policy)
-          format(
-            # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
-            _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
-            policy: policy.name,
-            link:   action_link("disable", policy.id)
-          ) + issues_list(issues.by_policy(policy))
-        else
-          format(
-            # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
-            _("%{policy} is disabled (<a href=\"%{link}\">enable</a>)"),
-            policy: policy.name,
-            link:   action_link("enable", policy.id)
-          )
-        end
+        links.flatten.compact.uniq
       end
 
       # Returns the warning level
@@ -210,7 +132,22 @@ module Y2Security
       #
       # @return [Symbol] :blocker
       def warning_level
+        rules = failing_rules.values.flatten
+
+        return :warning if rules.none? || rules.none?(&:enabled?)
+
         :blocker
+      end
+
+      # Returns a warning message when policies issues are found
+      #
+      # @return [String,nil] Warning message or nil if no issues were found
+      def warning_message
+        rules = failing_rules.values.flatten
+
+        return nil if rules.none?
+
+        _("The system does not comply with the security policy.")
       end
 
       # Runs the security policies checks
@@ -220,7 +157,40 @@ module Y2Security
       #
       # @see Y2Security::SecurityPolicies::Manager#issues
       def check_security_policies
-        self.class.issues = policies_manager.issues
+        self.class.failing_rules =
+          policies_manager.failing_rules(target_config, include_disabled: true)
+      end
+
+      # Enables the policy with the given id
+      #
+      # @param id [Symbol] Policy id
+      def toggle_policy(id)
+        policy = policies_manager.find_policy(id)
+        return unless policy
+
+        method = policies_manager.enabled_policy?(policy) ? "disable_policy" : "enable_policy"
+        policies_manager.public_send(method, policy)
+      end
+
+      def toggle_rule(id)
+        rule = find_rule(id)
+        return unless rule
+
+        rule.enabled? ? rule.disable : rule.enable
+      end
+
+      def find_rule(id)
+        failing_rules.values.flatten.find { |r| r.id == id }
+      end
+
+      # Tries to fix the given issue in the given position
+      #
+      # @see #all_issues
+      #
+      # @param idx [Integer]
+      def fix_rule(id)
+        rule = find_rule(id)
+        rule&.fix(target_config)
       end
 
       # Adds or removes the packages needed by the policy to or from the Packages Proposal
@@ -233,80 +203,36 @@ module Y2Security
         end
       end
 
-      # Tries to fix the given issue in the given position
+      # Parses a link
       #
-      # @see #all_issues
-      #
-      # @param idx [Integer]
-      def fix_issue(idx)
-        issue = all_issues[idx]
-        issue&.fix
-      end
-
-      # Returns the HTML representation of a list of issues
-      #
-      # @see Yast::HTML.List
-      #
-      # @param issues [Array<Y2Security::SecurityPolicies::Issue>]
-      # @return [String]
-      def issues_list(issues)
-        items = issues.each_with_index.map { |issue, idx| issue_html(issue, idx) }
-
-        Yast::HTML.List(items)
-      end
-
-      # HTML representation of the issue
-      #
-      # @param issue [Y2Security::SecurityPolicies::Issue]
-      # @param idx [Integer]
-      #
-      # @return [String]
-      def issue_html(issue, idx)
-        message = issue.message
-        link = nil
-        action = nil
-
-        return message unless issue.action? || storage_issue?(issue)
-
-        if issue.action?
-          link = action_link("fix", idx)
-          action = issue.action.message
-        elsif storage_issue?(issue)
-          link = action_link("storage", idx)
-          action = _("open partitioning")
-        end
-
-        format(
-          # TRANSLATORS: 'issue' is a security policy issue description;
-          #  'link' is just an HTML-like link
-          _("%{issue} (<a href=\"%{link}\">%{action}</a>)"),
-          issue:  message,
-          link:   link,
-          action: action
-        )
-      end
-
-      # Whether the given issue is a storage issue
-      #
-      # @param issue [Y2Security::SecurityPolicies::Issue]
-      # @return [Boolean]
-      def storage_issue?(issue)
-        return false unless issue.scope?
-
-        issue.scope.is_a?(SecurityPolicies::Scopes::Storage)
+      # @param link [Array<String, String>] An array containing the the action
+      #   and the id of the element to act on
+      # @see #ask_user
+      def parse_link(link)
+        link.delete_prefix("#{PROPOSAL_ID}--").split(":")
       end
 
       # Convenience method to access the list of found issues
-      def issues
-        self.class.issues
+      def failing_rules
+        self.class.failing_rules
       end
 
-      # Returns the list of issues
+      # All policies
       #
-      # The reason to hold a variable with the list is that issues are identified by its position in
-      # the list, so we need to be sure that the list does not change.
-      def all_issues
-        @all_issues ||= issues.all
+      # @return [Array<Y2Security::SecurityPolicies::Policy>]
+      def policies
+        policies_manager.policies
+      end
+
+      # Convenience method to get the instance of the policies manager
+      #
+      # @return [Y2Security::SecurityPolicies::Manager]
+      def policies_manager
+        Y2Security::SecurityPolicies::Manager.instance
+      end
+
+      def target_config
+        @target_config ||= SecurityPolicies::TargetConfig.new
       end
 
       # Runs the storage client, opening a new wizard dialog with only Cancel and Accept buttons.
@@ -322,6 +248,161 @@ module Y2Security
         )
       ensure
         Yast::Wizard.CloseDialog
+      end
+
+      class LinksBuilder
+        def initialize(dialog_id)
+          @dialog_id = dialog_id
+        end
+
+        def links_for_policy(policy)
+          [policy_toggle_link(policy)]
+        end
+
+        def links_for_rule(rule)
+          [
+            rule_toggle_link(rule),
+            rule_fix_link(rule)
+          ]
+        end
+
+        def policy_toggle_link(policy)
+          build_link("toggle-policy", policy.id)
+        end
+
+        def rule_toggle_link(rule)
+          build_link("toggle-rule", rule.id)
+        end
+
+        def rule_fix_link(rule)
+          if rule.fixable?
+            build_link("fix-rule", rule.id)
+          elsif rule.scope == :storage
+            build_link("storage")
+          end
+        end
+
+      private
+
+        attr_reader :dialog_id
+
+        # Builds a link
+        #
+        # @param action [String] Action ("enable", "disable" or "fix")
+        # @param id [#to_s] id of the element to act on
+        # @return [String]
+        def build_link(action, id = nil)
+          "#{dialog_id}--#{action}:#{id}"
+        end
+      end
+
+      class PolicyPresenter
+        include Yast::I18n
+
+        def initialize(policy, enabled:, failing_rules:, links_builder:)
+          textdomain "security"
+
+          @policy = policy
+          @policy_enabled = enabled
+          @failing_rules = failing_rules
+          @links_builder = links_builder
+        end
+
+        def to_html
+          toggle_link = links_builder.policy_toggle_link(policy)
+
+          if policy_enabled
+            format(
+              # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
+              _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
+              policy: policy.name,
+              link: toggle_link
+            ) + failing_rules_list(failing_rules)
+          else
+            format(
+              # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
+              _("%{policy} is disabled (<a href=\"%{link}\">enable</a>)"),
+              policy: policy.name,
+              link:   toggle_link
+            )
+          end
+        end
+
+      private
+
+        attr_reader :policy
+
+        attr_reader :policy_enabled
+
+        attr_reader :failing_rules
+
+        attr_reader :links_builder
+
+        # Returns the HTML representation of a list of issues
+        #
+        # @see Yast::HTML.List
+        #
+        # @param issues [Array<Y2Security::SecurityPolicies::Issue>]
+        # @return [String]
+        def failing_rules_list(rules)
+          items = rules.map { |r| RulePresenter.new(r, links_builder).to_html  }
+
+          Yast::HTML.List(items)
+        end
+      end
+
+      class RulePresenter
+        include Yast::I18n
+
+        def initialize(rule, links_builder)
+          textdomain "security"
+
+          @rule = rule
+          @links_builder = links_builder
+        end
+
+        def to_html
+          return message if actions.none?
+
+          all_actions = actions.join(", ")
+          "#{message} (#{all_actions})"
+        end
+
+      private
+
+        attr_reader :rule
+
+        attr_reader :links_builder
+
+        def message
+          "#{rule.id} #{rule.description}"
+        end
+
+        def actions
+          rule_actions = [toggle_action]
+          rule_actions << fix_action if rule.enabled? && rule.fixable?
+
+          rule_actions
+        end
+
+        def toggle_action
+          text = rule.enabled? ? _("disable rule") : _("enable rule")
+
+          build_action(text, links_builder.rule_toggle_link(rule))
+        end
+
+        def fix_action
+          link = links_builder.rule_fix_link(rule)
+          return nil unless link
+
+          text = rule.scope == :storage ? _("open partitioning") : _("fix rule")
+
+          build_action(text, link)
+        end
+
+        def build_action(text, link)
+          format("<a href=\"%s\">%s</a>", link, text)
+        end
       end
     end
   end

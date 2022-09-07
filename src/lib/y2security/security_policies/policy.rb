@@ -17,7 +17,7 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2security/security_policies/scopes"
+require "y2security/security_policies/target_config"
 
 module Y2Security
   module SecurityPolicies
@@ -47,45 +47,14 @@ module Y2Security
         @packages = packages
       end
 
-      # Compares two policies
-      #
-      # @param other [Policy]
-      # @return [Boolean]
-      def ==(other)
-        other.class == self.class && other.id == id
-      end
-
-      alias_method :eql?, :==
-
-      # Whether the given value matches with the id of the policy
-      #
-      # @param value [#to_sym]
-      # @return [Boolean]
-      def is?(value)
-        id == value.to_sym
-      end
-
-      # Checks the rules of the policy and returns the issues found for the given scope (or for all
-      # scopes if none is given)
-      #
-      # @note Only rules that need to be applied during installation are checked. The rest of rules
-      #   are expected to be checked and fixed by other tools after the installation.
-      #
-      # @param scope [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall, nil]
-      # @return [Array<Issue>]
-      def validate(scope = nil)
+      def failing_rules(config, scope: nil, include_disabled: true)
         rules
-          .select { |r| r.enabled? && (scope.nil? || r.scope == scope) }
-          .map(&:validate)
-          .compact
-          .flatten
+          .select { |r| scope.nil? || r.scope == scope }
+          .select { |r| include_disabled || r.enabled? }
+          .reject { |r| r.pass?(config) }
       end
 
     private
-
-      def default_scopes
-        [:storage, :bootloader, :network, :firewall]
-      end
 
       def rules
         []

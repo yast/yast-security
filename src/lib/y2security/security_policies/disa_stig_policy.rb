@@ -44,7 +44,7 @@ module Y2Security
       end
 
       def rules
-        @rules = [
+        @rules ||= [
           MissingMountPointRule.new("SLES-15-040200", "/home"),
           MissingMountPointRule.new("SLES-15-040210", "/var"),
           MissingMountPointRule.new("SLES-15-030810", "/var/log/audit"),
