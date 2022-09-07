@@ -18,7 +18,6 @@
 # find current contact information at www.suse.com.
 
 require "y2security/lsm/config"
-require "y2security/autoinst_profile/security_section"
 
 module Y2Security
   module Autoinst

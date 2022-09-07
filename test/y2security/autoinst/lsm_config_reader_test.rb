@@ -19,6 +19,7 @@
 # find current contact information at www.suse.com.
 require_relative "../../test_helper"
 require "y2security/autoinst/lsm_config_reader"
+require "y2security/autoinst_profile"
 
 describe Y2Security::Autoinst::LSMConfigReader do
   subject { described_class.new(section) }

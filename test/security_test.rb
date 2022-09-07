@@ -797,19 +797,40 @@ module Yast
 
       context "when a security policy is expected to be enabled" do
         let(:policies_manager) { Y2Security::SecurityPolicies::Manager.instance }
-        let(:policy) { policies_manager.find_policy(:disa_stig) }
+        let(:policy) { policies_manager.policies.first }
+
+        let(:profile) do
+          [
+            { "name" => "disa_stig", "disabled_rules" => ["SLES-15-010200"] }
+          ]
+        end
+
+        after do
+          policies_manager.disable_policy(policy)
+          policy.rules.each(&:enable)
+        end
 
         it "enables the security policy" do
-          subject.Import("SECURITY_POLICIES" => [policy.id.to_s])
+          subject.Import("SECURITY_POLICIES" => profile)
+          expect(policies_manager.enabled_policy?(policy)).to eq(true)
+        end
 
-          expect(policies_manager.enabled_policies).to include(policy)
+        it "disables the unwanted rules" do
+          subject.Import("SECURITY_POLICIES" => profile)
+          rule = policy.rules.find { |r| r.id == "SLES-15-010200" }
+          expect(rule).to_not be_enabled
         end
 
         context "but the policy does not exist" do
+          let(:profile) do
+            [
+              { name: "dummy" }
+            ]
+          end
+
           it "logs an error" do
-            expect(subject.log).to receive(:error)
-              .with("The security policy 'dummy' is unknown.")
-            subject.Import("SECURITY_POLICIES" => ["dummy"])
+            expect(subject.log).to receive(:error).with("The security policy 'dummy' is unknown.")
+            subject.Import("SECURITY_POLICIES" => profile)
           end
         end
       end
