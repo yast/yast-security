@@ -25,8 +25,9 @@ module Y2Security
     # Rule to check whether there is a separate mount point for a given path
     #
     # @example Check for a separate mount point for /home
+    #   config = TargetConfig.new
     #   rule = MissingMountPointRule.new("SLES-15-040200", "/home")
-    #   rule.validate(Y2Storage::StorageManager.instance.staging)
+    #   rule.pass?(config)
     #
     class MissingMountPointRule < Rule
       # @return [String] Mount point to check
@@ -41,8 +42,7 @@ module Y2Security
         super(id, format(_("There must be a separate mount point for %s"), mount_point), :storage)
       end
 
-      # @param devicegraph [Y2Storage::Devicegraph] Devicegraph to check
-      # @see Rule#validate
+      # @see Rule#pass?
       def pass?(target_config)
         devicegraph = target_config.storage
         paths = devicegraph.mount_points.map(&:path)

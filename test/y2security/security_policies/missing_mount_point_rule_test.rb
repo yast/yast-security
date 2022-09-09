@@ -19,6 +19,7 @@
 
 require_relative "../../test_helper"
 require "y2security/security_policies/missing_mount_point_rule"
+require "y2security/security_policies/target_config"
 
 describe Y2Security::SecurityPolicies::MissingMountPointRule do
   subject { described_class.new("SLES-15-040200", "/home") }
@@ -29,38 +30,40 @@ describe Y2Security::SecurityPolicies::MissingMountPointRule do
     end
   end
 
-  describe "#validate" do
+  describe "#pass?" do
+    let(:target_config) do
+      instance_double(Y2Security::SecurityPolicies::TargetConfig, storage: devicegraph)
+    end
+
     let(:devicegraph) { Y2Storage::StorageManager.instance.staging }
 
+    before do
+      fake_storage_scenario("plain.yml")
+      allow(Y2Security::SecurityPolicies::TargetConfig).to receive(:new)
+        .and_return(target_config)
+    end
+
     context "when the given mount point is missing" do
-      before do
-        fake_storage_scenario("plain.yml")
-      end
-
-      it "returns an issue for missing mount point" do
-        issue = subject.validate(devicegraph)
-
-        expect(issue.message)
-          .to match(/must be a separate mount point for \/home/)
-        expect(issue.scope).to eq(:storage)
+      it "returns false" do
+        expect(subject.pass?(target_config)).to eq(false)
       end
     end
 
     context "when the given mount point /home is not missing" do
       before do
-        fake_storage_scenario("plain.yml")
-
         sda1 = devicegraph.find_by_name("/dev/sda1")
         sda1.mount_point.path = "/home"
-
-        sda3 = devicegraph.find_by_name("/dev/sda3")
-        sda3.mount_point.path = "/var"
       end
 
-      it "does not return an issue for missing mount points" do
-        issue = subject.validate(devicegraph)
-        expect(issue).to be_nil
+      it "returns true" do
+        expect(subject.pass?(target_config)).to eq(true)
       end
+    end
+  end
+
+  describe "#fixable?" do
+    it "returns false" do
+      expect(subject).to_not be_fixable
     end
   end
 end
