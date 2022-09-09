@@ -25,7 +25,11 @@ module Y2Security
   module SecurityPolicies
     # Class to manage security policies
     class Manager
-      include Singleton
+      class << self
+        def instance
+          @instance ||= new
+        end
+      end
 
       include Yast::Logger
 

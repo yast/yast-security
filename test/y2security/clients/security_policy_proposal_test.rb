@@ -23,12 +23,38 @@ require "y2security/clients/security_policy_proposal"
 require "y2security/security_policies"
 require "y2storage/devicegraph"
 
+class DummyPolicy < Y2Security::SecurityPolicies::Policy
+  def initialize
+    textdomain "security"
+    super(:dummy, _("Dummy policy"), [])
+  end
+
+  def rules
+    @rules ||= [DummyRule.new]
+  end
+end
+
+class DummyRule < Y2Security::SecurityPolicies::Rule
+  def initialize
+    textdomain "security"
+    super("SLES-15-000000", _("Dummy rule"), :network)
+  end
+end
+
 describe Y2Security::Clients::SecurityPolicyProposal do
   subject(:client) { described_class.new }
 
-  let(:policies_manager) { Y2Security::SecurityPolicies::Manager.instance }
+  let(:policies_manager) { Y2Security::SecurityPolicies::Manager.new }
+  let(:policy) { DummyPolicy.new }
+  let(:target_config) { instance_double(Y2Security::SecurityPolicies::TargetConfig )}
 
-  let(:disa_stig_policy) { policies_manager.find_policy(:disa_stig) }
+  before do
+    allow(Y2Security::SecurityPolicies::Manager).to receive(:instance)
+      .and_return(policies_manager)
+    allow(policies_manager).to receive(:policies).and_return([policy])
+    allow(Y2Security::SecurityPolicies::TargetConfig).to receive(:new)
+      .and_return(target_config)
+  end
 
   describe "#description" do
     it "returns a hash with the description" do
@@ -40,14 +66,12 @@ describe Y2Security::Clients::SecurityPolicyProposal do
   end
 
   describe "#make_proposal" do
-    context "when the DISA STIG policy is enabled" do
+    context "when a policy is enabled" do
       before do
-        policies_manager.enable_policy(disa_stig_policy)
-
-        allow(disa_stig_policy).to receive(:validate).and_return(issues)
+        policies_manager.enable_policy(policy)
+        rule = policy.rules.first
+        allow(rule).to receive(:pass?).and_return(false)
       end
-
-      let(:issues) { [] }
 
       xit "adds the packages needed by the policy to the packages proposal" do
         expect(Yast::PackagesProposal).to receive(:AddResolvables)
@@ -56,8 +80,6 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
 
       context "and the policy validation fails" do
-        let(:issues) { [Y2Security::SecurityPolicies::Issue.new("Issue #1")] }
-
         it "returns a warning message" do
           expect(subject.make_proposal({})).to include(
             "warning" => /does not comply/
@@ -72,7 +94,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
         it "includes the issues in the preformatted proposal" do
           expect(subject.make_proposal({})).to include(
-            "preformatted_proposal" => /Issue #1/
+            "preformatted_proposal" => /Dummy rule/
           )
         end
       end
@@ -84,9 +106,9 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
     end
 
-    context "when the STIG policy is not enabled" do
+    context "when the policy is not enabled" do
       before do
-        policies_manager.disable_policy(disa_stig_policy)
+        policies_manager.disable_policy(policy)
       end
 
       xit "removes the packages needed by the policy from the packages proposal" do
@@ -101,83 +123,72 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         )
       end
 
-      it "does not run the STIG validation" do
-        expect(disa_stig_policy).to_not receive(:validate)
+      it "does not run check the policy" do
+        expect(policy).to_not receive(:failing_rules)
         subject.make_proposal({})
       end
     end
   end
 
   describe "#ask_user" do
-    context "when the user asks to enable STIG" do
+    context "when the user asks to enable a policy" do
       before do
-        policies_manager.disable_policy(disa_stig_policy)
+        policies_manager.disable_policy(policy)
       end
 
       it "enables the policy" do
         subject.ask_user(
-          "chosen_id" => "security-policy--enable:#{disa_stig_policy.id}"
+          "chosen_id" => "security-policy--toggle-policy:#{policy.id}"
         )
-        expect(policies_manager.enabled_policy?(disa_stig_policy)).to eq(true)
+        expect(policies_manager.enabled_policy?(policy)).to eq(true)
       end
 
       it "returns :again as workflow result" do
         result = subject.ask_user(
-          "chosen_id" => "security-policy--enable:#{disa_stig_policy}"
+          "chosen_id" => "security-policy--toggle-policy:#{policy}"
         )
         expect(result).to eq("workflow_result" => :again)
       end
     end
 
-    context "when the user asks to disable STIG" do
+    context "when the user asks to disable a policy" do
       before do
-        policies_manager.enable_policy(disa_stig_policy)
+        policies_manager.enable_policy(policy)
       end
 
       it "disables the policy" do
         subject.ask_user(
-          "chosen_id" => "security-policy--disable:#{disa_stig_policy.id}"
+          "chosen_id" => "security-policy--toggle-policy:#{policy.id}"
         )
-        expect(policies_manager.enabled_policies).to_not include(disa_stig_policy)
+        expect(policies_manager.enabled_policies).to_not include(policy)
       end
 
       it "returns :again as workflow result" do
         result = subject.ask_user(
-          "chosen_id" => "security-policy--disable:#{disa_stig_policy.id}"
+          "chosen_id" => "security-policy--toggle-policy:#{policy.id}"
         )
         expect(result).to eq("workflow_result" => :again)
       end
     end
 
     context "when the user asks to fix an issue" do
+      let(:rule) { policy.rules.first }
+
       before do
-        policies_manager.enable_policy(disa_stig_policy)
-
-        allow(disa_stig_policy).to receive(:validate).and_return(issues)
-      end
-
-      let(:issues) { [issue] }
-
-      let(:issue) do
-        Y2Security::SecurityPolicies::Issue.new("The firewall is disabled", action: action)
-      end
-
-      issue_fixed = false
-
-      let(:action) do
-        Y2Security::SecurityPolicies::Action.new("enable the firewall") { issue_fixed = true }
+        policies_manager.enable_policy(policy)
+        allow(rule).to receive(:pass?).and_return(false)
       end
 
       it "fixes the issue" do
         subject.make_proposal({})
+        expect(rule).to receive(:fix).with(target_config)
         subject.ask_user(
-          "chosen_id" => "security-policy--fix:0"
+          "chosen_id" => "security-policy--fix-rule:#{rule.id}"
         )
-        expect(issue_fixed).to eq(true)
       end
     end
 
-    context "when the user asks to open the partitioning client" do
+    xcontext "when the user asks to open the partitioning client" do
       before do
         policies_manager.enable_policy(disa_stig_policy)
 
