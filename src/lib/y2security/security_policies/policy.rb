@@ -23,6 +23,8 @@ module Y2Security
   module SecurityPolicies
     # Base class for security policies
     class Policy
+      include Yast::I18n
+
       # Id of the policiy
       #
       # @return [Symbol]

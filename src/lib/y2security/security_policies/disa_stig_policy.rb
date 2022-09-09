@@ -31,8 +31,6 @@ module Y2Security
     # DISA = US Defense Information Systems Agency
     # STIG = Security Technical Implementation Guides
     class DisaStigPolicy < Policy
-      include Yast::I18n
-
       # @see Policy
       def initialize
         textdomain "security"
