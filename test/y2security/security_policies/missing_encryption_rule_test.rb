@@ -19,6 +19,7 @@
 
 require_relative "../../test_helper"
 require "y2security/security_policies/missing_encryption_rule"
+require "y2security/security_policies/target_config"
 
 describe Y2Security::SecurityPolicies::MissingEncryptionRule do
   describe "#id" do
@@ -27,7 +28,11 @@ describe Y2Security::SecurityPolicies::MissingEncryptionRule do
     end
   end
 
-  describe "#validare" do
+  describe "#pass?" do
+    let(:target_config) do
+      instance_double(Y2Security::SecurityPolicies::TargetConfig, storage: devicegraph)
+    end
+
     let(:devicegraph) { Y2Storage::StorageManager.instance.staging }
 
     context "when there are not-encrypted and mounted file systems" do
@@ -35,17 +40,8 @@ describe Y2Security::SecurityPolicies::MissingEncryptionRule do
         fake_storage_scenario("plain.yml")
       end
 
-      it "returns an issue for missing encryption" do
-        issue = subject.validate(devicegraph)
-
-        expect(issue.message).to match(/not encrypted: \/, swap/)
-        expect(issue.scope).to eq(:storage)
-      end
-
-      it "the issue does not include /boot/efi" do
-        issue = subject.validate(devicegraph)
-
-        expect(issue.message).to_not include("efi")
+      it "returns false" do
+        expect(subject.pass?(target_config)).to eq(false)
       end
     end
 
@@ -54,10 +50,15 @@ describe Y2Security::SecurityPolicies::MissingEncryptionRule do
         fake_storage_scenario("gpt_encryption.yml")
       end
 
-      it "does not return an issue for missing encryption" do
-        issue = subject.validate(devicegraph)
-        expect(issue).to be_nil
+      it "returns true" do
+        expect(subject.pass?(target_config)).to eq(true)
       end
+    end
+  end
+
+  describe "#fixable?" do
+    it "returns false" do
+      expect(subject).to_not be_fixable
     end
   end
 end
