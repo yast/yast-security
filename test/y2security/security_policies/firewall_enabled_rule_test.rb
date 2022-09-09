@@ -19,37 +19,52 @@
 
 require_relative "../../test_helper"
 require "y2security/security_policies/firewall_enabled_rule"
+require "y2security/security_policies/target_config"
 require "y2network/config"
 
 describe Y2Security::SecurityPolicies::FirewallEnabledRule do
+  let(:target_config) do
+    instance_double(Y2Security::SecurityPolicies::TargetConfig, security: security_config)
+  end
+
+  let(:security_config) do
+    instance_double("Installation::SecuritySettings", enable_firewall: enabled)
+  end
+
+  let(:enabled) { true }
+
   describe "#id" do
     it "returns the rule ID" do
       expect(subject.id).to eq("SLES-15-010220")
     end
   end
 
-  describe "#validate" do
-    let(:security_settings) do
-      instance_double("Installation::SecuritySettings", enable_firewall: enabled)
-    end
-
-    let(:enabled) { true }
-
+  describe "#pass?" do
     context "when the firewall is enabled" do
-      it "returns no issues" do
-        issue = subject.validate(security_settings)
-        expect(issue).to be_nil
+      it "returns true" do
+        expect(subject.pass?(target_config)).to eq(true)
       end
     end
 
     context "when the firewall is not enabled " do
       let(:enabled) { false }
 
-      it "returns an issue pointing that the firewall is not enabled" do
-        issue = subject.validate(security_settings)
-        expect(issue.message).to include("Firewall is not enabled")
-        expect(issue.scope).to eq(:security)
+      it "returns false" do
+        expect(subject.pass?(target_config)).to eq(false)
       end
+    end
+  end
+
+  describe "#fixable?" do
+    it "returns true" do
+      expect(subject).to be_fixable
+    end
+  end
+
+  describe "#fix" do
+    it "enables the firewall" do
+      expect(target_config.security).to receive(:enable_firewall!)
+      subject.fix(target_config)
     end
   end
 end

@@ -22,6 +22,12 @@ require "y2security/security_policies/rule"
 module Y2Security
   module SecurityPolicies
     # Rule to verify that the firewall is enabled (SLES-15-010220).
+    #
+    # @example Fix the current configuration if the rule does not pass
+    #   config = TargetConfig.new
+    #   rule = FirewallEnabledRule.new
+    #   rule.fix(config) unless rule.pass?(config)
+    #   config.security.enable_firewall #=> true
     class FirewallEnabledRule < Rule
       def initialize
         textdomain "security"
@@ -29,14 +35,17 @@ module Y2Security
         super("SLES-15-010220", _("Firewall must be enabled"), :security)
       end
 
+      # @see Rule#pass?
       def pass?(target_config)
         !!target_config.security&.enable_firewall
       end
 
+      # @see Rule#fixable?
       def fixable?
         true
       end
 
+      # @see Rule#fix
       def fix(target_config)
         target_config.security.enable_firewall!
       end
