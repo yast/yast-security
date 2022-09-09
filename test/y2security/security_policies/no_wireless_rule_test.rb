@@ -19,39 +19,80 @@
 
 require_relative "../../test_helper"
 require "y2security/security_policies/no_wireless_rule"
+require "y2security/security_policies/target_config"
 require "y2network/config"
 
 describe Y2Security::SecurityPolicies::NoWirelessRule do
-  describe "#validate" do
-    let(:network_config) { Y2Network::Config.new(source: :wicked, connections: connections) }
+  let(:target_config) do
+    instance_double(Y2Security::SecurityPolicies::TargetConfig, network: network_config)
+  end
+
+  let(:network_config) { Y2Network::Config.new(source: :wicked, connections: connections) }
+  let(:connections) { [] }
+
+  let(:wlan0_conn) do
+    Y2Network::ConnectionConfig::Wireless.new.tap do |conn|
+      conn.interface = "wlan0"
+      conn.name = "wlan0"
+    end
+  end
+
+  let(:wlan1_conn) do
+    Y2Network::ConnectionConfig::Wireless.new.tap do |conn|
+      conn.interface = "wlan1"
+      conn.name = "wlan1"
+      conn.startmode = Y2Network::Startmode.create("off")
+    end
+  end
+
+  describe "#pass?" do
+    context "when wireless devices are configured to be active" do
+      let(:connections) do
+        Y2Network::ConnectionConfigsCollection.new([wlan0_conn, wlan1_conn])
+      end
+
+      it "returns false" do
+        expect(subject.pass?(target_config)).to eq(false)
+      end
+    end
+
+    context "when no wireless devices are configured to be active" do
+      let(:connections) do
+        Y2Network::ConnectionConfigsCollection.new([wlan1_conn])
+      end
+
+      it "returns true" do
+        expect(subject.pass?(target_config)).to eq(true)
+      end
+    end
+  end
+
+  describe "#fixable?" do
+    it "returns true" do
+      expect(subject).to be_fixable
+    end
+  end
+
+  describe "#fix" do
+    let(:eth0_conn) do
+      Y2Network::ConnectionConfig::Ethernet.new.tap do |conn|
+        conn.interface = "eth0"
+        conn.name = "eth0"
+        conn.startmode = Y2Network::Startmode.create("auto")
+      end
+    end
 
     let(:connections) do
-      Y2Network::ConnectionConfigsCollection.new([wlan0_conn, wlan1_conn])
+      Y2Network::ConnectionConfigsCollection.new([eth0_conn, wlan0_conn])
     end
 
-    let(:wlan0_conn) do
-      Y2Network::ConnectionConfig::Wireless.new.tap do |conn|
-        conn.interface = "wlan0"
-        conn.name = "wlan0"
-        # conn.startmode = Y2Network::Startmode.create("off")
-      end
-    end
-
-    let(:wlan1_conn) do
-      Y2Network::ConnectionConfig::Wireless.new.tap do |conn|
-        conn.interface = "wlan1"
-        conn.name = "wlan1"
-        conn.startmode = Y2Network::Startmode.create("off")
-      end
-    end
-
-    it "returns an issue per each active wireless connection" do
-      issue = subject.validate(network_config)
-
-      expect(issue.message).to match(/Wireless network interfaces/)
-      expect(issue.message).to include("wlan0")
-      expect(issue.message).to_not include("wlan1")
-      expect(issue.scope).to eq(:network)
+    it "disables wireless devices" do
+      subject.fix(target_config)
+      network = target_config.network
+      eth0 = network.connections.by_name("eth0")
+      wlan0 = network.connections.by_name("wlan0")
+      expect(eth0.startmode).to eq(Y2Network::Startmode.create("auto"))
+      expect(wlan0.startmode).to eq(Y2Network::Startmode.create("off"))
     end
   end
 end
