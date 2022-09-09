@@ -318,7 +318,7 @@ module Y2Security
               # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
               _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
               policy: policy.name,
-              link: toggle_link
+              link:   toggle_link
             ) + failing_rules_list(failing_rules)
           else
             format(
@@ -347,7 +347,7 @@ module Y2Security
         # @param issues [Array<Y2Security::SecurityPolicies::Issue>]
         # @return [String]
         def failing_rules_list(rules)
-          items = rules.map { |r| RulePresenter.new(r, links_builder).to_html  }
+          items = rules.map { |r| RulePresenter.new(r, links_builder).to_html }
 
           Yast::HTML.List(items)
         end
@@ -398,7 +398,7 @@ module Y2Security
           link = links_builder.rule_fix_link(rule)
           return nil unless link
 
-          text = rule.scope == :storage ? _("open partitioning") : _("fix rule")
+          text = (rule.scope == :storage) ? _("open partitioning") : _("fix rule")
 
           build_action(text, link)
         end

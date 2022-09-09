@@ -76,7 +76,6 @@ module Y2Security
         Yast::Lan.yast_config
       end
 
-
       # Default security settings
       #
       # @return [Installation::SecuritySettings, nil] nil if yast2-installation is not available
