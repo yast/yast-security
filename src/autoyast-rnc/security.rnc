@@ -46,9 +46,20 @@ runlevel3_mandatory_services = element runlevel3_mandatory_services { STRING }
 runlevel5_extra_services = element runlevel5_extra_services { STRING }
 runlevel5_mandatory_services = element runlevel5_mandatory_services { STRING }
 smtpd_listen_remote = element smtpd_listen_remote { STRING }
+disabled_rules = element disabled_rules {
+    LIST,
+    element listentry { STRING }*
+}
+security_policy = element (security_policy | listentry) {
+    MAP,
+    (
+      element name { STRING }? &
+      disabled_rules?
+    )
+}
 security_policies = element security_policies {
-  LIST,
-  element (security_policy | listentry) { STRING }*
+    LIST,
+    security_policy*
 }
 syslog_on_no_error = element syslog_on_no_error { STRING }
 system_gid_max = element system_gid_max { STRING }
