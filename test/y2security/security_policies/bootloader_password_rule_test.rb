@@ -19,56 +19,60 @@
 
 require_relative "../../test_helper"
 require "y2security/security_policies/bootloader_password_rule"
+require "y2security/security_policies/target_config"
 
 describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
   let(:bootloader) { Bootloader::NoneBootloader.new }
 
-  context "and no Grub based bootloader is selected" do
-    it "returns no issues" do
-      issue = subject.validate(bootloader)
-      expect(issue).to be_nil
+  describe "#id" do
+    it "returns the rule ID" do
+      expect(subject.id).to eq("SLES-15-010200")
     end
   end
 
-  context "and a Grub based bootloader is selected" do
-    let(:bootloader) { Bootloader::Grub2.new }
-    let(:password) { nil }
-    let(:unrestricted) { false }
+  describe "#pass?" do
+    let(:target_config) do
+      instance_double(Y2Security::SecurityPolicies::TargetConfig, bootloader: bootloader)
+    end
 
-    before do
-      if password
-        bootloader.password.used = true
-        bootloader.password.unrestricted = unrestricted
+    context "when no Grub based bootloader is selected" do
+      it "returns true" do
+        expect(subject.pass?(target_config)).to eq(true)
       end
     end
 
-    context "when a password is not set" do
-      it "returns an issue pointing that the bootloader password must be set" do
-        issue = subject.validate(bootloader)
-        expect(issue.message).to match(/Bootloader must be protected/)
-        expect(issue.scope).to eq(:bootloader)
-      end
-    end
-
-    context "when a password is set" do
+    context "when a Grub based bootloader is selected" do
+      let(:bootloader) { Bootloader::Grub2.new }
       let(:password) { "test.pass" }
+      let(:restricted) { true }
 
-      context "and the menu editing is restricted" do
-        it "returns no issues" do
-          issue = subject.validate(bootloader)
-          expect(issue).to be_nil
+      before do
+        if password
+          bootloader.password.used = true
+          bootloader.password.unrestricted = !restricted
+        end
+      end
+
+      context "and a password is set and menu editing is restricted" do
+        it "returns true" do
+          expect(subject.pass?(target_config)).to eq(true)
+        end
+      end
+
+      context "and no password is set" do
+        let(:password) { false }
+
+        it "returns false" do
+          expect(subject.pass?(target_config)).to eq(false)
         end
       end
 
       context "and the menu editing is not restricted" do
-        let(:unrestricted) { true }
+        let(:restricted) { false }
 
-        it "returns an issue pointing that the bootloader menu editing" \
-          " must be set as restricted" do
-            issue = subject.validate(bootloader)
-            expect(issue.message).to match(/Bootloader must be protected/)
-            expect(issue.scope).to eq(:bootloader)
-          end
+        it "returns false" do
+          expect(subject.pass?(target_config)).to eq(false)
+        end
       end
     end
   end

@@ -42,7 +42,9 @@ module Y2Security
         return true unless bootloader.is_a?(Bootloader::Grub2Base)
 
         password = bootloader.password
-        password&.used? && password&.unrestricted
+        return false unless password
+
+        password.used? && !password.unrestricted
       end
     end
   end
