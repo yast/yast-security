@@ -250,6 +250,7 @@ module Y2Security
         Yast::Wizard.CloseDialog
       end
 
+      # Builds links for a rule in the context of a dialog
       class LinksBuilder
         def initialize(dialog_id)
           @dialog_id = dialog_id
@@ -296,6 +297,7 @@ module Y2Security
         end
       end
 
+      # Builds the representation of a security policy
       class PolicyPresenter
         include Yast::I18n
 
@@ -351,6 +353,7 @@ module Y2Security
         end
       end
 
+      # Builds the representation of a rule
       class RulePresenter
         include Yast::I18n
 

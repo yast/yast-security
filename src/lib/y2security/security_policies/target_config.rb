@@ -23,6 +23,15 @@ require "bootloader/bootloader_factory"
 
 module Y2Security
   module SecurityPolicies
+    # This class represents the target system configuration
+    #
+    # Instead of having to fetch information from several singleton classes and modules,
+    # policy rules get the information they need through an instance of this class.
+    # This approach has these advantages:
+    #
+    # * The main point is that injecting the configuration makes testing easier.
+    # * Each rule decides which aspects of the configuration are relevant for them.
+    #
     class TargetConfig
       include Yast::Logger
 

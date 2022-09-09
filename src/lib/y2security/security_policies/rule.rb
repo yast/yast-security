@@ -22,18 +22,23 @@ require "yast"
 module Y2Security
   module SecurityPolicies
     # Represents a rule for a security policy
+    #
+    # It is expected to redefined the #pass? and, optionally, #fixable? and #fix? methods in the
+    # derived classes.
     class Rule
       include Yast::I18n
 
-      # @return [String]
+      # @return [String] Rule ID
       attr_reader :id
 
+      # @return [String] Rule description
       attr_reader :description
 
-      # @return [Symbol]
+      # @return [Symbol] Scope to apply the rule to
       attr_reader :scope
 
       # @param id [String] Rule ID (e.g., "SLES-15-010190")
+      # @param description [String] Rule description
       # @param scope [Symbol] Scope
       def initialize(id, description, scope)
         @id = id
@@ -42,26 +47,38 @@ module Y2Security
         @enabled = true
       end
 
+      # Enables the rule
+      #
+      # If the rule is enabled, it will be used when checking a profile.
       def enable
         @enabled = true
       end
 
+      # Disables the rule
+      #
+      # If the rule is disabled, it will be skipped when checking a profile.
       def disable
         @enabled = false
       end
 
+      # Determines whether the rule is enabled or not
+      #
+      # @return [Boolean] true if the rule is enabled; false otherwise
       def enabled?
         @enabled
       end
 
+      # Determines whether the rule passes or not
       def pass?(_target_config)
         true
       end
 
+      # Determines whether the rule can be automatically fixed
       def fixable?
         false
       end
 
+      # Automatically fixes the system to make the rule pass
       def fix(_target_config)
         nil
       end
