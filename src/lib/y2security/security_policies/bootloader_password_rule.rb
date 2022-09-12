@@ -34,8 +34,7 @@ module Y2Security
         )
       end
 
-      # @param bootloader [Bootloader::BootloaderFactory] Bootloader configuration
-      # @see Rule#validate
+      # @see Rule#pass?
       def pass?(target_config)
         bootloader = target_config.bootloader
 

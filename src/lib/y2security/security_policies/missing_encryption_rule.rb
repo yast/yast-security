@@ -30,8 +30,7 @@ module Y2Security
         super("SLES-15-010330", _("Separate file systems must be encryped"), :storage)
       end
 
-      # @param devicegraph [Y2Storage::Devicegraph] Devicegraph to check
-      # @see Rule#validate
+      # @see Rule#pass?
       def pass?(target_config)
         devicegraph = target_config.storage
         blk_filesystems = blk_filesystems_with_missing_encryption(devicegraph)

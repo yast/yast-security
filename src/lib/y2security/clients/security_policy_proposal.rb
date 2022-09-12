@@ -185,9 +185,7 @@ module Y2Security
 
       # Tries to fix the given issue in the given position
       #
-      # @see #all_issues
-      #
-      # @param idx [Integer]
+      # @param id [Integer] Rule index
       def fix_rule(id)
         rule = find_rule(id)
         rule&.fix(target_config)
@@ -340,11 +338,11 @@ module Y2Security
 
         attr_reader :links_builder
 
-        # Returns the HTML representation of a list of issues
+        # Returns the HTML representation of a list of failing rules
         #
         # @see Yast::HTML.List
         #
-        # @param issues [Array<Y2Security::SecurityPolicies::Issue>]
+        # @param rules [Array<Y2Security::SecurityPolicies::Rule>] Rules to display
         # @return [String]
         def failing_rules_list(rules)
           items = rules.map { |r| RulePresenter.new(r, links_builder).to_html }

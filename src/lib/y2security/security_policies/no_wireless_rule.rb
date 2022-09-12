@@ -38,7 +38,6 @@ module Y2Security
         super("SLES-15-010380", _("Wireless network interfaces must be deactivated"), :network)
       end
 
-      # @param config [Y2Network::Config] Network configuration to check
       # @see Rule#pass?
       def pass?(target_config)
         wireless = find_wireless_connections(target_config.network)
@@ -52,8 +51,6 @@ module Y2Security
 
       # Build an action to disable a connection
       #
-      # @param config [Y2Network::Config] Network configuration
-      # @param conn   [Array<Y2Network::ConnectionConfig>]
       # @see Rule#fix
       def fix(target_config)
         config = target_config.network
