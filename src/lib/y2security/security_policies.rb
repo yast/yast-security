@@ -18,5 +18,4 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policies/manager"
-require "y2security/security_policies/scopes"
 require "y2security/security_policies/disa_stig_policy"
