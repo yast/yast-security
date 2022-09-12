@@ -46,7 +46,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
   let(:policies_manager) { Y2Security::SecurityPolicies::Manager.new }
   let(:policy) { DummyPolicy.new }
-  let(:target_config) { instance_double(Y2Security::SecurityPolicies::TargetConfig )}
+  let(:target_config) { instance_double(Y2Security::SecurityPolicies::TargetConfig) }
 
   before do
     allow(Y2Security::SecurityPolicies::Manager).to receive(:instance)
