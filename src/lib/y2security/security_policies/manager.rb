@@ -92,7 +92,7 @@ module Y2Security
       end
 
       # @return [Hash<Policy, Array<Rule>>]
-      def failing_rules(config, scope: nil, include_disabled: true)
+      def failing_rules(config, scope: nil, include_disabled: false)
         enabled_policies.each_with_object({}) do |policy, result|
           result[policy] =
             policy.failing_rules(config, scope: scope, include_disabled: include_disabled)

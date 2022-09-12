@@ -34,9 +34,9 @@ module Y2Security
       PROPOSAL_ID = "security-policy".freeze
 
       class << self
-        # Collection of issues found for enabled policies
+        # Collection of failing rules from the enabled policies
         #
-        # The list of issues is shared by SecurityPolicyProposal instances.
+        # The list of failing rules is shared by SecurityPolicyProposal instances.
         #
         # @return [IssuesCollection]
         def failing_rules
@@ -73,7 +73,7 @@ module Y2Security
           "preformatted_proposal" => preformatted_proposal,
           "links"                 => links,
           "warning_level"         => warning_level,
-          "warning"               => warning_message
+          "warning"               => nil
         }
       end
 
@@ -109,6 +109,8 @@ module Y2Security
           presenter.to_html
         end
 
+        formatted_policies[0..-2] = formatted_policies[0..-2].map { |p| p + Yast::HTML.Newline }
+
         Yast::HTML.List(formatted_policies)
       end
 
@@ -116,19 +118,18 @@ module Y2Security
 
       # Returns the list of valid links for the proposal
       #
-      # The list includes links to enable, disable and fix issues.
-      #
       # @return [Array<String>]
       def links
-        links = policies.map { |p| links_builder.links_for_policy(p) } +
-          failing_rules.values.flatten.map { |r| links_builder.links_for_rule(r) }
+        policies_links = policies.map { |p| links_builder.links_for_policy(p) }
+        rules_links = rules.map { |r| links_builder.links_for_rule(r) }
+        links = policies_links + rules_links
 
         links.flatten.compact.uniq
       end
 
       # Returns the warning level
       #
-      # Always blocker issues
+      # Blocker if there are enabled failing rules
       #
       # @return [Symbol] :blocker
       def warning_level
@@ -139,26 +140,15 @@ module Y2Security
         :blocker
       end
 
-      # Returns a warning message when policies issues are found
-      #
-      # @return [String,nil] Warning message or nil if no issues were found
-      def warning_message
-        rules = failing_rules.values.flatten
-
-        return nil if rules.none?
-
-        _("The system does not comply with the security policy.")
-      end
-
       # Runs the security policies checks
       #
-      # Calling this method updates the list of issues in
-      # Y2Security::Clients::SecurityProposalProposal.issues.
+      # Calling this method updates the list of failing rules in
+      # Y2Security::Clients::SecurityProposalProposal.failing_rules
       #
-      # @see Y2Security::SecurityPolicies::Manager#issues
+      # @see Y2Security::SecurityPolicies::Manager#failing_rules
       def check_security_policies
         self.class.failing_rules =
-          policies_manager.failing_rules(target_config, include_disabled: true)
+          policies_manager.failing_rules(target_config)
       end
 
       # Enables the policy with the given id
@@ -180,12 +170,12 @@ module Y2Security
       end
 
       def find_rule(id)
-        failing_rules.values.flatten.find { |r| r.id == id }
+        rules.find { |r| r.id == id }
       end
 
-      # Tries to fix the given issue in the given position
+      # Tries to fix the given rule
       #
-      # @param id [Integer] Rule index
+      # @param id [Integer] Rule id
       def fix_rule(id)
         rule = find_rule(id)
         rule&.fix(target_config)
@@ -210,7 +200,7 @@ module Y2Security
         link.delete_prefix("#{PROPOSAL_ID}--").split(":")
       end
 
-      # Convenience method to access the list of found issues
+      # Convenience method to access the list of failing rules
       def failing_rules
         self.class.failing_rules
       end
@@ -220,6 +210,13 @@ module Y2Security
       # @return [Array<Y2Security::SecurityPolicies::Policy>]
       def policies
         policies_manager.policies
+      end
+
+      # All rules from all policies
+      #
+      # @return [Array<Y2Security::SecurityPolicies::Rule>]
+      def rules
+        policies.map(&:rules).flatten
       end
 
       # Convenience method to get the instance of the policies manager
@@ -317,7 +314,7 @@ module Y2Security
               _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
               policy: policy.name,
               link:   toggle_link
-            ) + failing_rules_list(failing_rules)
+            ) + rules_section
           else
             format(
               # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
@@ -338,13 +335,47 @@ module Y2Security
 
         attr_reader :links_builder
 
-        # Returns the HTML representation of a list of failing rules
+        # HTML section describing the failing and disabled rules
+        #
+        # @see Yast::HTML
+        #
+        # @return [String]
+        def rules_section
+          [failing_rules_section, disabled_rules_section].compact.join
+        end
+
+        # HTML section describing the failing rules
+        #
+        # @see Yast::HTML
+        #
+        # @return [String]
+        def failing_rules_section
+          return nil if failing_rules.none?
+
+          Yast::HTML.Para(Yast::HTML.Colorize(_("The following rules are failing:"), "red")) +
+            rules_list(failing_rules)
+        end
+
+        # HTML section describing the disabled rules
+        #
+        # @see Yast::HTML
+        #
+        # @return [String]
+        def disabled_rules_section
+          disabled_rules = policy.rules.reject(&:enabled?)
+
+          return nil if disabled_rules.none?
+
+          Yast::HTML.Para(_("The following rules are disabled:")) + rules_list(disabled_rules)
+        end
+
+        # HTML list of rules
         #
         # @see Yast::HTML.List
         #
         # @param rules [Array<Y2Security::SecurityPolicies::Rule>] Rules to display
         # @return [String]
-        def failing_rules_list(rules)
+        def rules_list(rules)
           items = rules.map { |r| RulePresenter.new(r, links_builder).to_html }
 
           Yast::HTML.List(items)
@@ -381,9 +412,9 @@ module Y2Security
 
         def actions
           rule_actions = [toggle_action]
-          rule_actions << fix_action if rule.enabled? && rule.fixable?
+          rule_actions << fix_action if rule.enabled?
 
-          rule_actions
+          rule_actions.compact
         end
 
         def toggle_action

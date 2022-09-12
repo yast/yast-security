@@ -161,7 +161,7 @@ describe Y2Security::SecurityPolicies::Manager do
         subject.enable_policy(disa_stig_policy)
 
         allow(disa_stig_policy).to receive(:failing_rules)
-          .with(target_config, include_disabled: true, scope: nil).and_return([rule])
+          .with(target_config, include_disabled: false, scope: nil).and_return([rule])
       end
 
       it "returns a hash where the keys are the policies and the values the failing rules" do
@@ -171,17 +171,17 @@ describe Y2Security::SecurityPolicies::Manager do
       context "when a scope is given" do
         it "only includes the rules for the given scope" do
           expect(disa_stig_policy).to receive(:failing_rules)
-            .with(target_config, include_disabled: true, scope: :bootloader).and_return([rule])
+            .with(target_config, include_disabled: false, scope: :bootloader).and_return([rule])
           expect(subject.failing_rules(target_config, scope: :bootloader))
             .to eq(disa_stig_policy => [rule])
         end
       end
 
-      context "when disabled rules must be excluded" do
-        it "does not include disabled rules" do
+      context "when disabled rules must be included" do
+        it "includes disabled rules" do
           expect(disa_stig_policy).to receive(:failing_rules)
-            .with(target_config, include_disabled: false, scope: nil).and_return([rule])
-          expect(subject.failing_rules(target_config, include_disabled: false))
+            .with(target_config, include_disabled: true, scope: nil).and_return([rule])
+          expect(subject.failing_rules(target_config, include_disabled: true))
             .to eq(disa_stig_policy => [rule])
         end
       end

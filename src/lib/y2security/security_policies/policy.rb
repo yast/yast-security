@@ -54,7 +54,7 @@ module Y2Security
       #   be checked.
       # @param include_disabled [Boolean] Include disabled rules.
       # @return [Array<Rule>] Failing rules for the given config and scope
-      def failing_rules(config, scope: nil, include_disabled: true)
+      def failing_rules(config, scope: nil, include_disabled: false)
         rules
           .select { |r| scope.nil? || r.scope == scope }
           .select { |r| include_disabled || r.enabled? }
@@ -64,8 +64,6 @@ module Y2Security
       def ==(other)
         id == other.id && self.class == other.class
       end
-
-    private
 
       def rules
         []

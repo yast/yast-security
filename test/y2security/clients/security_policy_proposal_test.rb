@@ -69,8 +69,6 @@ describe Y2Security::Clients::SecurityPolicyProposal do
     context "when a policy is enabled" do
       before do
         policies_manager.enable_policy(policy)
-        rule = policy.rules.first
-        allow(rule).to receive(:pass?).and_return(false)
       end
 
       xit "adds the packages needed by the policy to the packages proposal" do
@@ -79,10 +77,22 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         subject.make_proposal({})
       end
 
-      context "and the policy validation fails" do
-        it "returns a warning message" do
+      it "includes a link to disable the policy" do
+        expect(subject.make_proposal({})).to include(
+          "preformatted_proposal" => %r{<a href=.*>disable</a>}
+        )
+      end
+
+      context "and some rules are failing" do
+        before do
+          allow(rule).to receive(:pass?).and_return(false)
+        end
+
+        let(:rule) { policy.rules.first }
+
+        it "does not include a general warning message" do
           expect(subject.make_proposal({})).to include(
-            "warning" => /does not comply/
+            "warning" => nil
           )
         end
 
@@ -92,17 +102,86 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           )
         end
 
-        it "includes the failing rules in the preformatted proposal" do
+        it "includes a failing rules section" do
           expect(subject.make_proposal({})).to include(
-            "preformatted_proposal" => /Dummy rule/
+            "preformatted_proposal" => /rules are failing:.*Dummy rule/
           )
+        end
+
+        it "includes a link to disable the rule" do
+          expect(subject.make_proposal({})).to include(
+            "preformatted_proposal" => %r{<a href=.*>disable rule</a>}
+          )
+        end
+
+        context "and the failing rule is fixable" do
+          before do
+            allow(rule).to receive(:fixable?).and_return(true)
+          end
+
+          it "includes a link to fix the rule" do
+            expect(subject.make_proposal({})).to include(
+              "preformatted_proposal" => %r{<a href=.*>fix rule</a>}
+            )
+          end
+        end
+
+        context "and the failing rule is a storage rule" do
+          before do
+            allow(rule).to receive(:scope).and_return(:storage)
+          end
+
+          it "includes a link to open the partitioning" do
+            expect(subject.make_proposal({})).to include(
+              "preformatted_proposal" => %r{<a href=.*>open partitioning</a>}
+            )
+          end
         end
       end
 
-      it "includes a link to disable the policy" do
-        expect(subject.make_proposal({})).to include(
-          "preformatted_proposal" => %r{<a href=.*>disable</a>}
-        )
+      context "and some rules are disabled" do
+        before do
+          allow(rule).to receive(:pass?).and_return(false)
+          allow(rule).to receive(:enabled?).and_return(false)
+        end
+
+        let(:rule) { policy.rules.first }
+
+        it "includes a failing rules section" do
+          expect(subject.make_proposal({})).to include(
+            "preformatted_proposal" => /rules are disabled:.*Dummy rule/
+          )
+        end
+
+        it "includes a link to enable the rule" do
+          expect(subject.make_proposal({})).to include(
+            "preformatted_proposal" => %r{<a href=.*>enable rule</a>}
+          )
+        end
+
+        context "and the rule is fixable" do
+          before do
+            allow(rule).to receive(:fixable?).and_return(true)
+          end
+
+          it "does not include a link to fix the rule" do
+            expect(subject.make_proposal({})).to_not include(
+              "preformatted_proposal" => %r{<a href=.*>fix rule</a>}
+            )
+          end
+        end
+
+        context "and the rule is a storage rule" do
+          before do
+            allow(rule).to receive(:scope).and_return(:storage)
+          end
+
+          it "does not include a link to open the partitioning" do
+            expect(subject.make_proposal({})).to_not include(
+              "preformatted_proposal" => %r{<a href=.*>open partitioning</a>}
+            )
+          end
+        end
       end
     end
 
@@ -126,6 +205,21 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       it "does not run check the policy" do
         expect(policy).to_not receive(:failing_rules)
         subject.make_proposal({})
+      end
+
+      context "and some rules are disabled" do
+        before do
+          allow(rule).to receive(:pass?).and_return(false)
+          allow(rule).to receive(:enabled?).and_return(false)
+        end
+
+        let(:rule) { policy.rules.first }
+
+        it "does not include a failing rules section" do
+          expect(subject.make_proposal({})).to_not include(
+            "preformatted_proposal" => /rules are disabled:/
+          )
+        end
       end
     end
   end
@@ -188,25 +282,23 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
     end
 
-    xcontext "when the user asks to open the partitioning client" do
-      before do
-        policies_manager.enable_policy(disa_stig_policy)
+    context "when the user asks to open the partitioning client" do
+      let(:rule) { policy.rules.first }
 
-        allow(disa_stig_policy).to receive(:validate).and_return(issues)
+      before do
+        policies_manager.enable_policy(policy)
+        allow(rule).to receive(:pass?).and_return(false)
+        allow(rule).to receive(:scope).and_return(:storage)
 
         allow(Yast::Wizard).to receive(:OpenAcceptDialog)
         allow(Yast::Wizard).to receive(:CloseDialog)
       end
 
-      let(:scope) { Y2Security::SecurityPolicies::Scopes::Storage.new(devicegraph: devicegraph) }
-
-      let(:devicegraph) { instance_double(Y2Storage::Devicegraph) }
-
       it "opens the partitioning" do
         expect(Yast::WFM).to receive(:CallFunction).with("inst_disk_proposal", anything)
 
         subject.make_proposal({})
-        subject.ask_user("chosen_id" => "security-policy--storage:0")
+        subject.ask_user("chosen_id" => "security-policy--storage:#{rule.id}")
       end
     end
   end
