@@ -45,45 +45,32 @@ shared_examples "Y2Security::SecurityPolicies::Policy" do
     end
   end
 
-  describe "#validate" do
-    before do
-      allow(Y2Security::SecurityPolicies::Scopes::Storage)
-        .to receive(:new).and_return(storage_scope)
-
-      allow(Y2Security::SecurityPolicies::Scopes::Bootloader)
-        .to receive(:new).and_return(bootloader_scope)
-
-      allow(Y2Security::SecurityPolicies::Scopes::Network)
-        .to receive(:new).and_return(network_scope)
-
-      allow(Y2Security::SecurityPolicies::Scopes::Firewall)
-        .to receive(:new).and_return(firewall_scope)
+  describe "#failing_rules" do
+    let(:target_config) do
+      instance_double(Y2Security::SecurityPolicies::TargetConfig)
     end
 
-    let(:storage_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Storage) }
-    let(:bootloader_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Bootloader) }
-    let(:network_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Network) }
-    let(:firewall_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Firewall) }
+    context "when a rule fails" do
+      before do
+        subject.rules.each do |rule|
+          allow(rule).to receive(:pass?).with(target_config).and_return(false)
+        end
+      end
 
-    context "when no scope is given" do
-      it "checks all the scopes" do
-        expect(subject).to receive(:issues_for).with(storage_scope)
-        expect(subject).to receive(:issues_for).with(bootloader_scope)
-        expect(subject).to receive(:issues_for).with(network_scope)
-        expect(subject).to receive(:issues_for).with(firewall_scope)
-
-        subject.validate
+      it "returns the failing rules" do
+        expect(subject.failing_rules(target_config)).to eq(subject.rules)
       end
     end
 
-    context "when a scope is given" do
-      it "only checks the given scope" do
-        expect(subject).to_not receive(:issues_for).with(storage_scope)
-        expect(subject).to receive(:issues_for).with(bootloader_scope)
-        expect(subject).to_not receive(:issues_for).with(network_scope)
-        expect(subject).to_not receive(:issues_for).with(firewall_scope)
+    context "when no rules fail" do
+      before do
+        subject.rules.each do |rule|
+          allow(rule).to receive(:pass?).and_return(true)
+        end
+      end
 
-        subject.validate(bootloader_scope)
+      it "returns an empty array" do
+        expect(subject.failing_rules(target_config)).to eq([])
       end
     end
   end

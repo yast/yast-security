@@ -23,4 +23,54 @@ require "y2security/security_policies/disa_stig_policy"
 
 describe Y2Security::SecurityPolicies::DisaStigPolicy do
   include_examples "Y2Security::SecurityPolicies::Policy"
+
+  let(:target_config) do
+    instance_double(Y2Security::SecurityPolicies::TargetConfig)
+  end
+
+  describe "#rules" do
+    it "checks whether /home is on a separate mount point" do
+      rule = subject.rules.find do |mp|
+        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
+          mp.mount_point == "/home"
+      end
+      expect(rule).to_not be_nil
+    end
+
+    it "checks whether /var is on a separate mount point" do
+      rule = subject.rules.find do |mp|
+        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
+          mp.mount_point == "/var"
+      end
+      expect(rule).to_not be_nil
+    end
+
+    it "checks whether /var/log/audit is on a separate mount point" do
+      rule = subject.rules.find do |mp|
+        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
+          mp.mount_point == "/var/log/audit"
+      end
+      expect(rule).to_not be_nil
+    end
+
+    it "checks whether the file system is encrypted" do
+      expect(subject.rules)
+        .to include(Y2Security::SecurityPolicies::MissingEncryptionRule)
+    end
+
+    it "checks that no wireless rules will be active" do
+      expect(subject.rules)
+        .to include(Y2Security::SecurityPolicies::NoWirelessRule)
+    end
+
+    it "checks that the firewall will be enabled" do
+      expect(subject.rules)
+        .to include(Y2Security::SecurityPolicies::FirewallEnabledRule)
+    end
+
+    it "checks that the bootloader is password-protected and restricted" do
+      expect(subject.rules)
+        .to include(Y2Security::SecurityPolicies::BootloaderPasswordRule)
+    end
+  end
 end
