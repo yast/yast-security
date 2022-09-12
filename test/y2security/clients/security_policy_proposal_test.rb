@@ -92,7 +92,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           )
         end
 
-        it "includes the issues in the preformatted proposal" do
+        it "includes the failing rules in the preformatted proposal" do
           expect(subject.make_proposal({})).to include(
             "preformatted_proposal" => /Dummy rule/
           )
@@ -171,7 +171,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
     end
 
-    context "when the user asks to fix an issue" do
+    context "when the user asks to fix an rule" do
       let(:rule) { policy.rules.first }
 
       before do
@@ -179,7 +179,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         allow(rule).to receive(:pass?).and_return(false)
       end
 
-      it "fixes the issue" do
+      it "fixes the rule" do
         subject.make_proposal({})
         expect(rule).to receive(:fix).with(target_config)
         subject.ask_user(
@@ -197,10 +197,6 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         allow(Yast::Wizard).to receive(:OpenAcceptDialog)
         allow(Yast::Wizard).to receive(:CloseDialog)
       end
-
-      let(:issues) { [issue] }
-
-      let(:issue) { Y2Security::SecurityPolicies::Issue.new("Storage issue", scope: scope) }
 
       let(:scope) { Y2Security::SecurityPolicies::Scopes::Storage.new(devicegraph: devicegraph) }
 
