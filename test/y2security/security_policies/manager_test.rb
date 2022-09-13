@@ -28,6 +28,9 @@ describe Y2Security::SecurityPolicies::Manager do
     end
 
     allow(ENV).to receive(:keys).and_return env.keys
+
+    allow(Y2Security::SecurityPolicies::DisaStigPolicy)
+      .to receive(:new).and_return(disa_stig_policy)
   end
 
   let(:env) { {} }
