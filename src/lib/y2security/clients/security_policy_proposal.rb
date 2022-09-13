@@ -152,17 +152,23 @@ module Y2Security
           policies_manager.failing_rules(target_config)
       end
 
-      # Enables the policy with the given id
+      # Toggles (enable/disable) the policy with the given ID
       #
-      # @param id [Symbol] Policy id
+      # @param id [Symbol] Policy ID
       def toggle_policy(id)
         policy = policies_manager.find_policy(id)
         return unless policy
 
-        method = policies_manager.enabled_policy?(policy) ? "disable_policy" : "enable_policy"
-        policies_manager.public_send(method, policy)
+        if policies_manager.enabled_policy?(policy)
+          policies_manager.disable_policy(policy)
+        else
+          policies_manager.enable_policy(policy)
+        end
       end
 
+      # Toggles (enable/disable) the rule with the given ID
+      #
+      # @param id [String] Rule ID
       def toggle_rule(id)
         rule = find_rule(id)
         return unless rule
@@ -170,13 +176,17 @@ module Y2Security
         rule.enabled? ? rule.disable : rule.enable
       end
 
+      # Returns the rule with the given ID
+      #
+      # @param id [String] Rule ID
+      # @return [SecurityPolicies::Rule, nil] nil if there is no rule with the given ID
       def find_rule(id)
         rules.find { |r| r.id == id }
       end
 
-      # Tries to fix the given rule
+      # Tries to fix the rule with the given ID
       #
-      # @param id [Integer] Rule id
+      # @param id [Integer] Rule ID
       def fix_rule(id)
         rule = find_rule(id)
         rule&.fix(target_config)
@@ -194,14 +204,17 @@ module Y2Security
 
       # Parses a link
       #
-      # @param link [Array<String, String>] An array containing the the action
-      #   and the id of the element to act on
       # @see #ask_user
+      #
+      # @param link [String] A link containing the action and the ID of the element to act on
+      # @return [Array<String>] Action and ID
       def parse_link(link)
         link.delete_prefix("#{PROPOSAL_ID}--").split(":")
       end
 
       # Convenience method to access the list of failing rules
+      #
+      # @return [Hash{SecurityPolicies::Policy => Array<SecurityPolicies::Rule>}]
       def failing_rules
         self.class.failing_rules
       end
@@ -227,6 +240,8 @@ module Y2Security
         Y2Security::SecurityPolicies::Manager.instance
       end
 
+      # Target config to work on
+      #
       # @return [SecurityPolicies::TargetConfig]
       def target_config
         @target_config ||= SecurityPolicies::TargetConfig.new
@@ -247,17 +262,28 @@ module Y2Security
         Yast::Wizard.CloseDialog
       end
 
-      # Builds unique hyperlink IDs
-      # (by scoping actions with a dialog ID and adding an optional object ID).
+      # Helper class to builds unique hyperlink IDs (by scoping actions with a dialog ID and adding
+      # an optional object ID).
       class LinksBuilder
+        # Constructor
+        #
+        # @param dialog_id [String]
         def initialize(dialog_id)
           @dialog_id = dialog_id
         end
 
+        # Possible links to use over a policy
+        #
+        # @param policy [SecurityPolicies::Policy]
+        # @return [Array<String>]
         def links_for_policy(policy)
           [policy_toggle_link(policy)]
         end
 
+        # Possible links to use over a rule
+        #
+        # @param rule [SecurityPolicies::Rule]
+        # @return [Array<String>]
         def links_for_rule(rule)
           [
             rule_toggle_link(rule),
@@ -265,14 +291,28 @@ module Y2Security
           ]
         end
 
+        # Link for toggling (enable or disable) a policy
+        #
+        # @param policy [SecurityPolicies::Policy]
+        # @return [String]
         def policy_toggle_link(policy)
           build_link("toggle-policy", policy.id)
         end
 
+        # Link for toggling (enable or disable) a rule
+        #
+        # @param rule [SecurityPolicies::Rule]
+        # @return [String]
         def rule_toggle_link(rule)
           build_link("toggle-rule", rule.id)
         end
 
+        # Link for the action to fix a rule
+        #
+        # Rules from storage scope will link to the Expert Partitioner if the rule is not fixable.
+        #
+        # @param rule [SecurityPolicies::Rule]
+        # @return [String, nil] nil if there is no action for the rule
         def rule_fix_link(rule)
           if rule.fixable?
             build_link("fix-rule", rule.id)
@@ -283,25 +323,28 @@ module Y2Security
 
       private
 
+        # @return [String]
         attr_reader :dialog_id
 
         # Builds a link
         #
-        # @param action [String] Action ("enable", "disable" or "fix")
-        # @param id [#to_s] id of the element to act on
+        # @param action [String] Action (e.g., "toggle", "fix", etc)
+        # @param id [#to_s] ID of the element to act on
+        #
         # @return [String]
         def build_link(action, id = nil)
           "#{dialog_id}--#{action}:#{id}"
         end
       end
 
-      # Builds the representation of a security policy
+      # Helper class to build the representation of a security policy
       class PolicyPresenter
         include Yast::I18n
 
-        # @param policy [SecurityPolicies::Policy]
-        # @param failing_rules [Array<SecurityPolicies::Rule>]
-        # @param links_builder [LinksBuilder]
+        # @param policy [SecurityPolicies::Policy] policy to present
+        # @param enabled [Boolean] Whether the policy is enabled
+        # @param failing_rules [Array<SecurityPolicies::Rule>] Failing rules from the policy
+        # @param links_builder [LinksBuilder] Object to build links
         def initialize(policy, enabled:, failing_rules:, links_builder:)
           textdomain "security"
 
@@ -334,12 +377,16 @@ module Y2Security
 
       private
 
+        # @return [SecuiryPolicies::Policy]
         attr_reader :policy
 
+        # @return [Boolean]
         attr_reader :policy_enabled
 
+        # @return [Array<SecurityPolicies::Rule>]
         attr_reader :failing_rules
 
+        # @return [LinksBuilder]
         attr_reader :links_builder
 
         # HTML section describing the failing and disabled rules
@@ -389,11 +436,14 @@ module Y2Security
         end
       end
 
-      # Builds the representation of a rule
+      # Helper class to build the representation of a rule
       class RulePresenter
         include Yast::I18n
 
-        #  @param rule [SecurityPolicies::Rule]
+        # Constructor
+        #
+        # @param rule [SecurityPolicies::Rule] Rule to present
+        # @param rule [LinksBuilder]
         def initialize(rule, links_builder)
           textdomain "security"
 
@@ -401,6 +451,7 @@ module Y2Security
           @links_builder = links_builder
         end
 
+        # @return [String]
         def to_html
           return message if actions.none?
 
@@ -410,14 +461,20 @@ module Y2Security
 
       private
 
+        # @return [SecurityPolicies::Rule]
         attr_reader :rule
 
+        # @return [LinksBuilder]
         attr_reader :links_builder
 
+        # @see #to_html
+        # @return [String]
         def message
           "#{rule.id} #{rule.description}"
         end
 
+        # @see #to_html
+        # @return [Array<String>]
         def actions
           rule_actions = [toggle_action]
           rule_actions << fix_action if rule.enabled?
@@ -426,6 +483,7 @@ module Y2Security
         end
 
         def toggle_action
+          # TRANSLATORS: an action hyperlink
           text = rule.enabled? ? _("disable rule") : _("enable rule")
 
           build_action(text, links_builder.rule_toggle_link(rule))
@@ -435,11 +493,25 @@ module Y2Security
           link = links_builder.rule_fix_link(rule)
           return nil unless link
 
-          text = (rule.scope == :storage) ? _("open partitioning") : _("fix rule")
+          text = if rule.scope == :storage
+            # TRANSLATORS: an action hyperlink to fix a problem detected by a rule of a security
+            # policy. "open" is a verb.
+            _("open partitioner")
+          else
+            # TRANSLATORS: an action hyperlink to fix a problem detected by a rule of a security
+            # policy.
+            _("fix rule")
+          end
 
           build_action(text, link)
         end
 
+        # HTML-like hyperlink element
+        #
+        # @param text [String] Text for the <a> tag
+        # @param link [String] URL for the <a> tag
+        #
+        # @return [String]
         def build_action(text, link)
           format("<a href=\"%s\">%s</a>", link, text)
         end
