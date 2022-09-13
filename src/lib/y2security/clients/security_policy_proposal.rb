@@ -38,7 +38,7 @@ module Y2Security
         #
         # The list of failing rules is shared by SecurityPolicyProposal instances.
         #
-        # @return [IssuesCollection]
+        # @return [Hash{SecurityPolicies::Policy => Array<SecurityPolicies::Rule>}]
         def failing_rules
           @failing_rules ||= {}
         end
@@ -95,6 +95,7 @@ module Y2Security
         { "workflow_result" => :again }
       end
 
+      # @return [LinksBuilder]
       attr_reader :links_builder
 
       # @see Installation::ProposalClient#preformatted_proposal
@@ -226,6 +227,7 @@ module Y2Security
         Y2Security::SecurityPolicies::Manager.instance
       end
 
+      # @return [SecurityPolicies::TargetConfig]
       def target_config
         @target_config ||= SecurityPolicies::TargetConfig.new
       end
@@ -245,7 +247,8 @@ module Y2Security
         Yast::Wizard.CloseDialog
       end
 
-      # Builds links for a rule in the context of a dialog
+      # Builds unique hyperlink IDs
+      # (by scoping actions with a dialog ID and adding an optional object ID).
       class LinksBuilder
         def initialize(dialog_id)
           @dialog_id = dialog_id
@@ -296,6 +299,9 @@ module Y2Security
       class PolicyPresenter
         include Yast::I18n
 
+        # @param policy [SecurityPolicies::Policy]
+        # @param failing_rules [Array<SecurityPolicies::Rule>]
+        # @param links_builder [LinksBuilder]
         def initialize(policy, enabled:, failing_rules:, links_builder:)
           textdomain "security"
 
@@ -305,6 +311,7 @@ module Y2Security
           @links_builder = links_builder
         end
 
+        # @return [String]
         def to_html
           toggle_link = links_builder.policy_toggle_link(policy)
 
@@ -386,6 +393,7 @@ module Y2Security
       class RulePresenter
         include Yast::I18n
 
+        #  @param rule [SecurityPolicies::Rule]
         def initialize(rule, links_builder)
           textdomain "security"
 

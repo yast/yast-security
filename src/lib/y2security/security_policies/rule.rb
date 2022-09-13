@@ -68,7 +68,8 @@ module Y2Security
         @enabled
       end
 
-      # Determines whether the rule passes or not
+      # Determines whether the rule passes or not.
+      # *target_config* is a {TargetConfig}.
       def pass?(_target_config)
         true
       end
@@ -78,7 +79,8 @@ module Y2Security
         false
       end
 
-      # Automatically fixes the system to make the rule pass
+      # Automatically fixes the system to make the rule pass.
+      # *target_config* is a {TargetConfig}.
       def fix(_target_config)
         nil
       end
