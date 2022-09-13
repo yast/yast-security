@@ -131,9 +131,9 @@ describe Y2Security::Clients::SecurityPolicyProposal do
             allow(rule).to receive(:scope).and_return(:storage)
           end
 
-          it "includes a link to open the partitioning" do
+          it "includes a link to open the storage proposal" do
             expect(subject.make_proposal({})).to include(
-              "preformatted_proposal" => %r{<a href=.*>open partitioning</a>}
+              "preformatted_proposal" => %r{<a href=.*>storage proposal</a>}
             )
           end
         end
@@ -176,9 +176,9 @@ describe Y2Security::Clients::SecurityPolicyProposal do
             allow(rule).to receive(:scope).and_return(:storage)
           end
 
-          it "does not include a link to open the partitioning" do
+          it "does not include a link to open the storage proposal" do
             expect(subject.make_proposal({})).to_not include(
-              "preformatted_proposal" => %r{<a href=.*>open partitioning</a>}
+              "preformatted_proposal" => %r{<a href=.*>storage proposal</a>}
             )
           end
         end
@@ -282,7 +282,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
     end
 
-    context "when the user asks to open the partitioning client" do
+    context "when the user asks to open the storage proposal" do
       let(:rule) { policy.rules.first }
 
       before do
@@ -294,7 +294,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         allow(Yast::Wizard).to receive(:CloseDialog)
       end
 
-      it "opens the partitioning" do
+      it "opens the storage proposal" do
         expect(Yast::WFM).to receive(:CallFunction).with("inst_disk_proposal", anything)
 
         subject.make_proposal({})

@@ -494,9 +494,8 @@ module Y2Security
           return nil unless link
 
           text = if rule.scope == :storage
-            # TRANSLATORS: an action hyperlink to fix a problem detected by a rule of a security
-            # policy. "open" is a verb.
-            _("open partitioner")
+            # TRANSLATORS: an action hyperlink to open the storage proposal client
+            _("storage proposal")
           else
             # TRANSLATORS: an action hyperlink to fix a problem detected by a rule of a security
             # policy.
