@@ -935,7 +935,7 @@ module Yast
     # It sets the LSM configuration according to the one provided in the profile and ensures
     # needed patterns for the selected LSM
     #
-    # @param settings [SecuritySection] profile security settings to be imported.
+    # @param section [SecuritySection] profile security settings to be imported.
     def import_lsm_config(section)
       Y2Security::Autoinst::LSMConfigReader.new(section).read
       return unless lsm_config.configurable?
