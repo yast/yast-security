@@ -34,7 +34,8 @@ describe Y2Security::SecurityPolicies::TargetConfig do
       allow(Installation::SecuritySettings).to receive(:instance)
         .and_return(security)
       # Avoid yast2-installation cyclic dependency
-      allow_any_instance_of(described_class).to receive(:require).with("installation/security_settings")
+      allow_any_instance_of(described_class)
+        .to receive(:require).with("installation/security_settings")
     end
 
     let(:storage_manager) do

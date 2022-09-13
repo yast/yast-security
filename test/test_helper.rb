@@ -78,6 +78,7 @@ module Installation
     include Singleton
 
     def enable_firewall; end
+
     def enable_firewall!; end
   end
 end
