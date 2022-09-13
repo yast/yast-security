@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "installation/autoinst_profile/section_with_attributes"
+require "y2security/autoinst_profile/security_policy_section"
 
 module Y2Security
   module AutoinstProfile
@@ -56,7 +57,7 @@ module Y2Security
       # Constructor
       #
       # @param parent [SectionWithAttributes] Parent section
-      def initialize(_parent = nil)
+      def initialize(parent = nil)
         super
         @security_policies = []
       end
@@ -76,7 +77,7 @@ module Y2Security
         return [] unless hash["security_policies"]
 
         hash["security_policies"].map do |policy|
-          SecurityPolicySection.new_from_hashes(policy)
+          SecurityPolicySection.new_from_hashes(policy, self)
         end
       end
     end
