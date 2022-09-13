@@ -78,13 +78,6 @@ module Y2Security
 
       # Default security settings
       #
-      # @return [Installation::SecuritySettings, nil] nil if yast2-installation is not available
-      def default_security_settings
-        ensure_security_settings { ::Installation::SecuritySettings.instance }
-      end
-
-      # Ensures that security settings is loaded and runs the given block
-      #
       # FIXME: avoid a cyclic dependency with yast2-installation
       #
       # The package yast2-installation has yast2-security as dependency, so yast2-security does
@@ -92,9 +85,11 @@ module Y2Security
       # yast2-installation is always included in the installation image, but it could be missing
       # at building time. And missing yast2-installation in a running system should not be
       # relevant because the policies are only checked during the installation.
-      def ensure_security_settings
+      #
+      # @return [Installation::SecuritySettings, nil] nil if yast2-installation is not available
+      def default_security_settings
         require "installation/security_settings"
-        yield
+        ::Installation::SecuritySettings.instance
       rescue LoadError
         log.warn("Security settings cannot be loaded. Make sure yast2-installation is installed.")
         nil

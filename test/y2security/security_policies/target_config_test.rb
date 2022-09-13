@@ -19,8 +19,8 @@
 
 require_relative "../../test_helper"
 require "y2security/security_policies/target_config"
-require "installation/security_settings"
 Yast.import "Lan"
+require "singleton"
 
 describe Y2Security::SecurityPolicies::TargetConfig do
   describe "#new" do
@@ -33,6 +33,8 @@ describe Y2Security::SecurityPolicies::TargetConfig do
         .and_return(bootloader)
       allow(Installation::SecuritySettings).to receive(:instance)
         .and_return(security)
+      # Avoid yast2-installation cyclic dependency
+      allow_any_instance_of(described_class).to receive(:require).with("installation/security_settings")
     end
 
     let(:storage_manager) do
