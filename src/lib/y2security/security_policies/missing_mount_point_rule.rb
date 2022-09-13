@@ -39,6 +39,7 @@ module Y2Security
         textdomain "security"
 
         @mount_point = mount_point
+        # TRANSLATORS: security policy rule
         super(id, format(_("There must be a separate mount point for %s"), mount_point), :storage)
       end
 

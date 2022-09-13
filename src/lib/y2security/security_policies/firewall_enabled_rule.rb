@@ -32,6 +32,7 @@ module Y2Security
       def initialize
         textdomain "security"
 
+        # TRANSLATORS: security policy rule
         super("SLES-15-010220", _("Firewall must be enabled"), :security)
       end
 

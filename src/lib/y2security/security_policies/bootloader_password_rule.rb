@@ -29,6 +29,7 @@ module Y2Security
 
         super(
           "SLES-15-010200",
+          # TRANSLATORS: security policy rule
           _("Bootloader must be protected by password and menu editing must be restricted"),
           :bootloader
         )

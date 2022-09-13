@@ -35,6 +35,7 @@ module Y2Security
       def initialize
         textdomain "security"
 
+        # TRANSLATORS: security policy rule
         super("SLES-15-010380", _("Wireless network interfaces must be deactivated"), :network)
       end
 
