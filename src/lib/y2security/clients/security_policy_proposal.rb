@@ -443,7 +443,7 @@ module Y2Security
         # Constructor
         #
         # @param rule [SecurityPolicies::Rule] Rule to present
-        # @param rule [LinksBuilder]
+        # @param links_builder [LinksBuilder]
         def initialize(rule, links_builder)
           textdomain "security"
 
