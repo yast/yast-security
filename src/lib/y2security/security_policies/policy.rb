@@ -50,19 +50,14 @@ module Y2Security
       end
 
       # @param config [TargetConfig] Configuration to check
-      # @param scope [Symbol,nil] Scope to check. nil means that all scopes must
-      #   be checked.
-      # @param include_disabled [Boolean] Include disabled rules.
+      # @param scope [Symbol, nil] Scope to check (nil means that all scopes must be checked)
+      # @param include_disabled [Boolean] Whether disabled rules should be checked
       # @return [Array<Rule>] Failing rules for the given config and scope
       def failing_rules(config, scope: nil, include_disabled: false)
         rules
           .select { |r| scope.nil? || r.scope == scope }
           .select { |r| include_disabled || r.enabled? }
           .reject { |r| r.pass?(config) }
-      end
-
-      def ==(other)
-        id == other.id && self.class == other.class
       end
 
       def rules
