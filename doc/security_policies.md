@@ -20,18 +20,21 @@ We can classify rules into multiple cases:
 
 ## YaST and Security Policies
 
-The YaST installer supports security policies which can be enabled in the Installation Summary. The
-installer checks the rules of the enabled policies and reports the issues to fix before proceeding
-with the installation. For some issues, YaST offers a link to easily remediate it. For others, the
-link will take you to the proper installation client to fix the issue (e.g., the Guided
-Partitoning). At this moment, only the DISA STIG policy is supported, but the YaST infrastructure
-is ready to offer more policies if requested.
+The YaST installer supports security policies which can be enabled in the Installation Summary.
+At this moment, YaST only offers the DISA STIG policy, although more policies are expected to be
+added.
 
-The boot parameter `YAST_SECURITY_POLICIES` can be used for enabling policies from the beginning of
-the installation without waiting until reaching the Installation Summary. If the policies are
-enabled (e.g., `YAST_SECURITY_POLICIES=disa_stig`), then some YaST clients could show policies
-issues too. For example, the Guided Partitioning client and the Expert Partitioner show the policies
-issues related to storage configuration.
+The installer checks all the enabled policies and reports the failing rules. The installation will
+be blocked meanwhile there are failing rules. For some rules, YaST offers a link to easily remediate
+the rule. For others, the link will go to the proper installation client (e.g., the Storage
+Proposal) where the user is expected to manually fix the rule. Moreover, YaST allows to disable
+rules. Disabled rules will not be checked and they will not blocked the installation.
+
+A boot parameter `YAST_SECURITY_POLICIES` can be used for enabling policies from the beginning of
+the installation without waiting until reaching the Installation Summary. If a policy is enabled
+(e.g., `YAST_SECURITY_POLICIES=disa_stig`), then some YaST clients perform policy checks too. For
+example, the Guided Partitioning client and the Expert Partitioner show the failing rules related to
+the storage configuration.
 
 ## DISA STIG Checks
 
@@ -39,17 +42,20 @@ The YaST installer only checks a subset of the rules defined by a security polic
 focused on such rules that need to be applied during the installation. For example, for DISA STIG
 the following rules should be checked:
 
-* All file systems are encrypted ([SLES-15-010330](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_encrypt_partitions])).
-* The system has a separate mount point for */home* ([SLES-15-040200](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_home)).
-* The system has a separate mount point for */var* ([SLES-15-040210](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_var)).
-* The system has a separate mount point for */var/log/audit* ([SLES-15-040210](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_var_log_audit)) (Note: this rule is not checked by YaST).
-* A bootloader password (for grub2) must be configured (UEFI) ([SLES-15-010200](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_uefi)).
-* A bootloader password (for grub2) must be configured (non-UEFI) ([SLES-15-010190](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_non-uefi)) (Note: this rule is not checked by YaST).
+* [SLES-15-010330](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_encrypt_partitions]) All file systems are encrypted ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-06-06/finding/V-234831)).
+* [SLES-15-040200](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_home) The system has a separate mount point for */home* ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-03-04/finding/V-235004)).
+* [SLES-15-040210](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_var) The system has a separate mount point for */var* ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-06-14/finding/V-235005)).
+* [SLES-15-040210](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_var_log_audit) The system has a separate mount point for */var/log/audit* ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-06-06/finding/V-234980)).
+* [SLES-15-030660](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_auditd_audispd_configure_sufficiently_large_partition) Enough capacity for audit records ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-06-06/finding/V-234965)).
+* [SLES-15-010200](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_uefi) A bootloader password (for grub2) must be configured (UEFI) ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234820)).
+* [SLES-15-010190](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_non-uefi) A bootloader password (for grub2) must be configured (BIOS) ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-02-11/finding/V-234819)).
+
+*NOTE: rules SLES-15-030660 and SLES-15-010190 are not checked by YaST yet.*
 
 Apart from the rules above, YaST also checks these other rules at installation time:
 
-* Verify firewalld is enabled ([SLES-15-010220](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_service_firewalld_enabled)).
-* Deactivate Wireless Network Interfaces ([SLES-15-010380](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_wireless_disable_interfaces)).
+* [SLES-15-010220](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_service_firewalld_enabled) Verify firewalld is enabled ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234821)).
+* [SLES-15-010380](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_wireless_disable_interfaces) Deactivate Wireless Network Interfaces ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234847)).
 
 
 ## YaST API
@@ -57,31 +63,42 @@ Apart from the rules above, YaST also checks these other rules at installation t
 This section describes some implementation details of the security policies in YaST.
 
 Everything related to security policies is defined under the `Y2Security::SecurityPolicies`
-namespace. Each policy is defined by its own class, for example
-`Y2Security::SecurityPolicies::DisaStigPolicy`. The policy classes provide a `#validate` method
-which checks the policy rules and reports a list of issues. The issues are represented by instances
-of the `Y2Security::SecurityPolicies::Issue` class. An issue optionally has an associated action
-(`Y2Security::SecurityPolicies::Action`) to automataically fix the issue.
+name space. Each policy is defined by its own class, for example
+`Y2Security::SecurityPolicies::DisaStigPolicy`. The policy classes provide a `#failing_rules` method
+which checks the policy rules and reports the failing rules. The rules are represented by instances
+of a subclass of `Y2Security::SecurityPolicies::Rule`. Some rules are fixable, that is, they offer
+a method for automatically fix the rule.
 
 The security policies are managed by the singleton class `Y2Security::SecurityPolicies::Manager`.
-That class offers an API for enabling and disabling policies and for getting the issues from all the
-enabled policies. YaST clients use the policies manager to interact with the policies. For example,
-`Y2Security::Clients::SecurityPolicyProposal` uses the manager to enable and disable policices and
-to get the list of issues. In *yast-storage-ng*, the Guided Setup and the Expert Partitoner also use
-the manager to get the list of storage issues. Scopes are used for limiting the policy checks to a
-specific area (e.g., storage). The scopes are defined under the
-`Y2Security::SecurityPolicies::Scopes` namespace.
+That class provides an API for enabling and disabling policies and for getting the failing rules
+from all the enabled policies. YaST clients (e.g., `Y2Security::Clients::SecurityPolicyProposal`)
+use the policies manager to interact with the policies. In *yast-storage-ng*, the Guided Setup and
+the Expert Partitoner also use the manager to get the failing rules related to the storage
+configuration. The configuration to check by the policies can be configured with a
+`Y2Security::SecurityPolicies::TargetConfig` object.
 
-~~~
-            Manager
-              |
-     _ _ _ _ _ _ _ _ _ _
-    |                   |
-(enabled)           (disabled)
-    |                   |
- PolicyA             PolicyB
-    |
- _ _ _ _ _ _ _ _
-|               |
-issue(#fix)     issue
+~~~ruby
+#                 Manager
+#                   |
+#          _ _ _ _ _ _ _ _ _ _
+#         |                   |
+#         |                   |
+#      Policy A            Policy B
+#         |
+#      _ _ _ _ _ _ _ _
+#     |               |
+#   rule            rule
+
+require "y2security/security_policies"
+
+manager = Y2Security::SecurityPolicies::Manager.instance
+
+config = Y2Security::SecurityPolicies::TargetConfig.new
+
+failing_rules = manager.failing_rules(config, scope: :network)
+failing_rules.first.fixable?  #=> true
+failing_rules.first.fix
+
+policy = manager.find_policy(:disa_stig)
+policy.rules.each(&:disable)
 ~~~
