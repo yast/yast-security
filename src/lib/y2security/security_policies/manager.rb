@@ -91,6 +91,10 @@ module Y2Security
         @enabled_policies.include?(policy)
       end
 
+      # @param config [TargetConfig]
+      # @param scope [Symbol,nil] only consider rules with this scope.
+      #   For example yast2-storage-ng will call this with :storage to
+      #   only display rules that it can fix.
       # @return [Hash<Policy, Array<Rule>>]
       def failing_rules(config, scope: nil, include_disabled: false)
         enabled_policies.each_with_object({}) do |policy, result|
