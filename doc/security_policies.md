@@ -20,21 +20,23 @@ We can classify rules into multiple cases:
 
 ## YaST and Security Policies
 
-The YaST installer supports security policies which can be enabled in the Installation Summary.
-At this moment, YaST only offers the DISA STIG policy, although more policies are expected to be
-added.
+The YaST installer supports security policies. At this moment, the installer only offers the DISA
+STIG policy, although more policies are expected to be added.
 
-The installer checks all the enabled policies and reports the failing rules. The installation will
-be blocked meanwhile there are failing rules. For some rules, YaST offers a link to easily remediate
-the rule. For others, the link will go to the proper installation client (e.g., the Storage
-Proposal) where the user is expected to manually fix the rule. Moreover, YaST allows to disable
-rules. Disabled rules will not be checked and they will not blocked the installation.
+There are two ways for enabling security policies in YaST: in the Installation Summary dialog at
+the end of the installation or by using the `YAST_SECURITY_POLICIES` boot parameter. Policies and
+rules can also be enabled in the AutoYaST profile.
 
-A boot parameter `YAST_SECURITY_POLICIES` can be used for enabling policies from the beginning of
-the installation without waiting until reaching the Installation Summary. If a policy is enabled
-(e.g., `YAST_SECURITY_POLICIES=disa_stig`), then some YaST clients perform policy checks too. For
-example, the Guided Partitioning client and the Expert Partitioner show the failing rules related to
-the storage configuration.
+The Installation Summary has a Security Policy section that shows the policies and reports the
+failing rules for the enabled policies. The policies are also checked by some YaST clients. For
+example, the Guided Partitioning and the Expert Partitioner show the failing rules related to the
+storage configuration. The installation will be blocked meanwhile there are failing rules.
+
+In the Security Policy section, some rules offer a link to easily remediate the issue. For others
+rules, the link will go to the proper installation client (e.g., the Storage Proposal) where the
+user is expected to manually fix the security problem. Moreover, YaST allows disabling rules.
+Disabled rules will not be checked by YaST and they will not blocked the installation. AutoYaST
+profiles also support disabling rules.
 
 ## DISA STIG Checks
 
