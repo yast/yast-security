@@ -35,18 +35,11 @@ module Y2Security
       # @return [String]
       attr_reader :name
 
-      # Packages to install for the policy
-      #
-      # @return [Array<String>]
-      attr_reader :packages
-
       # @param id [Symbol]
       # @param name [String]
-      # @param packages [Array<String>]
-      def initialize(id, name, packages = [])
+      def initialize(id, name)
         @id = id
         @name = name
-        @packages = packages
       end
 
       # @param config [TargetConfig] Configuration to check
