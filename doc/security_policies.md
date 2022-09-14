@@ -69,7 +69,7 @@ name space. Each policy is defined by its own class, for example
 `Y2Security::SecurityPolicies::DisaStigPolicy`. The policy classes provide a `#failing_rules` method
 which checks the policy rules and reports the failing rules. The rules are represented by instances
 of a subclass of `Y2Security::SecurityPolicies::Rule`. Some rules are fixable, that is, they offer
-a method for automatically fix the rule.
+a method for automatically fix the issue.
 
 The security policies are managed by the singleton class `Y2Security::SecurityPolicies::Manager`.
 That class provides an API for enabling and disabling policies and for getting the failing rules
@@ -89,7 +89,7 @@ configuration. The configuration to check by the policies can be configured with
 #         |
 #      _ _ _ _ _ _ _ _
 #     |               |
-#   rule            rule
+#   rule1           rule2
 
 require "y2security/security_policies"
 
