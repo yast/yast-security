@@ -34,6 +34,7 @@ require "security/ctrl_alt_del_config"
 require "security/display_manager"
 require "y2security/autoinst/lsm_config_reader"
 require "y2security/security_policies"
+require "y2security/autoinst_profile"
 
 module Yast
   class SecurityClass < Module # rubocop:disable Metrics/ClassLength
@@ -804,8 +805,9 @@ module Yast
         settings["security_policies"] = settings.delete("SECURITY_POLICIES")
       end
 
-      import_lsm_config(settings)
-      import_security_policies(settings)
+      section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
+      import_lsm_config(section)
+      import_security_policies(section.security_policies)
 
       return true if settings == {}
 
@@ -933,11 +935,9 @@ module Yast
     # It sets the LSM configuration according to the one provided in the profile and ensures
     # needed patterns for the selected LSM
     #
-    # @param settings [Hash] profile security settings to be imported.
-    def import_lsm_config(settings)
-      section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
+    # @param section [SecuritySection] profile security settings to be imported.
+    def import_lsm_config(section)
       Y2Security::Autoinst::LSMConfigReader.new(section).read
-
       return unless lsm_config.configurable?
 
       PackagesProposal.SetResolvables("LSM", :pattern, lsm_config.needed_patterns)
@@ -945,19 +945,22 @@ module Yast
 
     # It enables the security policies according to the profile
     #
-    # @param settings [Hash] security settings to import from the profile
-    def import_security_policies(settings)
-      return unless settings["security_policies"].is_a?(Array)
-
-      settings["security_policies"].each do |policy_id|
-        policies_manager = Y2Security::SecurityPolicies::Manager.instance
-        policy = policies_manager.find_policy(policy_id.to_sym)
+    # @param sections [Array<Y2Security::AutoinstProfile::SecurityPolicySection>] security
+    #   policies sections from the AutoYaST profile
+    def import_security_policies(sections)
+      manager = Y2Security::SecurityPolicies::Manager.instance
+      sections.each do |section|
+        policy = manager.find_policy(section.name&.to_sym)
         if policy.nil?
-          log.error "The security policy '#{policy_id}' is unknown."
+          log.error "The security policy '#{section.name}' is unknown."
           next
         end
 
-        policies_manager.enable_policy(policy)
+        manager.enable_policy(policy)
+        section.disabled_rules.each do |rule_id|
+          rule = policy.rules.find { |r| r.id == rule_id }
+          rule&.disable
+        end
       end
     end
 

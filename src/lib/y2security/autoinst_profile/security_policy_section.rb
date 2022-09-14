@@ -1,4 +1,4 @@
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -18,16 +18,12 @@
 # find current contact information at www.suse.com.
 
 require "installation/autoinst_profile/section_with_attributes"
-require "y2security/autoinst_profile/security_policy_section"
 
 module Y2Security
   module AutoinstProfile
-    # This class represents an AutoYaST <security> section although by now it only handles
-    # LSM related attributes
+    # This class represents the <security_policy> section of an AutoYaST profile
     #
-    # <security>
-    #   <selinux_mode>enforcing</selinux_mode>
-    #   <lsm_select>selinux</lsm_select>
+    # @example Enabling DISA STIG except one of the rules
     #   <security_policies t="list">
     #     <listitem>
     #       <name>disa_stig</name>
@@ -36,30 +32,24 @@ module Y2Security
     #       </disabled_rules>
     #     </listitem>
     #   </security_policies>
-    # </security>
-    class SecuritySection < ::Installation::AutoinstProfile::SectionWithAttributes
+    class SecurityPolicySection < ::Installation::AutoinstProfile::SectionWithAttributes
       def self.attributes
         [
-          { name: :selinux_mode },
-          { name: :lsm_select },
-          { name: :security_policies }
+          { name: :name },
+          { name: :disabled_rules }
         ]
       end
 
       define_attr_accessors
 
-      # @!attribute selinux_mode
-      #   @return [String] SELinux mode to be used
-      # @!attribute lsm_select
-      #   @return [String] Major Linux Security Module to be used.
-      #     Possible values: apparmor, selinux, none
+      # @!attribute name
+      #   @return [String] Policy name to apply
+      # @!attribute disabled_rules
+      #   @return [Array<String>] Rules to ignore
 
-      # Constructor
-      #
-      # @param parent [SectionWithAttributes] Parent section
       def initialize(parent = nil)
         super
-        @security_policies = []
+        @disabled_rules = []
       end
 
       # Method used by {.new_from_hashes} to populate the attributes.
@@ -67,18 +57,7 @@ module Y2Security
       # @param hash [Hash] see {.new_from_hashes}
       def init_from_hashes(hash)
         super
-        @security_policies = policies_from_hashes(hash)
-      end
-
-    private
-
-      # @return [Array<SecurityPolicySection>]
-      def policies_from_hashes(hash)
-        return [] unless hash["security_policies"]
-
-        hash["security_policies"].map do |policy|
-          SecurityPolicySection.new_from_hashes(policy, self)
-        end
+        @disabled_rules = hash["disabled_rules"] || []
       end
     end
   end

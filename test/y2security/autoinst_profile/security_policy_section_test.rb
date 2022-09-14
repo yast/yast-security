@@ -1,4 +1,5 @@
-# Copyright (c) [2021] SUSE LLC
+#!/usr/bin/env rspec
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -17,5 +18,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2security/autoinst_profile/security_section"
+require_relative "../../test_helper"
 require "y2security/autoinst_profile/security_policy_section"
+
+describe Y2Security::AutoinstProfile::SecurityPolicySection do
+  describe ".new_from_hashes" do
+    let(:profile) do
+      { "name" => "disa_stig", "disabled_rules" => ["SLES-15-040200"] }
+    end
+
+    it "sets the name and the list of ignored rules" do
+      section = described_class.new_from_hashes(profile)
+      expect(section.name).to eq("disa_stig")
+      expect(section.disabled_rules).to eq(["SLES-15-040200"])
+    end
+
+    context "an empty profile" do
+      it "returns an empty section" do
+        section = described_class.new_from_hashes({})
+        expect(section.name).to be_nil
+        expect(section.disabled_rules).to eq([])
+      end
+    end
+  end
+end
