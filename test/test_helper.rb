@@ -70,3 +70,15 @@ if ENV["COVERAGE"]
     ]
   end
 end
+
+# Mock the Installation::SecuritySettings class to avoid
+# a cyclic dependency on yast2-installation
+module Installation
+  class SecuritySettings
+    include Singleton
+
+    def enable_firewall; end
+
+    def enable_firewall!; end
+  end
+end

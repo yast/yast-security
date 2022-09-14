@@ -20,13 +20,16 @@
 require "yast"
 require "singleton"
 require "y2security/security_policies/disa_stig_policy"
-require "y2security/security_policies/issue"
 
 module Y2Security
   module SecurityPolicies
     # Class to manage security policies
     class Manager
-      include Singleton
+      class << self
+        def instance
+          @instance ||= new
+        end
+      end
 
       include Yast::Logger
 
@@ -61,7 +64,7 @@ module Y2Security
       # @param id [Symbol] Security policy id
       # @return [Policy, nil]
       def find_policy(id)
-        policies.find { |p| p.is?(id) }
+        policies.find { |p| p.id == id }
       end
 
       # Enables the given policy
@@ -88,20 +91,16 @@ module Y2Security
         @enabled_policies.include?(policy)
       end
 
-      # Issues from all enabled policies
-      #
-      # The issues can be limited to a specific scope.
-      #
-      # @param scope [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall]
-      # @return [IssuesCollection]
-      def issues(scope = nil)
-        issues_collection = IssuesCollection.new
-
-        enabled_policies.each do |policy|
-          issues_collection.update(policy, policy.validate(scope))
+      # @param config [TargetConfig]
+      # @param scope [Symbol,nil] only consider rules with this scope.
+      #   For example yast2-storage-ng will call this with :storage to
+      #   only display rules that it can fix.
+      # @return [Hash<Policy, Array<Rule>>]
+      def failing_rules(config, scope: nil, include_disabled: false)
+        enabled_policies.each_with_object({}) do |policy, result|
+          result[policy] =
+            policy.failing_rules(config, scope: scope, include_disabled: include_disabled)
         end
-
-        issues_collection
       end
 
     private

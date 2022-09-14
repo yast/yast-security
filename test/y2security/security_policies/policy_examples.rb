@@ -21,69 +21,62 @@ require_relative "../../test_helper"
 require "y2security/security_policies/policy"
 
 shared_examples "Y2Security::SecurityPolicies::Policy" do
-  describe "#==" do
-    context "when the policies have different class" do
-      class OtherPolicy < Y2Security::SecurityPolicies::Policy
-        def initialize
-          super(:other, "other")
-        end
-      end
-
-      let(:other) { OtherPolicy.new }
-
-      it "returns false" do
-        expect(subject == other).to eq(false)
-      end
-    end
-
-    context "when the policies have the same class and id" do
-      let(:other) { subject.class.new }
-
-      it "returns true" do
-        expect(subject == other).to eq(true)
-      end
+  class TestRule < Y2Security::SecurityPolicies::Rule
+    def initialize(id, scope)
+      super(id, "Test rule #{id}", scope)
     end
   end
 
-  describe "#validate" do
+  describe "#failing_rules" do
     before do
-      allow(Y2Security::SecurityPolicies::Scopes::Storage)
-        .to receive(:new).and_return(storage_scope)
-
-      allow(Y2Security::SecurityPolicies::Scopes::Bootloader)
-        .to receive(:new).and_return(bootloader_scope)
-
-      allow(Y2Security::SecurityPolicies::Scopes::Network)
-        .to receive(:new).and_return(network_scope)
-
-      allow(Y2Security::SecurityPolicies::Scopes::Firewall)
-        .to receive(:new).and_return(firewall_scope)
+      allow(subject).to receive(:rules).and_return(rules)
     end
 
-    let(:storage_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Storage) }
-    let(:bootloader_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Bootloader) }
-    let(:network_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Network) }
-    let(:firewall_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Firewall) }
+    let(:rules) { [rule1, rule2, rule3, rule4] }
 
-    context "when no scope is given" do
-      it "checks all the scopes" do
-        expect(subject).to receive(:issues_for).with(storage_scope)
-        expect(subject).to receive(:issues_for).with(bootloader_scope)
-        expect(subject).to receive(:issues_for).with(network_scope)
-        expect(subject).to receive(:issues_for).with(firewall_scope)
+    let(:rule1) { TestRule.new("test1", :storage) }
+    let(:rule2) { TestRule.new("test2", :storage) }
+    let(:rule3) { TestRule.new("test3", :network) }
+    let(:rule4) { TestRule.new("test4", :network) }
 
-        subject.validate
+    let(:target_config) { instance_double(Y2Security::SecurityPolicies::TargetConfig) }
+
+    context "when all rules pass" do
+      before do
+        allow(rule1).to receive(:pass?).and_return(true)
+        allow(rule2).to receive(:pass?).and_return(true)
+        allow(rule3).to receive(:pass?).and_return(true)
+        allow(rule4).to receive(:pass?).and_return(true)
+      end
+
+      it "returns an empty array" do
+        expect(subject.failing_rules(target_config)).to eq([])
       end
     end
 
-    context "when a scope is given" do
-      it "only checks the given scope" do
-        expect(subject).to_not receive(:issues_for).with(storage_scope)
-        expect(subject).to receive(:issues_for).with(bootloader_scope)
-        expect(subject).to_not receive(:issues_for).with(network_scope)
-        expect(subject).to_not receive(:issues_for).with(firewall_scope)
+    context "when some rules fail" do
+      before do
+        allow(rule1).to receive(:pass?).and_return(false)
+        allow(rule2).to receive(:pass?).and_return(true)
+        allow(rule3).to receive(:pass?).and_return(false)
+        allow(rule4).to receive(:pass?).and_return(false)
+      end
 
-        subject.validate(bootloader_scope)
+      it "includes the failing rules from all scopes by default" do
+        rule4.disable
+
+        expect(subject.failing_rules(target_config)).to contain_exactly(rule1, rule3)
+      end
+
+      it "includes the disabled failing rules if requested" do
+        rule4.disable
+
+        expect(subject.failing_rules(target_config, include_disabled: true))
+          .to contain_exactly(rule1, rule3, rule4)
+      end
+
+      it "only includes the failing rules from a scope if requested" do
+        expect(subject.failing_rules(target_config, scope: :storage)).to contain_exactly(rule1)
       end
     end
   end

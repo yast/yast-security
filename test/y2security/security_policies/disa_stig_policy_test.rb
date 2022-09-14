@@ -24,211 +24,53 @@ require "y2security/security_policies/disa_stig_policy"
 describe Y2Security::SecurityPolicies::DisaStigPolicy do
   include_examples "Y2Security::SecurityPolicies::Policy"
 
-  describe "#validate" do
-    context "when validating the network scope" do
-      let(:scope) { Y2Security::SecurityPolicies::Scopes::Network.new(config: network_config) }
-
-      let(:network_config) { Y2Network::Config.new(source: :wicked, connections: connections) }
-
-      let(:connections) do
-        Y2Network::ConnectionConfigsCollection.new([wlan0_conn, wlan1_conn])
-      end
-
-      let(:wlan0_conn) do
-        Y2Network::ConnectionConfig::Wireless.new.tap do |conn|
-          conn.interface = "wlan0"
-          conn.name = "wlan0"
-          # conn.startmode = Y2Network::Startmode.create("off")
-        end
-      end
-
-      let(:wlan1_conn) do
-        Y2Network::ConnectionConfig::Wireless.new.tap do |conn|
-          conn.interface = "wlan1"
-          conn.name = "wlan1"
-          conn.startmode = Y2Network::Startmode.create("off")
-        end
-      end
-
-      it "returns an issue per each active wireless connection" do
-        issues = subject.validate(scope)
-        expect(issues.size).to eq(1)
-
-        issue = issues.first
-
-        expect(issue.message).to match(/Wireless network interfaces/)
-        expect(issue.message).to include("wlan0")
-        expect(issue.message).to_not include("wlan1")
-        expect(issue.scope).to eq(scope)
-      end
-    end
-
-    context "when validating the storage scope" do
-      let(:scope) { Y2Security::SecurityPolicies::Scopes::Storage.new(devicegraph: devicegraph) }
-
-      let(:devicegraph) { Y2Storage::StorageManager.instance.staging }
-
-      context "when there are not-encrypted and mounted file systems" do
-        before do
-          fake_storage_scenario("plain.yml")
-        end
-
-        it "returns an issue for missing encryption" do
-          issues = subject.validate(scope)
-
-          expect(issues.map(&:message)).to include(an_object_matching(/not encrypted: \/, swap/))
-          expect(issues.map(&:scope)).to all(eq(scope))
-        end
-
-        it "the issue does not include /boot/efi" do
-          issues = subject.validate(scope)
-
-          expect(issues.map(&:message))
-            .to_not include(an_object_matching(/not encrypted:.*efi.*/))
-        end
-      end
-
-      context "when all mounted file systems are encrypted" do
-        before do
-          fake_storage_scenario("gpt_encryption.yml")
-        end
-
-        it "does not return an issue for missing encryption" do
-          issues = subject.validate(scope)
-
-          expect(issues.map(&:message))
-            .to_not include(an_object_matching(/not encrypted/))
-        end
-      end
-
-      context "when /home and/or /var mount points are missing" do
-        before do
-          fake_storage_scenario("plain.yml")
-        end
-
-        it "returns an issue for missing mount points" do
-          issues = subject.validate(scope)
-
-          expect(issues.map(&:message))
-            .to include(an_object_matching(/must be a separate mount point for: \/home, \/var/))
-          expect(issues.map(&:scope)).to all(eq(scope))
-        end
-      end
-
-      context "when neither /home nor /var mount points are missing" do
-        before do
-          fake_storage_scenario("plain.yml")
-
-          sda1 = devicegraph.find_by_name("/dev/sda1")
-          sda1.mount_point.path = "/home"
-
-          sda3 = devicegraph.find_by_name("/dev/sda3")
-          sda3.mount_point.path = "/var"
-        end
-
-        it "does not return an issue for missing mount points" do
-          issues = subject.validate(scope)
-
-          expect(issues.map(&:message))
-            .to_not include(an_object_matching(/must be a separate mount point/))
-        end
-      end
-    end
+  let(:target_config) do
+    instance_double(Y2Security::SecurityPolicies::TargetConfig)
   end
 
-  context "when validating the firewall scope" do
-    let(:scope) do
-      Y2Security::SecurityPolicies::Scopes::Firewall.new(security_settings: security_settings)
+  describe "#rules" do
+    it "checks whether /home is on a separate mount point" do
+      rule = subject.rules.find do |mp|
+        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
+          mp.mount_point == "/home"
+      end
+      expect(rule).to_not be_nil
     end
 
-    let(:security_settings) do
-      instance_double("Installation::SecuritySettings", enable_firewall: enabled)
+    it "checks whether /var is on a separate mount point" do
+      rule = subject.rules.find do |mp|
+        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
+          mp.mount_point == "/var"
+      end
+      expect(rule).to_not be_nil
     end
 
-    let(:enabled) { true }
-
-    context "and the firewall is enabled" do
-      it "returns no issues" do
-        issues = subject.validate(scope)
-        expect(issues).to be_empty
+    it "checks whether /var/log/audit is on a separate mount point" do
+      rule = subject.rules.find do |mp|
+        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
+          mp.mount_point == "/var/log/audit"
       end
+      expect(rule).to_not be_nil
     end
 
-    context "and the firewall is not enabled " do
-      let(:enabled) { false }
-
-      it "returns an issue pointing that the firewall is not enabled" do
-        issues = subject.validate(scope)
-        expect(issues.size).to eq(1)
-
-        issue = issues.first
-
-        expect(issue.message).to include("Firewall is not enabled")
-        expect(issue.scope).to eq(scope)
-      end
-    end
-  end
-
-  context "when validating the bootloader scope" do
-    let(:scope) { Y2Security::SecurityPolicies::Scopes::Bootloader.new(bootloader: bootloader) }
-
-    let(:bootloader) { Bootloader::NoneBootloader.new }
-
-    context "and no Grub based bootloader is selected" do
-      it "returns no issues" do
-        issues = subject.validate(scope)
-        expect(issues).to be_empty
-      end
+    it "checks whether the file system is encrypted" do
+      expect(subject.rules)
+        .to include(Y2Security::SecurityPolicies::MissingEncryptionRule)
     end
 
-    context "and a Grub based bootloader is selected" do
-      let(:bootloader) { Bootloader::Grub2.new }
-      let(:password) { nil }
-      let(:unrestricted) { false }
+    it "checks that no wireless rules will be active" do
+      expect(subject.rules)
+        .to include(Y2Security::SecurityPolicies::NoWirelessRule)
+    end
 
-      before do
-        if password
-          bootloader.password.used = true
-          bootloader.password.unrestricted = unrestricted
-        end
-      end
+    it "checks that the firewall will be enabled" do
+      expect(subject.rules)
+        .to include(Y2Security::SecurityPolicies::FirewallEnabledRule)
+    end
 
-      context "when a password is not set" do
-        it "returns an issue pointing that the bootloader password must be set" do
-          issues = subject.validate(scope)
-          expect(issues.size).to eq(2)
-
-          issue = issues.first
-          expect(issue.message).to include("Bootloader password must be set")
-          expect(issue.scope).to eq(scope)
-        end
-      end
-
-      context "when a password is set" do
-        let(:password) { "test.pass" }
-
-        context "and the menu editing is restricted" do
-          it "returns no issues" do
-            issues = subject.validate(scope)
-            expect(issues).to be_empty
-          end
-        end
-
-        context "and the menu editing is not restricted" do
-          let(:unrestricted) { true }
-
-          it "returns an issue pointing that the bootloader menu editing" \
-             " must be set as restricted" do
-            issues = subject.validate(scope)
-            expect(issues.size).to eq(1)
-
-            issue = issues.first
-
-            expect(issue.message).to include("Bootloader menu editing must be set as restricted")
-            expect(issue.scope).to eq(scope)
-          end
-        end
-      end
+    it "checks that the bootloader is password-protected and restricted" do
+      expect(subject.rules)
+        .to include(Y2Security::SecurityPolicies::BootloaderPasswordRule)
     end
   end
 end

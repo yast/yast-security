@@ -17,12 +17,14 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2security/security_policies/scopes"
+require "y2security/security_policies/target_config"
 
 module Y2Security
   module SecurityPolicies
     # Base class for security policies
     class Policy
+      include Yast::I18n
+
       # Id of the policiy
       #
       # @return [Symbol]
@@ -47,54 +49,18 @@ module Y2Security
         @packages = packages
       end
 
-      # Compares two policies
-      #
-      # @param other [Policy]
-      # @return [Boolean]
-      def ==(other)
-        other.class == self.class && other.id == id
+      # @param config [TargetConfig] Configuration to check
+      # @param scope [Symbol, nil] Scope to check (nil means that all scopes must be checked)
+      # @param include_disabled [Boolean] Whether disabled rules should be checked
+      # @return [Array<Rule>] Failing rules for the given config and scope
+      def failing_rules(config, scope: nil, include_disabled: false)
+        rules
+          .select { |r| scope.nil? || r.scope == scope }
+          .select { |r| include_disabled || r.enabled? }
+          .reject { |r| r.pass?(config) }
       end
 
-      alias_method :eql?, :==
-
-      # Whether the given value matches with the id of the policy
-      #
-      # @param value [#to_sym]
-      # @return [Boolean]
-      def is?(value)
-        id == value.to_sym
-      end
-
-      # Checks the rules of the policy and returns the issues found for the given scope (or for all
-      # scopes if none is given)
-      #
-      # @note Only rules that need to be applied during installation are checked. The rest of rules
-      #   are expected to be checked and fixed by other tools after the installation.
-      #
-      # @param scope [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall, nil]
-      # @return [Array<Issue>]
-      def validate(scope = nil)
-        scopes = scope ? [scope] : default_scopes
-
-        scopes.map { |s| issues_for(s) }.flatten
-      end
-
-    private
-
-      def default_scopes
-        [
-          Scopes::Storage.new,
-          Scopes::Bootloader.new,
-          Scopes::Network.new,
-          Scopes::Firewall.new
-        ]
-      end
-
-      # Issues for a specific scope
-      #
-      # @param _scope [Scopes::Storage, Scopes::Bootloader, Scopes::Network, Scopes::Firewall, nil]
-      # @return [Array<Issue>]
-      def issues_for(_scope)
+      def rules
         []
       end
     end

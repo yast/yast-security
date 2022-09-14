@@ -22,20 +22,23 @@ require "y2security/security_policies/manager"
 require "y2security/security_policies/disa_stig_policy"
 
 describe Y2Security::SecurityPolicies::Manager do
-  # Always start with a new instance to make testing easier
-  subject { described_class.send(:new) }
-
   before do
     allow(ENV).to receive(:[]) do |key|
       env[key]
     end
 
     allow(ENV).to receive(:keys).and_return env.keys
+
+    allow(Y2Security::SecurityPolicies::DisaStigPolicy)
+      .to receive(:new).and_return(disa_stig_policy)
   end
 
   let(:env) { {} }
 
   let(:disa_stig_policy) { Y2Security::SecurityPolicies::DisaStigPolicy.new }
+  let(:target_config) do
+    instance_double(Y2Security::SecurityPolicies::TargetConfig)
+  end
 
   describe ".new" do
     context "when YAST_SECURITY_POLICIES does not contain a policy" do
@@ -143,52 +146,46 @@ describe Y2Security::SecurityPolicies::Manager do
     end
   end
 
-  describe "#issues" do
-    context "if there is no enabled policies" do
+  describe "#failing_rules" do
+    context "if there are no enabled policies" do
       before do
         subject.disable_policy(disa_stig_policy)
       end
 
-      it "returns an empty collection" do
-        expect(subject.issues.all).to be_empty
+      it "returns an empty array" do
+        expect(subject.failing_rules(target_config)).to be_empty
       end
     end
 
     context "if there are enabled policies" do
+      let(:rule) { instance_double(Y2Security::SecurityPolicies::Rule) }
+
       before do
         subject.enable_policy(disa_stig_policy)
 
-        allow(disa_stig_policy).to receive(:validate).and_return(issues)
+        allow(disa_stig_policy).to receive(:failing_rules)
+          .with(target_config, include_disabled: false, scope: nil).and_return([rule])
       end
 
-      let(:issues) { [Y2Security::SecurityPolicies::Issue.new("test")] }
-
-      it "returns a collection with the issues of each policy" do
-        expect(subject.issues.by_policy(disa_stig_policy)).to contain_exactly(*issues)
+      it "returns a hash where the keys are the policies and the values the failing rules" do
+        expect(subject.failing_rules(target_config)).to eq(disa_stig_policy => [rule])
       end
 
-      context "and the issues are requested for a scope" do
-        before do
-          subject.enable_policy(disa_stig_policy)
-
-          allow(disa_stig_policy).to receive(:validate).with(storage_scope)
-            .and_return(storage_issues)
-          allow(disa_stig_policy).to receive(:validate).with(network_scope)
-            .and_return(network_issues)
+      context "when a scope is given" do
+        it "only includes the rules for the given scope" do
+          expect(disa_stig_policy).to receive(:failing_rules)
+            .with(target_config, include_disabled: false, scope: :bootloader).and_return([rule])
+          expect(subject.failing_rules(target_config, scope: :bootloader))
+            .to eq(disa_stig_policy => [rule])
         end
+      end
 
-        let(:storage_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Storage) }
-        let(:network_scope) { instance_double(Y2Security::SecurityPolicies::Scopes::Network) }
-
-        let(:storage_issues) { [Y2Security::SecurityPolicies::Issue.new("storage issue")] }
-        let(:network_issues) { [Y2Security::SecurityPolicies::Issue.new("network issue")] }
-
-        it "only returns the issues for the requested scope" do
-          expect(subject.issues(storage_scope).by_policy(disa_stig_policy))
-            .to contain_exactly(*storage_issues)
-
-          expect(subject.issues(network_scope).by_policy(disa_stig_policy))
-            .to contain_exactly(*network_issues)
+      context "when disabled rules must be included" do
+        it "includes disabled rules" do
+          expect(disa_stig_policy).to receive(:failing_rules)
+            .with(target_config, include_disabled: true, scope: nil).and_return([rule])
+          expect(subject.failing_rules(target_config, include_disabled: true))
+            .to eq(disa_stig_policy => [rule])
         end
       end
     end

@@ -17,23 +17,35 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
+require "y2security/security_policies/rule"
+
 module Y2Security
   module SecurityPolicies
-    # Scopes for the validation of a security policy
-    #
-    # Scopes are used to check the policy rules associated to a specific area (e.g., network,
-    # storage, etc). This is useful for clients that are interested in a subset of rules, for
-    # example the storage rules in the Expert Partitioner.
-    #
-    # Note that there is no base class for scopes. For now there is nothing to share among them.
-    # Moreover, the check code of the policies always knows what kind the scope it expects, so there
-    # is no need of a common API for scopes.
-    module Scopes
+    #  Run to check whether grub2 is password-protected and menu editing is restricted
+    #  (SLES-15-010200).
+    class BootloaderPasswordRule < Rule
+      def initialize
+        textdomain "security"
+
+        super(
+          "SLES-15-010200",
+          # TRANSLATORS: security policy rule
+          _("Bootloader must be protected by password and menu editing must be restricted"),
+          :bootloader
+        )
+      end
+
+      # @see Rule#pass?
+      def pass?(target_config)
+        bootloader = target_config.bootloader
+
+        return true unless bootloader.is_a?(Bootloader::Grub2Base)
+
+        password = bootloader.password
+        return false unless password
+
+        password.used? && !password.unrestricted
+      end
     end
   end
 end
-
-require "y2security/security_policies/scopes/storage"
-require "y2security/security_policies/scopes/bootloader"
-require "y2security/security_policies/scopes/network"
-require "y2security/security_policies/scopes/firewall"
