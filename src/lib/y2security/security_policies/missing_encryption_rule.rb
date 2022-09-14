@@ -27,7 +27,7 @@ module Y2Security
       def initialize
         textdomain "security"
 
-        super("SLES-15-010330", _("Separate file systems must be encrypted"), :storage)
+        super("SLES-15-010330", _("All file systems must be encrypted"), :storage)
       end
 
       # @see Rule#pass?
