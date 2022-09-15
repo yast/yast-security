@@ -59,9 +59,9 @@ module Y2Security
       def description
         {
           # Proposal title
-          "rich_text_title" => _("Security Policy"),
+          "rich_text_title" => _("Security Policies"),
           # Menu entry label
-          "menu_title"      => _("&Security Policy"),
+          "menu_title"      => _("&Security Policies"),
           "id"              => PROPOSAL_ID
         }
       end
