@@ -23,7 +23,10 @@ require "y2security/security_policies/bootloader_password_rule"
 require "y2security/security_policies/firewall_enabled_rule"
 require "y2security/security_policies/missing_encryption_rule"
 require "y2security/security_policies/missing_mount_point_rule"
+require "y2security/security_policies/separate_filesystem_rule"
+require "y2security/security_policies/filesystem_size_rule"
 require "y2security/security_policies/no_wireless_rule"
+require "y2storage/disk_size"
 
 module Y2Security
   module SecurityPolicies
@@ -45,7 +48,8 @@ module Y2Security
         @rules ||= [
           MissingMountPointRule.new("SLES-15-040200", "/home"),
           MissingMountPointRule.new("SLES-15-040210", "/var"),
-          MissingMountPointRule.new("SLES-15-030810", "/var/log/audit"),
+          SeparateFilesystemRule.new("SLES-15-030810", "/var/log/audit"),
+          FilesystemSizeRule.new("SLES-15-030660", "/var/log/audit", Y2Storage::DiskSize.MiB(100)),
           MissingEncryptionRule.new,
           NoWirelessRule.new,
           FirewallEnabledRule.new,

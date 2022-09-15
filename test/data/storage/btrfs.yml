@@ -1,0 +1,59 @@
+# 2022-09-15 13:29:08 +0100
+---
+- disk:
+    name: "/dev/sda"
+    size: 1 TiB
+    block_size: 0.5 KiB
+    io_size: 0 B
+    min_grain: 1 MiB
+    align_ofs: 0 B
+    partition_table: msdos
+    mbr_gap: 1 MiB
+    partitions:
+    - free:
+        size: 1 MiB
+        start: 0 B
+    - partition:
+        size: 1 GiB
+        start: 1 MiB
+        name: "/dev/sda1"
+        type: primary
+        id: linux
+    - partition:
+        size: 1045503 MiB (1.00 TiB)
+        start: 1025 MiB (1.00 GiB)
+        name: "/dev/sda2"
+        type: primary
+        id: linux
+        file_system: btrfs
+        mount_point: "/"
+        btrfs:
+          default_subvolume: "@"
+          subvolumes:
+          - subvolume:
+              path: "@"
+          - subvolume:
+              path: "@/boot/grub2/i386-pc"
+          - subvolume:
+              path: "@/boot/grub2/x86_64-efi"
+          - subvolume:
+              path: "@/home"
+          - subvolume:
+              path: "@/opt"
+          - subvolume:
+              path: "@/root"
+          - subvolume:
+              path: "@/srv"
+          - subvolume:
+              path: "@/usr/local"
+          - subvolume:
+              path: "@/var"
+              nocow: true
+    - partition:
+        size: 2 GiB
+        start: 1022 GiB (1.00 TiB)
+        name: "/dev/sda3"
+        type: primary
+        id: swap
+        file_system: swap
+        mount_point: swap

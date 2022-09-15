@@ -18,36 +18,46 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policies/rule"
-require "y2storage"
 
 module Y2Security
   module SecurityPolicies
-    # Rule to check whether there is a separate mount point for a given path
-    #
-    # @example Check for a separate mount point for /home
-    #   config = TargetConfig.new
-    #   rule = MissingMountPointRule.new("SLES-15-040200", "/home")
-    #   rule.pass?(config)
-    class MissingMountPointRule < Rule
-      # @return [String] Mount point to check
-      attr_reader :mount_point
+    # Rule to check whether a file system is big enough
+    class FilesystemSizeRule < Rule
+      # Mount path for the file system to check
+      #
+      # @return [String]
+      attr_reader :mount_path
+
+      # Minimum size the file system should have
+      #
+      # @return [Y2Storage::DiskSize]
+      attr_reader :min_size
 
       # @param id [String] Rule ID
-      # @param mount_point [String] Mount point to check
-      def initialize(id, mount_point)
+      # @param mount_path [String] Mount path for the file system to check
+      # @param min_size [Y2Storage::DiskSize] Minimum size the file system should have
+      def initialize(id, mount_path, min_size)
         textdomain "security"
 
-        @mount_point = mount_point
-        # TRANSLATORS: security policy rule
-        super(id, format(_("There must be a separate mount point for %s"), mount_point), :storage)
+        @mount_path = mount_path
+        @min_size = min_size
+        super(
+          id,
+          # TRANSLATORS: security policy rule, %s is a placeholder.
+          format(_("The minimum size for the file system %s must be %s"), mount_path, min_size),
+          :storage
+        )
       end
 
       # @see Rule#pass?
       def pass?(target_config)
         devicegraph = target_config.storage
-        paths = devicegraph.mount_points.map(&:path)
+        filesystem = devicegraph.blk_filesystems.find { |f| f.mount_path == mount_path }
 
-        paths.include?(mount_point)
+        return false unless filesystem
+
+        size = filesystem.blk_devices.map(&:size).reduce(:+)
+        size >= min_size
       end
     end
   end
