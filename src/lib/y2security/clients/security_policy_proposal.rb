@@ -73,7 +73,7 @@ module Y2Security
           "preformatted_proposal" => preformatted_proposal,
           "links"                 => links,
           "warning_level"         => warning_level,
-          "warning"               => nil
+          "warning"               => warning
         }
       end
 
@@ -128,17 +128,30 @@ module Y2Security
         links.flatten.compact.uniq
       end
 
+      # Returns the warning message
+      #
+      # @return [String,nil] warning message or nil if there are no failing rules
+      def warning
+        return nil if success?
+
+        _("The current configuration does not comply with the enabled security policies.")
+      end
+
+      # Whether the proposal was successful
+      #
+      # @return [Boolean] true if the proposal was successful; false otherwise
+      def success?
+        rules = failing_rules.values.flatten
+        rules.none? || rules.none?(&:enabled?)
+      end
+
       # Returns the warning level
       #
       # Blocker if there are enabled failing rules
       #
       # @return [Symbol] :blocker
       def warning_level
-        rules = failing_rules.values.flatten
-
-        return :warning if rules.none? || rules.none?(&:enabled?)
-
-        :blocker
+        success? ? nil : :blocker
       end
 
       # Runs the security policies checks

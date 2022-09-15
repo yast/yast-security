@@ -90,9 +90,9 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
         let(:rule) { policy.rules.first }
 
-        it "does not include a general warning message" do
+        it "includes a general warning message" do
           expect(subject.make_proposal({})).to include(
-            "warning" => nil
+            "warning" => /does not comply/
           )
         end
 
