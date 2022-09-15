@@ -22,11 +22,31 @@ require "y2security/security_policies/bootloader_password_rule"
 require "y2security/security_policies/target_config"
 
 describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
+  before do
+    allow(Y2Storage::Arch).to receive(:new).and_return(arch)
+  end
+
+  let(:arch) { instance_double(Y2Storage::Arch, efiboot?: efiboot) }
+
+  let(:efiboot) { true }
+
   let(:bootloader) { Bootloader::NoneBootloader.new }
 
   describe "#id" do
-    it "returns the rule ID" do
-      expect(subject.id).to eq("SLES-15-010200")
+    context "in a UEFI system" do
+      let(:efiboot) { true }
+
+      it "returns SLES-15-010200" do
+        expect(subject.id).to eq("SLES-15-010200")
+      end
+    end
+
+    context "in a non-UEFI system" do
+      let(:efiboot) { false }
+
+      it "returns SLES-15-010190" do
+        expect(subject.id).to eq("SLES-15-010190")
+      end
     end
   end
 

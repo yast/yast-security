@@ -801,7 +801,7 @@ module Yast
 
         let(:profile) do
           [
-            { "name" => "disa_stig", "disabled_rules" => ["SLES-15-010200"] }
+            { "name" => "disa_stig", "disabled_rules" => ["SLES-15-030660"] }
           ]
         end
 
@@ -817,7 +817,7 @@ module Yast
 
         it "disables the unwanted rules" do
           subject.Import("SECURITY_POLICIES" => profile)
-          rule = policy.rules.find { |r| r.id == "SLES-15-010200" }
+          rule = policy.rules.find { |r| r.id == "SLES-15-030660" }
           expect(rule).to_not be_enabled
         end
 
