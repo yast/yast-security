@@ -89,7 +89,9 @@ module Y2Security
         when "fix-rule"
           fix_rule(id)
         when "storage"
-          storage_client
+          open_client("inst_disk_proposal")
+        when "bootloader"
+          open_client("bootloader")
         end
 
         { "workflow_result" => :again }
@@ -260,15 +262,16 @@ module Y2Security
         @target_config ||= SecurityPolicies::TargetConfig.new
       end
 
-      # Runs the storage client, opening a new wizard dialog with only Cancel and Accept buttons.
+      # Runs a client, opening a new wizard dialog with only Cancel and Accept buttons.
       #
+      # @param client [String] client name
       # @return [Symbol] client result
-      def storage_client
+      def open_client(client)
         Yast::Wizard.OpenAcceptDialog
 
         # It is necessary to enable back and next for the Guided Setup wizard
         Yast::WFM.CallFunction(
-          "inst_disk_proposal",
+          client,
           [{ "enable_back" => true, "enable_next" => true }]
         )
       ensure
@@ -322,7 +325,7 @@ module Y2Security
 
         # Link for the action to fix a rule
         #
-        # Rules from storage scope will link to the Expert Partitioner if the rule is not fixable.
+        # Rules from storage and bootloader scopes should open a client for modifying the settings.
         #
         # @param rule [SecurityPolicies::Rule]
         # @return [String, nil] nil if there is no action for the rule
@@ -331,6 +334,8 @@ module Y2Security
             build_link("fix-rule", rule.id)
           elsif rule.scope == :storage
             build_link("storage")
+          elsif rule.scope == :bootloader
+            build_link("bootloader")
           end
         end
 
@@ -506,14 +511,8 @@ module Y2Security
           link = links_builder.rule_fix_link(rule)
           return nil unless link
 
-          text = if rule.scope == :storage
-            # TRANSLATORS: an action hyperlink to open the storage proposal client
-            _("storage proposal")
-          else
-            # TRANSLATORS: an action hyperlink to fix a problem detected by a rule of a security
-            # policy.
-            _("fix rule")
-          end
+          # TRANSLATORS: text for an action hyperlink
+          text = link.match?(/--fix-rule:/) ? _("fix rule") : _("modify settings")
 
           build_action(text, link)
         end

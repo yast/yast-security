@@ -71,6 +71,12 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         policies_manager.enable_policy(policy)
       end
 
+      xit "adds the packages needed by the policy to the packages proposal" do
+        expect(Yast::PackagesProposal).to receive(:AddResolvables)
+          .with("security", :package, disa_stig_policy.packages)
+        subject.make_proposal({})
+      end
+
       it "includes a link to disable the policy" do
         expect(subject.make_proposal({})).to include(
           "preformatted_proposal" => %r{<a href=.*>disable</a>}
@@ -111,6 +117,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         context "and the failing rule is fixable" do
           before do
             allow(rule).to receive(:fixable?).and_return(true)
+            allow(rule).to receive(:scope).and_return(:storage)
           end
 
           it "includes a link to fix the rule" do
@@ -120,15 +127,33 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           end
         end
 
-        context "and the failing rule is a storage rule" do
+        context "and the failing rule is not fixable" do
           before do
-            allow(rule).to receive(:scope).and_return(:storage)
+            allow(rule).to receive(:fixable?).and_return(false)
           end
 
-          it "includes a link to open the storage proposal" do
-            expect(subject.make_proposal({})).to include(
-              "preformatted_proposal" => %r{<a href=.*>storage proposal</a>}
-            )
+          context "and the scope is storage" do
+            before do
+              allow(rule).to receive(:scope).and_return(:storage)
+            end
+
+            it "includes a link to modify the storage settings" do
+              expect(subject.make_proposal({})).to include(
+                "preformatted_proposal" => %r{<a href=.*storage:\">modify settings</a>}
+              )
+            end
+          end
+
+          context "and the scope is bootloader" do
+            before do
+              allow(rule).to receive(:scope).and_return(:bootloader)
+            end
+
+            it "includes a link to modify the bootloader settings" do
+              expect(subject.make_proposal({})).to include(
+                "preformatted_proposal" => %r{<a href=.*bootloader:\">modify settings</a>}
+              )
+            end
           end
         end
       end
@@ -165,14 +190,15 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           end
         end
 
-        context "and the rule is a storage rule" do
+        context "and the rule is not fixable" do
           before do
+            allow(rule).to receive(:fixable?).and_return(false)
             allow(rule).to receive(:scope).and_return(:storage)
           end
 
-          it "does not include a link to open the storage proposal" do
+          it "does not include a link to modify the settings" do
             expect(subject.make_proposal({})).to_not include(
-              "preformatted_proposal" => %r{<a href=.*>storage proposal</a>}
+              "preformatted_proposal" => %r{<a href=.*>modify settings</a>}
             )
           end
         end
@@ -182,6 +208,12 @@ describe Y2Security::Clients::SecurityPolicyProposal do
     context "when the policy is not enabled" do
       before do
         policies_manager.disable_policy(policy)
+      end
+
+      xit "removes the packages needed by the policy from the packages proposal" do
+        expect(Yast::PackagesProposal).to receive(:RemoveResolvables)
+          .with("security", :package, disa_stig_policy.packages)
+        subject.make_proposal({})
       end
 
       it "includes a link to enable the policy" do
@@ -270,7 +302,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
     end
 
-    context "when the user asks to open the storage proposal" do
+    context "when the user asks to modify the storage settings" do
       let(:rule) { policy.rules.first }
 
       before do
@@ -282,11 +314,31 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         allow(Yast::Wizard).to receive(:CloseDialog)
       end
 
-      it "opens the storage proposal" do
+      it "opens the storage client" do
         expect(Yast::WFM).to receive(:CallFunction).with("inst_disk_proposal", anything)
 
         subject.make_proposal({})
-        subject.ask_user("chosen_id" => "security-policy--storage:#{rule.id}")
+        subject.ask_user("chosen_id" => "security-policy--storage:")
+      end
+    end
+
+    context "when the user asks to modify the bootloader settings" do
+      let(:rule) { policy.rules.first }
+
+      before do
+        policies_manager.enable_policy(policy)
+        allow(rule).to receive(:pass?).and_return(false)
+        allow(rule).to receive(:scope).and_return(:bootloader)
+
+        allow(Yast::Wizard).to receive(:OpenAcceptDialog)
+        allow(Yast::Wizard).to receive(:CloseDialog)
+      end
+
+      it "opens the bootloader client" do
+        expect(Yast::WFM).to receive(:CallFunction).with("bootloader", anything)
+
+        subject.make_proposal({})
+        subject.ask_user("chosen_id" => "security-policy--bootloader:")
       end
     end
   end
