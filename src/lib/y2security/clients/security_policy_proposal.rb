@@ -151,7 +151,7 @@ module Y2Security
       #
       # @return [Symbol] :blocker
       def warning_level
-        success? ? :warning : :blocker
+        success? ? nil : :blocker
       end
 
       # Runs the security policies checks
