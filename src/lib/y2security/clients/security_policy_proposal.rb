@@ -134,7 +134,7 @@ module Y2Security
       def warning
         return nil if success?
 
-        _("The current configuration does not comply with the enabled security policies")
+        _("The current configuration does not comply with the enabled security policies.")
       end
 
       # Whether the proposal was successful
