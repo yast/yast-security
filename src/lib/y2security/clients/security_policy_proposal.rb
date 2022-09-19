@@ -83,7 +83,6 @@ module Y2Security
         case action
         when "toggle-policy"
           toggle_policy(id.to_sym)
-          refresh_packages
         when "toggle-rule"
           toggle_rule(id)
         when "fix-rule"
@@ -205,16 +204,6 @@ module Y2Security
       def fix_rule(id)
         rule = find_rule(id)
         rule&.fix(target_config)
-      end
-
-      # Adds or removes the packages needed by the policy to or from the Packages Proposal
-      def refresh_packages
-        policies.each do |policy|
-          enabled = policies_manager.enabled_policy?(policy)
-          method = enabled ? "AddResolvables" : "RemoveResolvables"
-
-          Yast::PackagesProposal.public_send(method, "security", :package, policy.packages)
-        end
       end
 
       # Parses a link

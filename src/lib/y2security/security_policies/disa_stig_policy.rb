@@ -41,7 +41,7 @@ module Y2Security
         # TRANSLATORS: This is a security policy name.
         #   "Defense Information Systems Agency" is from the USA, https://disa.mil/
         #   STIG = Security Technical Implementation Guides
-        super(:disa_stig, _("Defense Information Systems Agency STIG"), ["scap-security-guide"])
+        super(:disa_stig, _("Defense Information Systems Agency STIG"))
       end
 
       def rules

@@ -26,7 +26,7 @@ require "y2storage/devicegraph"
 class DummyPolicy < Y2Security::SecurityPolicies::Policy
   def initialize
     textdomain "security"
-    super(:dummy, _("Dummy policy"), [])
+    super(:dummy, _("Dummy policy"))
   end
 
   def rules
@@ -69,12 +69,6 @@ describe Y2Security::Clients::SecurityPolicyProposal do
     context "when a policy is enabled" do
       before do
         policies_manager.enable_policy(policy)
-      end
-
-      xit "adds the packages needed by the policy to the packages proposal" do
-        expect(Yast::PackagesProposal).to receive(:AddResolvables)
-          .with("security", :package, disa_stig_policy.packages)
-        subject.make_proposal({})
       end
 
       it "includes a link to disable the policy" do
@@ -208,12 +202,6 @@ describe Y2Security::Clients::SecurityPolicyProposal do
     context "when the policy is not enabled" do
       before do
         policies_manager.disable_policy(policy)
-      end
-
-      xit "removes the packages needed by the policy from the packages proposal" do
-        expect(Yast::PackagesProposal).to receive(:RemoveResolvables)
-          .with("security", :package, disa_stig_policy.packages)
-        subject.make_proposal({})
       end
 
       it "includes a link to enable the policy" do

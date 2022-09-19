@@ -91,6 +91,11 @@ describe Y2Security::SecurityPolicies::Manager do
   end
 
   describe "#enable_policy" do
+    before do
+      allow(subject).to receive(:require).with("installation/services")
+        .and_return(true)
+    end
+
     context "if the given policy is unknown" do
       let(:policy) { Y2Security::SecurityPolicies::Policy.new(:unknown, "Unknown") }
 
@@ -109,11 +114,26 @@ describe Y2Security::SecurityPolicies::Manager do
 
         expect(subject.enabled_policies).to include(policy)
       end
+
+      it "adds the ssg-apply package and enables the service" do
+        subject.enable_policy(policy)
+
+        expect(Installation::Services.enabled).to include("ssg-apply")
+        expect(Yast::PackagesProposal.GetResolvables("security", :package))
+          .to include("ssg-apply")
+      end
+
+      after do
+        Yast::PackagesProposal.RemoveResolvables("security", :package, ["ssg-apply"])
+        Installation::Services.reset
+      end
     end
   end
 
   describe "#disable_policy" do
     before do
+      allow(subject).to receive(:require).with("installation/services")
+        .and_return(true)
       subject.enable_policy(disa_stig_policy)
     end
 
@@ -121,6 +141,38 @@ describe Y2Security::SecurityPolicies::Manager do
       subject.disable_policy(disa_stig_policy)
 
       expect(subject.enabled_policies).to_not include(disa_stig_policy)
+    end
+
+    it "removes the ssg-apply package and disables the service" do
+      subject.disable_policy(disa_stig_policy)
+
+      expect(Installation::Services.enabled).to_not include("ssg-apply")
+      expect(Yast::PackagesProposal.GetResolvables("security", :package))
+        .to_not include("ssg-apply")
+    end
+
+    context "if more than one policy is enabled" do
+      let(:another_policy) do
+        instance_double(Y2Security::SecurityPolicies::Policy)
+      end
+
+      before do
+        subject.instance_variable_set(:@policies, [disa_stig_policy, another_policy])
+        subject.enable_policy(another_policy)
+      end
+
+      it "does not remove the package nor disables the service" do
+        subject.disable_policy(disa_stig_policy)
+
+        expect(Installation::Services.enabled).to include("ssg-apply")
+        expect(Yast::PackagesProposal.GetResolvables("security", :package))
+          .to include("ssg-apply")
+      end
+
+      after do
+        Yast::PackagesProposal.RemoveResolvables("security", :package, ["ssg-apply"])
+        Installation::Services.reset
+      end
     end
   end
 

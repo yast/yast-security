@@ -21,6 +21,8 @@ require "yast"
 require "singleton"
 require "y2security/security_policies/disa_stig_policy"
 
+Yast.import "PackagesProposal"
+
 module Y2Security
   module SecurityPolicies
     # Class to manage security policies
@@ -74,13 +76,17 @@ module Y2Security
         return unless policies.include?(policy)
 
         @enabled_policies.push(policy).uniq!
+        enable_service
       end
 
       # Disables the given policy
       #
       # @param policy [Policy]
       def disable_policy(policy)
+        return unless policies.include?(policy)
+
         @enabled_policies.delete(policy)
+        disable_service if @enabled_policies.empty?
       end
 
       # Whether the given policy is enabled
@@ -139,6 +145,39 @@ module Y2Security
         return [] unless key
 
         ENV[key].split(",")
+      end
+
+      SERVICE_NAME = "ssg-apply".freeze
+      private_constant :SERVICE_NAME
+
+      # Adds the package and enables the service to remedy the system after the installation
+      def enable_service
+        return if enabled_services.include?(SERVICE_NAME)
+
+        enabled_services << SERVICE_NAME
+        Yast::PackagesProposal.AddResolvables("security", :package, [SERVICE_NAME])
+      end
+
+      # Disables the service and removes the package to remedy the system after the installation
+      def disable_service
+        return unless enabled_services.include?(SERVICE_NAME)
+
+        enabled_services.delete(SERVICE_NAME)
+        Yast::PackagesProposal.RemoveResolvables("security", :package, [SERVICE_NAME])
+      end
+
+      # Return the list of enabled services
+      #
+      # FIXME: avoid a cyclic dependency with yast2-installation
+      #
+      # @return [Array<String>] List of enabled services
+      def enabled_services
+        require "installation/services" unless defined?(::Installation::Services)
+        ::Installation::Services.enabled
+      rescue LoadError
+        log.warn("Could not load the list of enabled services. " \
+          "Make sure yast2-installation is installed.")
+        []
       end
     end
   end

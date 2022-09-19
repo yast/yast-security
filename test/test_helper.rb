@@ -81,4 +81,16 @@ module Installation
 
     def enable_firewall!; end
   end
+
+  class Services
+    class << self
+      def enabled
+        @enabled ||= []
+      end
+
+      def reset
+        enabled.clear
+      end
+    end
+  end
 end
