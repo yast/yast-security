@@ -62,8 +62,9 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
 
     it "checks whether the file system for /var/log/audit is big enough" do
       rule = subject.rules.find do |r|
-        r.is_a?(Y2Security::SecurityPolicies::SeparateFilesystemRule) &&
-          r.mount_path == "/var/log/audit"
+        r.is_a?(Y2Security::SecurityPolicies::FilesystemSizeRule) &&
+          r.mount_path == "/var/log/audit" &&
+          r.min_size.to_i > 0
       end
       expect(rule).to_not be_nil
     end

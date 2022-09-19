@@ -18,6 +18,7 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policies/rule"
+require "y2storage/disk_size"
 
 module Y2Security
   module SecurityPolicies
@@ -36,11 +37,11 @@ module Y2Security
       # @param id [String] Rule ID
       # @param mount_path [String] Mount path for the file system to check
       # @param min_size [Y2Storage::DiskSize] Minimum size the file system should have
-      def initialize(id, mount_path, min_size)
+      def initialize(id, mount_path, min_size: nil)
         textdomain "security"
 
         @mount_path = mount_path
-        @min_size = min_size
+        @min_size = min_size || Y2Storage::DiskSize.new(0)
         super(
           id,
           # TRANSLATORS: security policy rule, %s is a placeholder.
