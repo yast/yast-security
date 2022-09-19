@@ -28,7 +28,6 @@ module Y2Security
     #   config = TargetConfig.new
     #   rule = MissingMountPointRule.new("SLES-15-040200", "/home")
     #   rule.pass?(config)
-    #
     class MissingMountPointRule < Rule
       # @return [String] Mount point to check
       attr_reader :mount_point

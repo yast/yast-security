@@ -47,17 +47,17 @@ the following rules should be checked:
 * [SLES-15-010330](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_encrypt_partitions]) All file systems are encrypted ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-06-06/finding/V-234831)).
 * [SLES-15-040200](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_home) The system has a separate mount point for */home* ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-03-04/finding/V-235004)).
 * [SLES-15-040210](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_var) The system has a separate mount point for */var* ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-06-14/finding/V-235005)).
-* [SLES-15-040210](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_var_log_audit) The system has a separate mount point for */var/log/audit* ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-06-06/finding/V-234980)).
-* [SLES-15-030660](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_auditd_audispd_configure_sufficiently_large_partition) Enough capacity for audit records ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-06-06/finding/V-234965)).
-* [SLES-15-010200](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_uefi) A bootloader password (for grub2) must be configured (UEFI) ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234820)).
-* [SLES-15-010190](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_non-uefi) A bootloader password (for grub2) must be configured (BIOS) ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-02-11/finding/V-234819)).
+* [SLES-15-040210](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_partition_for_var_log_audit) The system has a separate file system for */var/log/audit* ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-06-06/finding/V-234980)).
+* [SLES-15-030660](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_auditd_audispd_configure_sufficiently_large_partition) The file system /var/log/audit has enough capacity for audit records ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-06-06/finding/V-234965)).
+* [SLES-15-010200](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_uefi) A bootloader password (for grub2) is configured (UEFI) ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234820)).
+* [SLES-15-010190](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_non-uefi) A bootloader password (for grub2) is configured (BIOS) ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-02-11/finding/V-234819)).
 
 *NOTE: rules SLES-15-030660 and SLES-15-010190 are not checked by YaST yet.*
 
 Apart from the rules above, YaST also checks these other rules at installation time:
 
-* [SLES-15-010220](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_service_firewalld_enabled) Verify firewalld is enabled ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234821)).
-* [SLES-15-010380](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_wireless_disable_interfaces) Deactivate Wireless Network Interfaces ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234847)).
+* [SLES-15-010220](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_service_firewalld_enabled) Firewalld is enabled ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234821)).
+* [SLES-15-010380](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_wireless_disable_interfaces) Wireless Network Interfaces are deactivated ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234847)).
 
 
 ## YaST API

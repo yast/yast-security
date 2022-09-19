@@ -18,38 +18,30 @@
 # find current contact information at www.suse.com.
 
 require "y2security/security_policies/rule"
-require "y2storage/arch"
 
 module Y2Security
   module SecurityPolicies
-    #  Run to check whether grub2 is password-protected and menu editing is restricted
-    class BootloaderPasswordRule < Rule
-      def initialize
+    # Rule to check whether there is a separate file system for a given path
+    class SeparateFilesystemRule < Rule
+      # Mount path for the file system to check
+      #
+      # @return [String]
+      attr_reader :mount_path
+
+      # @param id [String] Rule ID
+      # @param mount_path [String] Mount path for the file system to check
+      def initialize(id, mount_path)
         textdomain "security"
 
-        # DISA STIG defines a rule for UEFI (SLES-15-010200) and another rule for non-UEFI
-        # (SLES-15-010190). The condition to check both rules in YaST is exactly the same, so let's
-        # simply adapt the rule ID according to the system type.
-        id = Y2Storage::Arch.new.efiboot? ? "SLES-15-010200" : "SLES-15-010190"
-
-        super(
-          id,
-          # TRANSLATORS: security policy rule
-          _("Bootloader must be protected by password and menu editing must be restricted"),
-          :bootloader
-        )
+        @mount_path = mount_path
+        # TRANSLATORS: security policy rule, %s is a placeholder.
+        super(id, format(_("There must be a separate file system for %s"), mount_path), :storage)
       end
 
       # @see Rule#pass?
       def pass?(target_config)
-        bootloader = target_config.bootloader
-
-        return true unless bootloader.is_a?(Bootloader::Grub2Base)
-
-        password = bootloader.password
-        return false unless password
-
-        password.used? && !password.unrestricted
+        devicegraph = target_config.storage
+        devicegraph.blk_filesystems.any? { |f| f.mount_path == mount_path }
       end
     end
   end

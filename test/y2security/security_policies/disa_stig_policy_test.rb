@@ -29,6 +29,13 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
   end
 
   describe "#rules" do
+
+    before do
+      allow(Y2Storage::Arch).to receive(:new).and_return(arch)
+    end
+
+    let(:arch) { instance_double(Y2Storage::Arch, efiboot?: true) }
+
     it "checks whether /home is on a separate mount point" do
       rule = subject.rules.find do |mp|
         mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
@@ -45,10 +52,19 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
       expect(rule).to_not be_nil
     end
 
-    it "checks whether /var/log/audit is on a separate mount point" do
-      rule = subject.rules.find do |mp|
-        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
-          mp.mount_point == "/var/log/audit"
+    it "checks whether /var/log/audit is on a separate file system" do
+      rule = subject.rules.find do |r|
+        r.is_a?(Y2Security::SecurityPolicies::SeparateFilesystemRule) &&
+          r.mount_path == "/var/log/audit"
+      end
+      expect(rule).to_not be_nil
+    end
+
+    it "checks whether the file system for /var/log/audit is big enough" do
+      rule = subject.rules.find do |r|
+        r.is_a?(Y2Security::SecurityPolicies::FilesystemSizeRule) &&
+          r.mount_path == "/var/log/audit" &&
+          r.min_size.to_i > 0
       end
       expect(rule).to_not be_nil
     end
