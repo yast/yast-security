@@ -167,6 +167,10 @@ module Y2Security
       end
 
       # Return the list of enabled services
+      #
+      # FIXME: avoid a cyclic dependency with yast2-installation
+      #
+      # @return [Array<String>] List of enabled services
       def enabled_services
         require "installation/services" unless defined?(::Installation::Services)
         ::Installation::Services.enabled
