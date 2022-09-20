@@ -47,18 +47,58 @@ module CFA
       profile: "profile", disabled_rules: "disabled-rules"
     )
 
+    class << self
+      # Loads a file
+      #
+      # @param file_handler [#read,#write] an object able to read/write a string (like File)
+      # @param file_path    [String] File path
+      # @return [SsgApply] File with the already loaded content
+      def load(file_handler: Yast::TargetFile, file_path: PATH)
+        file = new(file_handler: file_handler, file_path: file_path)
+        file.load
+        file
+      rescue Errno::ENOENT
+        log.info("#{file_path} couldn't be loaded. Probably the file does not exist yet.")
+
+        file
+      end
+    end
+
+    # @param file_handler [#read,#write] an object able to read/write a string (like File)
+    # @param file_path    [String] File path
     def initialize(file_handler: Yast::TargetFile, file_path: PATH)
       super(AugeasParser.new(LENS), file_path, file_handler: file_handler)
     end
 
+    # Returns the list of disabled rules
+    #
+    # To add rules to the list, please use the #disabled_rules= method instead of
+    # adding rules to the value returned by this method.
+    #
+    # @return [Array<String>] List of disabled rules
     def disabled_rules
       @disabled_rules ||= generic_get("disabled-rules")
         .to_s.split(",").freeze
     end
 
+    # Sets the list of disabled rules
+    #
+    # @example Adding disabled rules
+    #   file = SsgApply.load
+    #   rules = file.disabled_rules
+    #   new_rule = Rule.new("SLES-15-000000", "My dummy rule", :unknown)
+    #   file.disabled_rules = rules + [new_rule]
+    #
     def disabled_rules=(value)
       @disabled_rules = nil
       generic_set("disabled-rules", value.join(","))
+    end
+
+    # Determines whether the file is empty
+    #
+    # @return [Boolean] true if it is empty; false otherwise
+    def empty?
+      data.data.empty?
     end
   end
 end
