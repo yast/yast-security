@@ -89,6 +89,7 @@ module CFA
     #   new_rule = Rule.new("SLES-15-000000", "My dummy rule", :unknown)
     #   file.disabled_rules = rules + [new_rule]
     #
+    # @param value [Array<String>] List of disabled rules IDs
     def disabled_rules=(value)
       @disabled_rules = nil
       generic_set("disabled-rules", value.join(","))
