@@ -73,4 +73,12 @@ describe CFA::SsgApply do
       end
     end
   end
+
+  describe "#disabled_rules=" do
+    it "sets the 'disabled-rules' key to a comma separated list" do
+      expect(file).to receive(:generic_set)
+        .with("disabled-rules", "SLES-15-040200,SLES-15-010200")
+      file.disabled_rules = ["SLES-15-040200", "SLES-15-010200"]
+    end
+  end
 end
