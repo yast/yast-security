@@ -21,6 +21,7 @@ require "yast"
 require "installation/proposal_client"
 require "y2security/security_policies/manager"
 require "y2security/security_policies/target_config"
+require "y2security/security_policies/unknown_rule"
 
 Yast.import "Wizard"
 
@@ -419,11 +420,15 @@ module Y2Security
 
         # HTML section describing the disabled rules
         #
+        # @note Unknown rules are filtered out.
+        #
         # @see Yast::HTML
         #
         # @return [String]
         def disabled_rules_section
-          disabled_rules = policy.rules.reject(&:enabled?)
+          disabled_rules = policy.rules.reject do |rule|
+            rule.enabled? || rule.is_a?(SecurityPolicies::UnknownRule)
+          end
 
           return nil if disabled_rules.none?
 

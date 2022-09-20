@@ -21,6 +21,7 @@
 require_relative "../../test_helper"
 require "y2security/clients/security_policy_proposal"
 require "y2security/security_policies"
+require "y2security/security_policies/unknown_rule"
 require "y2storage/devicegraph"
 
 class DummyPolicy < Y2Security::SecurityPolicies::Policy
@@ -156,6 +157,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         before do
           allow(rule).to receive(:pass?).and_return(false)
           allow(rule).to receive(:enabled?).and_return(false)
+          policy.rules << Y2Security::SecurityPolicies::UnknownRule.new("Unknown")
         end
 
         let(:rule) { policy.rules.first }
@@ -170,6 +172,22 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           expect(subject.make_proposal({})).to include(
             "preformatted_proposal" => %r{<a href=.*>enable rule</a>}
           )
+        end
+
+        context "and there are unknown rules" do
+          before do
+            policy.rules << Y2Security::SecurityPolicies::UnknownRule.new("unknown")
+          end
+
+          it "does not include the unknown rules" do
+            expect(subject.make_proposal({})).to include(
+              "preformatted_proposal" => /rules are disabled:.*Dummy rule/
+            )
+
+            expect(subject.make_proposal({})).to_not include(
+              "preformatted_proposal" => /rules are disabled:.*unknown/
+            )
+          end
         end
 
         context "and the rule is fixable" do
