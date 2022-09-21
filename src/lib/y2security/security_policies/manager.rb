@@ -20,6 +20,7 @@
 require "yast"
 require "singleton"
 require "y2security/security_policies/disa_stig_policy"
+require "cfa/ssg_apply"
 
 Yast.import "PackagesProposal"
 
@@ -107,6 +108,29 @@ module Y2Security
           result[policy] =
             policy.failing_rules(config, scope: scope, include_disabled: include_disabled)
         end
+      end
+
+      # Writes custom configuration for the ssg-apply script
+      #
+      # YaST installs the package ssg-apply if a security policy is enabled. That package provides
+      # an script to be run on the first boot. The ssg-apply script invokes the oscap command using
+      # options provided in the /etc/ssg-apply/override.conf file (if it exists), or in the
+      # /etc/ssg-apply/default.conf file (if override.conf does not exist). Using an override.conf
+      # file allows for custom configuration without modifying the default configuration file.
+      #
+      # Only the #profile and #disabled-rules options are written.
+      def write_config
+        # Only one policy is expected to be enabled
+        policy = policies.find { |p| enabled_policy?(p) }
+
+        id = policy&.id || ""
+        rules = policy&.rules || []
+
+        file = CFA::SsgApply.new
+        file.load
+        file.profile = id.to_s
+        file.disabled_rules = rules.reject(&:enabled?).map(&:id)
+        file.save
       end
 
     private
