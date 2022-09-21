@@ -22,6 +22,7 @@ require "installation/proposal_client"
 require "y2security/security_policies/manager"
 require "y2security/security_policies/target_config"
 require "y2security/security_policies/unknown_rule"
+require "bootloader/main_dialog"
 
 Yast.import "Wizard"
 
@@ -81,6 +82,7 @@ module Y2Security
       # @see Installation::ProposalClient#ask_user
       def ask_user(param)
         action, id = parse_link(param["chosen_id"])
+        result = :again
         case action
         when "toggle-policy"
           toggle_policy(id.to_sym)
@@ -89,12 +91,12 @@ module Y2Security
         when "fix-rule"
           fix_rule(id)
         when "storage"
-          open_client("inst_disk_proposal")
+          result = open_client("inst_disk_proposal")
         when "bootloader"
-          open_client("bootloader")
+          result = open_bootloader
         end
 
-        { "workflow_result" => :again }
+        { "workflow_sequence" => result }
       end
 
       # @return [LinksBuilder]
@@ -266,6 +268,16 @@ module Y2Security
         )
       ensure
         Yast::Wizard.CloseDialog
+      end
+
+      # Runs the bootloader configuration dialog and configures bootloader
+      #
+      # @return [Symbol] result
+      def open_bootloader
+        result = ::Bootloader::MainDialog.new.run_auto
+        Yast::Bootloader.proposed_cfg_changed = true if result == :next
+
+        result
       end
 
       # Helper class to builds unique hyperlink IDs (by scoping actions with a dialog ID and adding
