@@ -454,7 +454,7 @@ module Y2Security
         # @param rules [Array<Y2Security::SecurityPolicies::Rule>] Rules to display
         # @return [String]
         def rules_list(rules)
-          items = rules.map { |r| RulePresenter.new(r, links_builder).to_html }
+          items = rules.sort_by(&:id).map { |r| RulePresenter.new(r, links_builder).to_html }
 
           Yast::HTML.List(items)
         end
