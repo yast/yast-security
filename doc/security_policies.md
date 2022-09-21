@@ -52,8 +52,6 @@ the following rules should be checked:
 * [SLES-15-010200](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_uefi) A bootloader password (for grub2) is configured (UEFI) ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234820)).
 * [SLES-15-010190](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_group_non-uefi) A bootloader password (for grub2) is configured (BIOS) ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2022-02-11/finding/V-234819)).
 
-*NOTE: rules SLES-15-030660 and SLES-15-010190 are not checked by YaST yet.*
-
 Apart from the rules above, YaST also checks these other rules at installation time:
 
 * [SLES-15-010220](http://static.open-scap.org/ssg-guides/ssg-sle15-guide-stig.html#xccdf_org.ssgproject.content_rule_service_firewalld_enabled) Firewalld is enabled ([stigviewer](https://www.stigviewer.com/stig/suse_linux_enterprise_server_15/2021-11-30/finding/V-234821)).

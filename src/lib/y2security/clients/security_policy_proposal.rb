@@ -21,6 +21,8 @@ require "yast"
 require "installation/proposal_client"
 require "y2security/security_policies/manager"
 require "y2security/security_policies/target_config"
+require "y2security/security_policies/unknown_rule"
+require "bootloader/main_dialog"
 
 Yast.import "Wizard"
 
@@ -80,6 +82,7 @@ module Y2Security
       # @see Installation::ProposalClient#ask_user
       def ask_user(param)
         action, id = parse_link(param["chosen_id"])
+        result = :again
         case action
         when "toggle-policy"
           toggle_policy(id.to_sym)
@@ -88,12 +91,12 @@ module Y2Security
         when "fix-rule"
           fix_rule(id)
         when "storage"
-          open_client("inst_disk_proposal")
+          result = open_client("inst_disk_proposal")
         when "bootloader"
-          open_client("bootloader")
+          result = open_bootloader
         end
 
-        { "workflow_result" => :again }
+        { "workflow_sequence" => result }
       end
 
       # @return [LinksBuilder]
@@ -267,6 +270,16 @@ module Y2Security
         Yast::Wizard.CloseDialog
       end
 
+      # Runs the bootloader configuration dialog and configures bootloader
+      #
+      # @return [Symbol] result
+      def open_bootloader
+        result = ::Bootloader::MainDialog.new.run_auto
+        Yast::Bootloader.proposed_cfg_changed = true if result == :next
+
+        result
+      end
+
       # Helper class to builds unique hyperlink IDs (by scoping actions with a dialog ID and adding
       # an optional object ID).
       class LinksBuilder
@@ -419,11 +432,15 @@ module Y2Security
 
         # HTML section describing the disabled rules
         #
+        # @note Unknown rules are filtered out.
+        #
         # @see Yast::HTML
         #
         # @return [String]
         def disabled_rules_section
-          disabled_rules = policy.rules.reject(&:enabled?)
+          disabled_rules = policy.rules.reject do |rule|
+            rule.enabled? || rule.is_a?(SecurityPolicies::UnknownRule)
+          end
 
           return nil if disabled_rules.none?
 
@@ -437,7 +454,7 @@ module Y2Security
         # @param rules [Array<Y2Security::SecurityPolicies::Rule>] Rules to display
         # @return [String]
         def rules_list(rules)
-          items = rules.map { |r| RulePresenter.new(r, links_builder).to_html }
+          items = rules.sort_by(&:id).map { |r| RulePresenter.new(r, links_builder).to_html }
 
           Yast::HTML.List(items)
         end

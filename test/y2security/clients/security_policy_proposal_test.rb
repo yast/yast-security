@@ -21,7 +21,9 @@
 require_relative "../../test_helper"
 require "y2security/clients/security_policy_proposal"
 require "y2security/security_policies"
+require "y2security/security_policies/unknown_rule"
 require "y2storage/devicegraph"
+require "bootloader/main_dialog"
 
 class DummyPolicy < Y2Security::SecurityPolicies::Policy
   def initialize
@@ -156,6 +158,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         before do
           allow(rule).to receive(:pass?).and_return(false)
           allow(rule).to receive(:enabled?).and_return(false)
+          policy.rules << Y2Security::SecurityPolicies::UnknownRule.new("Unknown")
         end
 
         let(:rule) { policy.rules.first }
@@ -170,6 +173,22 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           expect(subject.make_proposal({})).to include(
             "preformatted_proposal" => %r{<a href=.*>enable rule</a>}
           )
+        end
+
+        context "and there are unknown rules" do
+          before do
+            policy.rules << Y2Security::SecurityPolicies::UnknownRule.new("unknown")
+          end
+
+          it "does not include the unknown rules" do
+            expect(subject.make_proposal({})).to include(
+              "preformatted_proposal" => /rules are disabled:.*Dummy rule/
+            )
+
+            expect(subject.make_proposal({})).to_not include(
+              "preformatted_proposal" => /rules are disabled:.*unknown/
+            )
+          end
         end
 
         context "and the rule is fixable" do
@@ -247,9 +266,9 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
       it "returns :again as workflow result" do
         result = subject.ask_user(
-          "chosen_id" => "security-policy--toggle-policy:#{policy}"
+          "chosen_id" => "security-policy--toggle-policy:#{policy.id}"
         )
-        expect(result).to eq("workflow_result" => :again)
+        expect(result).to eq("workflow_sequence" => :again)
       end
     end
 
@@ -269,7 +288,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         result = subject.ask_user(
           "chosen_id" => "security-policy--toggle-policy:#{policy.id}"
         )
-        expect(result).to eq("workflow_result" => :again)
+        expect(result).to eq("workflow_sequence" => :again)
       end
     end
 
@@ -282,11 +301,17 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       end
 
       it "fixes the rule" do
-        subject.make_proposal({})
         expect(rule).to receive(:fix).with(target_config)
         subject.ask_user(
           "chosen_id" => "security-policy--fix-rule:#{rule.id}"
         )
+      end
+
+      it "returns :again as workflow result" do
+        result = subject.ask_user(
+          "chosen_id" => "security-policy--fix-rule:#{policy.id}"
+        )
+        expect(result).to eq("workflow_sequence" => :again)
       end
     end
 
@@ -300,13 +325,23 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
         allow(Yast::Wizard).to receive(:OpenAcceptDialog)
         allow(Yast::Wizard).to receive(:CloseDialog)
+
+        allow(Yast::WFM).to receive(:CallFunction).and_return(client_result)
       end
+
+      let(:client_result) { :cancel }
 
       it "opens the storage client" do
         expect(Yast::WFM).to receive(:CallFunction).with("inst_disk_proposal", anything)
 
-        subject.make_proposal({})
         subject.ask_user("chosen_id" => "security-policy--storage:")
+      end
+
+      it "returns the client result as workflow result" do
+        result = subject.ask_user(
+          "chosen_id" => "security-policy--storage:"
+        )
+        expect(result).to eq("workflow_sequence" => :cancel)
       end
     end
 
@@ -318,15 +353,45 @@ describe Y2Security::Clients::SecurityPolicyProposal do
         allow(rule).to receive(:pass?).and_return(false)
         allow(rule).to receive(:scope).and_return(:bootloader)
 
-        allow(Yast::Wizard).to receive(:OpenAcceptDialog)
-        allow(Yast::Wizard).to receive(:CloseDialog)
+        allow_any_instance_of(::Bootloader::MainDialog)
+          .to receive(:run_auto).and_return(dialog_result)
+
+        Yast::Bootloader.proposed_cfg_changed = false
       end
 
-      it "opens the bootloader client" do
-        expect(Yast::WFM).to receive(:CallFunction).with("bootloader", anything)
+      let(:dialog_result) { :cancel }
 
-        subject.make_proposal({})
+      it "opens the bootloader dialog" do
+        expect_any_instance_of(::Bootloader::MainDialog).to receive(:run_auto)
+
         subject.ask_user("chosen_id" => "security-policy--bootloader:")
+      end
+
+      it "returns the dialog result as workflow result" do
+        result = subject.ask_user(
+          "chosen_id" => "security-policy--bootloader:"
+        )
+        expect(result).to eq("workflow_sequence" => :cancel)
+      end
+
+      context "when the dialog is accepted" do
+        let(:dialog_result) { :next }
+
+        it "sets bootloader config as modified" do
+          subject.ask_user("chosen_id" => "security-policy--bootloader:")
+
+          expect(Yast::Bootloader.proposed_cfg_changed).to eq(true)
+        end
+      end
+
+      context "when the dialog is not accepted" do
+        let(:dialog_result) { :abort }
+
+        it "does not set bootloader config as modified" do
+          subject.ask_user("chosen_id" => "security-policy--bootloader:")
+
+          expect(Yast::Bootloader.proposed_cfg_changed).to eq(false)
+        end
       end
     end
   end

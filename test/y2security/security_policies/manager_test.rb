@@ -20,6 +20,7 @@
 require_relative "../../test_helper"
 require "y2security/security_policies/manager"
 require "y2security/security_policies/disa_stig_policy"
+require "y2security/security_policies/unknown_rule"
 
 describe Y2Security::SecurityPolicies::Manager do
   before do
@@ -239,6 +240,53 @@ describe Y2Security::SecurityPolicies::Manager do
           expect(subject.failing_rules(target_config, include_disabled: true))
             .to eq(disa_stig_policy => [rule])
         end
+      end
+    end
+  end
+
+  describe "#write_config" do
+    before do
+      allow(CFA::SsgApply).to receive(:load).and_return(ssg_apply_file)
+      allow(ssg_apply_file).to receive(:save)
+
+      allow(disa_stig_policy).to receive(:rules).and_return(rules)
+    end
+
+    let(:ssg_apply_file) { CFA::SsgApply.new }
+
+    let(:rules) { [rule1, rule2, rule3] }
+
+    let(:rule1) { Y2Security::SecurityPolicies::UnknownRule.new("rule1").tap(&:disable) }
+    let(:rule2) { Y2Security::SecurityPolicies::UnknownRule.new("rule2").tap(&:enable) }
+    let(:rule3) { Y2Security::SecurityPolicies::UnknownRule.new("rule3").tap(&:disable) }
+
+    context "when a security policy is enabled" do
+      before do
+        subject.enable_policy(disa_stig_policy)
+      end
+
+      it "writes the profile and disabled rules in the ssg-apply config" do
+        expect(ssg_apply_file).to receive(:save)
+
+        subject.write_config
+
+        expect(ssg_apply_file.profile).to eq("disa_stig")
+        expect(ssg_apply_file.disabled_rules).to contain_exactly("rule1", "rule3")
+      end
+    end
+
+    context "when no security policy is enabled" do
+      before do
+        subject.disable_policy(disa_stig_policy)
+      end
+
+      it "writes no policy and no disabled rules in the ssg-apply config" do
+        expect(ssg_apply_file).to receive(:save)
+
+        subject.write_config
+
+        expect(ssg_apply_file.profile).to eq("")
+        expect(ssg_apply_file.disabled_rules).to be_empty
       end
     end
   end

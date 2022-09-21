@@ -34,6 +34,7 @@ require "security/ctrl_alt_del_config"
 require "security/display_manager"
 require "y2security/autoinst/lsm_config_reader"
 require "y2security/security_policies"
+require "y2security/security_policies/unknown_rule"
 require "y2security/autoinst_profile"
 
 module Yast
@@ -959,6 +960,10 @@ module Yast
         manager.enable_policy(policy)
         section.disabled_rules.each do |rule_id|
           rule = policy.rules.find { |r| r.id == rule_id }
+          if rule.nil?
+            rule = Y2Security::SecurityPolicies::UnknownRule.new(rule_id)
+            policy.rules << rule
+          end
           rule&.disable
         end
       end
