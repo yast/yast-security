@@ -126,8 +126,7 @@ module Y2Security
         id = policy&.id || ""
         rules = policy&.rules || []
 
-        file = CFA::SsgApply.new
-        file.load
+        file = CFA::SsgApply.load
         file.profile = id.to_s
         file.disabled_rules = rules.reject(&:enabled?).map(&:id)
         file.save

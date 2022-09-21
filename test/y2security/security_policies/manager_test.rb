@@ -246,8 +246,7 @@ describe Y2Security::SecurityPolicies::Manager do
 
   describe "#write_config" do
     before do
-      allow(CFA::SsgApply).to receive(:new).and_return(ssg_apply_file)
-      allow(ssg_apply_file).to receive(:load)
+      allow(CFA::SsgApply).to receive(:load).and_return(ssg_apply_file)
       allow(ssg_apply_file).to receive(:save)
 
       allow(disa_stig_policy).to receive(:rules).and_return(rules)
