@@ -39,7 +39,7 @@ module Y2Security
         end
 
         # TRANSLATORS: security policy rule
-        description = _("Bootloader must be protected by password and menu editing must be " \
+        description = _("Boot loader must be protected by password and menu editing must be " \
           "restricted")
 
         super(name, id: id, description: description, scope: :bootloader)
