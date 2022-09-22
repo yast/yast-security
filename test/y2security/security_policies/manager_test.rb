@@ -98,7 +98,7 @@ describe Y2Security::SecurityPolicies::Manager do
     end
 
     context "if the given policy is unknown" do
-      let(:policy) { Y2Security::SecurityPolicies::Policy.new(:unknown, "Unknown") }
+      let(:policy) { Y2Security::SecurityPolicies::Policy.new(:unknown, "Unknown", "") }
 
       it "does not enable the policy" do
         subject.enable_policy(policy)
