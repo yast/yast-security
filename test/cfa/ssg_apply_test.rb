@@ -63,7 +63,7 @@ describe CFA::SsgApply do
 
       it "returns an array containing the disabled rules" do
         file.load
-        expect(file.disabled_rules).to eq(["SLES-15-040200", "SLES-15-010200"])
+        expect(file.disabled_rules).to eq(["partition_for_home", "encrypt_partitions"])
       end
     end
 
@@ -77,8 +77,8 @@ describe CFA::SsgApply do
   describe "#disabled_rules=" do
     it "sets the 'disabled-rules' key to a comma separated list" do
       expect(file).to receive(:generic_set)
-        .with("disabled-rules", "SLES-15-040200,SLES-15-010200")
-      file.disabled_rules = ["SLES-15-040200", "SLES-15-010200"]
+        .with("disabled-rules", "rule_name1,rule_name2")
+      file.disabled_rules = ["rule_name1", "rule_name2"]
     end
   end
 end

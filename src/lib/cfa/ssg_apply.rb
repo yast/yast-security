@@ -27,7 +27,8 @@ module CFA
   # @example Writing the base configuration
   #   file = SsgApply.new
   #   file.profile = "disa_stig"
-  #   file.disabled_rules = ["SLES-15-010190"]
+  #   file.remediation = "/usr/share/scap-security-guide/bash/sle15-script-stig.sh"
+  #   file.disabled_rules = ["partition_for_home"]
   #   file.save
   #
   # @example Loading the configuration from a given file path
@@ -44,7 +45,7 @@ module CFA
     private_constant :LENS
 
     attributes(
-      profile: "profile", disabled_rules: "disabled-rules"
+      profile: "profile", remediation: "remediation", disabled_rules: "disabled-rules"
     )
 
     class << self

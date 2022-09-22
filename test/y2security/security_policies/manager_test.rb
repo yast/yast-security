@@ -265,12 +265,13 @@ describe Y2Security::SecurityPolicies::Manager do
         subject.enable_policy(disa_stig_policy)
       end
 
-      it "writes the profile and disabled rules in the ssg-apply config" do
+      it "writes the profile, remediation and disabled rules in the ssg-apply config" do
         expect(ssg_apply_file).to receive(:save)
 
         subject.write_config
 
         expect(ssg_apply_file.profile).to eq("disa_stig")
+        expect(ssg_apply_file.remediation).to eq(disa_stig_policy.remediation)
         expect(ssg_apply_file.disabled_rules).to contain_exactly("rule1", "rule3")
       end
     end
@@ -280,13 +281,10 @@ describe Y2Security::SecurityPolicies::Manager do
         subject.disable_policy(disa_stig_policy)
       end
 
-      it "writes no policy and no disabled rules in the ssg-apply config" do
-        expect(ssg_apply_file).to receive(:save)
+      it "does not write the ssg-apply config" do
+        expect(ssg_apply_file).to_not receive(:save)
 
         subject.write_config
-
-        expect(ssg_apply_file.profile).to eq("")
-        expect(ssg_apply_file.disabled_rules).to be_empty
       end
     end
   end

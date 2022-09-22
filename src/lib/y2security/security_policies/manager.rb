@@ -125,12 +125,12 @@ module Y2Security
         # Only one policy is expected to be enabled
         policy = policies.find { |p| enabled_policy?(p) }
 
-        id = policy&.id || ""
-        rules = policy&.rules || []
+        return unless policy
 
         file = CFA::SsgApply.load
-        file.profile = id.to_s
-        file.disabled_rules = rules.reject(&:enabled?).map(&:id)
+        file.profile = policy.id.to_s
+        file.remediation = policy.remediation
+        file.disabled_rules = policy.rules.reject(&:enabled?).map(&:name)
         file.save
       end
 
