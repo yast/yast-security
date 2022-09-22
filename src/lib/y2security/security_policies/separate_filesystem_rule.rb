@@ -28,14 +28,17 @@ module Y2Security
       # @return [String]
       attr_reader :mount_path
 
+      # @param name [String] Rule name
       # @param id [String] Rule ID
       # @param mount_path [String] Mount path for the file system to check
-      def initialize(id, mount_path)
+      def initialize(name, id, mount_path)
         textdomain "security"
 
         @mount_path = mount_path
         # TRANSLATORS: security policy rule, %s is a placeholder.
-        super(id, format(_("There must be a separate file system for %s"), mount_path), :storage)
+        description = format(_("There must be a separate file system for %s"), mount_path)
+
+        super(name, id: id, description: description, scope: :storage)
       end
 
       # @see Rule#pass?

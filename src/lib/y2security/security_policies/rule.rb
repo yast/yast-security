@@ -28,6 +28,9 @@ module Y2Security
     class Rule
       include Yast::I18n
 
+      # @return [String] Rule name
+      attr_reader :name
+
       # @return [String] Rule ID
       attr_reader :id
 
@@ -37,10 +40,12 @@ module Y2Security
       # @return [Symbol] Scope to apply the rule to
       attr_reader :scope
 
+      # @param name [String] Rule name (e.g., "partition_for_home")
       # @param id [String] Rule ID (e.g., "SLES-15-010190")
       # @param description [String] Rule description
       # @param scope [Symbol] Scope
-      def initialize(id, description, scope)
+      def initialize(name, id: nil, description: nil, scope: nil)
+        @name = name
         @id = id
         @description = description
         @scope = scope

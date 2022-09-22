@@ -39,7 +39,7 @@ end
 class DummyRule < Y2Security::SecurityPolicies::Rule
   def initialize
     textdomain "security"
-    super("SLES-15-000000", _("Dummy rule"), :network)
+    super("dummy_rule", id: "SLES-15-000000", description: _("Dummy rule"), scope: :network)
   end
 end
 

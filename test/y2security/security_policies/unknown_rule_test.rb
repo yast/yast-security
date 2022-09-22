@@ -21,11 +21,17 @@ require_relative "../../test_helper"
 require "y2security/security_policies/unknown_rule"
 
 describe Y2Security::SecurityPolicies::UnknownRule do
-  subject { described_class.new("SLES-15-010530") }
+  subject { described_class.new("package_aide_installed") }
+
+  describe "#name" do
+    it "returns the rule name" do
+      expect(subject.name).to eq("package_aide_installed")
+    end
+  end
 
   describe "#id" do
-    it "returns the rule ID" do
-      expect(subject.id).to eq("SLES-15-010530")
+    it "returns nil" do
+      expect(subject.id).to be_nil
     end
   end
 

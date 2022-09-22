@@ -23,9 +23,17 @@ require "y2security/security_policies/target_config"
 require "y2storage"
 
 describe Y2Security::SecurityPolicies::FilesystemSizeRule do
-  subject { described_class.new("SLES-15-030660", "/var/log/audit", min_size: min_size) }
+  subject do
+    described_class.new("min_size", "SLES-15-030660", "/var/log/audit", min_size: min_size)
+  end
 
   let(:min_size) { Y2Storage::DiskSize.MiB(100) }
+
+  describe "#name" do
+    it "returns the rule name" do
+      expect(subject.name).to eq("min_size")
+    end
+  end
 
   describe "#id" do
     it "returns the rule ID" do

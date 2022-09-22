@@ -36,7 +36,7 @@ describe Y2Security::AutoinstProfile::SecuritySection do
       let(:profile) do
         {
           "security_policies" => [
-            { "name" => "disa_stig", "disabled_rules" => ["SLES-15-000000"] }
+            { "name" => "disa_stig", "disabled_rules" => ["partition_for_home"] }
           ]
         }
       end

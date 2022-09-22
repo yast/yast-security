@@ -22,8 +22,8 @@ require "y2security/security_policies/policy"
 
 shared_examples "Y2Security::SecurityPolicies::Policy" do
   class TestRule < Y2Security::SecurityPolicies::Rule
-    def initialize(id, scope)
-      super(id, "Test rule #{id}", scope)
+    def initialize(name, scope)
+      super(name, description: "Test rule #{name}", scope: scope)
     end
   end
 

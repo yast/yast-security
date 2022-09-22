@@ -22,7 +22,13 @@ require "y2security/security_policies/missing_mount_point_rule"
 require "y2security/security_policies/target_config"
 
 describe Y2Security::SecurityPolicies::MissingMountPointRule do
-  subject { described_class.new("SLES-15-040200", "/home") }
+  subject { described_class.new("partition_for_home", "SLES-15-040200", "/home") }
+
+  describe "#name" do
+    it "returns the rule name" do
+      expect(subject.name).to eq("partition_for_home")
+    end
+  end
 
   describe "#id" do
     it "returns the rule ID" do

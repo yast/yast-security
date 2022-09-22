@@ -28,7 +28,7 @@ module Y2Security
     #     <listitem>
     #       <name>disa_stig</name>
     #       <disabled_rules t="list">
-    #         <listitem>SLES-15-020400</listitem>
+    #         <listitem>encrypt_partitions</listitem>
     #       </disabled_rules>
     #     </listitem>
     #   </security_policies>
@@ -45,7 +45,7 @@ module Y2Security
       # @!attribute name
       #   @return [String] Policy name to apply
       # @!attribute disabled_rules
-      #   @return [Array<String>] Rules to ignore
+      #   @return [Array<String>] Name of the rules to ignore
 
       def initialize(parent = nil)
         super

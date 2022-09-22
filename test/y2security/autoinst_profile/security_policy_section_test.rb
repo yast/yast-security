@@ -24,13 +24,13 @@ require "y2security/autoinst_profile/security_policy_section"
 describe Y2Security::AutoinstProfile::SecurityPolicySection do
   describe ".new_from_hashes" do
     let(:profile) do
-      { "name" => "disa_stig", "disabled_rules" => ["SLES-15-040200"] }
+      { "name" => "disa_stig", "disabled_rules" => ["partition_for_home"] }
     end
 
     it "sets the name and the list of ignored rules" do
       section = described_class.new_from_hashes(profile)
       expect(section.name).to eq("disa_stig")
-      expect(section.disabled_rules).to eq(["SLES-15-040200"])
+      expect(section.disabled_rules).to eq(["partition_for_home"])
     end
 
     context "an empty profile" do

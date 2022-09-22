@@ -22,7 +22,13 @@ require "y2security/security_policies/separate_filesystem_rule"
 require "y2security/security_policies/target_config"
 
 describe Y2Security::SecurityPolicies::SeparateFilesystemRule do
-  subject { described_class.new("SLES-15-030810", "/var/log/audit") }
+  subject { described_class.new("partition_for_var_log_audit", "SLES-15-030810", "/var/log/audit") }
+
+  describe "#name" do
+    it "returns the rule name" do
+      expect(subject.name).to eq("partition_for_var_log_audit")
+    end
+  end
 
   describe "#id" do
     it "returns the rule ID" do
