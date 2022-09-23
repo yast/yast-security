@@ -71,6 +71,14 @@ module CFA
       super(AugeasParser.new(LENS), file_path, file_handler: file_handler)
     end
 
+    # Removes empty values before saving, otherwise the lens complains
+    def save
+      matcher = CFA::Matcher.new { |_, v| v.strip.empty? }
+      empty_elements = data.select(matcher).map { |e| e[:key] }
+      empty_elements.each { |e| data.delete(e) }
+      super
+    end
+
     # Returns the list of disabled rules
     #
     # To add rules to the list, please use the #disabled_rules= method instead of

@@ -29,7 +29,6 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
   end
 
   describe "#rules" do
-
     before do
       allow(Y2Storage::Arch).to receive(:new).and_return(arch)
     end
