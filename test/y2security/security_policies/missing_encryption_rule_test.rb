@@ -22,6 +22,12 @@ require "y2security/security_policies/missing_encryption_rule"
 require "y2security/security_policies/target_config"
 
 describe Y2Security::SecurityPolicies::MissingEncryptionRule do
+  describe "#name" do
+    it "returns the rule name" do
+      expect(subject.name).to eq("encrypt_partitions")
+    end
+  end
+
   describe "#id" do
     it "returns the rule ID" do
       expect(subject.id).to eq("SLES-15-010330")

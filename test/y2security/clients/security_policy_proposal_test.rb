@@ -28,7 +28,7 @@ require "bootloader/main_dialog"
 class DummyPolicy < Y2Security::SecurityPolicies::Policy
   def initialize
     textdomain "security"
-    super(:dummy, _("Dummy policy"))
+    super(:dummy, _("Dummy policy"), "/remediation.sh")
   end
 
   def rules
@@ -39,7 +39,7 @@ end
 class DummyRule < Y2Security::SecurityPolicies::Rule
   def initialize
     textdomain "security"
-    super("SLES-15-000000", _("Dummy rule"), :network)
+    super("dummy_rule", id: "SLES-15-000000", description: _("Dummy rule"), scope: :network)
   end
 end
 

@@ -29,15 +29,20 @@ module Y2Security
 
         # DISA STIG defines a rule for UEFI (SLES-15-010200) and another rule for non-UEFI
         # (SLES-15-010190). The condition to check both rules in YaST is exactly the same, so let's
-        # simply adapt the rule ID according to the system type.
-        id = Y2Storage::Arch.new.efiboot? ? "SLES-15-010200" : "SLES-15-010190"
+        # simply adapt the rule name and ID according to the system type.
+        if Y2Storage::Arch.new.efiboot?
+          name = "grub2_uefi_password"
+          id = "SLES-15-010200"
+        else
+          name = "grub2_password"
+          id = "SLES-15-010190"
+        end
 
-        super(
-          id,
-          # TRANSLATORS: security policy rule
-          _("Bootloader must be protected by password and menu editing must be restricted"),
-          :bootloader
-        )
+        # TRANSLATORS: security policy rule
+        description = _("Boot loader must be protected by password and menu editing must be " \
+          "restricted")
+
+        super(name, id: id, description: description, scope: :bootloader)
       end
 
       # @see Rule#pass?

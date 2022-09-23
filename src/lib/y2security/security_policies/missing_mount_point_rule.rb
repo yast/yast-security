@@ -23,23 +23,21 @@ require "y2storage"
 module Y2Security
   module SecurityPolicies
     # Rule to check whether there is a separate mount point for a given path
-    #
-    # @example Check for a separate mount point for /home
-    #   config = TargetConfig.new
-    #   rule = MissingMountPointRule.new("SLES-15-040200", "/home")
-    #   rule.pass?(config)
     class MissingMountPointRule < Rule
       # @return [String] Mount point to check
       attr_reader :mount_point
 
+      # @param name [String] Rule name
       # @param id [String] Rule ID
       # @param mount_point [String] Mount point to check
-      def initialize(id, mount_point)
+      def initialize(name, id, mount_point)
         textdomain "security"
 
         @mount_point = mount_point
         # TRANSLATORS: security policy rule
-        super(id, format(_("There must be a separate mount point for %s"), mount_point), :storage)
+        description = format(_("There must be a separate mount point for %s"), mount_point)
+
+        super(name, id: id, description: description, scope: :storage)
       end
 
       # @see Rule#pass?

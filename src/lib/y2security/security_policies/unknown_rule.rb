@@ -31,10 +31,11 @@ module Y2Security
     class UnknownRule < Rule
       include Yast::I18n
 
-      # @param id [String] Rule ID (e.g., "SLES-15-010190")
-      def initialize(id)
+      # @param name [String] Rule name
+      def initialize(name)
         textdomain "security"
-        super(id, _("Unknown rule"), :unknown)
+
+        super(name, description: _("Unknown rule"), scope: :unknown)
       end
 
       # Unknown rules are always considered as passing.

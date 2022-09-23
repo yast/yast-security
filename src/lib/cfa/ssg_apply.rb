@@ -27,7 +27,8 @@ module CFA
   # @example Writing the base configuration
   #   file = SsgApply.new
   #   file.profile = "disa_stig"
-  #   file.disabled_rules = ["SLES-15-010190"]
+  #   file.remediation = "/usr/share/scap-security-guide/bash/sle15-script-stig.sh"
+  #   file.disabled_rules = ["partition_for_home"]
   #   file.save
   #
   # @example Loading the configuration from a given file path
@@ -44,7 +45,7 @@ module CFA
     private_constant :LENS
 
     attributes(
-      profile: "profile", disabled_rules: "disabled-rules"
+      profile: "profile", remediation: "remediation", disabled_rules: "disabled-rules"
     )
 
     class << self
@@ -68,6 +69,14 @@ module CFA
     # @param file_path    [String] File path
     def initialize(file_handler: Yast::TargetFile, file_path: PATH)
       super(AugeasParser.new(LENS), file_path, file_handler: file_handler)
+    end
+
+    # Removes empty values before saving, otherwise the lens complains
+    def save
+      matcher = CFA::Matcher.new { |_, v| v.strip.empty? }
+      empty_elements = data.select(matcher).map { |e| e[:key] }
+      empty_elements.each { |e| data.delete(e) }
+      super
     end
 
     # Returns the list of disabled rules

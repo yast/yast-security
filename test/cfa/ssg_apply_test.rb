@@ -24,10 +24,16 @@ require "cfa/ssg_apply"
 
 describe CFA::SsgApply do
   subject(:file) do
-    described_class.new(file_path: file_path)
+    described_class.new(file_handler: file_handler, file_path: file_path)
   end
 
+  let(:file_handler) { Yast::TargetFile }
+
   let(:file_path) { File.join(DATA_PATH, "system/etc/ssg-apply/default.conf") }
+
+  before do
+    allow(file_handler).to receive(:write)
+  end
 
   describe ".load" do
     context "when the file exists" do
@@ -50,6 +56,72 @@ describe CFA::SsgApply do
     end
   end
 
+  describe "#save" do
+    before do
+      file.profile = profile
+      file.remediation = remediation
+      file.disabled_rules = disabled_rules
+    end
+
+    let(:profile) { "disa_stig" }
+    let(:remediation) { "/path/to/file.sh" }
+    let(:disabled_rules) { ["rule1", "rule2"] }
+
+    it "writes the profile" do
+      expect(file_handler).to receive(:write).with(anything, /profile = disa_stig/)
+
+      file.save
+    end
+
+    it "writes the remediation" do
+      expect(file_handler).to receive(:write).with(anything, /remediation = \/path\/to\/file.sh/)
+
+      file.save
+    end
+
+    it "writes the disabled rules" do
+      expect(file_handler).to receive(:write).with(anything, /disabled-rules = rule1,rule2/)
+
+      file.save
+    end
+
+    context "when the profile is empty" do
+      let(:profile) { "" }
+
+      it "removes the profile key" do
+        expect(file_handler).to receive(:write) do |_, content|
+          expect(content).to_not include("profile")
+        end
+
+        file.save
+      end
+    end
+
+    context "when the remediation is empty" do
+      let(:remediation) { "" }
+
+      it "removes the remediation key" do
+        expect(file_handler).to receive(:write) do |_, content|
+          expect(content).to_not include("remediation")
+        end
+
+        file.save
+      end
+    end
+
+    context "when disabled rules is empty" do
+      let(:disabled_rules) { [] }
+
+      it "removes the disabled-rules key" do
+        expect(file_handler).to receive(:write) do |_, content|
+          expect(content).to_not include("disabled-rules")
+        end
+
+        file.save
+      end
+    end
+  end
+
   describe "#profile" do
     it "returns the profile value" do
       file.load
@@ -63,7 +135,7 @@ describe CFA::SsgApply do
 
       it "returns an array containing the disabled rules" do
         file.load
-        expect(file.disabled_rules).to eq(["SLES-15-040200", "SLES-15-010200"])
+        expect(file.disabled_rules).to eq(["partition_for_home", "encrypt_partitions"])
       end
     end
 
@@ -77,8 +149,8 @@ describe CFA::SsgApply do
   describe "#disabled_rules=" do
     it "sets the 'disabled-rules' key to a comma separated list" do
       expect(file).to receive(:generic_set)
-        .with("disabled-rules", "SLES-15-040200,SLES-15-010200")
-      file.disabled_rules = ["SLES-15-040200", "SLES-15-010200"]
+        .with("disabled-rules", "rule_name1,rule_name2")
+      file.disabled_rules = ["rule_name1", "rule_name2"]
     end
   end
 end

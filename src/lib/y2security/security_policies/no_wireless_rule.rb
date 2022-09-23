@@ -24,19 +24,15 @@ require "y2network/startmode"
 module Y2Security
   module SecurityPolicies
     # Rule to deactivate wireless network interfaces (SLES-15-010380).
-    #
-    # @example Fix the current configuration if the rule does not pass
-    #   config = TargetConfig.new
-    #   rule = NoWirelessRule.new
-    #   rule.fix(config) unless rule.pass?(config)
-    #   wlan0 = config.network.connections.by_name("wlan0")
-    #   wlan0.startmode.to_s #=> "off"
     class NoWirelessRule < Rule
       def initialize
         textdomain "security"
 
-        # TRANSLATORS: security policy rule
-        super("SLES-15-010380", _("Wireless network interfaces must be deactivated"), :network)
+        # TRANSLATORS: Security policy rule
+        description = _("Wireless network interfaces must be deactivated")
+
+        super("wireless_disable_interfaces",
+          id: "SLES-15-010380", description: description, scope: :network)
       end
 
       # @see Rule#pass?

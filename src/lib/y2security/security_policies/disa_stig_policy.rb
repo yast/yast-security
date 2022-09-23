@@ -41,16 +41,20 @@ module Y2Security
         # TRANSLATORS: This is a security policy name.
         #   "Defense Information Systems Agency" is from the USA, https://disa.mil/
         #   STIG = Security Technical Implementation Guides
-        super(:disa_stig, _("Defense Information Systems Agency STIG"))
+        name = _("Defense Information Systems Agency STIG")
+        remediation = "/usr/share/scap-security-guide/bash/sle15-script-stig.sh"
+
+        super(:disa_stig, name, remediation)
       end
 
       def rules
         @rules ||= [
-          MissingMountPointRule.new("SLES-15-040200", "/home"),
-          MissingMountPointRule.new("SLES-15-040210", "/var"),
-          SeparateFilesystemRule.new("SLES-15-030810", "/var/log/audit"),
-          FilesystemSizeRule.new("SLES-15-030660", "/var/log/audit",
-            min_size: Y2Storage::DiskSize.MiB(100)),
+          MissingMountPointRule.new("partition_for_home", "SLES-15-040200", "/home"),
+          MissingMountPointRule.new("partition_for_var", "SLES-15-040210", "/var"),
+          SeparateFilesystemRule.new("partition_for_var_log_audit",
+            "SLES-15-030810", "/var/log/audit"),
+          FilesystemSizeRule.new("auditd_audispd_configure_sufficiently_large_partition",
+            "SLES-15-030660", "/var/log/audit", min_size: Y2Storage::DiskSize.MiB(100)),
           MissingEncryptionRule.new,
           NoWirelessRule.new,
           FirewallEnabledRule.new,

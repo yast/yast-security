@@ -32,6 +32,24 @@ describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
 
   let(:bootloader) { Bootloader::NoneBootloader.new }
 
+  describe "#name" do
+    context "in a UEFI system" do
+      let(:efiboot) { true }
+
+      it "returns grub2_uefi_password" do
+        expect(subject.name).to eq("grub2_uefi_password")
+      end
+    end
+
+    context "in a non-UEFI system" do
+      let(:efiboot) { false }
+
+      it "returns grub2_password" do
+        expect(subject.name).to eq("grub2_password")
+      end
+    end
+  end
+
   describe "#id" do
     context "in a UEFI system" do
       let(:efiboot) { true }
