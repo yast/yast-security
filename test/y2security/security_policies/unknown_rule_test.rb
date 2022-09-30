@@ -23,15 +23,21 @@ require "y2security/security_policies/unknown_rule"
 describe Y2Security::SecurityPolicies::UnknownRule do
   subject { described_class.new("package_aide_installed") }
 
-  describe "#name" do
-    it "returns the rule name" do
-      expect(subject.name).to eq("package_aide_installed")
+  describe "#id" do
+    it "returns the rule ID" do
+      expect(subject.id).to eq("package_aide_installed")
     end
   end
 
-  describe "#id" do
-    it "returns nil" do
-      expect(subject.id).to be_nil
+  describe "#identifiers" do
+    it "returns an empty list" do
+      expect(subject.identifiers).to eq([])
+    end
+  end
+
+  describe "#references" do
+    it "returns an empty list" do
+      expect(subject.references).to eq([])
     end
   end
 

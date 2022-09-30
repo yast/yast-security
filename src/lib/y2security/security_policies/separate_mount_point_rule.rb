@@ -23,21 +23,29 @@ require "y2storage"
 module Y2Security
   module SecurityPolicies
     # Rule to check whether there is a separate mount point for a given path
-    class MissingMountPointRule < Rule
-      # @return [String] Mount point to check
-      attr_reader :mount_point
+    class SeparateMountPointRule < Rule
+      # @return [String] Mount path to check
+      attr_reader :mount_path
 
-      # @param name [String] Rule name
-      # @param id [String] Rule ID
-      # @param mount_point [String] Mount point to check
-      def initialize(name, id, mount_point)
+      # Constructor
+      #
+      # @param id [String] See {Rule#id}
+      # @param mount_path [String] See {#mount_path}
+      # @param identifiers [Array<String>] See {Rule#identifiers}
+      # @param references [Array<String>] See {Rule#references}
+      def initialize(id, mount_path, identifiers: [], references: [])
         textdomain "security"
 
-        @mount_point = mount_point
         # TRANSLATORS: security policy rule
-        description = format(_("There must be a separate mount point for %s"), mount_point)
+        description = format(_("There must be a separate mount point for %s"), mount_path)
 
-        super(name, id: id, description: description, scope: :storage)
+        super(id,
+          identifiers: identifiers,
+          references:  references,
+          description: description,
+          scope:       :storage)
+
+        @mount_path = mount_path
       end
 
       # @see Rule#pass?
@@ -45,7 +53,7 @@ module Y2Security
         devicegraph = target_config.storage
         paths = devicegraph.mount_points.map(&:path)
 
-        paths.include?(mount_point)
+        paths.include?(mount_path)
       end
     end
   end

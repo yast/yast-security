@@ -34,21 +34,31 @@ module Y2Security
       # @return [Y2Storage::DiskSize]
       attr_reader :min_size
 
-      # @param name [String] Rule name
-      # @param id [String] Rule ID
-      # @param mount_path [String] Mount path for the file system to check
-      # @param min_size [Y2Storage::DiskSize] Minimum size the file system should have
-      def initialize(name, id, mount_path, min_size: nil)
+      # Constructor
+      #
+      # @param id [String] See {Rule#id}
+      # @param mount_path [String] See {#mount_path}
+      # @param min_size [Y2Storage::DiskSize] See {#min_size}
+      # @param identifiers [Array<String>] See {Rule#identifiers}
+      # @param references [Array<String>] See {Rule#references}
+      def initialize(id, mount_path, min_size: nil, identifiers: [], references: [])
         textdomain "security"
 
-        @mount_path = mount_path
-        @min_size = min_size || Y2Storage::DiskSize.new(0)
+        min_size ||= Y2Storage::DiskSize.new(0)
+
         description = format(
           # TRANSLATORS: security policy rule, %s is a placeholder.
           _("The minimum size for the file system %s must be %s"), mount_path, min_size
         )
 
-        super(name, id: id, description: description, scope: :storage)
+        super(id,
+          identifiers: identifiers,
+          references:  references,
+          description: description,
+          scope:       :storage)
+
+        @mount_path = mount_path
+        @min_size = min_size
       end
 
       # @see Rule#pass?

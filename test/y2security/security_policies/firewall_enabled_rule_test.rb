@@ -33,18 +33,6 @@ describe Y2Security::SecurityPolicies::FirewallEnabledRule do
 
   let(:enabled) { true }
 
-  describe "#name" do
-    it "returns the rule name" do
-      expect(subject.name).to eq("service_firewalld_enabled")
-    end
-  end
-
-  describe "#id" do
-    it "returns the rule ID" do
-      expect(subject.id).to eq("SLES-15-010220")
-    end
-  end
-
   describe "#pass?" do
     context "when the firewall is enabled" do
       it "returns true" do

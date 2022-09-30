@@ -958,10 +958,10 @@ module Yast
         end
 
         manager.enable_policy(policy)
-        section.disabled_rules.each do |rule_name|
-          rule = policy.rules.find { |r| r.name == rule_name }
+        section.disabled_rules.each do |rule_id|
+          rule = policy.rules.find { |r| r.id == rule_id }
           if rule.nil?
-            rule = Y2Security::SecurityPolicies::UnknownRule.new(rule_name)
+            rule = Y2Security::SecurityPolicies::UnknownRule.new(rule_id)
             policy.rules << rule
           end
           rule&.disable

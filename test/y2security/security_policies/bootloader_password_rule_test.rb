@@ -32,12 +32,12 @@ describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
 
   let(:bootloader) { Bootloader::NoneBootloader.new }
 
-  describe "#name" do
+  describe "#id" do
     context "in a UEFI system" do
       let(:efiboot) { true }
 
       it "returns grub2_uefi_password" do
-        expect(subject.name).to eq("grub2_uefi_password")
+        expect(subject.id).to eq("grub2_uefi_password")
       end
     end
 
@@ -45,25 +45,43 @@ describe Y2Security::SecurityPolicies::BootloaderPasswordRule do
       let(:efiboot) { false }
 
       it "returns grub2_password" do
-        expect(subject.name).to eq("grub2_password")
+        expect(subject.id).to eq("grub2_password")
       end
     end
   end
 
-  describe "#id" do
+  describe "#identifiers" do
     context "in a UEFI system" do
       let(:efiboot) { true }
 
-      it "returns SLES-15-010200" do
-        expect(subject.id).to eq("SLES-15-010200")
+      it "contains CCE-83275-8" do
+        expect(subject.identifiers).to contain_exactly("CCE-83275-8")
       end
     end
 
     context "in a non-UEFI system" do
       let(:efiboot) { false }
 
-      it "returns SLES-15-010190" do
-        expect(subject.id).to eq("SLES-15-010190")
+      it "contains CCE-83274-1" do
+        expect(subject.identifiers).to contain_exactly("CCE-83274-1")
+      end
+    end
+  end
+
+  describe "#references" do
+    context "in a UEFI system" do
+      let(:efiboot) { true }
+
+      it "contains SLES-15-010200" do
+        expect(subject.references).to contain_exactly("SLES-15-010200")
+      end
+    end
+
+    context "in a non-UEFI system" do
+      let(:efiboot) { false }
+
+      it "contains SLES-15-010190" do
+        expect(subject.references).to contain_exactly("SLES-15-010190")
       end
     end
   end

@@ -28,11 +28,25 @@ module Y2Security
     class Rule
       include Yast::I18n
 
-      # @return [String] Rule name
-      attr_reader :name
-
-      # @return [String] Rule ID
+      # Rule ID
+      #
+      # Contains the rule ID as defined by the Scap Security Guided without the prefix
+      # "xccdf_org.ssgproject.content_rule_".
+      # For example, for a rule with ID "xccdf_org.ssgproject.content_rule_partition_for_home" the
+      # value would be "partition_for_home".
+      #
+      # @return [String]
       attr_reader :id
+
+      # Rule identifiers (e.g., "CCE-85639-3")
+      #
+      # @return [Array<String>]
+      attr_reader :identifiers
+
+      # Rule references (e.g., "SLES-15-040200", "SV-235004r622137_rule", etc)
+      #
+      # @return [Array<String>]
+      attr_reader :references
 
       # @return [String] Rule description
       attr_reader :description
@@ -40,13 +54,15 @@ module Y2Security
       # @return [Symbol] Scope to apply the rule to
       attr_reader :scope
 
-      # @param name [String] Rule name (e.g., "partition_for_home")
-      # @param id [String] Rule ID (e.g., "SLES-15-010190")
-      # @param description [String] Rule description
-      # @param scope [Symbol] Scope
-      def initialize(name, id: nil, description: nil, scope: nil)
-        @name = name
+      # @param id [String] See {#id}
+      # @param identifiers [Array<String>] See {#identifiers}
+      # @param references [Array<String>] See {#references}
+      # @param description [String] See {#description}
+      # @param scope [Symbol] See {#scope}
+      def initialize(id, identifiers: [], references: [], description: nil, scope: nil)
         @id = id
+        @identifiers = identifiers
+        @references = references
         @description = description
         @scope = scope
         @enabled = true

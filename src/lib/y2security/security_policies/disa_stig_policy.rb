@@ -19,12 +19,12 @@
 
 require "yast"
 require "y2security/security_policies/policy"
-require "y2security/security_policies/bootloader_password_rule"
-require "y2security/security_policies/firewall_enabled_rule"
-require "y2security/security_policies/missing_encryption_rule"
-require "y2security/security_policies/missing_mount_point_rule"
+require "y2security/security_policies/separate_mount_point_rule"
 require "y2security/security_policies/separate_filesystem_rule"
 require "y2security/security_policies/filesystem_size_rule"
+require "y2security/security_policies/encrypted_filesystems_rule"
+require "y2security/security_policies/bootloader_password_rule"
+require "y2security/security_policies/firewall_enabled_rule"
 require "y2security/security_policies/no_wireless_rule"
 require "y2storage/disk_size"
 
@@ -49,16 +49,24 @@ module Y2Security
 
       def rules
         @rules ||= [
-          MissingMountPointRule.new("partition_for_home", "SLES-15-040200", "/home"),
-          MissingMountPointRule.new("partition_for_var", "SLES-15-040210", "/var"),
-          SeparateFilesystemRule.new("partition_for_var_log_audit",
-            "SLES-15-030810", "/var/log/audit"),
+          SeparateMountPointRule.new("partition_for_home", "/home",
+            identifiers: ["CCE-85639-3"],
+            references:  ["SLES-15-040200"]),
+          SeparateMountPointRule.new("partition_for_var", "/var",
+            identifiers: ["CCE-85640-1"],
+            references:  ["SLES-15-040210"]),
+          SeparateFilesystemRule.new("partition_for_var_log_audit", "/var/log/audit",
+            identifiers: ["CCE-85618-7"],
+            references:  ["SLES-15-030810"]),
           FilesystemSizeRule.new("auditd_audispd_configure_sufficiently_large_partition",
-            "SLES-15-030660", "/var/log/audit", min_size: Y2Storage::DiskSize.MiB(100)),
-          MissingEncryptionRule.new,
-          NoWirelessRule.new,
+            "/var/log/audit",
+            min_size:    Y2Storage::DiskSize.MiB(100),
+            identifiers: ["CCE-85697-1"],
+            references:  ["SLES-15-030660"]),
+          EncryptedFilesystemsRule.new,
+          BootloaderPasswordRule.new,
           FirewallEnabledRule.new,
-          BootloaderPasswordRule.new
+          NoWirelessRule.new
         ]
       end
     end
