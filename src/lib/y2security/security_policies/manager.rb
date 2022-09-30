@@ -24,8 +24,6 @@ require "cfa/ssg_apply"
 
 Yast.import "PackagesProposal"
 
-Yast.import "PackagesProposal"
-
 module Y2Security
   module SecurityPolicies
     # Class to manage security policies
