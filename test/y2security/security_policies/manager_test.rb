@@ -98,7 +98,7 @@ describe Y2Security::SecurityPolicies::Manager do
     end
 
     context "if the given policy is unknown" do
-      let(:policy) { Y2Security::SecurityPolicies::Policy.new(:unknown, "Unknown", "") }
+      let(:policy) { Y2Security::SecurityPolicies::Policy.new(:unknown, "Unknown") }
 
       it "does not enable the policy" do
         subject.enable_policy(policy)
@@ -265,14 +265,10 @@ describe Y2Security::SecurityPolicies::Manager do
         subject.enable_policy(disa_stig_policy)
       end
 
-      it "writes the profile, remediation and disabled rules in the ssg-apply config" do
+      it "writes the ssg-apply configuration file" do
         expect(ssg_apply_file).to receive(:save)
-
         subject.write_config
-
         expect(ssg_apply_file.profile).to eq("disa_stig")
-        expect(ssg_apply_file.remediation).to eq(disa_stig_policy.remediation)
-        expect(ssg_apply_file.disabled_rules).to contain_exactly("rule1", "rule3")
       end
     end
 
