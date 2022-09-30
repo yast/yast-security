@@ -44,9 +44,7 @@ module CFA
     LENS = "simplevars.lns".freeze
     private_constant :LENS
 
-    attributes(
-      profile: "profile", remediation: "remediation", disabled_rules: "disabled-rules"
-    )
+    attributes(profile: "profile", remediate: "remediate")
 
     class << self
       # Loads a file
@@ -77,31 +75,6 @@ module CFA
       empty_elements = data.select(matcher).map { |e| e[:key] }
       empty_elements.each { |e| data.delete(e) }
       super
-    end
-
-    # Returns the list of disabled rules
-    #
-    # To add rules to the list, please use the #disabled_rules= method instead of
-    # adding rules to the value returned by this method.
-    #
-    # @return [Array<String>] List of disabled rules
-    def disabled_rules
-      @disabled_rules ||= generic_get("disabled-rules")
-        .to_s.split(",").freeze
-    end
-
-    # Sets the list of disabled rules
-    #
-    # @example Adding disabled rules
-    #   file = SsgApply.load
-    #   rules = file.disabled_rules
-    #   new_rule = Rule.new("SLES-15-000000", "My dummy rule", :unknown)
-    #   file.disabled_rules = rules + [new_rule]
-    #
-    # @param value [Array<String>] List of disabled rules IDs
-    def disabled_rules=(value)
-      @disabled_rules = nil
-      generic_set("disabled-rules", value.join(","))
     end
 
     # Determines whether the file is empty
