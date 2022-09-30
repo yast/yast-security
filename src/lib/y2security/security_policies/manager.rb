@@ -30,9 +30,9 @@ module Y2Security
     # Class to manage security policies
     class Manager
       # @return [Symbol] action to perform after the installation. :remediate peforms a full
-      # remediation, :check just checks the policy and :none does nothing apart from installing
+      # remediation, :scan just scan the system and :none does nothing apart from installing
       # the package
-      attr_accessor :action
+      attr_accessor :scap_action
 
       class << self
         def instance
@@ -119,7 +119,7 @@ module Y2Security
       def write
         # Only one policy is expected to be enabled
         policy = policies.find { |p| enabled_policy?(p) }
-        return if policy.nil? || action == :none
+        return if policy.nil? || scap_action == :none
 
         write_config(policy)
         enable_service
@@ -139,7 +139,7 @@ module Y2Security
       def write_config(policy)
         file = CFA::SsgApply.load
         file.profile = policy.id.to_s
-        file.remediate = (action == :check) ? "no" : "yes"
+        file.remediate = (scap_action == :remediate) ? "yes" : "no"
         file.save
       end
 
