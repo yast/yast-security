@@ -23,11 +23,17 @@ require "y2security/security_policies/disa_stig_policy"
 require "cfa/ssg_apply"
 
 Yast.import "PackagesProposal"
+Yast.import "Service"
 
 module Y2Security
   module SecurityPolicies
     # Class to manage security policies
     class Manager
+      # @return [Symbol] action to perform after the installation. :remediate peforms a full
+      # remediation, :check just checks the policy and :none does nothing apart from installing
+      # the package
+      attr_accessor :action
+
       class << self
         def instance
           @instance ||= new
@@ -77,7 +83,7 @@ module Y2Security
         return unless policies.include?(policy)
 
         @enabled_policies.push(policy).uniq!
-        enable_service
+        add_package
       end
 
       # Disables the given policy
@@ -87,7 +93,7 @@ module Y2Security
         return unless policies.include?(policy)
 
         @enabled_policies.delete(policy)
-        disable_service if @enabled_policies.empty?
+        remove_package if @enabled_policies.empty?
       end
 
       # Whether the given policy is enabled
@@ -110,6 +116,17 @@ module Y2Security
         end
       end
 
+      def write
+        # Only one policy is expected to be enabled
+        policy = policies.find { |p| enabled_policy?(p) }
+        return if policy.nil? || action == :none
+
+        write_config(policy)
+        enable_service
+      end
+
+    private
+
       # Writes custom configuration for the ssg-apply script
       #
       # YaST installs the package ssg-apply if a security policy is enabled. That package provides
@@ -118,19 +135,13 @@ module Y2Security
       # /etc/ssg-apply/default.conf file (if override.conf does not exist). Using an override.conf
       # file allows for custom configuration without modifying the default configuration file.
       #
-      # Only the #profile and #disabled-rules options are written.
-      def write_config
-        # Only one policy is expected to be enabled
-        policy = policies.find { |p| enabled_policy?(p) }
-
-        return unless policy
-
+      # Only the #profile and #remediate options are written.
+      def write_config(policy)
         file = CFA::SsgApply.load
         file.profile = policy.id.to_s
+        file.remediate = (action == :check) ? "no" : "yes"
         file.save
       end
-
-    private
 
       # Enables policies according to the environment variable ENV_SECURITY_POLICIES
       def enable_policies
@@ -171,34 +182,18 @@ module Y2Security
       SERVICE_NAME = "ssg-apply".freeze
       private_constant :SERVICE_NAME
 
-      # Adds the package and enables the service to remedy the system after the installation
+      # Enables the ssg-apply service to remedy the system after the installation
       def enable_service
-        return if enabled_services.include?(SERVICE_NAME)
+        Yast::Service.enable(SERVICE_NAME)
+      end
 
-        enabled_services << SERVICE_NAME
+      def add_package
         Yast::PackagesProposal.AddResolvables("security", :package, [SERVICE_NAME])
       end
 
       # Disables the service and removes the package to remedy the system after the installation
-      def disable_service
-        return unless enabled_services.include?(SERVICE_NAME)
-
-        enabled_services.delete(SERVICE_NAME)
+      def remove_package
         Yast::PackagesProposal.RemoveResolvables("security", :package, [SERVICE_NAME])
-      end
-
-      # Return the list of enabled services
-      #
-      # FIXME: avoid a cyclic dependency with yast2-installation
-      #
-      # @return [Array<String>] List of enabled services
-      def enabled_services
-        require "installation/services" unless defined?(::Installation::Services)
-        ::Installation::Services.enabled
-      rescue LoadError
-        log.warn("Could not load the list of enabled services. " \
-          "Make sure yast2-installation is installed.")
-        []
       end
     end
   end

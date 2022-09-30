@@ -116,25 +116,21 @@ describe Y2Security::SecurityPolicies::Manager do
         expect(subject.enabled_policies).to include(policy)
       end
 
-      it "adds the ssg-apply package and enables the service" do
+      it "adds the ssg-apply package" do
         subject.enable_policy(policy)
 
-        expect(Installation::Services.enabled).to include("ssg-apply")
         expect(Yast::PackagesProposal.GetResolvables("security", :package))
           .to include("ssg-apply")
       end
 
       after do
         Yast::PackagesProposal.RemoveResolvables("security", :package, ["ssg-apply"])
-        Installation::Services.reset
       end
     end
   end
 
   describe "#disable_policy" do
     before do
-      allow(subject).to receive(:require).with("installation/services")
-        .and_return(true)
       subject.enable_policy(disa_stig_policy)
     end
 
@@ -144,10 +140,9 @@ describe Y2Security::SecurityPolicies::Manager do
       expect(subject.enabled_policies).to_not include(disa_stig_policy)
     end
 
-    it "removes the ssg-apply package and disables the service" do
+    it "removes the ssg-apply package" do
       subject.disable_policy(disa_stig_policy)
 
-      expect(Installation::Services.enabled).to_not include("ssg-apply")
       expect(Yast::PackagesProposal.GetResolvables("security", :package))
         .to_not include("ssg-apply")
     end
@@ -162,17 +157,15 @@ describe Y2Security::SecurityPolicies::Manager do
         subject.enable_policy(another_policy)
       end
 
-      it "does not remove the package nor disables the service" do
+      it "does not remove the package" do
         subject.disable_policy(disa_stig_policy)
 
-        expect(Installation::Services.enabled).to include("ssg-apply")
         expect(Yast::PackagesProposal.GetResolvables("security", :package))
           .to include("ssg-apply")
       end
 
       after do
         Yast::PackagesProposal.RemoveResolvables("security", :package, ["ssg-apply"])
-        Installation::Services.reset
       end
     end
   end
@@ -244,15 +237,17 @@ describe Y2Security::SecurityPolicies::Manager do
     end
   end
 
-  describe "#write_config" do
+  describe "#write" do
     before do
       allow(CFA::SsgApply).to receive(:load).and_return(ssg_apply_file)
       allow(ssg_apply_file).to receive(:save)
 
       allow(disa_stig_policy).to receive(:rules).and_return(rules)
+      subject.action = action
     end
 
     let(:ssg_apply_file) { CFA::SsgApply.new }
+    let(:action) { :none }
 
     let(:rules) { [rule1, rule2, rule3] }
 
@@ -265,10 +260,52 @@ describe Y2Security::SecurityPolicies::Manager do
         subject.enable_policy(disa_stig_policy)
       end
 
-      it "writes the ssg-apply configuration file" do
-        expect(ssg_apply_file).to receive(:save)
-        subject.write_config
-        expect(ssg_apply_file.profile).to eq("disa_stig")
+      it "writes failing rules in security_policy_failed_rules"
+
+      context "when neither checks or remedation are enabled" do
+        let(:action) { :none }
+
+        it "does not write the configuration" do
+          expect(ssg_apply_file).to_not receive(:save)
+          subject.write
+        end
+
+        it "does not enable the service" do
+          expect(Yast::Service).to_not receive(:enable)
+          subject.write
+        end
+      end
+
+      context "when checking the policy after installation is enabled" do
+        let(:action) { :check }
+
+        it "disables ssg-apply remediation" do
+          expect(ssg_apply_file).to receive(:save)
+          subject.write
+          expect(ssg_apply_file.remediate).to eq("no")
+          expect(ssg_apply_file.profile).to eq("disa_stig")
+        end
+
+        it "enables the service" do
+          expect(Yast::Service).to receive(:enable).with("ssg-apply")
+          subject.write
+        end
+      end
+
+      context "when full remediation is enabled" do
+        let(:action) { :remediate }
+
+        it "enables ssg-apply remediation" do
+          expect(ssg_apply_file).to receive(:save)
+          subject.write
+          expect(ssg_apply_file.remediate).to eq("yes")
+          expect(ssg_apply_file.profile).to eq("disa_stig")
+        end
+
+        it "enables the service" do
+          expect(Yast::Service).to receive(:enable).with("ssg-apply")
+          subject.write
+        end
       end
     end
 
@@ -277,10 +314,16 @@ describe Y2Security::SecurityPolicies::Manager do
         subject.disable_policy(disa_stig_policy)
       end
 
+      it "writes does not write the security_policy_failed_rules file"
+
       it "does not write the ssg-apply config" do
         expect(ssg_apply_file).to_not receive(:save)
+        subject.write
+      end
 
-        subject.write_config
+      it "does not enable the service" do
+        expect(Yast::Service).to_not receive(:enable)
+        subject.write
       end
     end
   end
