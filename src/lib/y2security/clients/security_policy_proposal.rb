@@ -454,7 +454,8 @@ module Y2Security
         # @param rules [Array<Y2Security::SecurityPolicies::Rule>] Rules to display
         # @return [String]
         def rules_list(rules)
-          items = rules.sort_by(&:id).map { |r| RulePresenter.new(r, links_builder).to_html }
+          rules = rules.sort_by { |r| r.identifiers.first }
+          items = rules.map { |r| RulePresenter.new(r, links_builder).to_html }
 
           Yast::HTML.List(items)
         end
@@ -477,10 +478,10 @@ module Y2Security
 
         # @return [String]
         def to_html
-          return message if actions.none?
+          second_line = (rule.identifiers + rule.references).join(", ")
+          second_line << " (#{actions.join(", ")})" if actions.any?
 
-          all_actions = actions.join(", ")
-          "#{message} (#{all_actions})"
+          rule.description + Yast::HTML.Newline + second_line
         end
 
       private
@@ -492,15 +493,11 @@ module Y2Security
         attr_reader :links_builder
 
         # @see #to_html
-        # @return [String]
-        def message
-          "#{rule.id} #{rule.description}"
-        end
-
-        # @see #to_html
         # @return [Array<String>]
         def actions
-          rule_actions = [toggle_action]
+          rule_actions = []
+          # Disabling rule is not offered for now.
+          # rule_actions << toggle_action
           rule_actions << fix_action if rule.enabled?
 
           rule_actions.compact

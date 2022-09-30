@@ -108,8 +108,8 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           )
         end
 
-        it "includes a link to disable the rule" do
-          expect(subject.make_proposal({})).to include(
+        it "does not include a link to disable the rule" do
+          expect(subject.make_proposal({})).to_not include(
             "preformatted_proposal" => %r{<a href=.*>disable rule</a>}
           )
         end
@@ -173,8 +173,8 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           )
         end
 
-        it "includes a link to enable the rule" do
-          expect(subject.make_proposal({})).to include(
+        it "does not include a link to enable the rule" do
+          expect(subject.make_proposal({})).to_not include(
             "preformatted_proposal" => %r{<a href=.*>enable rule</a>}
           )
         end
