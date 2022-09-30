@@ -90,6 +90,8 @@ module Y2Security
           toggle_rule(id)
         when "fix-rule"
           fix_rule(id)
+        when "set-scap-action"
+          policies_manager.scap_action = id.to_sym
         when "storage"
           result = open_client("inst_disk_proposal")
         when "bootloader"
@@ -109,7 +111,8 @@ module Y2Security
           rules = failing_rules[policy]
 
           presenter = PolicyPresenter.new(policy,
-            enabled: enabled, failing_rules: rules, links_builder: links_builder)
+            enabled: enabled, failing_rules: rules, links_builder: links_builder,
+            scap_action: policies_manager.scap_action)
 
           presenter.to_html
         end
@@ -127,7 +130,7 @@ module Y2Security
       def links
         policies_links = policies.map { |p| links_builder.links_for_policy(p) }
         rules_links = rules.map { |r| links_builder.links_for_rule(r) }
-        links = policies_links + rules_links
+        links = policies_links + rules_links + links_builder.links_for_scap_actions
 
         links.flatten.compact.uniq
       end
@@ -309,6 +312,14 @@ module Y2Security
           ]
         end
 
+        # Possible links to set the SCAP action
+        #
+        # @return [Array<String>]
+        def links_for_scap_actions
+          # TODO: turn this into an enum or something similar
+          [:none, :scan, :remediate].map { |a| scap_action_link(a) }
+        end
+
         # Link for toggling (enable or disable) a policy
         #
         # @param policy [SecurityPolicies::Policy]
@@ -341,6 +352,14 @@ module Y2Security
           end
         end
 
+        # Link to set the SCAP action after installation
+        #
+        # @param scap_action [Symbol] SCAP action
+        # @see Y2Security::SecurityPolicies::Manager#scap_action
+        def scap_action_link(scap_action)
+          build_link("set-scap-action", scap_action)
+        end
+
       private
 
         # @return [String]
@@ -365,26 +384,29 @@ module Y2Security
         # @param enabled [Boolean] Whether the policy is enabled
         # @param failing_rules [Array<SecurityPolicies::Rule>] Failing rules from the policy
         # @param links_builder [LinksBuilder] Object to build links
-        def initialize(policy, enabled:, failing_rules:, links_builder:)
+        # @param scap_action [Symbol] SCAP action on first boot (see Manager#scap_action)
+        def initialize(policy, enabled:, failing_rules:, links_builder:, scap_action:)
           textdomain "security"
 
           @policy = policy
           @policy_enabled = enabled
           @failing_rules = failing_rules
           @links_builder = links_builder
+          @scap_action = scap_action
         end
 
         # @return [String]
         def to_html
           toggle_link = links_builder.policy_toggle_link(policy)
 
-          if policy_enabled
+          sections = []
+          sections << if policy_enabled
             format(
               # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
               _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
               policy: policy.name,
               link:   toggle_link
-            ) + rules_section
+            )
           else
             format(
               # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
@@ -393,6 +415,12 @@ module Y2Security
               link:   toggle_link
             )
           end
+
+          if policy_enabled
+            sections << scap_action_description
+            sections << rules_section
+          end
+          sections.join
         end
 
       private
@@ -408,6 +436,9 @@ module Y2Security
 
         # @return [LinksBuilder]
         attr_reader :links_builder
+
+        # @return [Symbol]
+        attr_reader :scap_action
 
         # HTML section describing the failing and disabled rules
         #
@@ -458,6 +489,44 @@ module Y2Security
           items = rules.map { |r| RulePresenter.new(r, links_builder).to_html }
 
           Yast::HTML.List(items)
+        end
+
+        # Describes the action that will be performed on first boot
+        #
+        # @return [String]
+        def scap_action_description
+          case scap_action
+          when :none
+            text = _("No SCAP scan will be performed on first boot")
+            actions = [:scan, :remediate]
+          when :scan
+            text = _("A full SCAP scan will be performed on first boot")
+            actions = [:none, :remediate]
+          else
+            text = _("A full SCAP remediation will be performed on first boot")
+            actions = [:none, :scan]
+          end
+
+          actions_links = actions.map { |a| scap_action_link(a) }.join(", ")
+          Yast::HTML.Para("#{text} (#{actions_links})")
+        end
+
+        # Returns a link to set the SCAP action to the given value
+        #
+        # @param action [Symbol] SCAP action
+        # @return [String]
+        def scap_action_link(action)
+          label =
+            case action
+            when :none
+              _("do nothing")
+            when :scan
+              _("scan only")
+            when :remediate
+              _("scan and remediate")
+            end
+
+          format("<a href=\"%s\">%s</a>", links_builder.scap_action_link(action), label)
         end
       end
 

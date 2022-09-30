@@ -243,11 +243,11 @@ describe Y2Security::SecurityPolicies::Manager do
       allow(ssg_apply_file).to receive(:save)
 
       allow(disa_stig_policy).to receive(:rules).and_return(rules)
-      subject.action = action
+      subject.scap_action = scap_action
     end
 
     let(:ssg_apply_file) { CFA::SsgApply.new }
-    let(:action) { :none }
+    let(:scap_action) { :none }
 
     let(:rules) { [rule1, rule2, rule3] }
 
@@ -263,7 +263,7 @@ describe Y2Security::SecurityPolicies::Manager do
       it "writes failing rules in security_policy_failed_rules"
 
       context "when neither checks or remedation are enabled" do
-        let(:action) { :none }
+        let(:scap_action) { :none }
 
         it "does not write the configuration" do
           expect(ssg_apply_file).to_not receive(:save)
@@ -277,7 +277,7 @@ describe Y2Security::SecurityPolicies::Manager do
       end
 
       context "when checking the policy after installation is enabled" do
-        let(:action) { :check }
+        let(:scap_action) { :scan }
 
         it "disables ssg-apply remediation" do
           expect(ssg_apply_file).to receive(:save)
@@ -293,7 +293,7 @@ describe Y2Security::SecurityPolicies::Manager do
       end
 
       context "when full remediation is enabled" do
-        let(:action) { :remediate }
+        let(:scap_action) { :remediate }
 
         it "enables ssg-apply remediation" do
           expect(ssg_apply_file).to receive(:save)
