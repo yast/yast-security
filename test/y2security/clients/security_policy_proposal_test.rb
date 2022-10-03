@@ -96,9 +96,9 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           )
         end
 
-        it "returns :block as warning_level" do
+        it "returns :error as warning_level" do
           expect(subject.make_proposal({})).to include(
-            "warning_level" => :blocker
+            "warning_level" => :error
           )
         end
 

@@ -154,11 +154,11 @@ module Y2Security
 
       # Returns the warning level
       #
-      # Blocker if there are enabled failing rules
+      # Error if there are enabled failing rules
       #
-      # @return [Symbol] :blocker
+      # @return [Symbol,nil] :error or nil
       def warning_level
-        success? ? nil : :blocker
+        success? ? nil : :error
       end
 
       # Runs the security policies checks
