@@ -239,25 +239,34 @@ describe Y2Security::SecurityPolicies::Manager do
 
   describe "#write" do
     before do
-      allow(CFA::SsgApply).to receive(:load).and_return(ssg_apply_file)
-      allow(ssg_apply_file).to receive(:save)
-
       allow(disa_stig_policy).to receive(:rules).and_return(rules)
       subject.scap_action = scap_action
+      allow(Yast::WFM).to receive(:scr_root).and_return(scr_root)
+      FileUtils.mkdir_p(File.join(scr_root, "etc", "ssg-apply"))
+      FileUtils.cp(
+        File.join(DATA_PATH, "system", "etc", "ssg-apply", "default.conf"),
+        default_file_path
+      )
     end
 
-    let(:ssg_apply_file) { CFA::SsgApply.new }
+    let(:scr_root) { Dir.mktmpdir }
     let(:scap_action) { :none }
-
-    let(:rules) { [rule1, rule2, rule3] }
-
+    let(:default_file_path) { File.join(scr_root, "etc", "ssg-apply", "default.conf") }
+    let(:override_file_path) { File.join(scr_root, "etc", "ssg-apply", "override.conf") }
     let(:rule1) { Y2Security::SecurityPolicies::UnknownRule.new("rule1").tap(&:disable) }
     let(:rule2) { Y2Security::SecurityPolicies::UnknownRule.new("rule2").tap(&:enable) }
     let(:rule3) { Y2Security::SecurityPolicies::UnknownRule.new("rule3").tap(&:disable) }
 
+    let(:rules) { [rule1, rule2, rule3] }
+
     context "when a security policy is enabled" do
+
       before do
         subject.enable_policy(disa_stig_policy)
+      end
+
+      after do
+        FileUtils.remove_entry(scr_root) if Dir.exist?(scr_root)
       end
 
       it "writes failing rules in security_policy_failed_rules"
@@ -266,8 +275,8 @@ describe Y2Security::SecurityPolicies::Manager do
         let(:scap_action) { :none }
 
         it "does not write the configuration" do
-          expect(ssg_apply_file).to_not receive(:save)
           subject.write
+          expect(File).to_not exist(override_file_path)
         end
 
         it "does not enable the service" do
@@ -280,10 +289,10 @@ describe Y2Security::SecurityPolicies::Manager do
         let(:scap_action) { :scan }
 
         it "disables ssg-apply remediation" do
-          expect(ssg_apply_file).to receive(:save)
           subject.write
-          expect(ssg_apply_file.remediate).to eq("no")
-          expect(ssg_apply_file.profile).to eq("disa_stig")
+          apply_file = CFA::SsgApply.load
+          expect(apply_file.remediate).to eq("no")
+          expect(apply_file.profile).to eq("disa_stig")
         end
 
         it "enables the service" do
@@ -296,10 +305,10 @@ describe Y2Security::SecurityPolicies::Manager do
         let(:scap_action) { :remediate }
 
         it "enables ssg-apply remediation" do
-          expect(ssg_apply_file).to receive(:save)
           subject.write
-          expect(ssg_apply_file.remediate).to eq("yes")
-          expect(ssg_apply_file.profile).to eq("disa_stig")
+          apply_file = CFA::SsgApply.load
+          expect(apply_file.remediate).to eq("yes")
+          expect(apply_file.profile).to eq("disa_stig")
         end
 
         it "enables the service" do
@@ -317,8 +326,8 @@ describe Y2Security::SecurityPolicies::Manager do
       it "writes does not write the security_policy_failed_rules file"
 
       it "does not write the ssg-apply config" do
-        expect(ssg_apply_file).to_not receive(:save)
         subject.write
+        expect(File).to_not exist(override_file_path)
       end
 
       it "does not enable the service" do

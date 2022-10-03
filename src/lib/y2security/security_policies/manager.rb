@@ -21,6 +21,7 @@ require "yast"
 require "singleton"
 require "y2security/security_policies/disa_stig_policy"
 require "cfa/ssg_apply"
+require "fileutils"
 
 Yast.import "PackagesProposal"
 Yast.import "Service"
@@ -116,6 +117,7 @@ module Y2Security
         end
       end
 
+      # Writes the security policy configuration to the target system
       def write
         # Only one policy is expected to be enabled
         policy = policies.find { |p| enabled_policy?(p) }
@@ -135,12 +137,26 @@ module Y2Security
       # /etc/ssg-apply/default.conf file (if override.conf does not exist). Using an override.conf
       # file allows for custom configuration without modifying the default configuration file.
       #
+      # Bear in mind that ssg-apply does not perform any kind of merging between both configuration
+      # files.
+      #
       # Only the #profile and #remediate options are written.
       def write_config(policy)
+        copy_default_config
         file = CFA::SsgApply.load
         file.profile = policy.id.to_s
         file.remediate = (scap_action == :remediate) ? "yes" : "no"
         file.save
+      end
+
+
+      # Copies the default configuration file to the one used by YaST
+      #
+      def copy_default_config
+        root = Yast::WFM.scr_root
+        source = ::File.join(root, CFA::SsgApply.default_file_path)
+        target = ::File.join(root, CFA::SsgApply.override_file_path)
+        ::FileUtils.copy(source, target) if File.exist?(source)
       end
 
       # Enables policies according to the environment variable ENV_SECURITY_POLICIES
