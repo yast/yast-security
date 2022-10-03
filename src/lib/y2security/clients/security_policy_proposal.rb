@@ -64,7 +64,8 @@ module Y2Security
           "rich_text_title" => _("Security Policies"),
           # Menu entry label
           "menu_title"      => _("&Security Policies"),
-          "id"              => PROPOSAL_ID
+          "id"              => PROPOSAL_ID,
+          "help"            => help_text
         }
       end
 
@@ -281,6 +282,26 @@ module Y2Security
         Yast::Bootloader.proposed_cfg_changed = true if result == :next
 
         result
+      end
+
+      def help_text
+        _(
+          "<p><b>Security Policies</b</p>\n" \
+          "<p>This section allows to configure the installed system to conform with the " \
+          "guidelines of a given security policy like the Security Technical Implementation " \
+          "Guide (STIG) of the Defense Information Systems Agency (DISA).</p>\n" \
+          "<p>Enabling a policy allows to configure the new system to execute a full security " \
+          "scan using the OpenSCAP tools in the first boot. By default, that will generate a " \
+          "report at <tt>/var/log/ssg-apply/</tt> listing the rules that would need some kind " \
+          "of remediation. The system can also be configured to automatically apply remediations " \
+          "right after the initial scan. Note that may lead to a system that is secure to the " \
+          "point of being unusable for some use cases. It is also possible to completely skip " \
+          "the automatic scan.</p>\n" \
+          "<p>Enabling a security policy will also cause the installer to check some rules that " \
+          "can hardly be remediated after installation. For each failing rule the installer will " \
+          "display several well-known identifiers and a link to the functionality of the " \
+          "installer that can be used to manually remediate the issue before installing.<p>"
+        )
       end
 
       # Helper class to builds unique hyperlink IDs (by scoping actions with a dialog ID and adding
