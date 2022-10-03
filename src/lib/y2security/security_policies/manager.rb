@@ -59,6 +59,7 @@ module Y2Security
       def initialize
         @enabled_policies = []
         @scap_action = :scan
+        @last_result = {}
 
         enable_policies
       end
@@ -112,7 +113,7 @@ module Y2Security
       #   only display rules that it can fix.
       # @return [Hash<Policy, Array<Rule>>]
       def failing_rules(config, scope: nil, include_disabled: false)
-        enabled_policies.each_with_object({}) do |policy, result|
+        @last_result = enabled_policies.each_with_object({}) do |policy, result|
           result[policy] =
             policy.failing_rules(config, scope: scope, include_disabled: include_disabled)
         end
@@ -122,7 +123,10 @@ module Y2Security
       def write
         # Only one policy is expected to be enabled
         policy = policies.find { |p| enabled_policy?(p) }
-        return if policy.nil? || scap_action == :none
+        return if policy.nil?
+
+        write_failing_rules(policy)
+        return if scap_action == :none
 
         write_config(policy)
         enable_service
@@ -151,12 +155,25 @@ module Y2Security
       end
 
       # Copies the default configuration file to the one used by YaST
-      #
       def copy_default_config
         root = Yast::WFM.scr_root
         source = ::File.join(root, CFA::SsgApply.default_file_path)
         target = ::File.join(root, CFA::SsgApply.override_file_path)
         ::FileUtils.copy(source, target) if File.exist?(source)
+      end
+
+      FAILING_RULES_FILE_PATH = "/var/log/YaST2/security_policy_failed_rules".freeze
+      # Writes the list of failing rules
+      def write_failing_rules(policy)
+        root = Yast::WFM.scr_root
+        path = ::File.join(root, FAILING_RULES_FILE_PATH)
+        dir = File.dirname(path)
+        FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+        rules = @last_result[policy]
+        return unless rules&.any?
+
+        content = rules.map(&:id).sort.join("\n") + "\n"
+        File.write(path, content)
       end
 
       # Enables policies according to the environment variable ENV_SECURITY_POLICIES

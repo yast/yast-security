@@ -252,12 +252,15 @@ describe Y2Security::SecurityPolicies::Manager do
     before do
       allow(disa_stig_policy).to receive(:rules).and_return(rules)
       subject.scap_action = scap_action
+
       allow(Yast::WFM).to receive(:scr_root).and_return(scr_root)
       FileUtils.mkdir_p(File.join(scr_root, "etc", "ssg-apply"))
       FileUtils.cp(
         File.join(DATA_PATH, "system", "etc", "ssg-apply", "default.conf"),
         default_file_path
       )
+      allow(rule1).to receive(:pass?).and_return(false)
+      allow(rule2).to receive(:pass?).and_return(false)
     end
 
     let(:scr_root) { Dir.mktmpdir }
@@ -269,18 +272,27 @@ describe Y2Security::SecurityPolicies::Manager do
     let(:rule3) { Y2Security::SecurityPolicies::UnknownRule.new("rule3").tap(&:disable) }
 
     let(:rules) { [rule1, rule2, rule3] }
+    let(:target_config) do
+      instance_double(Y2Security::SecurityPolicies::TargetConfig)
+    end
 
     context "when a security policy is enabled" do
-
       before do
         subject.enable_policy(disa_stig_policy)
+        subject.failing_rules(target_config, scope: :unknown, include_disabled: true)
       end
 
       after do
         FileUtils.remove_entry(scr_root) if Dir.exist?(scr_root)
       end
 
-      it "writes failing rules in security_policy_failed_rules"
+      it "writes failing rules in security_policy_failed_rules" do
+        subject.write
+        content = File.read(
+          File.join(scr_root, "var", "log", "YaST2", "security_policy_failed_rules")
+        )
+        expect(content).to eq("rule1\nrule2\n")
+      end
 
       context "when neither checks or remedation are enabled" do
         let(:scap_action) { :none }
@@ -333,8 +345,6 @@ describe Y2Security::SecurityPolicies::Manager do
       before do
         subject.disable_policy(disa_stig_policy)
       end
-
-      it "writes does not write the security_policy_failed_rules file"
 
       it "does not write the ssg-apply config" do
         subject.write
