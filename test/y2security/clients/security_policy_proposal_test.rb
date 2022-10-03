@@ -104,7 +104,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
         it "includes a failing rules section" do
           expect(subject.make_proposal({})).to include(
-            "preformatted_proposal" => /rules are failing:.*Dummy rule/
+            "preformatted_proposal" => /and are failing:.*Dummy rule/
           )
         end
 
