@@ -67,6 +67,17 @@ describe Y2Security::SecurityPolicies::Manager do
     end
   end
 
+  describe "#scap_action" do
+    it "returns :scan by default" do
+      expect(subject.scap_action).to eq(:scan)
+    end
+
+    it "returns the given action" do
+      subject.scap_action = :remediate
+      expect(subject.scap_action).to eq(:remediate)
+    end
+  end
+
   describe "#policies" do
     it "returns all the known policies" do
       expect(subject.policies).to contain_exactly(disa_stig_policy)

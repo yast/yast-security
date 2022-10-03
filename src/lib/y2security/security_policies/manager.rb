@@ -58,6 +58,7 @@ module Y2Security
       # ENV_SECURITY_POLICIES
       def initialize
         @enabled_policies = []
+        @scap_action = :scan
 
         enable_policies
       end
