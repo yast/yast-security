@@ -30,7 +30,7 @@ module Y2Security
 
       # Rule ID
       #
-      # Contains the rule ID as defined by the Scap Security Guided without the prefix
+      # Contains the rule ID as defined by the SCAP Security Guided without the prefix
       # "xccdf_org.ssgproject.content_rule_".
       # For example, for a rule with ID "xccdf_org.ssgproject.content_rule_partition_for_home" the
       # value would be "partition_for_home".

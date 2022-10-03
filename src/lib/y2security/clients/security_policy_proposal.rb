@@ -495,11 +495,8 @@ module Y2Security
         # @see #to_html
         # @return [Array<String>]
         def actions
-          rule_actions = []
-          # Disabling rule is not offered for now.
-          # rule_actions << toggle_action
-          rule_actions << fix_action if rule.enabled?
-
+          # Disabling rule is not offered for now
+          rule_actions = rule.enabled? ? [fix_action] : []
           rule_actions.compact
         end
 
