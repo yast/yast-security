@@ -22,17 +22,27 @@ require "y2security/security_policies/separate_filesystem_rule"
 require "y2security/security_policies/target_config"
 
 describe Y2Security::SecurityPolicies::SeparateFilesystemRule do
-  subject { described_class.new("partition_for_var_log_audit", "SLES-15-030810", "/var/log/audit") }
-
-  describe "#name" do
-    it "returns the rule name" do
-      expect(subject.name).to eq("partition_for_var_log_audit")
-    end
+  subject do
+    described_class.new("partition_for_var_log_audit", "/var/log/audit",
+      identifiers: ["CCE-85618-7"],
+      references:  ["SLES-15-030810"])
   end
 
   describe "#id" do
     it "returns the rule ID" do
-      expect(subject.id).to eq("SLES-15-030810")
+      expect(subject.id).to eq("partition_for_var_log_audit")
+    end
+  end
+
+  describe "identifiers" do
+    it "returns the rule identifiers" do
+      expect(subject.identifiers).to contain_exactly("CCE-85618-7")
+    end
+  end
+
+  describe "#references" do
+    it "returns the rule references" do
+      expect(subject.references).to contain_exactly("SLES-15-030810")
     end
   end
 

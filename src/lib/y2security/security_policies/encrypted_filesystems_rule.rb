@@ -22,15 +22,19 @@ require "y2storage"
 
 module Y2Security
   module SecurityPolicies
-    # Rule to check that all file systems are encrypted (except /boot/efi) (SLES-15-010330).
-    class MissingEncryptionRule < Rule
+    # Rule to check that all file systems are encrypted (except /boot/efi)
+    class EncryptedFilesystemsRule < Rule
       def initialize
         textdomain "security"
 
         # TRANSLATORS: Security policy rule
         description = _("All file systems must be encrypted")
 
-        super("encrypt_partitions", id: "SLES-15-010330", description: description, scope: :storage)
+        super("encrypt_partitions",
+          identifiers: ["CCE-85719-3"],
+          references:  ["SLES-15-010330"],
+          description: description,
+          scope:       :storage)
       end
 
       # @see Rule#pass?

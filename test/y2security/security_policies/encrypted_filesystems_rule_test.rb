@@ -18,24 +18,10 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "y2security/security_policies/missing_mount_point_rule"
+require "y2security/security_policies/encrypted_filesystems_rule"
 require "y2security/security_policies/target_config"
 
-describe Y2Security::SecurityPolicies::MissingMountPointRule do
-  subject { described_class.new("partition_for_home", "SLES-15-040200", "/home") }
-
-  describe "#name" do
-    it "returns the rule name" do
-      expect(subject.name).to eq("partition_for_home")
-    end
-  end
-
-  describe "#id" do
-    it "returns the rule ID" do
-      expect(subject.id).to eq("SLES-15-040200")
-    end
-  end
-
+describe Y2Security::SecurityPolicies::EncryptedFilesystemsRule do
   describe "#pass?" do
     let(:target_config) do
       instance_double(Y2Security::SecurityPolicies::TargetConfig, storage: devicegraph)
@@ -43,22 +29,19 @@ describe Y2Security::SecurityPolicies::MissingMountPointRule do
 
     let(:devicegraph) { Y2Storage::StorageManager.instance.staging }
 
-    before do
-      fake_storage_scenario("plain.yml")
-      allow(Y2Security::SecurityPolicies::TargetConfig).to receive(:new)
-        .and_return(target_config)
-    end
+    context "when there are not-encrypted and mounted file systems" do
+      before do
+        fake_storage_scenario("plain.yml")
+      end
 
-    context "when the given mount point is missing" do
       it "returns false" do
         expect(subject.pass?(target_config)).to eq(false)
       end
     end
 
-    context "when the given mount point /home is not missing" do
+    context "when all mounted file systems are encrypted" do
       before do
-        sda1 = devicegraph.find_by_name("/dev/sda1")
-        sda1.mount_point.path = "/home"
+        fake_storage_scenario("gpt_encryption.yml")
       end
 
       it "returns true" do

@@ -39,7 +39,11 @@ end
 class DummyRule < Y2Security::SecurityPolicies::Rule
   def initialize
     textdomain "security"
-    super("dummy_rule", id: "SLES-15-000000", description: _("Dummy rule"), scope: :network)
+    super("dummy_rule",
+      identifiers: ["CCE-12345-67"],
+      references:  ["SLES-15-000000"],
+      description: _("Dummy rule"),
+      scope:       :network)
   end
 end
 
@@ -104,8 +108,8 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           )
         end
 
-        it "includes a link to disable the rule" do
-          expect(subject.make_proposal({})).to include(
+        it "does not include a link to disable the rule" do
+          expect(subject.make_proposal({})).to_not include(
             "preformatted_proposal" => %r{<a href=.*>disable rule</a>}
           )
         end
@@ -169,8 +173,8 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           )
         end
 
-        it "includes a link to enable the rule" do
-          expect(subject.make_proposal({})).to include(
+        it "does not include a link to enable the rule" do
+          expect(subject.make_proposal({})).to_not include(
             "preformatted_proposal" => %r{<a href=.*>enable rule</a>}
           )
         end

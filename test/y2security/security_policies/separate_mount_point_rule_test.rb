@@ -18,19 +18,31 @@
 # find current contact information at www.suse.com.
 
 require_relative "../../test_helper"
-require "y2security/security_policies/missing_encryption_rule"
+require "y2security/security_policies/separate_mount_point_rule"
 require "y2security/security_policies/target_config"
 
-describe Y2Security::SecurityPolicies::MissingEncryptionRule do
-  describe "#name" do
-    it "returns the rule name" do
-      expect(subject.name).to eq("encrypt_partitions")
-    end
+describe Y2Security::SecurityPolicies::SeparateMountPointRule do
+  subject do
+    described_class.new("partition_for_home", "/home",
+      identifiers: ["CCE-85639-3"],
+      references:  ["SLES-15-040200"])
   end
 
   describe "#id" do
     it "returns the rule ID" do
-      expect(subject.id).to eq("SLES-15-010330")
+      expect(subject.id).to eq("partition_for_home")
+    end
+  end
+
+  describe "identifiers" do
+    it "returns the rule identifiers" do
+      expect(subject.identifiers).to contain_exactly("CCE-85639-3")
+    end
+  end
+
+  describe "#references" do
+    it "returns the rule references" do
+      expect(subject.references).to contain_exactly("SLES-15-040200")
     end
   end
 
@@ -41,19 +53,22 @@ describe Y2Security::SecurityPolicies::MissingEncryptionRule do
 
     let(:devicegraph) { Y2Storage::StorageManager.instance.staging }
 
-    context "when there are not-encrypted and mounted file systems" do
-      before do
-        fake_storage_scenario("plain.yml")
-      end
+    before do
+      fake_storage_scenario("plain.yml")
+      allow(Y2Security::SecurityPolicies::TargetConfig).to receive(:new)
+        .and_return(target_config)
+    end
 
+    context "when the given mount point is missing" do
       it "returns false" do
         expect(subject.pass?(target_config)).to eq(false)
       end
     end
 
-    context "when all mounted file systems are encrypted" do
+    context "when the given mount point /home is not missing" do
       before do
-        fake_storage_scenario("gpt_encryption.yml")
+        sda1 = devicegraph.find_by_name("/dev/sda1")
+        sda1.mount_point.path = "/home"
       end
 
       it "returns true" do

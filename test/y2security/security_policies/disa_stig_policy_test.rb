@@ -37,16 +37,16 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
 
     it "checks whether /home is on a separate mount point" do
       rule = subject.rules.find do |mp|
-        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
-          mp.mount_point == "/home"
+        mp.is_a?(Y2Security::SecurityPolicies::SeparateMountPointRule) &&
+          mp.mount_path == "/home"
       end
       expect(rule).to_not be_nil
     end
 
     it "checks whether /var is on a separate mount point" do
       rule = subject.rules.find do |mp|
-        mp.is_a?(Y2Security::SecurityPolicies::MissingMountPointRule) &&
-          mp.mount_point == "/var"
+        mp.is_a?(Y2Security::SecurityPolicies::SeparateMountPointRule) &&
+          mp.mount_path == "/var"
       end
       expect(rule).to_not be_nil
     end
@@ -70,7 +70,7 @@ describe Y2Security::SecurityPolicies::DisaStigPolicy do
 
     it "checks whether the file system is encrypted" do
       expect(subject.rules)
-        .to include(Y2Security::SecurityPolicies::MissingEncryptionRule)
+        .to include(Y2Security::SecurityPolicies::EncryptedFilesystemsRule)
     end
 
     it "checks that no wireless rules will be active" do
