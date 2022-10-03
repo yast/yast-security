@@ -457,9 +457,8 @@ module Y2Security
         def failing_rules_section
           return nil if failing_rules.none?
 
-          Yast::HTML.Para(Yast::HTML.Colorize(
-            _("The following rules were already checked by the installer and are failing:"), "red")
-          ) + rules_list(failing_rules)
+          msg = _("The following rules were already checked by the installer and are failing:")
+          Yast::HTML.Para(Yast::HTML.Colorize(msg, "red")) + rules_list(failing_rules)
         end
 
         # HTML section describing the disabled rules

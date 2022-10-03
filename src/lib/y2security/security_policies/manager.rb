@@ -149,7 +149,6 @@ module Y2Security
         file.save
       end
 
-
       # Copies the default configuration file to the one used by YaST
       #
       def copy_default_config
