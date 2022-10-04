@@ -22,6 +22,7 @@ require "installation/proposal_client"
 require "y2security/security_policies/manager"
 require "y2security/security_policies/target_config"
 require "y2security/security_policies/unknown_rule"
+require "y2security/security_policies/rule_presenter"
 require "bootloader/main_dialog"
 
 Yast.import "Wizard"
@@ -455,76 +456,17 @@ module Y2Security
         # @return [String]
         def rules_list(rules)
           rules = rules.sort_by { |r| r.identifiers.first }
-          items = rules.map { |r| RulePresenter.new(r, links_builder).to_html }
+
+          items = rules.map do |rule|
+            # Link for toggling rule is not passed, so the option for enabling/disabling rule is not
+            # offered.
+            presenter = SecurityPolicies::RulePresenter.new(rule,
+              fix_link: links_builder.rule_fix_link(rule))
+
+            presenter.to_html
+          end
 
           Yast::HTML.List(items)
-        end
-      end
-
-      # Helper class to build the representation of a rule
-      class RulePresenter
-        include Yast::I18n
-
-        # Constructor
-        #
-        # @param rule [SecurityPolicies::Rule] Rule to present
-        # @param links_builder [LinksBuilder]
-        def initialize(rule, links_builder)
-          textdomain "security"
-
-          @rule = rule
-          @links_builder = links_builder
-        end
-
-        # @return [String]
-        def to_html
-          second_line = (rule.identifiers + rule.references).join(", ")
-          second_line << " (#{actions.join(", ")})" if actions.any?
-
-          rule.description + Yast::HTML.Newline + second_line
-        end
-
-      private
-
-        # @return [SecurityPolicies::Rule]
-        attr_reader :rule
-
-        # @return [LinksBuilder]
-        attr_reader :links_builder
-
-        # @see #to_html
-        # @return [Array<String>]
-        def actions
-          # Disabling rule is not offered for now
-          rule_actions = rule.enabled? ? [fix_action] : []
-          rule_actions.compact
-        end
-
-        def toggle_action
-          # TRANSLATORS: an action hyperlink
-          text = rule.enabled? ? _("disable rule") : _("enable rule")
-
-          build_action(text, links_builder.rule_toggle_link(rule))
-        end
-
-        def fix_action
-          link = links_builder.rule_fix_link(rule)
-          return nil unless link
-
-          # TRANSLATORS: text for an action hyperlink
-          text = link.match?(/--fix-rule:/) ? _("fix rule") : _("modify settings")
-
-          build_action(text, link)
-        end
-
-        # HTML-like hyperlink element
-        #
-        # @param text [String] Text for the <a> tag
-        # @param link [String] URL for the <a> tag
-        #
-        # @return [String]
-        def build_action(text, link)
-          format("<a href=\"%s\">%s</a>", link, text)
         end
       end
     end
