@@ -59,13 +59,11 @@ describe CFA::SsgApply do
   describe "#save" do
     before do
       file.profile = profile
-      file.remediation = remediation
-      file.disabled_rules = disabled_rules
+      file.remediate = remediate
     end
 
     let(:profile) { "disa_stig" }
-    let(:remediation) { "/path/to/file.sh" }
-    let(:disabled_rules) { ["rule1", "rule2"] }
+    let(:remediate) { "yes" }
 
     it "writes the profile" do
       expect(file_handler).to receive(:write).with(anything, /profile = disa_stig/)
@@ -73,14 +71,8 @@ describe CFA::SsgApply do
       file.save
     end
 
-    it "writes the remediation" do
-      expect(file_handler).to receive(:write).with(anything, /remediation = \/path\/to\/file.sh/)
-
-      file.save
-    end
-
-    it "writes the disabled rules" do
-      expect(file_handler).to receive(:write).with(anything, /disabled-rules = rule1,rule2/)
+    it "writes the remediate value" do
+      expect(file_handler).to receive(:write).with(anything, /remediate = yes/)
 
       file.save
     end
@@ -97,24 +89,12 @@ describe CFA::SsgApply do
       end
     end
 
-    context "when the remediation is empty" do
-      let(:remediation) { "" }
+    context "when the remediate is empty" do
+      let(:remediate) { "" }
 
-      it "removes the remediation key" do
+      it "removes the remediate key" do
         expect(file_handler).to receive(:write) do |_, content|
-          expect(content).to_not include("remediation")
-        end
-
-        file.save
-      end
-    end
-
-    context "when disabled rules is empty" do
-      let(:disabled_rules) { [] }
-
-      it "removes the disabled-rules key" do
-        expect(file_handler).to receive(:write) do |_, content|
-          expect(content).to_not include("disabled-rules")
+          expect(content).to_not include("remediate")
         end
 
         file.save
@@ -126,31 +106,6 @@ describe CFA::SsgApply do
     it "returns the profile value" do
       file.load
       expect(file.profile).to eq("stig")
-    end
-  end
-
-  describe "#disabled_rules" do
-    context "when a 'disabled_rules' list is specified" do
-      let(:file_path) { File.join(DATA_PATH, "system/etc/ssg-apply/override.conf") }
-
-      it "returns an array containing the disabled rules" do
-        file.load
-        expect(file.disabled_rules).to eq(["partition_for_home", "encrypt_partitions"])
-      end
-    end
-
-    context "when no 'disabled_rules' list is specified" do
-      it "returns an empty array" do
-        expect(file.disabled_rules).to eq([])
-      end
-    end
-  end
-
-  describe "#disabled_rules=" do
-    it "sets the 'disabled-rules' key to a comma separated list" do
-      expect(file).to receive(:generic_set)
-        .with("disabled-rules", "rule_name1,rule_name2")
-      file.disabled_rules = ["rule_name1", "rule_name2"]
     end
   end
 end

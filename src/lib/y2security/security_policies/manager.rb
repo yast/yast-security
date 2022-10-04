@@ -20,19 +20,37 @@
 require "yast"
 require "singleton"
 require "y2security/security_policies/disa_stig_policy"
+require "y2security/security_policies/target_config"
 require "cfa/ssg_apply"
+require "fileutils"
 
 Yast.import "PackagesProposal"
-
-Yast.import "PackagesProposal"
+Yast.import "Service"
 
 module Y2Security
   module SecurityPolicies
     # Class to manage security policies
     class Manager
+      # @return [:none, :scan, :remediate] action to perform after the installation. `:remediate`
+      #   peforms a full remediation; `:scan` just scan the system and `:none` does nothing apart
+      #   from installing the package
+      # @see .known_scap_actions
+      attr_reader :scap_action
+
+      class UnknownSCAPAction < StandardError; end
+
+      SCAP_ACTIONS = [:none, :scan, :remediate].freeze
+
       class << self
         def instance
           @instance ||= new
+        end
+
+        # Returns the known values for scap actions
+        #
+        # @return [Array<Symbol>]
+        def known_scap_actions
+          SCAP_ACTIONS
         end
       end
 
@@ -53,8 +71,15 @@ module Y2Security
       # ENV_SECURITY_POLICIES
       def initialize
         @enabled_policies = []
+        @scap_action = :scan
 
         enable_policies
+      end
+
+      def scap_action=(value)
+        raise UnknownSCAPAction unless self.class.known_scap_actions.include?(value)
+
+        @scap_action = value
       end
 
       # Returns the list of known security policies
@@ -79,7 +104,7 @@ module Y2Security
         return unless policies.include?(policy)
 
         @enabled_policies.push(policy).uniq!
-        enable_service
+        add_package
       end
 
       # Disables the given policy
@@ -89,7 +114,7 @@ module Y2Security
         return unless policies.include?(policy)
 
         @enabled_policies.delete(policy)
-        disable_service if @enabled_policies.empty?
+        remove_package if @enabled_policies.empty?
       end
 
       # Whether the given policy is enabled
@@ -112,6 +137,23 @@ module Y2Security
         end
       end
 
+      # Writes the security policy configuration to the target system
+      #
+      # @param config [TargetConfig]
+      def write(config = TargetConfig.new)
+        # Only one policy is expected to be enabled
+        policy = policies.find { |p| enabled_policy?(p) }
+        return if policy.nil?
+
+        write_failing_rules(config, policy)
+        return if scap_action == :none
+
+        write_config(policy)
+        enable_service
+      end
+
+    private
+
       # Writes custom configuration for the ssg-apply script
       #
       # YaST installs the package ssg-apply if a security policy is enabled. That package provides
@@ -120,21 +162,45 @@ module Y2Security
       # /etc/ssg-apply/default.conf file (if override.conf does not exist). Using an override.conf
       # file allows for custom configuration without modifying the default configuration file.
       #
-      # Only the #profile and #disabled-rules options are written.
-      def write_config
-        # Only one policy is expected to be enabled
-        policy = policies.find { |p| enabled_policy?(p) }
-
-        return unless policy
-
+      # Bear in mind that ssg-apply does not perform any kind of merging between both configuration
+      # files.
+      #
+      # Only the #profile and #remediate options are written.
+      def write_config(policy)
+        copy_default_config
         file = CFA::SsgApply.load
         file.profile = policy.id.to_s
-        file.remediation = policy.remediation
-        file.disabled_rules = policy.rules.reject(&:enabled?).map(&:id)
+        file.remediate = (scap_action == :remediate) ? "yes" : "no"
         file.save
       end
 
-    private
+      # Copies the default configuration file to the one used by YaST
+      def copy_default_config
+        root = Yast::WFM.scr_root
+        source = ::File.join(root, CFA::SsgApply.default_file_path)
+        target = ::File.join(root, CFA::SsgApply.override_file_path)
+        ::FileUtils.copy(source, target) if File.exist?(source)
+      end
+
+      FAILING_RULES_FILE_PATH = "/var/log/YaST2/security_policy_failed_rules".freeze
+      private_constant :FAILING_RULES_FILE_PATH
+
+      # Writes the list of failing rules
+      #
+      # @param config [TargetConfig]
+      # @param policy [Policy]
+      def write_failing_rules(config, policy)
+        root = Yast::WFM.scr_root
+        path = ::File.join(root, FAILING_RULES_FILE_PATH)
+        dir = File.dirname(path)
+        FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
+        failing = failing_rules(config)
+        rules = failing[policy]
+        return unless rules&.any?
+
+        content = rules.map(&:id).sort.join("\n") + "\n"
+        File.write(path, content)
+      end
 
       # Enables policies according to the environment variable ENV_SECURITY_POLICIES
       def enable_policies
@@ -175,34 +241,18 @@ module Y2Security
       SERVICE_NAME = "ssg-apply".freeze
       private_constant :SERVICE_NAME
 
-      # Adds the package and enables the service to remedy the system after the installation
+      # Enables the ssg-apply service to remedy the system after the installation
       def enable_service
-        return if enabled_services.include?(SERVICE_NAME)
+        Yast::Service.enable(SERVICE_NAME)
+      end
 
-        enabled_services << SERVICE_NAME
+      def add_package
         Yast::PackagesProposal.AddResolvables("security", :package, [SERVICE_NAME])
       end
 
       # Disables the service and removes the package to remedy the system after the installation
-      def disable_service
-        return unless enabled_services.include?(SERVICE_NAME)
-
-        enabled_services.delete(SERVICE_NAME)
+      def remove_package
         Yast::PackagesProposal.RemoveResolvables("security", :package, [SERVICE_NAME])
-      end
-
-      # Return the list of enabled services
-      #
-      # FIXME: avoid a cyclic dependency with yast2-installation
-      #
-      # @return [Array<String>] List of enabled services
-      def enabled_services
-        require "installation/services" unless defined?(::Installation::Services)
-        ::Installation::Services.enabled
-      rescue LoadError
-        log.warn("Could not load the list of enabled services. " \
-          "Make sure yast2-installation is installed.")
-        []
       end
     end
   end

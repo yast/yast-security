@@ -65,7 +65,8 @@ module Y2Security
           "rich_text_title" => _("Security Policies"),
           # Menu entry label
           "menu_title"      => _("&Security Policies"),
-          "id"              => PROPOSAL_ID
+          "id"              => PROPOSAL_ID,
+          "help"            => help_text
         }
       end
 
@@ -91,6 +92,8 @@ module Y2Security
           toggle_rule(id)
         when "fix-rule"
           fix_rule(id)
+        when "set-scap-action"
+          policies_manager.scap_action = id.to_sym
         when "storage"
           result = open_client("inst_disk_proposal")
         when "bootloader"
@@ -110,7 +113,8 @@ module Y2Security
           rules = failing_rules[policy]
 
           presenter = PolicyPresenter.new(policy,
-            enabled: enabled, failing_rules: rules, links_builder: links_builder)
+            enabled: enabled, failing_rules: rules, links_builder: links_builder,
+            scap_action: policies_manager.scap_action)
 
           presenter.to_html
         end
@@ -128,7 +132,7 @@ module Y2Security
       def links
         policies_links = policies.map { |p| links_builder.links_for_policy(p) }
         rules_links = rules.map { |r| links_builder.links_for_rule(r) }
-        links = policies_links + rules_links
+        links = policies_links + rules_links + links_builder.links_for_scap_actions
 
         links.flatten.compact.uniq
       end
@@ -152,11 +156,11 @@ module Y2Security
 
       # Returns the warning level
       #
-      # Blocker if there are enabled failing rules
+      # Error if there are enabled failing rules
       #
-      # @return [Symbol] :blocker
+      # @return [Symbol,nil] :error or nil
       def warning_level
-        success? ? nil : :blocker
+        success? ? nil : :error
       end
 
       # Runs the security policies checks
@@ -281,6 +285,26 @@ module Y2Security
         result
       end
 
+      def help_text
+        _(
+          "<p><b>Security Policies</b</p>\n" \
+          "<p>This section allows to configure the installed system to conform with the " \
+          "guidelines of a given security policy like the Security Technical Implementation " \
+          "Guide (STIG) of the Defense Information Systems Agency (DISA).</p>\n" \
+          "<p>Enabling a policy allows to configure the new system to execute a full security " \
+          "scan using the OpenSCAP tools in the first boot. By default, that will generate a " \
+          "report at <tt>/var/log/ssg-apply/</tt> listing the rules that would need some kind " \
+          "of remediation. The system can also be configured to automatically apply remediations " \
+          "right after the initial scan. Note that may lead to a system that is secure to the " \
+          "point of being unusable for some use cases. It is also possible to completely skip " \
+          "the automatic scan.</p>\n" \
+          "<p>Enabling a security policy will also cause the installer to check some rules that " \
+          "can hardly be remediated after installation. For each failing rule the installer will " \
+          "display several well-known identifiers and a link to the functionality of the " \
+          "installer that can be used to manually remediate the issue before installing.<p>"
+        )
+      end
+
       # Helper class to builds unique hyperlink IDs (by scoping actions with a dialog ID and adding
       # an optional object ID).
       class LinksBuilder
@@ -308,6 +332,15 @@ module Y2Security
             rule_toggle_link(rule),
             rule_fix_link(rule)
           ]
+        end
+
+        # Possible links to set the SCAP action
+        #
+        # @return [Array<String>]
+        def links_for_scap_actions
+          Y2Security::SecurityPolicies::Manager.known_scap_actions.map do |action|
+            scap_action_link(action)
+          end
         end
 
         # Link for toggling (enable or disable) a policy
@@ -342,6 +375,14 @@ module Y2Security
           end
         end
 
+        # Link to set the SCAP action after installation
+        #
+        # @param scap_action [Symbol] SCAP action
+        # @see Y2Security::SecurityPolicies::Manager#scap_action
+        def scap_action_link(scap_action)
+          build_link("set-scap-action", scap_action)
+        end
+
       private
 
         # @return [String]
@@ -366,13 +407,15 @@ module Y2Security
         # @param enabled [Boolean] Whether the policy is enabled
         # @param failing_rules [Array<SecurityPolicies::Rule>] Failing rules from the policy
         # @param links_builder [LinksBuilder] Object to build links
-        def initialize(policy, enabled:, failing_rules:, links_builder:)
+        # @param scap_action [Symbol] SCAP action on first boot (see Manager#scap_action)
+        def initialize(policy, enabled:, failing_rules:, links_builder:, scap_action:)
           textdomain "security"
 
           @policy = policy
           @policy_enabled = enabled
           @failing_rules = failing_rules
           @links_builder = links_builder
+          @scap_action = scap_action
         end
 
         # @return [String]
@@ -385,7 +428,7 @@ module Y2Security
               _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
               policy: policy.name,
               link:   toggle_link
-            ) + rules_section
+            ) + scap_action_description + rules_section
           else
             format(
               # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
@@ -410,6 +453,9 @@ module Y2Security
         # @return [LinksBuilder]
         attr_reader :links_builder
 
+        # @return [Symbol]
+        attr_reader :scap_action
+
         # HTML section describing the failing and disabled rules
         #
         # @see Yast::HTML
@@ -427,8 +473,8 @@ module Y2Security
         def failing_rules_section
           return nil if failing_rules.none?
 
-          Yast::HTML.Para(Yast::HTML.Colorize(_("The following rules are failing:"), "red")) +
-            rules_list(failing_rules)
+          msg = _("The following rules were already checked by the installer and are failing:")
+          Yast::HTML.Para(Yast::HTML.Colorize(msg, "red")) + rules_list(failing_rules)
         end
 
         # HTML section describing the disabled rules
@@ -467,6 +513,44 @@ module Y2Security
           end
 
           Yast::HTML.List(items)
+        end
+
+        # Describes the action that will be performed on first boot
+        #
+        # @return [String]
+        def scap_action_description
+          case scap_action
+          when :none
+            text = _("No SCAP scan will be performed on first boot")
+            actions = [:scan, :remediate]
+          when :scan
+            text = _("A full SCAP scan will be performed on first boot")
+            actions = [:none, :remediate]
+          else
+            text = _("A full SCAP remediation will be performed on first boot")
+            actions = [:none, :scan]
+          end
+
+          actions_links = actions.map { |a| scap_action_link(a) }.join(", ")
+          Yast::HTML.Para("#{text} (#{actions_links})")
+        end
+
+        # Returns a link to set the SCAP action to the given value
+        #
+        # @param action [Symbol] SCAP action
+        # @return [String]
+        def scap_action_link(action)
+          label =
+            case action
+            when :none
+              _("do nothing")
+            when :scan
+              _("scan only")
+            when :remediate
+              _("scan and remediate")
+            end
+
+          format("<a href=\"%s\">%s</a>", links_builder.scap_action_link(action), label)
         end
       end
     end

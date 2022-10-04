@@ -42,9 +42,8 @@ module Y2Security
         #   "Defense Information Systems Agency" is from the USA, https://disa.mil/
         #   STIG = Security Technical Implementation Guides
         name = _("Defense Information Systems Agency STIG")
-        remediation = "/usr/share/scap-security-guide/bash/sle15-script-stig.sh"
 
-        super(:disa_stig, name, remediation)
+        super(:disa_stig, name)
       end
 
       def rules

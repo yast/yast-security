@@ -28,7 +28,7 @@ require "bootloader/main_dialog"
 class DummyPolicy < Y2Security::SecurityPolicies::Policy
   def initialize
     textdomain "security"
-    super(:dummy, _("Dummy policy"), "/remediation.sh")
+    super(:dummy, _("Dummy policy"))
   end
 
   def rules
@@ -96,15 +96,15 @@ describe Y2Security::Clients::SecurityPolicyProposal do
           )
         end
 
-        it "returns :block as warning_level" do
+        it "returns :error as warning_level" do
           expect(subject.make_proposal({})).to include(
-            "warning_level" => :blocker
+            "warning_level" => :error
           )
         end
 
         it "includes a failing rules section" do
           expect(subject.make_proposal({})).to include(
-            "preformatted_proposal" => /rules are failing:.*Dummy rule/
+            "preformatted_proposal" => /and are failing:.*Dummy rule/
           )
         end
 

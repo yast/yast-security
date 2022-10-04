@@ -27,26 +27,21 @@ module CFA
   # @example Writing the base configuration
   #   file = SsgApply.new
   #   file.profile = "disa_stig"
-  #   file.remediation = "/usr/share/scap-security-guide/bash/sle15-script-stig.sh"
-  #   file.disabled_rules = ["partition_for_home"]
+  #   file.remedy = "yes"
   #   file.save
-  #
-  # @example Loading the configuration from a given file path
-  #   file = SsgApply.new(file_path: "/etc/ssg-apply/default.conf")
-  #   file.load
-  #   file.profile #=> "stig"
-  #   file.disabled_rules #=> []
   class SsgApply < BaseModel
     extend Yast::Logger
     include Yast::Logger
 
-    PATH = "/etc/ssg-apply/override.conf".freeze
-    LENS = "simplevars.lns".freeze
-    private_constant :LENS
+    # Original configuration file
+    DEFAULT_PATH = "/etc/ssg-apply/default.conf".freeze
 
-    attributes(
-      profile: "profile", remediation: "remediation", disabled_rules: "disabled-rules"
-    )
+    # Configuration file used for customizing the ssg-apply configuration
+    OVERRIDE_PATH = "/etc/ssg-apply/override.conf".freeze
+    LENS = "simplevars.lns".freeze
+    private_constant :DEFAULT_PATH, :OVERRIDE_PATH, :LENS
+
+    attributes(profile: "profile", remediate: "remediate")
 
     class << self
       # Loads a file
@@ -54,7 +49,7 @@ module CFA
       # @param file_handler [#read,#write] an object able to read/write a string (like File)
       # @param file_path    [String] File path
       # @return [SsgApply] File with the already loaded content
-      def load(file_handler: Yast::TargetFile, file_path: PATH)
+      def load(file_handler: Yast::TargetFile, file_path: OVERRIDE_PATH)
         file = new(file_handler: file_handler, file_path: file_path)
         file.load
         file
@@ -63,11 +58,25 @@ module CFA
 
         file
       end
+
+      # Returns the default file path
+      #
+      # @return [String]
+      def default_file_path
+        DEFAULT_PATH
+      end
+
+      # Returns the path of the file to customize the ssg-apply configuration
+      #
+      # @return [String]
+      def override_file_path
+        OVERRIDE_PATH
+      end
     end
 
     # @param file_handler [#read,#write] an object able to read/write a string (like File)
     # @param file_path    [String] File path
-    def initialize(file_handler: Yast::TargetFile, file_path: PATH)
+    def initialize(file_handler: Yast::TargetFile, file_path: OVERRIDE_PATH)
       super(AugeasParser.new(LENS), file_path, file_handler: file_handler)
     end
 
@@ -77,31 +86,6 @@ module CFA
       empty_elements = data.select(matcher).map { |e| e[:key] }
       empty_elements.each { |e| data.delete(e) }
       super
-    end
-
-    # Returns the list of disabled rules
-    #
-    # To add rules to the list, please use the #disabled_rules= method instead of
-    # adding rules to the value returned by this method.
-    #
-    # @return [Array<String>] List of disabled rules
-    def disabled_rules
-      @disabled_rules ||= generic_get("disabled-rules")
-        .to_s.split(",").freeze
-    end
-
-    # Sets the list of disabled rules
-    #
-    # @example Adding disabled rules
-    #   file = SsgApply.load
-    #   rules = file.disabled_rules
-    #   new_rule = Rule.new("SLES-15-000000", "My dummy rule", :unknown)
-    #   file.disabled_rules = rules + [new_rule]
-    #
-    # @param value [Array<String>] List of disabled rules IDs
-    def disabled_rules=(value)
-      @disabled_rules = nil
-      generic_set("disabled-rules", value.join(","))
     end
 
     # Determines whether the file is empty

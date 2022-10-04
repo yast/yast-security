@@ -35,18 +35,11 @@ module Y2Security
       # @return [String]
       attr_reader :name
 
-      # Path to the file provided by scap_security_guide to apply remediation for the policy
-      #
-      # @return [String]
-      attr_reader :remediation
-
       # @param id [Symbol]
       # @param name [String]
-      # @param remediation [String]
-      def initialize(id, name, remediation)
+      def initialize(id, name)
         @id = id
         @name = name
-        @remediation = remediation
       end
 
       # @param config [TargetConfig] Configuration to check
