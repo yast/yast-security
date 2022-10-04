@@ -337,7 +337,7 @@ module Y2Security
         #
         # @return [Array<String>]
         def links_for_scap_actions
-          Y2Security::SecurityPolicies::Manager.scap_actions.map do |action|
+          Y2Security::SecurityPolicies::Manager.known_scap_actions.map do |action|
             scap_action_link(action)
           end
         end
@@ -421,14 +421,13 @@ module Y2Security
         def to_html
           toggle_link = links_builder.policy_toggle_link(policy)
 
-          sections = []
-          sections << if policy_enabled
+          if policy_enabled
             format(
               # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
               _("%{policy} is enabled (<a href=\"%{link}\">disable</a>)"),
               policy: policy.name,
               link:   toggle_link
-            )
+            ) + scap_action_description + rules_section
           else
             format(
               # TRANSLATORS: 'policy' is a security policy name; 'link' is just an HTML-like link
@@ -437,12 +436,6 @@ module Y2Security
               link:   toggle_link
             )
           end
-
-          if policy_enabled
-            sections << scap_action_description
-            sections << rules_section
-          end
-          sections.join
         end
 
       private

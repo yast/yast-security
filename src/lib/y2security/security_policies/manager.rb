@@ -30,9 +30,10 @@ module Y2Security
   module SecurityPolicies
     # Class to manage security policies
     class Manager
-      # @return [Symbol] action to perform after the installation. :remediate peforms a full
-      # remediation, :scan just scan the system and :none does nothing apart from installing
-      # the package
+      # @return [:none, :scan, :remediate] action to perform after the installation. `:remediate`
+      #   peforms a full remediation; `:scan` just scan the system and `:none` does nothing apart
+      #   from installing the package
+      # @see .known_scap_actions
       attr_reader :scap_action
 
       class UnknownSCAPAction < StandardError; end
@@ -44,10 +45,10 @@ module Y2Security
           @instance ||= new
         end
 
-        # Returns the know values for scap actions
+        # Returns the known values for scap actions
         #
         # @return [Array<Symbol>]
-        def scap_actions
+        def known_scap_actions
           SCAP_ACTIONS
         end
       end
@@ -76,7 +77,7 @@ module Y2Security
       end
 
       def scap_action=(value)
-        raise UnknownSCAPAction unless self.class.scap_actions.include?(value)
+        raise UnknownSCAPAction unless self.class.known_scap_actions.include?(value)
 
         @scap_action = value
       end

@@ -36,7 +36,7 @@ module CFA
     # Original configuration file
     DEFAULT_PATH = "/etc/ssg-apply/default.conf".freeze
 
-    # Configuration file used by YaST
+    # Configuration file used for customizing the ssg-apply configuration
     OVERRIDE_PATH = "/etc/ssg-apply/override.conf".freeze
     LENS = "simplevars.lns".freeze
     private_constant :DEFAULT_PATH, :OVERRIDE_PATH, :LENS
@@ -66,7 +66,7 @@ module CFA
         DEFAULT_PATH
       end
 
-      # Returns the YaST configuration file path
+      # Returns the path of the file to customize the ssg-apply configuration
       #
       # @return [String]
       def override_file_path
