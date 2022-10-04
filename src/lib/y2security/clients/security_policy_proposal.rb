@@ -287,8 +287,8 @@ module Y2Security
       def help_text
         _(
           "<p><b>Security Policies</b</p>\n" \
-          "<p>This section allows to check whether the system to be installed will conform to " \
-          "the guidelines of a given security policy like the Security Technical Implementation " \
+          "<p>This section allows to configure the installed system to conform with the " \
+          "guidelines of a given security policy like the Security Technical Implementation " \
           "Guide (STIG) of the Defense Information Systems Agency (DISA).</p>\n" \
           "<p>Enabling a policy allows to configure the new system to execute a full security " \
           "scan using the OpenSCAP tools in the first boot. By default, that will generate a " \
@@ -296,13 +296,13 @@ module Y2Security
           "those that would need some kind of remediation. It's also possible to configure the " \
           "system to automatically try to apply a remedation for each failing rule. Note that " \
           "applying remediations can result in a system that is secure to the point of being " \
-          "unusable.</p>\n" \
+          "unusable for some use cases.</p>\n" \
           "<p>In some scenarios, some preliminary configuration may be needed before running " \
           "the OpenSCAP scan (eg. setting a tailoring file). Therefore it is also possible to " \
           "skip the scan during the first system boot.</p>" \
           "<p>Enabling a security policy will also cause the installer to check those rules that " \
           "are part of the policy but can hardly be remediated after installation. For each " \
-          "failing (ie. not fulfilled) rule the installer will display several well-known " \
+          "failing rule the installer will display several well-known " \
           "identifiers and a link to the functionality of the installer that can be used to " \
           "manually remediate the issue before proceeding with the installation.<p>"
         )
