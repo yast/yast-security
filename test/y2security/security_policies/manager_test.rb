@@ -251,6 +251,8 @@ describe Y2Security::SecurityPolicies::Manager do
   describe "#write" do
     before do
       allow(disa_stig_policy).to receive(:rules).and_return(rules)
+      allow(Y2Security::SecurityPolicies::TargetConfig).to receive(:new)
+        .and_return(target_config)
       subject.scap_action = scap_action
 
       allow(Yast::WFM).to receive(:scr_root).and_return(scr_root)
@@ -259,6 +261,7 @@ describe Y2Security::SecurityPolicies::Manager do
         File.join(DATA_PATH, "system", "etc", "ssg-apply", "default.conf"),
         default_file_path
       )
+
       allow(rule1).to receive(:pass?).and_return(false)
       allow(rule2).to receive(:pass?).and_return(false)
     end
@@ -267,9 +270,10 @@ describe Y2Security::SecurityPolicies::Manager do
     let(:scap_action) { :none }
     let(:default_file_path) { File.join(scr_root, "etc", "ssg-apply", "default.conf") }
     let(:override_file_path) { File.join(scr_root, "etc", "ssg-apply", "override.conf") }
-    let(:rule1) { Y2Security::SecurityPolicies::UnknownRule.new("rule1").tap(&:disable) }
+    let(:rule1) { Y2Security::SecurityPolicies::UnknownRule.new("rule1").tap(&:enable) }
     let(:rule2) { Y2Security::SecurityPolicies::UnknownRule.new("rule2").tap(&:enable) }
     let(:rule3) { Y2Security::SecurityPolicies::UnknownRule.new("rule3").tap(&:disable) }
+    let(:target_config) { instance_double(Y2Security::SecurityPolicies::TargetConfig) }
 
     let(:rules) { [rule1, rule2, rule3] }
     let(:target_config) do

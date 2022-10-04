@@ -20,6 +20,7 @@
 require "yast"
 require "singleton"
 require "y2security/security_policies/disa_stig_policy"
+require "y2security/security_policies/target_config"
 require "cfa/ssg_apply"
 require "fileutils"
 
@@ -71,7 +72,6 @@ module Y2Security
       def initialize
         @enabled_policies = []
         @scap_action = :scan
-        @last_result = {}
 
         enable_policies
       end
@@ -131,19 +131,21 @@ module Y2Security
       #   only display rules that it can fix.
       # @return [Hash<Policy, Array<Rule>>]
       def failing_rules(config, scope: nil, include_disabled: false)
-        @last_result = enabled_policies.each_with_object({}) do |policy, result|
+        enabled_policies.each_with_object({}) do |policy, result|
           result[policy] =
             policy.failing_rules(config, scope: scope, include_disabled: include_disabled)
         end
       end
 
       # Writes the security policy configuration to the target system
-      def write
+      #
+      # @param config [TargetConfig]
+      def write(config = TargetConfig.new)
         # Only one policy is expected to be enabled
         policy = policies.find { |p| enabled_policy?(p) }
         return if policy.nil?
 
-        write_failing_rules(policy)
+        write_failing_rules(config, policy)
         return if scap_action == :none
 
         write_config(policy)
@@ -181,13 +183,19 @@ module Y2Security
       end
 
       FAILING_RULES_FILE_PATH = "/var/log/YaST2/security_policy_failed_rules".freeze
+      private_constant :FAILING_RULES_FILE_PATH
+
       # Writes the list of failing rules
-      def write_failing_rules(policy)
+      #
+      # @param config [TargetConfig]
+      # @param policy [Policy]
+      def write_failing_rules(config, policy)
         root = Yast::WFM.scr_root
         path = ::File.join(root, FAILING_RULES_FILE_PATH)
         dir = File.dirname(path)
         FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
-        rules = @last_result[policy]
+        failing = failing_rules(config)
+        rules = failing[policy]
         return unless rules&.any?
 
         content = rules.map(&:id).sort.join("\n") + "\n"
