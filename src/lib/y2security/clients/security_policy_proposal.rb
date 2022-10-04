@@ -292,19 +292,15 @@ module Y2Security
           "Guide (STIG) of the Defense Information Systems Agency (DISA).</p>\n" \
           "<p>Enabling a policy allows to configure the new system to execute a full security " \
           "scan using the OpenSCAP tools in the first boot. By default, that will generate a " \
-          "report at <tt>/var/log/ssg-apply/</tt> specifying the rules that are fulfilled and " \
-          "those that would need some kind of remediation. It's also possible to configure the " \
-          "system to automatically try to apply a remedation for each failing rule. Note that " \
-          "applying remediations can result in a system that is secure to the point of being " \
-          "unusable for some use cases.</p>\n" \
-          "<p>In some scenarios, some preliminary configuration may be needed before running " \
-          "the OpenSCAP scan (eg. setting a tailoring file). Therefore it is also possible to " \
-          "skip the scan during the first system boot.</p>" \
-          "<p>Enabling a security policy will also cause the installer to check those rules that " \
-          "are part of the policy but can hardly be remediated after installation. For each " \
-          "failing rule the installer will display several well-known " \
-          "identifiers and a link to the functionality of the installer that can be used to " \
-          "manually remediate the issue before proceeding with the installation.<p>"
+          "report at <tt>/var/log/ssg-apply/</tt> listing the rules that would need some kind " \
+          "of remediation. The system can also be configured to automatically apply remediations " \
+          "right after the initial scan. Note that may lead to a system that is secure to the " \
+          "point of being unusable for some use cases. It is also possible to completely skip " \
+          "the automatic scan.</p>\n" \
+          "<p>Enabling a security policy will also cause the installer to check some rules that " \
+          "can hardly be remediated after installation. For each failing rule the installer will " \
+          "display several well-known identifiers and a link to the functionality of the " \
+          "installer that can be used to manually remediate the issue before installing.<p>"
         )
       end
 
