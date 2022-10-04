@@ -33,11 +33,22 @@ module Y2Security
       # @return [Symbol] action to perform after the installation. :remediate peforms a full
       # remediation, :scan just scan the system and :none does nothing apart from installing
       # the package
-      attr_accessor :scap_action
+      attr_reader :scap_action
+
+      class UnknownSCAPAction < StandardError; end
+
+      SCAP_ACTIONS = [:none, :scan, :remediate].freeze
 
       class << self
         def instance
           @instance ||= new
+        end
+
+        # Returns the know values for scap actions
+        #
+        # @return [Array<Symbol>]
+        def scap_actions
+          SCAP_ACTIONS
         end
       end
 
@@ -62,6 +73,12 @@ module Y2Security
         @last_result = {}
 
         enable_policies
+      end
+
+      def scap_action=(value)
+        raise UnknownSCAPAction unless self.class.scap_actions.include?(value)
+
+        @scap_action = value
       end
 
       # Returns the list of known security policies

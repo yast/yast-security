@@ -316,8 +316,9 @@ module Y2Security
         #
         # @return [Array<String>]
         def links_for_scap_actions
-          # TODO: turn this into an enum or something similar
-          [:none, :scan, :remediate].map { |a| scap_action_link(a) }
+          Y2Security::SecurityPolicies::Manager.scap_actions.map do |action|
+            scap_action_link(action)
+          end
         end
 
         # Link for toggling (enable or disable) a policy
