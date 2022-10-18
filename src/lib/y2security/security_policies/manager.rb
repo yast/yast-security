@@ -219,7 +219,7 @@ module Y2Security
       # @param value [String]
       # @return [Policy, nil]
       def policy_from_env(value)
-        return find_policy(:disa_stig) if value.match?(/\Adisa_stig\z/i)
+        return find_policy(:stig) if value.match?(/\Astig\z/i)
 
         log.warn("Security policy #{value} not found.")
         nil

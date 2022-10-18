@@ -59,7 +59,7 @@ describe Y2Security::SecurityPolicies::Manager do
     end
 
     context "when YAST_SECURITY_POLICIES contains a known policy" do
-      let(:env) { { "YAST_SECURITY_POLICIES" => "foo,Disa_Stig" } }
+      let(:env) { { "YAST_SECURITY_POLICIES" => "foo,Stig" } }
 
       it "enables the policy" do
         expect(subject.enabled_policies).to contain_exactly(disa_stig_policy)
@@ -86,7 +86,7 @@ describe Y2Security::SecurityPolicies::Manager do
 
   describe "#find_policy" do
     context "if there is a policy with the given id" do
-      let(:id) { :disa_stig }
+      let(:id) { :stig }
 
       it "returns the policy" do
         expect(subject.find_policy(id)).to eq(disa_stig_policy)
@@ -319,7 +319,7 @@ describe Y2Security::SecurityPolicies::Manager do
           subject.write
           apply_file = CFA::SsgApply.load
           expect(apply_file.remediate).to eq("no")
-          expect(apply_file.profile).to eq("disa_stig")
+          expect(apply_file.profile).to eq("stig")
         end
 
         it "enables the service" do
@@ -335,7 +335,7 @@ describe Y2Security::SecurityPolicies::Manager do
           subject.write
           apply_file = CFA::SsgApply.load
           expect(apply_file.remediate).to eq("yes")
-          expect(apply_file.profile).to eq("disa_stig")
+          expect(apply_file.profile).to eq("stig")
         end
 
         it "enables the service" do

@@ -802,7 +802,7 @@ module Yast
         let(:profile) do
           [
             {
-              "name"           => "disa_stig",
+              "name"           => "stig",
               "disabled_rules" => [
                 "partition_for_home",
                 "audit_rules_session_events_btmp"
