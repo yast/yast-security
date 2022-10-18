@@ -43,7 +43,7 @@ module Y2Security
         #   STIG = Security Technical Implementation Guides
         name = _("Defense Information Systems Agency STIG")
 
-        super(:disa_stig, name)
+        super(:stig, name)
       end
 
       def rules
