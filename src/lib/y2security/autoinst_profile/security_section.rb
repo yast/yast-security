@@ -59,7 +59,7 @@ module Y2Security
       # @param parent [SectionWithAttributes] Parent section
       def initialize(parent = nil)
         super
-        @security_policies = []
+        @security_policies = SecurityPolicySection.new
       end
 
       # Method used by {.new_from_hashes} to populate the attributes.
@@ -67,18 +67,7 @@ module Y2Security
       # @param hash [Hash] see {.new_from_hashes}
       def init_from_hashes(hash)
         super
-        @security_policies = policies_from_hashes(hash)
-      end
-
-    private
-
-      # @return [Array<SecurityPolicySection>]
-      def policies_from_hashes(hash)
-        return [] unless hash["security_policies"]
-
-        hash["security_policies"].map do |policy|
-          SecurityPolicySection.new_from_hashes(policy, self)
-        end
+        @security_policies = SecurityPolicySection.new_from_hashes(hash["security_policies"], self)
       end
     end
   end

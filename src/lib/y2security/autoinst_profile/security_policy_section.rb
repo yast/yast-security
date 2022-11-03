@@ -24,32 +24,30 @@ module Y2Security
     # This class represents the <security_policy> section of an AutoYaST profile
     #
     # @example Enabling DISA STIG except one of the rules
-    #   <security_policies t="list">
-    #     <listitem>
-    #       <name>disa_stig</name>
-    #       <disabled_rules t="list">
-    #         <listitem>encrypt_partitions</listitem>
-    #       </disabled_rules>
-    #     </listitem>
+    #   <security_policies>
+    #     <action>none</action>
+    #     <enabled_policies t="list">
+    #       <listentry>stig</listentry>
+    #     </enabled_policies>
     #   </security_policies>
     class SecurityPolicySection < ::Installation::AutoinstProfile::SectionWithAttributes
       def self.attributes
         [
-          { name: :name },
-          { name: :disabled_rules }
+          { name: :action },
+          { name: :enabled_policies }
         ]
       end
 
       define_attr_accessors
 
-      # @!attribute name
-      #   @return [String] Policy name to apply
-      # @!attribute disabled_rules
-      #   @return [Array<String>] Name of the rules to ignore
+      # @!attribute action
+      #   @return [String,nil] SCAP action to apply on first boot ("none", "scan" or "remediate")
+      # @!attribute enabled_policies
+      #   @return [Array<String>] List of enabled policies
 
       def initialize(parent = nil)
         super
-        @disabled_rules = []
+        @enabled_policies = []
       end
 
       # Method used by {.new_from_hashes} to populate the attributes.
@@ -57,7 +55,7 @@ module Y2Security
       # @param hash [Hash] see {.new_from_hashes}
       def init_from_hashes(hash)
         super
-        @disabled_rules = hash["disabled_rules"] || []
+        @enabled_policies = hash["enabled_policies"] if hash.key?("enabled_policies")
       end
     end
   end

@@ -800,20 +800,14 @@ module Yast
         let(:policy) { policies_manager.policies.first }
 
         let(:profile) do
-          [
-            {
-              "name"           => "stig",
-              "disabled_rules" => [
-                "partition_for_home",
-                "audit_rules_session_events_btmp"
-              ]
-            }
-          ]
+          {
+            "action"           => "remediate",
+            "enabled_policies" => ["stig"]
+          }
         end
 
         after do
           policies_manager.disable_policy(policy)
-          policy.rules.each(&:enable)
         end
 
         it "enables the security policy" do
@@ -821,24 +815,13 @@ module Yast
           expect(policies_manager.enabled_policy?(policy)).to eq(true)
         end
 
-        it "disables the unwanted rules" do
-          subject.Import("SECURITY_POLICIES" => profile)
-          rule = policy.rules.find { |r| r.id == "partition_for_home" }
-          expect(rule).to_not be_enabled
-        end
-
-        it "adds the unknown rules as disabled" do
-          subject.Import("SECURITY_POLICIES" => profile)
-          rule = policy.rules.find { |r| r.id == "audit_rules_session_events_btmp" }
-          expect(rule).to be_a(Y2Security::SecurityPolicies::UnknownRule)
-          expect(rule).to_not be_enabled
+        it "sets the SCAP action" do
+          expect(policies_manager.scap_action).to eq(:remediate)
         end
 
         context "but the policy does not exist" do
           let(:profile) do
-            [
-              { name: "dummy" }
-            ]
+            { "enabled_policies" => ["dummy"] }
           end
 
           it "logs an error" do

@@ -29,22 +29,23 @@ describe Y2Security::AutoinstProfile::SecuritySection do
       section = described_class.new_from_hashes(profile)
       expect(section.selinux_mode).to eql("enforcing")
       expect(section.lsm_select).to eql("selinux")
-      expect(section.security_policies).to be_empty
+      expect(section.security_policies.action).to be_nil
+      expect(section.security_policies.enabled_policies).to be_empty
     end
 
     context "when a list of security policies is given" do
       let(:profile) do
         {
-          "security_policies" => [
-            { "name" => "disa_stig", "disabled_rules" => ["partition_for_home"] }
-          ]
+          "security_policies" => {
+            "action" => "remediate", "enabled_policies" => ["stig"]
+          }
         }
       end
 
       it "adds one section for each policy" do
         section = described_class.new_from_hashes(profile)
-        policy_section = section.security_policies.first
-        expect(policy_section.name).to eq("disa_stig")
+        policy_section = section.security_policies
+        expect(policy_section.action).to eq("remediate")
         expect(policy_section.parent).to eq(section)
       end
     end

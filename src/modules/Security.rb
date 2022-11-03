@@ -946,26 +946,19 @@ module Yast
 
     # It enables the security policies according to the profile
     #
-    # @param sections [Array<Y2Security::AutoinstProfile::SecurityPolicySection>] security
-    #   policies sections from the AutoYaST profile
-    def import_security_policies(sections)
+    # @param sections [Y2Security::AutoinstProfile::SecurityPolicySection] security
+    #   policies section from the AutoYaST profile
+    def import_security_policies(section)
       manager = Y2Security::SecurityPolicies::Manager.instance
-      sections.each do |section|
-        policy = manager.find_policy(section.name&.to_sym)
+      manager.scap_action = section.action.to_sym if section.action
+      section.enabled_policies.each do |name|
+        policy = manager.find_policy(name&.to_sym)
         if policy.nil?
-          log.error "The security policy '#{section.name}' is unknown."
+          log.error "The security policy '#{name}' is unknown."
           next
         end
 
         manager.enable_policy(policy)
-        section.disabled_rules.each do |rule_id|
-          rule = policy.rules.find { |r| r.id == rule_id }
-          if rule.nil?
-            rule = Y2Security::SecurityPolicies::UnknownRule.new(rule_id)
-            policy.rules << rule
-          end
-          rule&.disable
-        end
       end
     end
 

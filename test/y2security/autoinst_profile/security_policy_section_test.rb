@@ -24,20 +24,20 @@ require "y2security/autoinst_profile/security_policy_section"
 describe Y2Security::AutoinstProfile::SecurityPolicySection do
   describe ".new_from_hashes" do
     let(:profile) do
-      { "name" => "disa_stig", "disabled_rules" => ["partition_for_home"] }
+      { "action" => "remediate", "enabled_policies" => ["stig"] }
     end
 
-    it "sets the name and the list of ignored rules" do
+    it "sets the SCAP action and the list of enabled policies" do
       section = described_class.new_from_hashes(profile)
-      expect(section.name).to eq("disa_stig")
-      expect(section.disabled_rules).to eq(["partition_for_home"])
+      expect(section.action).to eq("remediate")
+      expect(section.enabled_policies).to eq(["stig"])
     end
 
     context "an empty profile" do
       it "returns an empty section" do
         section = described_class.new_from_hashes({})
-        expect(section.name).to be_nil
-        expect(section.disabled_rules).to eq([])
+        expect(section.action).to be_nil
+        expect(section.enabled_policies).to eq([])
       end
     end
   end
