@@ -950,7 +950,13 @@ module Yast
     #   policies section from the AutoYaST profile
     def import_security_policies(section)
       manager = Y2Security::SecurityPolicies::Manager.instance
-      manager.scap_action = section.action.to_sym if section.action
+
+      begin
+        manager.scap_action = section.action.to_sym if section.action
+      rescue Y2Security::SecurityPolicies::Manager::UnknownSCAPAction
+        log.error("SCAP action '#{section.action}' is not valid.")
+      end
+
       section.enabled_policies.each do |name|
         policy = manager.find_policy(name&.to_sym)
         if policy.nil?
