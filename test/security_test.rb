@@ -801,8 +801,8 @@ module Yast
 
         let(:profile) do
           {
-            "action"           => "remediate",
-            "enabled_policies" => ["stig"]
+            "action" => "remediate",
+            "policy" => "stig"
           }
         end
 
@@ -811,7 +811,7 @@ module Yast
         end
 
         it "enables the security policy" do
-          subject.Import("SECURITY_POLICIES" => profile)
+          subject.Import("SECURITY_POLICY" => profile)
           expect(policies_manager.enabled_policy?(policy)).to eq(true)
         end
 
@@ -821,23 +821,23 @@ module Yast
 
         context "but a not valid SCAP action is given" do
           let(:profile) do
-            { "action" => "unknown" }
+            { "action" => "unknown", "policy" => "stig" }
           end
 
           it "logs an error" do
             expect(subject.log).to receive(:error).with("SCAP action 'unknown' is not valid.")
-            subject.Import("SECURITY_POLICIES" => profile)
+            subject.Import("SECURITY_POLICY" => profile)
           end
         end
 
         context "but the policy does not exist" do
           let(:profile) do
-            { "enabled_policies" => ["dummy"] }
+            { "policy" => "dummy" }
           end
 
           it "logs an error" do
             expect(subject.log).to receive(:error).with("The security policy 'dummy' is unknown.")
-            subject.Import("SECURITY_POLICIES" => profile)
+            subject.Import("SECURITY_POLICY" => profile)
           end
         end
       end

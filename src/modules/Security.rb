@@ -802,13 +802,13 @@ module Yast
 
       settings["lsm_select"] = settings.delete("LSM_SELECT") if settings.key?("LSM_SELECT")
       settings["selinux_mode"] = settings.delete("SELINUX_MODE") if settings.key?("SELINUX_MODE")
-      if settings.key?("SECURITY_POLICIES")
-        settings["security_policies"] = settings.delete("SECURITY_POLICIES")
+      if settings.key?("SECURITY_POLICY")
+        settings["security_policy"] = settings.delete("SECURITY_POLICY")
       end
 
       section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
       import_lsm_config(section)
-      import_security_policies(section.security_policies)
+      import_security_policy(section.security_policy)
 
       return true if settings == {}
 
@@ -948,24 +948,19 @@ module Yast
     #
     # @param sections [Y2Security::AutoinstProfile::SecurityPolicySection] security
     #   policies section from the AutoYaST profile
-    def import_security_policies(section)
+    def import_security_policy(section)
+      return if section.policy.nil?
+
       manager = Y2Security::SecurityPolicies::Manager.instance
-
-      begin
-        manager.scap_action = section.action.to_sym if section.action
-      rescue Y2Security::SecurityPolicies::Manager::UnknownSCAPAction
-        log.error("SCAP action '#{section.action}' is not valid.")
+      policy = manager.find_policy(section.policy.to_sym)
+      if policy.nil?
+        log.error "The security policy '#{section.policy}' is unknown."
+        return
       end
-
-      section.enabled_policies.each do |name|
-        policy = manager.find_policy(name&.to_sym)
-        if policy.nil?
-          log.error "The security policy '#{name}' is unknown."
-          next
-        end
-
-        manager.enable_policy(policy)
-      end
+      manager.enable_policy(policy)
+      manager.scap_action = section.action.to_sym if section.action
+    rescue Y2Security::SecurityPolicies::Manager::UnknownSCAPAction
+      log.error("SCAP action '#{section.action}' is not valid.")
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases
