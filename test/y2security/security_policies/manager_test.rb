@@ -42,24 +42,24 @@ describe Y2Security::SecurityPolicies::Manager do
   end
 
   describe ".new" do
-    context "when YAST_SECURITY_POLICIES does not contain a policy" do
-      let(:env) { { "YAST_SECURITY_POLICIES" => "" } }
+    context "when YAST_SECURITY_POLICY does not contain a policy" do
+      let(:env) { { "YAST_SECURITY_POLICY" => "" } }
 
       it "does not enable a policy" do
         expect(subject.enabled_policies).to be_empty
       end
     end
 
-    context "when YAST_SECURITY_POLICIES contains an unknown policy" do
-      let(:env) { { "YAST_SECURITY_POLICIES" => "DisaStig" } }
+    context "when YAST_SECURITY_POLICY contains an unknown policy" do
+      let(:env) { { "YAST_SECURITY_POLICY" => "DisaStig" } }
 
       it "does not enable a policy" do
         expect(subject.enabled_policies).to be_empty
       end
     end
 
-    context "when YAST_SECURITY_POLICIES contains a known policy" do
-      let(:env) { { "YAST_SECURITY_POLICIES" => "foo,Stig" } }
+    context "when YAST_SECURITY_POLICY contains a known policy" do
+      let(:env) { { "YAST_SECURITY_POLICY" => "Stig" } }
 
       it "enables the policy" do
         expect(subject.enabled_policies).to contain_exactly(disa_stig_policy)
