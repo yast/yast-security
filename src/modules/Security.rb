@@ -944,10 +944,10 @@ module Yast
       PackagesProposal.SetResolvables("LSM", :pattern, lsm_config.needed_patterns)
     end
 
-    # It enables the security policies according to the profile
+    # It enables the security policy according to the profile
     #
-    # @param sections [Y2Security::AutoinstProfile::SecurityPolicySection] security
-    #   policies section from the AutoYaST profile
+    # @param section [Y2Security::AutoinstProfile::SecurityPolicySection] security
+    #   policy section from the AutoYaST profile
     def import_security_policy(section)
       return if section.policy.nil?
 
