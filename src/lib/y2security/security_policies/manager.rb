@@ -59,8 +59,8 @@ module Y2Security
       # Environment variable to enable security policies
       #
       # Its value contains "comma-separate" ids of the policies to enable
-      ENV_SECURITY_POLICIES = "YAST_SECURITY_POLICIES".freeze
-      private_constant :ENV_SECURITY_POLICIES
+      ENV_SECURITY_POLICY = "YAST_SECURITY_POLICY".freeze
+      private_constant :ENV_SECURITY_POLICY
 
       # Currently enabled policies
       #
@@ -68,7 +68,7 @@ module Y2Security
       attr_reader :enabled_policies
 
       # Policies are automatically enabled according the the environment variable
-      # ENV_SECURITY_POLICIES
+      # ENV_SECURITY_POLICY
       def initialize
         @enabled_policies = []
         @scap_action = :scan
@@ -202,40 +202,34 @@ module Y2Security
         File.write(path, content)
       end
 
-      # Enables policies according to the environment variable ENV_SECURITY_POLICIES
+      # Enables policies according to the environment variable ENV_SECURITY_POLICY
       def enable_policies
-        policies_from_env.each { |p| enable_policy(p) }
+        policy = policy_from_env(env_policy)
+        enable_policy(policy) if policy
       end
 
-      # Policies from the values indicated with the environment variable ENV_SECURITY_POLICIES
-      #
-      # @return [Array<Policy>]
-      def policies_from_env
-        env_policies.map { |v| policy_from_env(v) }.compact.uniq
-      end
-
-      # Policy from one of the values indicated with the environment variable ENV_SECURITY_POLICIES
+      # Policy from one of the values indicated with the environment variable ENV_SECURITY_POLICY
       #
       # @param value [String]
       # @return [Policy, nil]
       def policy_from_env(value)
-        return find_policy(:stig) if value.match?(/\Astig\z/i)
+        return find_policy(:stig) if value.to_s.match?(/\Astig\z/i)
 
         log.warn("Security policy #{value} not found.")
         nil
       end
 
-      # Values indicated with the environment variable ENV_SECURITY_POLICIES
+      # Value indicated with the environment variable ENV_SECURITY_POLICY
       #
-      # @return [Array<String>]
-      def env_policies
+      # @return [String,nil]
+      def env_policy
         # Sort the keys to have a deterministic behavior and to prefer
         # all-uppercase over the other variants, then do a case insensitive
         # search
-        key = ENV.keys.sort.find { |k| k.match(/\A#{ENV_SECURITY_POLICIES}\z/i) }
-        return [] unless key
+        key = ENV.keys.sort.find { |k| k.match(/\A#{ENV_SECURITY_POLICY}\z/i) }
+        return nil unless key
 
-        ENV[key].split(",")
+        ENV[key]
       end
 
       SERVICE_NAME = "ssg-apply".freeze

@@ -28,21 +28,17 @@ module Y2Security
     # <security>
     #   <selinux_mode>enforcing</selinux_mode>
     #   <lsm_select>selinux</lsm_select>
-    #   <security_policies t="list">
-    #     <listitem>
-    #       <name>disa_stig</name>
-    #       <disabled_rules t="list">
-    #         <listitem>SLES-15-020400</listitem>
-    #       </disabled_rules>
-    #     </listitem>
-    #   </security_policies>
+    #   <security_policy>
+    #     <policy>stig</policy>
+    #     <action>remediate</action>
+    #   </security_policy>
     # </security>
     class SecuritySection < ::Installation::AutoinstProfile::SectionWithAttributes
       def self.attributes
         [
           { name: :selinux_mode },
           { name: :lsm_select },
-          { name: :security_policies }
+          { name: :security_policy }
         ]
       end
 
@@ -53,13 +49,15 @@ module Y2Security
       # @!attribute lsm_select
       #   @return [String] Major Linux Security Module to be used.
       #     Possible values: apparmor, selinux, none
+      # @!attribute security_policy
+      #   @return [SecurityPolicy] Security policy section
 
       # Constructor
       #
       # @param parent [SectionWithAttributes] Parent section
       def initialize(parent = nil)
         super
-        @security_policies = []
+        @security_policy = SecurityPolicySection.new
       end
 
       # Method used by {.new_from_hashes} to populate the attributes.
@@ -67,18 +65,9 @@ module Y2Security
       # @param hash [Hash] see {.new_from_hashes}
       def init_from_hashes(hash)
         super
-        @security_policies = policies_from_hashes(hash)
-      end
+        return unless hash.key?("security_policy")
 
-    private
-
-      # @return [Array<SecurityPolicySection>]
-      def policies_from_hashes(hash)
-        return [] unless hash["security_policies"]
-
-        hash["security_policies"].map do |policy|
-          SecurityPolicySection.new_from_hashes(policy, self)
-        end
+        @security_policy = SecurityPolicySection.new_from_hashes(hash["security_policy"], self)
       end
     end
   end

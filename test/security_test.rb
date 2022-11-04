@@ -800,50 +800,44 @@ module Yast
         let(:policy) { policies_manager.policies.first }
 
         let(:profile) do
-          [
-            {
-              "name"           => "stig",
-              "disabled_rules" => [
-                "partition_for_home",
-                "audit_rules_session_events_btmp"
-              ]
-            }
-          ]
+          {
+            "action" => "remediate",
+            "policy" => "stig"
+          }
         end
 
         after do
           policies_manager.disable_policy(policy)
-          policy.rules.each(&:enable)
         end
 
         it "enables the security policy" do
-          subject.Import("SECURITY_POLICIES" => profile)
+          subject.Import("SECURITY_POLICY" => profile)
           expect(policies_manager.enabled_policy?(policy)).to eq(true)
         end
 
-        it "disables the unwanted rules" do
-          subject.Import("SECURITY_POLICIES" => profile)
-          rule = policy.rules.find { |r| r.id == "partition_for_home" }
-          expect(rule).to_not be_enabled
+        it "sets the SCAP action" do
+          expect(policies_manager.scap_action).to eq(:remediate)
         end
 
-        it "adds the unknown rules as disabled" do
-          subject.Import("SECURITY_POLICIES" => profile)
-          rule = policy.rules.find { |r| r.id == "audit_rules_session_events_btmp" }
-          expect(rule).to be_a(Y2Security::SecurityPolicies::UnknownRule)
-          expect(rule).to_not be_enabled
+        context "but a not valid SCAP action is given" do
+          let(:profile) do
+            { "action" => "unknown", "policy" => "stig" }
+          end
+
+          it "logs an error" do
+            expect(subject.log).to receive(:error).with("SCAP action 'unknown' is not valid.")
+            subject.Import("SECURITY_POLICY" => profile)
+          end
         end
 
         context "but the policy does not exist" do
           let(:profile) do
-            [
-              { name: "dummy" }
-            ]
+            { "policy" => "dummy" }
           end
 
           it "logs an error" do
             expect(subject.log).to receive(:error).with("The security policy 'dummy' is unknown.")
-            subject.Import("SECURITY_POLICIES" => profile)
+            subject.Import("SECURITY_POLICY" => profile)
           end
         end
       end

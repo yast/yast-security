@@ -24,41 +24,24 @@ module Y2Security
     # This class represents the <security_policy> section of an AutoYaST profile
     #
     # @example Enabling DISA STIG except one of the rules
-    #   <security_policies t="list">
-    #     <listitem>
-    #       <name>disa_stig</name>
-    #       <disabled_rules t="list">
-    #         <listitem>encrypt_partitions</listitem>
-    #       </disabled_rules>
-    #     </listitem>
-    #   </security_policies>
+    #   <security_policy>
+    #     <action>none</action>
+    #     <name>stig</name>
+    #   </security_policy>
     class SecurityPolicySection < ::Installation::AutoinstProfile::SectionWithAttributes
       def self.attributes
         [
-          { name: :name },
-          { name: :disabled_rules }
+          { name: :action },
+          { name: :policy }
         ]
       end
 
       define_attr_accessors
 
-      # @!attribute name
-      #   @return [String] Policy name to apply
-      # @!attribute disabled_rules
-      #   @return [Array<String>] Name of the rules to ignore
-
-      def initialize(parent = nil)
-        super
-        @disabled_rules = []
-      end
-
-      # Method used by {.new_from_hashes} to populate the attributes.
-      #
-      # @param hash [Hash] see {.new_from_hashes}
-      def init_from_hashes(hash)
-        super
-        @disabled_rules = hash["disabled_rules"] || []
-      end
+      # @!attribute action
+      #   @return [String,nil] SCAP action to apply on first boot ("none", "scan" or "remediate")
+      # @!attribute policy
+      #   @return [String,nil] Enabled policy
     end
   end
 end
