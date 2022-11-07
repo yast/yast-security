@@ -1,0 +1,28 @@
+---
+- disk:
+    name: /dev/sda
+    size: 1 TiB
+    partition_table:  gpt
+    partitions:
+
+    - partition:
+        size:         1 GiB
+        name:         /dev/sda1
+        file_system:   vfat
+        mount_point:  "/boot/efi"
+
+    - partition:
+        size:         200 GiB
+        name:         /dev/sda2
+        file_system:  ext4
+        label:        root
+        mount_point:  "/"
+
+    - partition:
+        size:         700 GiB
+        name:         /dev/sda3
+        file_system:  swap
+        label:        swap
+        mount_point:  swap
+
+

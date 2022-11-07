@@ -1,4 +1,4 @@
-# Copyright (c) [2021] SUSE LLC
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -17,5 +17,6 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2security/autoinst_profile/security_section"
-require "y2security/autoinst_profile/security_policy_section"
+require "y2security/clients/security_policy_proposal"
+
+Y2Security::Clients::SecurityPolicyProposal.new.run

@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Aug 29 13:14:15 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Add support for DISA STIG security policy validation
+  (jsc#SLE-24764).
+- 4.4.15
+
+-------------------------------------------------------------------
 Tue Aug 23 08:41:45 UTC 2022 - David Diaz <dgonzalez@suse.com>
 
 - Do not crash when reading active LSM modules returns nil

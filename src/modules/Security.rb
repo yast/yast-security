@@ -33,6 +33,9 @@ require "yaml"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
 require "y2security/autoinst/lsm_config_reader"
+require "y2security/security_policies"
+require "y2security/security_policies/unknown_rule"
+require "y2security/autoinst_profile"
 
 module Yast
   class SecurityClass < Module # rubocop:disable Metrics/ClassLength
@@ -799,8 +802,13 @@ module Yast
 
       settings["lsm_select"] = settings.delete("LSM_SELECT") if settings.key?("LSM_SELECT")
       settings["selinux_mode"] = settings.delete("SELINUX_MODE") if settings.key?("SELINUX_MODE")
+      if settings.key?("SECURITY_POLICY")
+        settings["security_policy"] = settings.delete("SECURITY_POLICY")
+      end
 
-      import_lsm_config(settings)
+      section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
+      import_lsm_config(section)
+      import_security_policy(section.security_policy)
 
       return true if settings == {}
 
@@ -928,14 +936,31 @@ module Yast
     # It sets the LSM configuration according to the one provided in the profile and ensures
     # needed patterns for the selected LSM
     #
-    # @param settings [Hash] profile security settings to be imported.
-    def import_lsm_config(settings)
-      section = Y2Security::AutoinstProfile::SecuritySection.new_from_hashes(settings)
+    # @param section [SecuritySection] profile security settings to be imported.
+    def import_lsm_config(section)
       Y2Security::Autoinst::LSMConfigReader.new(section).read
-
       return unless lsm_config.configurable?
 
       PackagesProposal.SetResolvables("LSM", :pattern, lsm_config.needed_patterns)
+    end
+
+    # It enables the security policy according to the profile
+    #
+    # @param section [Y2Security::AutoinstProfile::SecurityPolicySection] security
+    #   policy section from the AutoYaST profile
+    def import_security_policy(section)
+      return if section.policy.nil?
+
+      manager = Y2Security::SecurityPolicies::Manager.instance
+      policy = manager.find_policy(section.policy.to_sym)
+      if policy.nil?
+        log.error "The security policy '#{section.policy}' is unknown."
+        return
+      end
+      manager.enabled_policy = policy
+      manager.scap_action = section.action.to_sym if section.action
+    rescue Y2Security::SecurityPolicies::Manager::UnknownSCAPAction
+      log.error("SCAP action '#{section.action}' is not valid.")
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases

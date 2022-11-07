@@ -46,6 +46,13 @@ runlevel3_mandatory_services = element runlevel3_mandatory_services { STRING }
 runlevel5_extra_services = element runlevel5_extra_services { STRING }
 runlevel5_mandatory_services = element runlevel5_mandatory_services { STRING }
 smtpd_listen_remote = element smtpd_listen_remote { STRING }
+security_policy = element security_policy {
+    MAP,
+    (
+      element policy { STRING } &
+      element action { "none" | "scan" | "remediate" }?
+    )
+}
 syslog_on_no_error = element syslog_on_no_error { STRING }
 system_gid_max = element system_gid_max { STRING }
 system_gid_min = element system_gid_min { STRING }
@@ -104,6 +111,7 @@ y2_security =
   | runlevel3_mandatory_services
   | runlevel5_extra_services
   | runlevel5_mandatory_services
+  | security_policy
   | smtpd_listen_remote
   | syslog_on_no_error
   | system_gid_max

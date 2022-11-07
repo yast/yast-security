@@ -17,7 +17,7 @@
 
 
 Name:           yast2-security
-Version:        4.4.14
+Version:        4.4.15
 Release:        0
 Group:          System/YaST
 License:        GPL-2.0-only
@@ -43,6 +43,8 @@ BuildRequires:  yast2 >= 4.4.47
 BuildRequires:  augeas-lenses
 # Y2Storage::StorageManager
 BuildRequires:  yast2-storage-ng
+# Yast::Lan and Y2Network
+BuildRequires:  yast2-network
 # Unfortunately we cannot move this to macros.yast,
 # bcond within macros are ignored by osc/OBS.
 %bcond_with yast_run_ci_tests
@@ -63,6 +65,8 @@ Requires:       yast2-bootloader
 Requires:       augeas-lenses
 # Y2Storage::StorageManager
 Requires:       yast2-storage-ng
+# Yast::Lan and Y2Network
+Requires:       yast2-network
 
 Provides:       y2c_sec yast2-config-security
 Provides:       yast2-trans-security y2t_sec
