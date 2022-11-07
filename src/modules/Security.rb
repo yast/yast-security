@@ -957,7 +957,7 @@ module Yast
         log.error "The security policy '#{section.policy}' is unknown."
         return
       end
-      manager.enable_policy(policy)
+      manager.enabled_policy = policy
       manager.scap_action = section.action.to_sym if section.action
     rescue Y2Security::SecurityPolicies::Manager::UnknownSCAPAction
       log.error("SCAP action '#{section.action}' is not valid.")

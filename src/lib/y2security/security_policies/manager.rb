@@ -18,7 +18,6 @@
 # find current contact information at www.suse.com.
 
 require "yast"
-require "singleton"
 require "y2security/security_policies/disa_stig_policy"
 require "y2security/security_policies/target_config"
 require "cfa/ssg_apply"
@@ -56,24 +55,20 @@ module Y2Security
 
       include Yast::Logger
 
-      # Environment variable to enable security policies
-      #
-      # Its value contains "comma-separate" ids of the policies to enable
+      # Environment variable to enable a security policy
       ENV_SECURITY_POLICY = "YAST_SECURITY_POLICY".freeze
       private_constant :ENV_SECURITY_POLICY
 
-      # Currently enabled policies
+      # Currently enabled policy
       #
-      # @return [Array<Policy>]
-      attr_reader :enabled_policies
+      # @return [Policy, nil]
+      attr_reader :enabled_policy
 
-      # Policies are automatically enabled according the the environment variable
-      # ENV_SECURITY_POLICY
+      # A policy is automatically enabled according the the environment variable ENV_SECURITY_POLICY
       def initialize
-        @enabled_policies = []
+        policy = policy_from_env(env_policy)
+        self.enabled_policy = policy
         @scap_action = :scan
-
-        enable_policies
       end
 
       def scap_action=(value)
@@ -97,58 +92,43 @@ module Y2Security
         policies.find { |p| p.id == id }
       end
 
-      # Enables the given policy
+      # Sets the enabled policy
       #
-      # @param policy [Policy]
-      def enable_policy(policy)
-        return unless policies.include?(policy)
-
-        @enabled_policies.push(policy).uniq!
-        add_package
-      end
-
-      # Disables the given policy
-      #
-      # @param policy [Policy]
-      def disable_policy(policy)
-        return unless policies.include?(policy)
-
-        @enabled_policies.delete(policy)
-        remove_package if @enabled_policies.empty?
-      end
-
-      # Whether the given policy is enabled
-      #
-      # @param policy [Policy]
-      # @return [Boolean]
-      def enabled_policy?(policy)
-        @enabled_policies.include?(policy)
+      # @param policy [Policy, nil]
+      def enabled_policy=(policy)
+        if policies.include?(policy)
+          @enabled_policy = policy
+          add_package
+        else
+          @enabled_policy = nil
+          remove_package
+        end
       end
 
       # @param config [TargetConfig]
       # @param scope [Symbol,nil] only consider rules with this scope.
       #   For example yast2-storage-ng will call this with :storage to
       #   only display rules that it can fix.
-      # @return [Hash<Policy, Array<Rule>>]
+      # @param include_disabled [Boolean] whether to evaluate disabled rules
+      #
+      # @return [Array<Rule>]
       def failing_rules(config, scope: nil, include_disabled: false)
-        enabled_policies.each_with_object({}) do |policy, result|
-          result[policy] =
-            policy.failing_rules(config, scope: scope, include_disabled: include_disabled)
-        end
+        return [] unless enabled_policy
+
+        enabled_policy.failing_rules(config, scope: scope, include_disabled: include_disabled)
       end
 
       # Writes the security policy configuration to the target system
       #
       # @param config [TargetConfig]
       def write(config = TargetConfig.new)
-        # Only one policy is expected to be enabled
-        policy = policies.find { |p| enabled_policy?(p) }
-        return if policy.nil?
+        return unless enabled_policy
 
-        write_failing_rules(config, policy)
+        write_failing_rules(config, enabled_policy)
+
         return if scap_action == :none
 
-        write_config(policy)
+        write_config(enabled_policy)
         enable_service
       end
 
@@ -194,21 +174,14 @@ module Y2Security
         path = ::File.join(root, FAILING_RULES_FILE_PATH)
         dir = File.dirname(path)
         FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
-        failing = failing_rules(config)
-        rules = failing[policy]
-        return unless rules&.any?
+        rules = policy.failing_rules(config)
+        return if rules.none?
 
         content = rules.map(&:id).sort.join("\n") + "\n"
         File.write(path, content)
       end
 
-      # Enables policies according to the environment variable ENV_SECURITY_POLICY
-      def enable_policies
-        policy = policy_from_env(env_policy)
-        enable_policy(policy) if policy
-      end
-
-      # Policy from one of the values indicated with the environment variable ENV_SECURITY_POLICY
+      # Policy from the value indicated with the environment variable ENV_SECURITY_POLICY
       #
       # @param value [String]
       # @return [Policy, nil]
@@ -221,7 +194,7 @@ module Y2Security
 
       # Value indicated with the environment variable ENV_SECURITY_POLICY
       #
-      # @return [String,nil]
+      # @return [String, nil]
       def env_policy
         # Sort the keys to have a deterministic behavior and to prefer
         # all-uppercase over the other variants, then do a case insensitive

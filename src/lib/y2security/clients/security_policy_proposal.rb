@@ -37,13 +37,13 @@ module Y2Security
       PROPOSAL_ID = "security-policy".freeze
 
       class << self
-        # Collection of failing rules from the enabled policies
+        # Failing rules from the enabled policy
         #
         # The list of failing rules is shared by SecurityPolicyProposal instances.
         #
-        # @return [Hash{SecurityPolicies::Policy => Array<SecurityPolicies::Rule>}]
+        # @return [Array<SecurityPolicies::Rule>]
         def failing_rules
-          @failing_rules ||= {}
+          @failing_rules ||= []
         end
 
         attr_writer :failing_rules
@@ -72,7 +72,7 @@ module Y2Security
 
       # @see Installation::ProposalClient#make_proposal
       def make_proposal(_attrs)
-        check_security_policies
+        check_security_policy
         {
           "preformatted_proposal" => preformatted_proposal,
           "links"                 => links,
@@ -109,8 +109,8 @@ module Y2Security
       # @see Installation::ProposalClient#preformatted_proposal
       def preformatted_proposal
         formatted_policies = policies.map do |policy|
-          enabled = policies_manager.enabled_policy?(policy)
-          rules = failing_rules[policy]
+          enabled = policies_manager.enabled_policy == policy
+          rules = enabled ? failing_rules : []
 
           presenter = PolicyPresenter.new(policy,
             enabled: enabled, failing_rules: rules, links_builder: links_builder,
@@ -150,8 +150,7 @@ module Y2Security
       #
       # @return [Boolean] true if the proposal was successful; false otherwise
       def success?
-        rules = failing_rules.values.flatten
-        rules.none? || rules.none?(&:enabled?)
+        failing_rules.none?(&:enabled?)
       end
 
       # Returns the warning level
@@ -163,15 +162,14 @@ module Y2Security
         success? ? nil : :error
       end
 
-      # Runs the security policies checks
+      # Runs the security policy checks
       #
       # Calling this method updates the list of failing rules in
       # Y2Security::Clients::SecurityProposalProposal.failing_rules
       #
       # @see Y2Security::SecurityPolicies::Manager#failing_rules
-      def check_security_policies
-        self.class.failing_rules =
-          policies_manager.failing_rules(target_config)
+      def check_security_policy
+        self.class.failing_rules = policies_manager.failing_rules(target_config)
       end
 
       # Toggles (enable/disable) the policy with the given ID
@@ -181,11 +179,8 @@ module Y2Security
         policy = policies_manager.find_policy(id)
         return unless policy
 
-        if policies_manager.enabled_policy?(policy)
-          policies_manager.disable_policy(policy)
-        else
-          policies_manager.enable_policy(policy)
-        end
+        enabled_policy = policies_manager.enabled_policy == policy ? nil : policy
+        policies_manager.enabled_policy = enabled_policy
       end
 
       # Toggles (enable/disable) the rule with the given ID
