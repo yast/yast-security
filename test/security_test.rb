@@ -807,12 +807,12 @@ module Yast
         end
 
         after do
-          policies_manager.disable_policy(policy)
+          policies_manager.enabled_policy = nil
         end
 
         it "enables the security policy" do
           subject.Import("SECURITY_POLICY" => profile)
-          expect(policies_manager.enabled_policy?(policy)).to eq(true)
+          expect(policies_manager.enabled_policy).to eq(policy)
         end
 
         it "sets the SCAP action" do

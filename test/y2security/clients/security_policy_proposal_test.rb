@@ -74,7 +74,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
   describe "#make_proposal" do
     context "when a policy is enabled" do
       before do
-        policies_manager.enable_policy(policy)
+        policies_manager.enabled_policy = policy
       end
 
       it "includes a link to disable the policy" do
@@ -224,7 +224,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
     context "when the policy is not enabled" do
       before do
-        policies_manager.disable_policy(policy)
+        policies_manager.enabled_policy = nil
       end
 
       it "includes a link to enable the policy" do
@@ -258,14 +258,14 @@ describe Y2Security::Clients::SecurityPolicyProposal do
   describe "#ask_user" do
     context "when the user asks to enable a policy" do
       before do
-        policies_manager.disable_policy(policy)
+        policies_manager.enabled_policy = nil
       end
 
       it "enables the policy" do
         subject.ask_user(
           "chosen_id" => "security-policy--toggle-policy:#{policy.id}"
         )
-        expect(policies_manager.enabled_policy?(policy)).to eq(true)
+        expect(policies_manager.enabled_policy).to eq(policy)
       end
 
       it "returns :again as workflow result" do
@@ -278,14 +278,14 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
     context "when the user asks to disable a policy" do
       before do
-        policies_manager.enable_policy(policy)
+        policies_manager.enabled_policy = policy
       end
 
       it "disables the policy" do
         subject.ask_user(
           "chosen_id" => "security-policy--toggle-policy:#{policy.id}"
         )
-        expect(policies_manager.enabled_policies).to_not include(policy)
+        expect(policies_manager.enabled_policy).to be_nil
       end
 
       it "returns :again as workflow result" do
@@ -300,7 +300,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       let(:rule) { policy.rules.first }
 
       before do
-        policies_manager.enable_policy(policy)
+        policies_manager.enabled_policy = policy
         allow(rule).to receive(:pass?).and_return(false)
       end
 
@@ -323,7 +323,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       let(:rule) { policy.rules.first }
 
       before do
-        policies_manager.enable_policy(policy)
+        policies_manager.enabled_policy = policy
         allow(rule).to receive(:pass?).and_return(false)
         allow(rule).to receive(:scope).and_return(:storage)
 
@@ -353,7 +353,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
       let(:rule) { policy.rules.first }
 
       before do
-        policies_manager.enable_policy(policy)
+        policies_manager.enabled_policy = policy
         allow(rule).to receive(:pass?).and_return(false)
         allow(rule).to receive(:scope).and_return(:bootloader)
 

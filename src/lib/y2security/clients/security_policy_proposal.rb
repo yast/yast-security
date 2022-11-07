@@ -179,7 +179,7 @@ module Y2Security
         policy = policies_manager.find_policy(id)
         return unless policy
 
-        enabled_policy = policies_manager.enabled_policy == policy ? nil : policy
+        enabled_policy = (policies_manager.enabled_policy == policy) ? nil : policy
         policies_manager.enabled_policy = enabled_policy
       end
 

@@ -46,7 +46,7 @@ describe Y2Security::SecurityPolicies::Manager do
       let(:env) { { "YAST_SECURITY_POLICY" => "" } }
 
       it "does not enable a policy" do
-        expect(subject.enabled_policies).to be_empty
+        expect(subject.enabled_policy).to be_nil
       end
     end
 
@@ -54,7 +54,7 @@ describe Y2Security::SecurityPolicies::Manager do
       let(:env) { { "YAST_SECURITY_POLICY" => "DisaStig" } }
 
       it "does not enable a policy" do
-        expect(subject.enabled_policies).to be_empty
+        expect(subject.enabled_policy).to be_nil
       end
     end
 
@@ -62,7 +62,7 @@ describe Y2Security::SecurityPolicies::Manager do
       let(:env) { { "YAST_SECURITY_POLICY" => "Stig" } }
 
       it "enables the policy" do
-        expect(subject.enabled_policies).to contain_exactly(disa_stig_policy)
+        expect(subject.enabled_policy).to eq(disa_stig_policy)
       end
     end
   end
@@ -102,7 +102,7 @@ describe Y2Security::SecurityPolicies::Manager do
     end
   end
 
-  describe "#enable_policy" do
+  describe "#enabled_policy=" do
     before do
       allow(subject).to receive(:require).with("installation/services")
         .and_return(true)
@@ -111,102 +111,64 @@ describe Y2Security::SecurityPolicies::Manager do
     context "if the given policy is unknown" do
       let(:policy) { Y2Security::SecurityPolicies::Policy.new(:unknown, "Unknown") }
 
-      it "does not enable the policy" do
-        subject.enable_policy(policy)
+      it "does not set the policy as enabled" do
+        subject.enabled_policy = policy
 
-        expect(subject.enabled_policies).to_not include(policy)
+        expect(subject.enabled_policy).to be_nil
+      end
+
+      it "removes the ssg-apply package" do
+        subject.enabled_policy = policy
+
+        expect(Yast::PackagesProposal.GetResolvables("security", :package))
+          .to_not include("ssg-apply")
       end
     end
 
     context "if the given policy is known" do
       let(:policy) { disa_stig_policy }
 
-      it "enables the policy" do
-        subject.enable_policy(policy)
+      it "sets the policy as enabled" do
+        subject.enabled_policy = policy
 
-        expect(subject.enabled_policies).to include(policy)
+        expect(subject.enabled_policy).to eq(policy)
       end
 
       it "adds the ssg-apply package" do
-        subject.enable_policy(policy)
+        subject.enabled_policy = policy
 
-        expect(Yast::PackagesProposal.GetResolvables("security", :package))
-          .to include("ssg-apply")
+        expect(Yast::PackagesProposal.GetResolvables("security", :package)).to include("ssg-apply")
       end
 
       after do
         Yast::PackagesProposal.RemoveResolvables("security", :package, ["ssg-apply"])
       end
     end
-  end
 
-  describe "#disable_policy" do
-    before do
-      subject.enable_policy(disa_stig_policy)
-    end
-
-    it "disables the given policy" do
-      subject.disable_policy(disa_stig_policy)
-
-      expect(subject.enabled_policies).to_not include(disa_stig_policy)
-    end
-
-    it "removes the ssg-apply package" do
-      subject.disable_policy(disa_stig_policy)
-
-      expect(Yast::PackagesProposal.GetResolvables("security", :package))
-        .to_not include("ssg-apply")
-    end
-
-    context "if more than one policy is enabled" do
-      let(:another_policy) do
-        instance_double(Y2Security::SecurityPolicies::Policy)
-      end
-
+    context "if the given policy is nil" do
       before do
-        subject.instance_variable_set(:@policies, [disa_stig_policy, another_policy])
-        subject.enable_policy(another_policy)
+        subject.enabled_policy = disa_stig_policy
       end
 
-      it "does not remove the package" do
-        subject.disable_policy(disa_stig_policy)
+      it "does not enable any policy" do
+        subject.enabled_policy = nil
+
+        expect(subject.enabled_policy).to be_nil
+      end
+
+      it "removes the ssg-apply package" do
+        subject.enabled_policy = nil
 
         expect(Yast::PackagesProposal.GetResolvables("security", :package))
-          .to include("ssg-apply")
-      end
-
-      after do
-        Yast::PackagesProposal.RemoveResolvables("security", :package, ["ssg-apply"])
-      end
-    end
-  end
-
-  describe "#enabled_policy?" do
-    context "if the given policy is enabled" do
-      before do
-        subject.enable_policy(disa_stig_policy)
-      end
-
-      it "returns true" do
-        expect(subject.enabled_policy?(disa_stig_policy)).to eq(true)
-      end
-    end
-
-    context "if the given policy is not enabled" do
-      before do
-        subject.disable_policy(disa_stig_policy)
-      end
-
-      it "returns false" do
-        expect(subject.enabled_policy?(disa_stig_policy)).to eq(false)
+          .to_not include("ssg-apply")
       end
     end
   end
 
   describe "#failing_rules" do
-    context "if there are no enabled policies" do
+    context "if there is no enabled policy" do
       before do
-        subject.disable_policy(disa_stig_policy)
+        subject.enabled_policy = nil
       end
 
       it "returns an empty array" do
@@ -214,35 +176,42 @@ describe Y2Security::SecurityPolicies::Manager do
       end
     end
 
-    context "if there are enabled policies" do
-      let(:rule) { instance_double(Y2Security::SecurityPolicies::Rule) }
-
+    context "if a policy is enabled" do
       before do
-        subject.enable_policy(disa_stig_policy)
+        subject.enabled_policy = disa_stig_policy
 
         allow(disa_stig_policy).to receive(:failing_rules)
-          .with(target_config, include_disabled: false, scope: nil).and_return([rule])
+          .with(target_config, include_disabled: false, scope: nil).and_return([rule1, rule2])
       end
 
-      it "returns a hash where the keys are the policies and the values the failing rules" do
-        expect(subject.failing_rules(target_config)).to eq(disa_stig_policy => [rule])
+      let(:rule1) { instance_double(Y2Security::SecurityPolicies::Rule) }
+      let(:rule2) { instance_double(Y2Security::SecurityPolicies::Rule) }
+
+      it "returns a list with the failing rules of the enabled policy" do
+        expect(subject.failing_rules(target_config)).to contain_exactly(rule1, rule2)
       end
 
       context "when a scope is given" do
+        before do
+          allow(disa_stig_policy).to receive(:failing_rules)
+            .with(target_config, include_disabled: false, scope: :bootloader).and_return([rule1])
+        end
+
         it "only includes the rules for the given scope" do
-          expect(disa_stig_policy).to receive(:failing_rules)
-            .with(target_config, include_disabled: false, scope: :bootloader).and_return([rule])
           expect(subject.failing_rules(target_config, scope: :bootloader))
-            .to eq(disa_stig_policy => [rule])
+            .to contain_exactly(rule1)
         end
       end
 
       context "when disabled rules must be included" do
+        before do
+          allow(disa_stig_policy).to receive(:failing_rules)
+            .with(target_config, include_disabled: true, scope: nil).and_return([rule1, rule2])
+        end
+
         it "includes disabled rules" do
-          expect(disa_stig_policy).to receive(:failing_rules)
-            .with(target_config, include_disabled: true, scope: nil).and_return([rule])
           expect(subject.failing_rules(target_config, include_disabled: true))
-            .to eq(disa_stig_policy => [rule])
+            .to contain_exactly(rule1, rule2)
         end
       end
     end
@@ -282,7 +251,7 @@ describe Y2Security::SecurityPolicies::Manager do
 
     context "when a security policy is enabled" do
       before do
-        subject.enable_policy(disa_stig_policy)
+        subject.enabled_policy = disa_stig_policy
         subject.failing_rules(target_config, scope: :unknown, include_disabled: true)
       end
 
@@ -347,7 +316,7 @@ describe Y2Security::SecurityPolicies::Manager do
 
     context "when no security policy is enabled" do
       before do
-        subject.disable_policy(disa_stig_policy)
+        subject.enabled_policy = nil
       end
 
       it "does not write the ssg-apply config" do
