@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Tue Nov  8 17:40:12 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Disable the ssg-apply service if the selected SCAP action is
+  "do nothing" (related to jsc#SLE-24764).
+- 4.4.16
+
+-------------------------------------------------------------------
 Mon Aug 29 13:14:15 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - Add support for DISA STIG security policy validation
