@@ -125,11 +125,10 @@ module Y2Security
         return unless enabled_policy
 
         write_failing_rules(config, enabled_policy)
-
+        adjust_service
         return if scap_action == :none
 
         write_config(enabled_policy)
-        enable_service
       end
 
     private
@@ -208,9 +207,13 @@ module Y2Security
       SERVICE_NAME = "ssg-apply".freeze
       private_constant :SERVICE_NAME
 
-      # Enables the ssg-apply service to remedy the system after the installation
-      def enable_service
-        Yast::Service.enable(SERVICE_NAME)
+      # Enables or disables the ssg-apply service according to the selected SCAP action
+      def adjust_service
+        if scap_action == :none
+          Yast::Service.disable(SERVICE_NAME)
+        else
+          Yast::Service.enable(SERVICE_NAME)
+        end
       end
 
       def add_package
