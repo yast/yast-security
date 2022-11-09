@@ -275,8 +275,8 @@ describe Y2Security::SecurityPolicies::Manager do
           expect(File).to_not exist(override_file_path)
         end
 
-        it "does not enable the service" do
-          expect(Yast::Service).to_not receive(:enable)
+        it "disables the service" do
+          expect(Yast::Service).to receive(:disable).with("ssg-apply")
           subject.write
         end
       end
