@@ -21,11 +21,16 @@ SRC_PATH = File.expand_path("../../src", __FILE__)
 DATA_PATH = File.join(File.expand_path(File.dirname(__FILE__)), "data")
 ENV["Y2DIR"] = SRC_PATH
 
+ENV["LC_ALL"] = "en_US.UTF-8"
+ENV["LANG"] = "en_US.UTF-8"
+
 require "yast"
 require "yast/rspec"
-require_relative 'SCRStub'
+require_relative "SCRStub"
+require_relative "support/storage_helpers"
 
 ::RSpec.configure do |config|
+  config.include Y2Security::RSpec::StorageHelpers
   config.include SCRStub
 
   config.mock_with :rspec do |mocks|
@@ -63,5 +68,29 @@ if ENV["COVERAGE"]
       SimpleCov::Formatter::HTMLFormatter,
       SimpleCov::Formatter::LcovFormatter
     ]
+  end
+end
+
+# Mock the Installation::SecuritySettings class to avoid
+# a cyclic dependency on yast2-installation
+module Installation
+  class SecuritySettings
+    include Singleton
+
+    def enable_firewall; end
+
+    def enable_firewall!; end
+  end
+
+  class Services
+    class << self
+      def enabled
+        @enabled ||= []
+      end
+
+      def reset
+        enabled.clear
+      end
+    end
   end
 end

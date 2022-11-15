@@ -17,6 +17,7 @@
 #
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
+
 require_relative "../../test_helper"
 require "y2security/autoinst_profile/security_section"
 
@@ -28,6 +29,25 @@ describe Y2Security::AutoinstProfile::SecuritySection do
       section = described_class.new_from_hashes(profile)
       expect(section.selinux_mode).to eql("enforcing")
       expect(section.lsm_select).to eql("selinux")
+      expect(section.security_policy.action).to be_nil
+      expect(section.security_policy.policy).to be_nil
+    end
+
+    context "when a list of security policies is given" do
+      let(:profile) do
+        {
+          "security_policy" => {
+            "action" => "remediate", "enabled_policies" => ["stig"]
+          }
+        }
+      end
+
+      it "adds one section for each policy" do
+        section = described_class.new_from_hashes(profile)
+        policy_section = section.security_policy
+        expect(policy_section.action).to eq("remediate")
+        expect(policy_section.parent).to eq(section)
+      end
     end
   end
 end

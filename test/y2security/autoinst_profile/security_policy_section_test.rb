@@ -1,4 +1,5 @@
-# Copyright (c) [2021] SUSE LLC
+#!/usr/bin/env rspec
+# Copyright (c) [2022] SUSE LLC
 #
 # All Rights Reserved.
 #
@@ -17,5 +18,27 @@
 # To contact SUSE LLC about this file by physical or electronic mail, you may
 # find current contact information at www.suse.com.
 
-require "y2security/autoinst_profile/security_section"
+require_relative "../../test_helper"
 require "y2security/autoinst_profile/security_policy_section"
+
+describe Y2Security::AutoinstProfile::SecurityPolicySection do
+  describe ".new_from_hashes" do
+    let(:profile) do
+      { "action" => "remediate", "policy" => "stig" }
+    end
+
+    it "sets the SCAP action and the list of enabled policies" do
+      section = described_class.new_from_hashes(profile)
+      expect(section.action).to eq("remediate")
+      expect(section.policy).to eq("stig")
+    end
+
+    context "an empty profile" do
+      it "returns an empty section" do
+        section = described_class.new_from_hashes({})
+        expect(section.action).to be_nil
+        expect(section.policy).to be_nil
+      end
+    end
+  end
+end

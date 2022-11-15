@@ -4,6 +4,7 @@ require_relative "test_helper"
 require "yast2/systemd/service"
 require "security/ctrl_alt_del_config"
 require "security/display_manager"
+require "y2security/security_policies/manager"
 
 def services_for(names, aliases = {})
   names.map do |n|
@@ -791,6 +792,53 @@ module Yast
           expect(Security.Import("EXTRA_SERVICES" => "yes")).to eql(true)
 
           expect(Security.Settings["FAIL_DELAY"]).to eql("5")
+        end
+      end
+
+      context "when a security policy is expected to be enabled" do
+        let(:policies_manager) { Y2Security::SecurityPolicies::Manager.instance }
+        let(:policy) { policies_manager.policies.first }
+
+        let(:profile) do
+          {
+            "action" => "remediate",
+            "policy" => "stig"
+          }
+        end
+
+        after do
+          policies_manager.enabled_policy = nil
+        end
+
+        it "enables the security policy" do
+          subject.Import("SECURITY_POLICY" => profile)
+          expect(policies_manager.enabled_policy).to eq(policy)
+        end
+
+        it "sets the SCAP action" do
+          expect(policies_manager.scap_action).to eq(:remediate)
+        end
+
+        context "but a not valid SCAP action is given" do
+          let(:profile) do
+            { "action" => "unknown", "policy" => "stig" }
+          end
+
+          it "logs an error" do
+            expect(subject.log).to receive(:error).with("SCAP action 'unknown' is not valid.")
+            subject.Import("SECURITY_POLICY" => profile)
+          end
+        end
+
+        context "but the policy does not exist" do
+          let(:profile) do
+            { "policy" => "dummy" }
+          end
+
+          it "logs an error" do
+            expect(subject.log).to receive(:error).with("The security policy 'dummy' is unknown.")
+            subject.Import("SECURITY_POLICY" => profile)
+          end
         end
       end
     end

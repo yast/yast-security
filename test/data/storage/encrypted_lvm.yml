@@ -1,0 +1,26 @@
+---
+- disk:
+    name: /dev/sda
+    size: 50 GiB
+    partition_table:  ms-dos
+    partitions:
+
+    - partition:
+        size:         unlimited
+        name:         /dev/sda1
+        id:           lvm
+        encryption:
+          name: "/dev/mapper/cr_sda1"
+
+- lvm_vg:
+    vg_name: vg0
+    lvm_pvs:
+        - lvm_pv:
+            blk_device: /dev/mapper/cr_sda1
+
+    lvm_lvs:
+        - lvm_lv:
+            size:         20 GiB
+            lv_name:      lv1
+            file_system:  ext4
+            mount_point:  "/"
