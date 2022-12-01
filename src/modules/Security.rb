@@ -687,7 +687,7 @@ module Yast
 
       # Security read dialog caption
       caption = _("Saving Security Configuration")
-      steps = 4
+      steps = 5
 
       Progress.New(
         caption,
