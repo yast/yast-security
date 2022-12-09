@@ -18,6 +18,10 @@
 # find current contact information at www.suse.com.
 
 require "installation/autoinst_profile/section_with_attributes"
+require "y2security/security_policies/manager"
+require "cfa/ssg_apply"
+
+Yast.import "Service"
 
 module Y2Security
   module AutoinstProfile
@@ -42,6 +46,21 @@ module Y2Security
       #   @return [String,nil] SCAP action to apply on first boot ("none", "scan" or "remediate")
       # @!attribute policy
       #   @return [String,nil] Enabled policy
+
+      # Clones the security policy settings from the underlying system
+      def self.new_from_system
+        file = CFA::SsgApply.load
+        section = new
+        return section if file.empty?
+
+        section.action = if Y2Security::SecurityPolicies::Manager.instance.service_enabled?
+          (file.remediate == "yes") ? "remediate" : "scan"
+        else
+          "none"
+        end
+        section.policy = file.profile
+        section
+      end
     end
   end
 end
