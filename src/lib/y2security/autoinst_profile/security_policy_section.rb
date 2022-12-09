@@ -53,10 +53,12 @@ module Y2Security
         section = new
         return section if file.empty?
 
-        section.action = if Y2Security::SecurityPolicies::Manager.instance.service_enabled?
-          (file.remediate == "yes") ? "remediate" : "scan"
-        else
+        section.action = if !Y2Security::SecurityPolicies::Manager.instance.service_enabled?
           "none"
+        elsif file.remediate == "yes"
+          "remediate"
+        else
+          "scan"
         end
         section.policy = file.profile
         section
