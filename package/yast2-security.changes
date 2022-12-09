@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Fri Dec  9 11:56:50 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- AutoYaST: export security policy settings (related to
+  jsc#SLE-24764).
+- 4.4.18
+
+-------------------------------------------------------------------
 Thu Dec  1 14:56:43 UTC 2022 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Fixed wrong steps count causing a crash during saving (bsc#1205918)
