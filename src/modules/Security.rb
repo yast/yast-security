@@ -853,7 +853,10 @@ module Yast
         settings["PASSWD_USE_CRACKLIB"] = settings.delete("PASSWD_USE_PWQUALITY")
       end
 
-      settings.merge(lsm_config.export)
+      merged_settings = settings.merge(lsm_config.export)
+      security_policy = export_security_policy
+      merged_settings.merge!("security_policy" => security_policy) unless security_policy.empty?
+      merged_settings
     end
 
     # Create a textual summary and a list of unconfigured cards
@@ -961,6 +964,14 @@ module Yast
       manager.scap_action = section.action.to_sym if section.action
     rescue Y2Security::SecurityPolicies::Manager::UnknownSCAPAction
       log.error("SCAP action '#{section.action}' is not valid.")
+    end
+
+    # Export security policy settings
+    #
+    # @return [Hash]
+    def export_security_policy
+      Y2Security::AutoinstProfile::SecurityPolicySection.new_from_system
+        .to_hashes
     end
 
     # Sets @missing_mandatory_services honoring the systemd aliases

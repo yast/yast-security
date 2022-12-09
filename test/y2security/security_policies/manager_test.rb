@@ -330,4 +330,26 @@ describe Y2Security::SecurityPolicies::Manager do
       end
     end
   end
+
+  describe "#service_enabled?" do
+    before do
+      allow(Yast::Service).to receive(:enabled?).with("ssg-apply").and_return(enabled?)
+    end
+
+    context "when the ssg-apply service is enabled" do
+      let(:enabled?) { true }
+
+      it "returns true" do
+        expect(subject.service_enabled?).to eq(true)
+      end
+    end
+
+    context "when the ssg-apply service is disabled" do
+      let(:enabled?) { false }
+
+      it "returns false" do
+        expect(subject.service_enabled?).to eq(false)
+      end
+    end
+  end
 end
