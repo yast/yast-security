@@ -181,8 +181,6 @@ module Y2Security
         dir = File.dirname(path)
         FileUtils.mkdir_p(dir) unless Dir.exist?(dir)
         rules = policy.failing_rules(config)
-        return if rules.none?
-
         content = rules.map(&:id).sort.join("\n") + "\n"
         File.write(path, content)
       end
