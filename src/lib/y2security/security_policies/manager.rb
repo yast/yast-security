@@ -138,6 +138,13 @@ module Y2Security
         Yast::Service.enabled?(SERVICE_NAME)
       end
 
+      # Determines whether security policies were checked at installation time
+      #
+      # @return [Boolean]
+      def on_installation?
+        ::File.exist?(FAILING_RULES_FILE_PATH)
+      end
+
     private
 
       # Writes custom configuration for the ssg-apply script

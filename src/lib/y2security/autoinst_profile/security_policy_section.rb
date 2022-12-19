@@ -49,11 +49,12 @@ module Y2Security
 
       # Clones the security policy settings from the underlying system
       def self.new_from_system
-        file = CFA::SsgApply.load
+        manager = Y2Security::SecurityPolicies::Manager.instance
         section = new
-        return section if file.empty?
+        return section unless manager.on_installation?
 
-        section.action = if !Y2Security::SecurityPolicies::Manager.instance.service_enabled?
+        file = CFA::SsgApply.load
+        section.action = if !manager.service_enabled?
           "none"
         elsif file.remediate == "yes"
           "remediate"

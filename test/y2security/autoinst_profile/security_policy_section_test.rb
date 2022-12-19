@@ -43,15 +43,26 @@ describe Y2Security::AutoinstProfile::SecurityPolicySection do
   end
 
   describe ".new_from_system" do
+    let(:on_installation?) { true }
     let(:service_enabled?) { true }
 
-    before do
-      allow(CFA::SsgApply).to receive(:load).and_return(file)
-      allow(Yast::Service).to receive(:enabled?).and_return(service_enabled?)
+    let(:manager) do
+      instance_double(
+        Y2Security::SecurityPolicies::Manager, service_enabled?: service_enabled?,
+        on_installation?: on_installation?
+      )
     end
 
-    context "when the ssg-apply service does not exist" do
-      let(:file) { instance_double(CFA::SsgApply, empty?: true) }
+    let(:file) { instance_double(CFA::SsgApply, profile: "stig") }
+
+    before do
+      allow(Y2Security::SecurityPolicies::Manager).to receive(:instance)
+        .and_return(manager)
+      allow(CFA::SsgApply).to receive(:load).and_return(file)
+    end
+
+    context "when the security policies did not run at installation time" do
+      let(:on_installation?) { false }
 
       it "returns an empty section" do
         section = described_class.new_from_system
@@ -59,8 +70,7 @@ describe Y2Security::AutoinstProfile::SecurityPolicySection do
       end
     end
 
-    context "when the ssg-apply service exists is disabled" do
-      let(:file) { instance_double(CFA::SsgApply, empty?: false, profile: "stig") }
+    context "when the ssg-apply service is disabled" do
       let(:service_enabled?) { false }
 
       it "returns a section with action set to 'none'" do
@@ -71,7 +81,7 @@ describe Y2Security::AutoinstProfile::SecurityPolicySection do
 
     context "when the remediate option is set to 'yes'" do
       let(:file) do
-        instance_double(CFA::SsgApply, empty?: false, profile: "stig", remediate: "yes")
+        instance_double(CFA::SsgApply, profile: "stig", remediate: "yes")
       end
 
       it "returns a section with action set to 'remediate'" do
@@ -82,7 +92,7 @@ describe Y2Security::AutoinstProfile::SecurityPolicySection do
 
     context "when the remediate option is set to 'no'" do
       let(:file) do
-        instance_double(CFA::SsgApply, empty?: false, profile: "stig", remediate: "no")
+        instance_double(CFA::SsgApply, profile: "stig", remediate: "no")
       end
 
       it "returns a section with action set to 'scan'" do
@@ -91,5 +101,4 @@ describe Y2Security::AutoinstProfile::SecurityPolicySection do
       end
     end
   end
-
 end
