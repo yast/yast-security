@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Dec 19 15:30:12 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- AutoYaST: only export the security policy settings if they were
+  checked during installation (related to jsc#SLE-24764).
+- 4.4.19
+
+-------------------------------------------------------------------
 Fri Dec  9 11:56:50 UTC 2022 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
 
 - AutoYaST: export security policy settings (related to
