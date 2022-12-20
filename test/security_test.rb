@@ -656,8 +656,17 @@ module Yast
     end
 
     describe "#Export" do
+      let(:security_policy_section) do
+        instance_double(
+          Y2Security::AutoinstProfile::SecurityPolicySection,
+          to_hashes: { "profile" => "stig" }
+        )
+      end
+
       before do
         Security.lsm_config.reset
+        allow(Y2Security::AutoinstProfile::SecurityPolicySection)
+          .to receive(:new_from_system).and_return(security_policy_section)
       end
 
       it "merges LSM settings" do
@@ -669,6 +678,22 @@ module Yast
         settings = Security.Export
         expect(settings["lsm_select"]).to eq("selinux")
         expect(settings["selinux_mode"]).to eq("permissive")
+      end
+
+      context "when there are no security_policy settings" do
+        let(:security_policy_section) do
+          instance_double(Y2Security::AutoinstProfile::SecurityPolicySection, to_hashes: {})
+        end
+
+        it "merges security policy settings" do
+          settings = Security.Export
+          expect(settings.keys).to_not include("security_policy")
+        end
+      end
+
+      it "merges security policy settings" do
+        settings = Security.Export
+        expect(settings["security_policy"]).to eq("profile" => "stig")
       end
     end
 

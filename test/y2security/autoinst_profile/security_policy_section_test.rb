@@ -41,4 +41,55 @@ describe Y2Security::AutoinstProfile::SecurityPolicySection do
       end
     end
   end
+
+  describe ".new_from_system" do
+    let(:service_enabled?) { true }
+
+    before do
+      allow(CFA::SsgApply).to receive(:load).and_return(file)
+      allow(Yast::Service).to receive(:enabled?).and_return(service_enabled?)
+    end
+
+    context "when the ssg-apply service does not exist" do
+      let(:file) { instance_double(CFA::SsgApply, empty?: true) }
+
+      it "returns an empty section" do
+        section = described_class.new_from_system
+        expect(section.to_hashes).to be_empty
+      end
+    end
+
+    context "when the ssg-apply service exists is disabled" do
+      let(:file) { instance_double(CFA::SsgApply, empty?: false, profile: "stig") }
+      let(:service_enabled?) { false }
+
+      it "returns a section with action set to 'none'" do
+        section = described_class.new_from_system
+        expect(section.action).to eq("none")
+      end
+    end
+
+    context "when the remediate option is set to 'yes'" do
+      let(:file) do
+        instance_double(CFA::SsgApply, empty?: false, profile: "stig", remediate: "yes")
+      end
+
+      it "returns a section with action set to 'remediate'" do
+        section = described_class.new_from_system
+        expect(section.action).to eq("remediate")
+      end
+    end
+
+    context "when the remediate option is set to 'no'" do
+      let(:file) do
+        instance_double(CFA::SsgApply, empty?: false, profile: "stig", remediate: "no")
+      end
+
+      it "returns a section with action set to 'scan'" do
+        section = described_class.new_from_system
+        expect(section.action).to eq("scan")
+      end
+    end
+  end
+
 end
