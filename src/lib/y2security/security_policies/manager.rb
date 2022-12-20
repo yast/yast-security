@@ -126,8 +126,6 @@ module Y2Security
 
         write_failing_rules(config, enabled_policy)
         adjust_service
-        return if scap_action == :none
-
         write_config(enabled_policy)
       end
 
