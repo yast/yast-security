@@ -126,9 +126,14 @@ module Y2Security
 
         write_failing_rules(config, enabled_policy)
         adjust_service
-        return if scap_action == :none
-
         write_config(enabled_policy)
+      end
+
+      # Determines whether the service to scan/remediate the system is enabled or not
+      #
+      # @return [Boolean]
+      def service_enabled?
+        Yast::Service.enabled?(SERVICE_NAME)
       end
 
     private

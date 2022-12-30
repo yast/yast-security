@@ -267,12 +267,19 @@ describe Y2Security::SecurityPolicies::Manager do
         expect(content).to eq("rule1\nrule2\n")
       end
 
+      it "writes the ssg-apply configuration" do
+        subject.write
+        expect(File).to exist(override_file_path)
+      end
+
       context "when neither checks or remedation are enabled" do
         let(:scap_action) { :none }
 
-        it "does not write the configuration" do
+        it "disables ssg-apply remediation" do
           subject.write
-          expect(File).to_not exist(override_file_path)
+          apply_file = CFA::SsgApply.load
+          expect(apply_file.remediate).to eq("no")
+          expect(apply_file.profile).to eq("stig")
         end
 
         it "disables the service" do
@@ -327,6 +334,28 @@ describe Y2Security::SecurityPolicies::Manager do
       it "does not enable the service" do
         expect(Yast::Service).to_not receive(:enable)
         subject.write
+      end
+    end
+  end
+
+  describe "#service_enabled?" do
+    before do
+      allow(Yast::Service).to receive(:enabled?).with("ssg-apply").and_return(enabled?)
+    end
+
+    context "when the ssg-apply service is enabled" do
+      let(:enabled?) { true }
+
+      it "returns true" do
+        expect(subject.service_enabled?).to eq(true)
+      end
+    end
+
+    context "when the ssg-apply service is disabled" do
+      let(:enabled?) { false }
+
+      it "returns false" do
+        expect(subject.service_enabled?).to eq(false)
       end
     end
   end
