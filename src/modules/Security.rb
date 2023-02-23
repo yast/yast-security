@@ -554,6 +554,11 @@ module Yast
     # Write login.defs configuration
     def write_shadow_config
       SHADOW_ATTRS.each do |attr|
+        # bsc#1208492 shadow config uses login.defs attr formatting
+        # like <Key><space>*<Value>, so empty value is not supported
+        # and moreover can cause crash in login.defs lens
+        next if @Settings[attr].nil? || @Settings[attr].empty?
+
         shadow_config.public_send("#{attr.to_s.downcase}=", @Settings[attr])
       end
       encr = @Settings.fetch("PASSWD_ENCRYPTION", default_encrypt_method)
