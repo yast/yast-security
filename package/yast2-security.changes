@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Mon Oct 30 09:09:26 UTC 2023 - Knut Anderssen <kanderssen@suse.com>
+
+- Do not load the security settings from the security policy until
+  needed (bsc#1216615).
+- 4.5.7
+
+-------------------------------------------------------------------
 Wed Feb 22 17:28:54 UTC 2023 - Michal Filka <mfilka@suse.com>
 
 - bsc#1208492
