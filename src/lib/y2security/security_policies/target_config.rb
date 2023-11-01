@@ -41,17 +41,19 @@ module Y2Security
       # @return [Bootloader::BootloaderFactory]
       attr_accessor :bootloader
 
-      # @return [Y2Network::Config]
-      attr_accessor :network
-
-      # @return [Installation::SecuritySettings, nil] nil if yast2-installation is not available
-      attr_accessor :security
-
       def initialize
         @storage = default_devicegraph
-        @network = default_network_config
         @bootloader = default_bootloader
-        @security = default_security_settings
+      end
+
+      # @return [Y2Network::Config]
+      def network
+        default_network_config
+      end
+
+      # @return [Installation::SecuritySettings, nil] nil if yast2-installation is not available
+      def security
+        default_security_settings
       end
 
       # Default devicegraph
