@@ -59,7 +59,7 @@ module Yast
       end
 
       # Not really needed, but looks better than returning nil
-      let(:empty_bash_output) { {"exit" => 0, "stdout" => "", "stderr" => ""} }
+      let(:empty_bash_output) { { "exit" => 0, "stdout" => "", "stderr" => "" } }
 
       it "defines the system behavior" do
         allow(Pam).to receive(:List).and_return(["pwquality", "pwhistory"])
