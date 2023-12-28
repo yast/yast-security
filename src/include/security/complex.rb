@@ -136,13 +136,13 @@ module Yast
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
+        if [:abort, :cancel].include?(ret)
           if ReallyAbort()
             break
           else
             next
           end
-        elsif ret == :back || ret == :next
+        elsif [:back, :next].include?(ret)
           break
         elsif ret == :custom
           next

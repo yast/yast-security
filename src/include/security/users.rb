@@ -100,7 +100,7 @@ module Yast
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
+        if [:abort, :cancel].include?(ret)
           if ReallyAbort()
             break
           else

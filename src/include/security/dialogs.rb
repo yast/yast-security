@@ -435,7 +435,7 @@ module Yast
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
+        if [:abort, :cancel].include?(ret)
           if ReallyAbort()
             break
           else
@@ -493,8 +493,7 @@ module Yast
               client_ret = WFM.CallFunction(client, [])
               Builtins.y2milestone("Client returned %1", client_ret)
 
-              if client_ret == :next || client_ret == :ok ||
-                  client_ret == :finish || client_ret == true
+              if [:next, :ok, :finish, true].include?(client_ret)
                 # update the current value
                 if @link_update_mapping.has_key?(ret)
                   Popup.Feedback(_("Analyzing system"), Message.takes_a_while) do
@@ -617,7 +616,7 @@ module Yast
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
+        if [:abort, :cancel].include?(ret)
           if ReallyAbort()
             break
           else
@@ -697,7 +696,7 @@ module Yast
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
+        if [:abort, :cancel].include?(ret)
           if ReallyAbort()
             break
           else
@@ -807,7 +806,7 @@ module Yast
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
+        if [:abort, :cancel].include?(ret)
           if ReallyAbort()
             break
           else
@@ -933,7 +932,7 @@ module Yast
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
+        if [:abort, :cancel].include?(ret)
           if ReallyAbort()
             break
           else
