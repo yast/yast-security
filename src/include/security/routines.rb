@@ -118,7 +118,7 @@ module Yast
           id_t = Convert.to_string(it)
           id_s = Convert.to_string(it)
         else
-          it_list = Convert.convert(it, :from => "any", :to => "list <string>")
+          it_list = Convert.convert(it, from: "any", to: "list <string>")
 
           id_t = Ops.get(it_list, 0, "")
           id_s = Ops.get(it_list, 1, "")

@@ -109,7 +109,7 @@ module Yast
         end
         @ret = Security.Import(
           Map.KeysToUpper(
-            Convert.convert(@param, :from => "map", :to => "map <string, any>")
+            Convert.convert(@param, from: "map", to: "map <string, any>")
           )
         )
       # Return required packages
@@ -120,8 +120,8 @@ module Yast
         @ret = Map.KeysToLower(
           Convert.convert(
             Security.Export,
-            :from => "map",
-            :to   => "map <string, any>"
+            from: "map",
+            to:   "map <string, any>"
           )
         )
       # Read current state
