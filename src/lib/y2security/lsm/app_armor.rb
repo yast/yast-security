@@ -25,6 +25,7 @@ module Y2Security
     # Class for handling AppArmor kernel boot params
     class AppArmor < Base
       def initialize
+        super
         textdomain "security"
       end
 

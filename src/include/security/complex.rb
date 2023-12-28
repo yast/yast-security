@@ -144,10 +144,7 @@ module Yast
           else
             next
           end
-        elsif ret == :back
-          break
-        elsif ret == :next
-          # check_*
+        elsif ret == :back || ret == :next
           break
         elsif ret == :custom
           next

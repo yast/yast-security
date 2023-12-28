@@ -209,9 +209,9 @@ module Yast
     def checkMinMax(minID, maxID)
       min = UI.QueryWidget(Id(minID), :Value)
       max = UI.QueryWidget(Id(maxID), :Value)
-      if (Ops.is_integer?(min) || Ops.is_float?(min)) && ((Ops.is_integer?(max) || Ops.is_float?(max))) && Ops.less_or_equal(
-        min, max
-      )
+      if (Ops.is_integer?(min) || Ops.is_float?(min)) &&
+          (Ops.is_integer?(max) || Ops.is_float?(max)) &&
+          Ops.less_or_equal(min, max)
         return true
       end
 

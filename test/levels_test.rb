@@ -9,6 +9,7 @@ module Yast
     attr_reader :Levels
 
     def initialize
+      super
       Yast.import "Security"
       Yast.include self, "security/levels.rb"
     end

@@ -240,6 +240,7 @@ Naming/MethodName:
     - 'src/include/security/users.rb'
     - 'src/include/security/wizards.rb'
     - 'src/modules/Security.rb'
+    - 'test/levels_test.rb'
 
 # Offense count: 9
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
