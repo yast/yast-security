@@ -168,14 +168,6 @@ Style/RescueModifier:
   Exclude:
     - 'src/modules/Security.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-# Configuration parameters: ConvertCodeThatCanStartToReturnNil, Whitelist.
-# Whitelist: present?, blank?, presence, try, try!
-Style/SafeNavigation:
-  Exclude:
-    - 'src/modules/Security.rb'
-
 # Offense count: 3
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, ConsistentQuotesInMultiline.

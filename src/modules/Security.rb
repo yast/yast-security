@@ -993,7 +993,7 @@ module Yast
         # If the name is not allowed, try the aliases
         if !allowed
           names = alias_names(service)
-          allowed = names && names.any? { |name| allowed_service?(name) }
+          allowed = names&.any? { |name| allowed_service?(name) }
         end
         log.info("Found extra service: #{service.name}") unless allowed
         allowed
@@ -1056,7 +1056,7 @@ module Yast
   # @return [Array<String>] alias names excluding '.service'
   def alias_names(service)
     names = service.properties.names
-    names.split.map { |name| name.sub(/\.service$/, "") } if names
+    names&.split&.map { |name| name.sub(/\.service$/, "") }
   end
 
   Security = SecurityClass.new
