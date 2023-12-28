@@ -96,16 +96,6 @@ Naming/VariableName:
     - 'src/include/security/widgets.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, SingleLineConditionsOnly, IncludeTernaryExpressions.
-# SupportedStyles: assign_to_condition, assign_inside_condition
-Style/ConditionalAssignment:
-  Exclude:
-    - 'src/include/security/helps.rb'
-    - 'src/include/security/routines.rb'
-    - 'src/modules/Security.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/Dir:

@@ -335,17 +335,17 @@ module Yast
         "<p><b><big>Boot Security</big></b></p>\n<p>In this dialog, change various boot settings related to security.</p>"
       )
 
-      if ::Security::CtrlAltDelConfig.default == "reboot"
+      details = if ::Security::CtrlAltDelConfig.default == "reboot"
         # TRANSLATORS: part of help text - default action (the default is
         # reboot)
-        details = _(
+        _(
           "Usually the system reboots. Sometimes it is desirable\n" \
           "to ignore this event, for example, when the system serves as both\n" \
           "workstation and server."
         )
       else
         # TRANSLATORS: part of help text - default action (the default is halt)
-        details = _(
+        _(
           "By default the system halts but sometimes it is desirable\n" \
           "to ignore this event, for example, when the system serves as both\n" \
           "workstation and server."

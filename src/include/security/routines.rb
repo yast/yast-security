@@ -137,16 +137,15 @@ module Yast
         combo = Builtins.add(combo, Item(Id(value), value, true))
       end
 
-      combobox = nil
       opt_t = nil
       opt_t = Opt(:editable) if Ops.get_string(m, "Editable", "no") == "yes"
       if Ops.get_string(m, "Notify", "no") == "yes"
         opt_t = opt_t == nil ? Opt(:notify) : Builtins.add(opt_t, :notify)
       end
-      if opt_t == nil
-        combobox = ComboBox(Id(widget_id), label, combo)
+      combobox = if opt_t == nil
+        ComboBox(Id(widget_id), label, combo)
       else
-        combobox = ComboBox(Id(widget_id), opt_t, label, combo)
+        ComboBox(Id(widget_id), opt_t, label, combo)
       end
 
       VBox(Left(combobox), VSeparator())
@@ -158,11 +157,7 @@ module Yast
       ret = UI.QueryWidget(Id(id), :Value)
       new = ""
       if Ops.is_boolean?(ret)
-        if ret == true
-          new = "yes"
-        else
-          new = "no"
-        end
+        new = ret ? "yes" : "no"
       elsif Ops.is_integer?(ret)
         new = Builtins.sformat("%1", ret)
       elsif Ops.is_string?(ret)

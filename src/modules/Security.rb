@@ -99,10 +99,10 @@ module Yast
     def init_settings
       # Services to check
       srv_file = Directory.find_data_file("security/services.yml")
-      if srv_file
-        srv_lists = YAML.load_file(srv_file) rescue {}
+      srv_lists = if srv_file
+        YAML.load_file(srv_file) rescue {}
       else
-        srv_lists = {}
+        {}
       end
 
       # These must be running
@@ -828,10 +828,10 @@ module Yast
           if @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
             # using the old sysconfig AY format
             val = settings[@sysctl2sysconfig[k]].to_s
-            if @sysctl[k].is_a?(TrueClass) || @sysctl[k].is_a?(FalseClass)
-              tmpSettings[k] = SYSCTL_VALUES_TO_BOOLEAN.key?(val) ? SYSCTL_VALUES_TO_BOOLEAN[val] : val
+            tmpSettings[k] = if @sysctl[k].is_a?(TrueClass) || @sysctl[k].is_a?(FalseClass)
+              SYSCTL_VALUES_TO_BOOLEAN.key?(val) ? SYSCTL_VALUES_TO_BOOLEAN[val] : val
             else
-              tmpSettings[k] = SYSCTL_VALUES_TO_INTSTRING.key?(val) ? SYSCTL_VALUES_TO_INTSTRING[val] : val
+              SYSCTL_VALUES_TO_INTSTRING.key?(val) ? SYSCTL_VALUES_TO_INTSTRING[val] : val
             end
           else
             # using old login defs settings ?
