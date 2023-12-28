@@ -417,7 +417,7 @@ module Yast
 
     def read_permissions
       # Removing "local" from the string
-      permissions = @Settings["PERMISSION_SECURITY"].to_s.split(" ")
+      permissions = @Settings["PERMISSION_SECURITY"].to_s.split
       @Settings["PERMISSION_SECURITY"] = permissions.delete_if {|p|
         p == "local" }.join(" ")
 
@@ -514,9 +514,10 @@ module Yast
 
     # Write the value of ctrl-alt-delete behavior
     def write_console_shutdown(ca)
-      if ca == "reboot"
+      case ca
+      when "reboot"
         SCR.Execute(path(".target.remove"), @ctrl_alt_del_file)
-      elsif ca == "halt"
+      when "halt"
         SCR.Execute(
           path(".target.bash"),
           Builtins.sformat(
@@ -797,7 +798,7 @@ module Yast
       # conversion to true/false
       ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
         if settings.key?(key) && settings[key].is_a?(::String)
-          settings[key] = settings[key] == "1" ? true : false
+          settings[key] = settings[key] == "1"
         end
       end
 

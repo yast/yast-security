@@ -278,7 +278,8 @@ module Yast
           ""
         )
         id = Ops.get_string(setting, "id", "")
-        if type == :table
+        case type
+        when :table
           ret_table = Builtins.add(
             ret_table,
             Item(
@@ -288,7 +289,7 @@ module Yast
               Ops.get_boolean(setting, "is_secure", false) ? "\u2714" : "\u2718"
             )
           )
-        elsif type == :richtext
+        when :richtext
           # add one line for each security setting
           ret = Ops.add(
             ret,
@@ -311,10 +312,11 @@ module Yast
         end
       end 
 
-      if type == :table
+      case type
+      when :table
         Builtins.y2debug("Overview table: %1", ret_table)
         return deep_copy(ret_table)
-      elsif type == :richtext
+      when :richtext
         # close the table
         ret = Ops.add(ret, "</TABLE>")
 
@@ -336,7 +338,8 @@ module Yast
       end
 
       # add extra help to service related options
-      if help_id == "MANDATORY_SERVICES"
+      case help_id
+      when "MANDATORY_SERVICES"
         missing = Security.MissingMandatoryServices
 
         if missing != nil && missing != []
@@ -355,7 +358,7 @@ module Yast
         else
           help += _("<P>All basic services are enabled.</P>")
         end
-      elsif help_id == "EXTRA_SERVICES"
+      when "EXTRA_SERVICES"
         extra = Security.ExtraServices
 
         if extra != nil && extra != []

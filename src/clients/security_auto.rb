@@ -71,18 +71,19 @@ module Yast
       Builtins.y2debug("param=%1", @param)
 
       # Create a  summary
-      if @func == "Summary"
+      case @func
+      when "Summary"
         @summary = Security.Summary
         @ret = Ops.get_string(@summary, 0, "")
       # Reset configuration
-      elsif @func == "Reset"
+      when "Reset"
         Security.Import({})
         @ret = {}
       # Change configuration (run AutoSequence)
-      elsif @func == "Change"
+      when "Change"
         @ret = SecurityAutoSequence()
       # Import Data
-      elsif @func == "Import"
+      when "Import"
 
         # Checking value semantic
         if @param.key?("selinux_mode")
@@ -114,10 +115,10 @@ module Yast
           )
         )
       # Return required packages
-      elsif @func == "Packages"
+      when "Packages"
         @ret = {}
       # Return actual state
-      elsif @func == "Export"
+      when "Export"
         @ret = Map.KeysToLower(
           Convert.convert(
             Security.Export,
@@ -126,21 +127,21 @@ module Yast
           )
         )
       # Read current state
-      elsif @func == "Read"
+      when "Read"
         Yast.import "Progress"
         Progress.off
         @ret = Security.Read
         Progress.on
       # Write givven settings
-      elsif @func == "Write"
+      when "Write"
         Yast.import "Progress"
         Security.write_only = true
         Progress.off
         @ret = Security.Write
         Progress.on
-      elsif @func == "SetModified"
+      when "SetModified"
         @ret = Security.SetModified
-      elsif @func == "GetModified"
+      when "GetModified"
         @ret = Security.GetModified
       else
         Builtins.y2error("Unknown function: %1", @func)

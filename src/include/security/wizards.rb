@@ -67,21 +67,22 @@ module Yast
         # needed for ncurses UI
         ret = Wizard.QueryTreeItem if ret == :wizardTree
 
-        if ret == "main"
+        case ret
+        when "main"
           ret = MainDialog()
-        elsif ret == "overview"
+        when "overview"
           ret = OverviewDialog()
-        elsif ret == "password"
+        when "password"
           ret = PassDialog()
-        elsif ret == "boot"
+        when "boot"
           ret = BootDialog()
-        elsif ret == "login"
+        when "login"
           ret = LoginDialog()
-        elsif ret == "users"
+        when "users"
           ret = AdduserDialog()
-        elsif ret == "misc"
+        when "misc"
           ret = MiscDialog()
-        elsif ret == :next || ret == :abort || ret == :finish
+        when :next, :abort, :finish
           break
         else
           Builtins.y2error("Unknown return value %1, aborting...", ret)
