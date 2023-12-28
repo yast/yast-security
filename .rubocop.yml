@@ -162,13 +162,6 @@ Style/NonNilCheck:
     - 'src/include/security/routines.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 4
-# Cop supports --auto-correct.
-# Configuration parameters: PreferredDelimiters.
-Style/PercentLiteralDelimiters:
-  Exclude:
-    - 'test/security_test.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.
