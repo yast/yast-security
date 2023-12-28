@@ -422,7 +422,7 @@ module Yast
       @Settings["PERMISSION_SECURITY"] = "secure" if @Settings["PERMISSION_SECURITY"].empty?
 
       log.debug "PERMISSION_SECURITY (after #{__callee__}): " \
-                "#{@Settings['PERMISSION_SECURITY']}"
+                "#{@Settings["PERMISSION_SECURITY"]}"
 
       @Settings["PERMISSION_SECURITY"]
     end
@@ -441,7 +441,7 @@ module Yast
         "active_console"
       end
       log.debug "HIBERNATE_SYSTEM (after #{__callee__}): " \
-                "#{@Settings['HIBERNATE_SYSTEM']}"
+                "#{@Settings["HIBERNATE_SYSTEM"]}"
     end
 
     # The name of the PAM module to deal with password quality. Either
