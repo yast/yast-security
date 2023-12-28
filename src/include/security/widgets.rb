@@ -261,9 +261,12 @@ module Yast
           }
         }
 
+      return unless @display_manager
+      return if @display_manager.shutdown_var_name.empty?
+
       @WIDGETS.merge!(
         @display_manager.shutdown_var_name => shutdown_login_manager_widget
-      ) if @display_manager && !@display_manager.shutdown_var_name.empty?
+      )
     end
 
     def shutdown_login_manager_widget
