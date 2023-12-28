@@ -132,8 +132,8 @@ module Yast
       }
 
       @link_update_mapping = {
-        "MANDATORY_SERVICES" => lambda { Security.ReadServiceSettings },
-        "EXTRA_SERVICES"     => lambda { Security.ReadServiceSettings }
+        "MANDATORY_SERVICES" => -> { Security.ReadServiceSettings },
+        "EXTRA_SERVICES"     => -> { Security.ReadServiceSettings }
       }
     end
 

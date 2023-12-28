@@ -133,16 +133,6 @@ Style/GuardClause:
     - 'src/include/security/users.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 10
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: line_count_dependent, lambda, literal
-Style/Lambda:
-  Exclude:
-    - 'src/include/security/complex.rb'
-    - 'src/include/security/dialogs.rb'
-    - 'src/include/security/wizards.rb'
-
 # Offense count: 4
 # Cop supports --auto-correct.
 Style/LineEndConcatenation:

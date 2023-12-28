@@ -98,12 +98,12 @@ module Yast
     # @return [Object] Returned value from WizardSequencer() call
     def MainSequence
       aliases = {
-        "main"     => lambda { MainDialog() },
-        "password" => lambda { PassDialog() },
-        "boot"     => lambda { BootDialog() },
-        "login"    => lambda { LoginDialog() },
-        "adduser"  => lambda { AdduserDialog() },
-        "misc"     => lambda { MiscDialog() }
+        "main"     => -> { MainDialog() },
+        "password" => -> { PassDialog() },
+        "boot"     => -> { BootDialog() },
+        "login"    => -> { LoginDialog() },
+        "adduser"  => -> { AdduserDialog() },
+        "misc"     => -> { MiscDialog() }
       }
 
       sequence = {
@@ -128,7 +128,7 @@ module Yast
     # Whole configuration of security
     # @return [Object] Returned value from WizardSequencer() call
     def SecuritySequence
-      aliases = { "main" => lambda { TreeDialog() }, "write" => [lambda do
+      aliases = { "main" => -> { TreeDialog() }, "write" => [lambda do
         WriteDialog()
       end, true] }
 
