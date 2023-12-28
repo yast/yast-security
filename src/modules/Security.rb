@@ -393,7 +393,7 @@ module Yast
       @Settings["CRACKLIB_DICT_PATH"] = "/usr/lib/cracklib_dict"
 
       pam_pwquality = Pam.Query(pwquality_module) || {}
-      @Settings["PASSWD_USE_PWQUALITY"] = pam_pwquality.size > 0 ? "yes" : "no"
+      @Settings["PASSWD_USE_PWQUALITY"] = pam_pwquality.empty? ? "no" : "yes"
 
       pam_pwquality.fetch("password", []).each do |entry|
         key, value = entry.split("=")

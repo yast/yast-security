@@ -167,9 +167,3 @@ Style/NonNilCheck:
 Style/RescueModifier:
   Exclude:
     - 'src/modules/Security.rb'
-
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/ZeroLengthPredicate:
-  Exclude:
-    - 'src/modules/Security.rb'
