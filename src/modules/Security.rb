@@ -1070,8 +1070,6 @@ module Yast
     names = service.properties.names
     if names
       names.split.map { |name| name.sub(/\.service$/, "") }
-    else
-      nil
     end
   end
 
