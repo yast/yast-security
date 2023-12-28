@@ -30,7 +30,7 @@
 # They are in one huge map called HELPS.
 module Yast
   module SecurityHelpsInclude
-    def initialize_security_helps(include_target)
+    def initialize_security_helps(_include_target)
       textdomain "security"
 
       @display_manager = Security.display_manager

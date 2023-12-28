@@ -95,7 +95,7 @@ module Yast
       "none" => N_("Nobody")
     }
 
-    def initialize_security_widgets(include_target)
+    def initialize_security_widgets(_include_target)
       textdomain "security"
 
       @display_manager = Security.display_manager
