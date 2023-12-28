@@ -238,7 +238,7 @@ module Yast
         to_remember = Builtins.tointeger(
           Ops.get_string(options, "remember", "0")
         )
-        if to_remember == nil || Ops.less_than(to_remember, 0) ||
+        if to_remember.nil? || Ops.less_than(to_remember, 0) ||
             Ops.greater_than(to_remember, 400)
           # error message
           Report.Error(

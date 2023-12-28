@@ -87,7 +87,7 @@ module Yast
       # "Widget" == "IntField"
       if widget == "IntField"
         intval = Builtins.tointeger(value)
-        intval = 0 if intval == nil
+        intval = 0 if intval.nil?
         return VBox(
           Left(IntField(Id(widget_id), label, minval, maxval, intval)),
           VSeparator()
@@ -110,7 +110,7 @@ module Yast
         # string|list it
         Builtins.y2debug("li=%1 (%2)", li, i)
         it = Ops.get(li, i)
-        it = "" if it == nil
+        it = "" if it.nil?
         Builtins.y2debug("it=%1", it)
         id_t = ""
         id_s = ""
@@ -138,9 +138,9 @@ module Yast
       opt_t = nil
       opt_t = Opt(:editable) if Ops.get_string(m, "Editable", "no") == "yes"
       if Ops.get_string(m, "Notify", "no") == "yes"
-        opt_t = opt_t == nil ? Opt(:notify) : Builtins.add(opt_t, :notify)
+        opt_t = opt_t.nil? ? Opt(:notify) : Builtins.add(opt_t, :notify)
       end
-      combobox = if opt_t == nil
+      combobox = if opt_t.nil?
         ComboBox(Id(widget_id), label, combo)
       else
         ComboBox(Id(widget_id), opt_t, label, combo)
