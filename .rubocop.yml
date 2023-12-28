@@ -4,7 +4,7 @@ inherit_from:
 
 # Offense count: 20
 Metrics/AbcSize:
-  Max: 126
+  Max: 127
 
 # Offense count: 19
 # Configuration parameters: CountComments, ExcludedMethods.
@@ -132,12 +132,6 @@ Style/GuardClause:
     - 'src/include/security/dialogs.rb'
     - 'src/include/security/users.rb'
     - 'src/modules/Security.rb'
-
-# Offense count: 4
-# Cop supports --auto-correct.
-Style/LineEndConcatenation:
-  Exclude:
-    - 'src/include/security/dialogs.rb'
 
 # Offense count: 1
 # Cop supports --auto-correct.

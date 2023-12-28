@@ -167,11 +167,11 @@ module Yast
       if type == :richtext
         # open a table
         ret = Builtins.sformat(
-          "<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>\n" +
-            "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" +
-            "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" +
-            "<TD></TD>\n" +
-            "</TR> <TR></TR>",
+          "<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>\n" \
+          "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
+          "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
+          "<TD></TD>\n" \
+          "</TR> <TR></TR>",
           # table header
           _("Security Setting"),
           _("Status"),
