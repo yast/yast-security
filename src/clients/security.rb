@@ -156,7 +156,7 @@ module Yast
       # Finish
       Builtins.y2milestone("Security module finished")
       Builtins.y2milestone("----------------------------------------")
-      deep_copy(@ret) 
+      deep_copy(@ret)
 
       # EOF
     end

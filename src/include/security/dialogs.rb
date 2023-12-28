@@ -160,8 +160,6 @@ module Yast
       return ret if plaintext
 
       Builtins.sformat("<A HREF=\"%1\">%2</A>", option, ret)
-
-      
     end
 
     def OverviewText(type)
@@ -310,7 +308,7 @@ module Yast
             )
           )
         end
-      end 
+      end
 
       case type
       when :table

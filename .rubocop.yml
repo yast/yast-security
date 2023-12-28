@@ -2,18 +2,6 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
 
-# Offense count: 7
-# Cop supports --auto-correct.
-# Configuration parameters: AllowInHeredoc.
-Layout/TrailingWhitespace:
-  Exclude:
-    - 'src/clients/security.rb'
-    - 'src/clients/security_auto.rb'
-    - 'src/clients/security_summary.rb'
-    - 'src/include/security/dialogs.rb'
-    - 'src/lib/security/clients/security_finish.rb'
-    - 'test/security_test.rb'
-
 # Offense count: 8
 Lint/LiteralAsCondition:
   Exclude:
