@@ -108,7 +108,7 @@ module Yast
       # These must be running
       @mandatory_services = srv_lists["mandatory_services"] || []
       # It must be an array of arrays (meaning [ [ || ] && && ])
-      @mandatory_services.map! {|s| s.is_a?(::String) ? [s] : s }
+      @mandatory_services.map! { |s| s.is_a?(::String) ? [s] : s }
       # These can be ignored (if they are running it's OK)
       @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
@@ -418,7 +418,7 @@ module Yast
     def read_permissions
       # Removing "local" from the string
       permissions = @Settings["PERMISSION_SECURITY"].to_s.split
-      @Settings["PERMISSION_SECURITY"] = permissions.delete_if {|p|
+      @Settings["PERMISSION_SECURITY"] = permissions.delete_if { |p|
         p == "local"
       }.join(" ")
 
@@ -1069,7 +1069,7 @@ module Yast
   def alias_names(service)
     names = service.properties.names
     if names
-      names.split.map {|name| name.sub(/\.service$/, "") }
+      names.split.map { |name| name.sub(/\.service$/, "") }
     else
       nil
     end
