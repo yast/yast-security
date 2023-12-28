@@ -159,9 +159,9 @@ module Yast
 
       return ret if plaintext
 
-      ret = Builtins.sformat("<A HREF=\"%1\">%2</A>", option, ret)
+      Builtins.sformat("<A HREF=\"%1\">%2</A>", option, ret)
 
-      ret
+      
     end
 
     def OverviewText(type)
@@ -455,7 +455,7 @@ module Yast
 
           break
         # user clicked a link in the richtext
-        elsif Ops.is_string?(ret) && Builtins.haskey(Security.Settings, ret) ||
+        elsif (Ops.is_string?(ret) && Builtins.haskey(Security.Settings, ret)) ||
             ret == :change
           if ret == :change
             # query the table in textmode
@@ -517,8 +517,8 @@ module Yast
           else
             Builtins.y2error("Unknown action for link %1", ret)
           end
-        elsif Ops.is_string?(ret) &&
-            Builtins.regexpmatch(Convert.to_string(ret), "^help_") ||
+        elsif (Ops.is_string?(ret) &&
+            Builtins.regexpmatch(Convert.to_string(ret), "^help_")) ||
             ret == :descr
           help_id = no_richtext ?
             Convert.to_string(UI.QueryWidget(Id(:table), :CurrentItem)) :

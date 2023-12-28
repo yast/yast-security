@@ -139,7 +139,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
             it "includes a link to modify the storage settings" do
               expect(subject.make_proposal({})).to include(
-                "preformatted_proposal" => %r{<a href=.*storage:\">modify settings</a>}
+                "preformatted_proposal" => %r{<a href=.*storage:">modify settings</a>}
               )
             end
           end
@@ -151,7 +151,7 @@ describe Y2Security::Clients::SecurityPolicyProposal do
 
             it "includes a link to modify the bootloader settings" do
               expect(subject.make_proposal({})).to include(
-                "preformatted_proposal" => %r{<a href=.*bootloader:\">modify settings</a>}
+                "preformatted_proposal" => %r{<a href=.*bootloader:">modify settings</a>}
               )
             end
           end

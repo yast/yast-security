@@ -232,7 +232,7 @@ describe Y2Security::LSM::Selinux do
   end
 
   describe "#running_mode" do
-    let(:getenforce_cmd) { ["/usr/sbin/getenforce", stdout: :capture] }
+    let(:getenforce_cmd) { ["/usr/sbin/getenforce", { stdout: :capture }] }
     let(:cheetah_error) { Cheetah::ExecutionFailed.new([], "", nil, nil) }
 
     context "when getenforce tool is available" do

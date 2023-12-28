@@ -1,6 +1,6 @@
 # use the shared YaST defaults
 inherit_from:
-  /usr/share/YaST2/data/devtools/data/rubocop-0.71.0_yast_style.yml
+  /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
 
 # Offense count: 1
 # Cop supports --auto-correct.
@@ -14,7 +14,7 @@ Layout/AccessModifierIndentation:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: with_first_argument, with_fixed_indentation
-Layout/AlignArguments:
+Layout/ArgumentAlignment:
   Exclude:
     - 'src/include/security/dialogs.rb'
 
@@ -24,7 +24,7 @@ Layout/AlignArguments:
 # SupportedHashRocketStyles: key, separator, table
 # SupportedColonStyles: key, separator, table
 # SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
-Layout/AlignHash:
+Layout/HashAlignment:
   Exclude:
     - 'src/clients/security.rb'
     - 'src/include/security/dialogs.rb'
@@ -48,7 +48,7 @@ Layout/EndAlignment:
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle, IndentationWidth.
 # SupportedStyles: consistent, consistent_relative_to_receiver, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
-Layout/IndentFirstArgument:
+Layout/FirstArgumentIndentation:
   Exclude:
     - 'src/include/security/dialogs.rb'
     - 'src/include/security/helps.rb'
@@ -105,7 +105,7 @@ Layout/SpaceInsideReferenceBrackets:
 # Offense count: 59
 # Cop supports --auto-correct.
 # Configuration parameters: IndentationWidth.
-Layout/Tab:
+Layout/IndentationStyle:
   Exclude:
     - 'src/clients/security.rb'
     - 'src/clients/security_auto.rb'
@@ -199,7 +199,7 @@ Metrics/CyclomaticComplexity:
 # Cop supports --auto-correct.
 # Configuration parameters: AutoCorrect, AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
 # URISchemes: http, https
-Metrics/LineLength:
+Layout/LineLength:
   Exclude:
     - 'src/include/security/dialogs.rb'
     - 'src/include/security/helps.rb'
@@ -244,7 +244,7 @@ Naming/MethodName:
 # Offense count: 9
 # Configuration parameters: MinNameLength, AllowNamesEndingInNumbers, AllowedNames, ForbiddenNames.
 # AllowedNames: io, id, to, by, on, in, at, ip, db
-Naming/UncommunicativeMethodParamName:
+Naming/MethodParameterName:
   Exclude:
     - 'src/include/security/routines.rb'
     - 'src/modules/Security.rb'

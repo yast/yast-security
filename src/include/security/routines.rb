@@ -143,10 +143,10 @@ module Yast
       if Ops.get_string(m, "Notify", "no") == "yes"
         opt_t = opt_t == nil ? Opt(:notify) : Builtins.add(opt_t, :notify)
       end
-      if opt_t != nil
-        combobox = ComboBox(Id(_ID), opt_t, label, combo)
-      else
+      if opt_t == nil
         combobox = ComboBox(Id(_ID), label, combo)
+      else
+        combobox = ComboBox(Id(_ID), opt_t, label, combo)
       end
 
       VBox(Left(combobox), VSeparator())
@@ -209,11 +209,12 @@ module Yast
     def checkMinMax(minID, maxID)
       min = UI.QueryWidget(Id(minID), :Value)
       max = UI.QueryWidget(Id(maxID), :Value)
-      if Ops.is_integer?(min) || Ops.is_float?(min)
-        if Ops.is_integer?(max) || Ops.is_float?(max)
-          return true if Ops.less_or_equal(min, max)
-        end
+      if (Ops.is_integer?(min) || Ops.is_float?(min)) && ((Ops.is_integer?(max) || Ops.is_float?(max))) && Ops.less_or_equal(
+        min, max
+      )
+        return true
       end
+
       false
     end
 
