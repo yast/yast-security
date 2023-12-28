@@ -406,9 +406,7 @@ module Yast
       pam_history = Pam.Query("pwhistory") || {}
       pam_history.fetch("password", []).each do |entry|
         key, value = entry.split("=")
-        if key == "remember" && value
-          @Settings["PASSWD_REMEMBER_HISTORY"] = value
-        end
+        @Settings["PASSWD_REMEMBER_HISTORY"] = value if key == "remember" && value
       end
       log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
@@ -580,9 +578,7 @@ module Yast
       if @Settings["PASSWD_USE_PWQUALITY"] == "yes"
         Pam.Add(pwquality_module)
         pth = @Settings["CRACKLIB_DICT_PATH"]
-        if pth && pth != "/usr/lib/cracklib_dict"
-          Pam.Add(pwquality_module + "-dictpath=#{pth}")
-        end
+        Pam.Add(pwquality_module + "-dictpath=#{pth}") if pth && pth != "/usr/lib/cracklib_dict"
       else
         Pam.Remove(pwquality_module)
       end
@@ -781,9 +777,7 @@ module Yast
     # @return [Boolean] True on success
     def Import(settings)
       settings = deep_copy(settings)
-      if settings.key?("KERNEL.SYSRQ")
-        settings["kernel.sysrq"] = settings.delete("KERNEL.SYSRQ")
-      end
+      settings["kernel.sysrq"] = settings.delete("KERNEL.SYSRQ") if settings.key?("KERNEL.SYSRQ")
       if settings.key?("NET.IPV4.TCP_SYNCOOKIES")
         settings["net.ipv4.tcp_syncookies"] = settings.delete("NET.IPV4.TCP_SYNCOOKIES")
       end
@@ -796,9 +790,7 @@ module Yast
 
       # conversion to true/false
       ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
-        if settings.key?(key) && settings[key].is_a?(::String)
-          settings[key] = settings[key] == "1"
-        end
+        settings[key] = settings[key] == "1" if settings.key?(key) && settings[key].is_a?(::String)
       end
 
       if settings.key?("PASSWD_USE_CRACKLIB")
@@ -1064,9 +1056,7 @@ module Yast
   # @return [Array<String>] alias names excluding '.service'
   def alias_names(service)
     names = service.properties.names
-    if names
-      names.split.map { |name| name.sub(/\.service$/, "") }
-    end
+    names.split.map { |name| name.sub(/\.service$/, "") } if names
   end
 
   Security = SecurityClass.new

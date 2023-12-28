@@ -440,9 +440,7 @@ module Yast
           # the current item has been selected, do not change to the same dialog
           if ret == "overview"
             # preselect the item if it has been unselected
-            if Wizard.QueryTreeItem != "overview"
-              Wizard.SelectTreeItem("overview")
-            end
+            Wizard.SelectTreeItem("overview") if Wizard.QueryTreeItem != "overview"
 
             next
           end
@@ -820,9 +818,7 @@ module Yast
           # the current item has been selected, do not change to the same dialog
           if ret == "password"
             # preselect the item if it has been unselected
-            if Wizard.QueryTreeItem != "password"
-              Wizard.SelectTreeItem("password")
-            end
+            Wizard.SelectTreeItem("password") if Wizard.QueryTreeItem != "password"
 
             next
           end
