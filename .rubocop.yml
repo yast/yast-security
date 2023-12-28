@@ -162,12 +162,6 @@ Style/NonNilCheck:
     - 'src/include/security/routines.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/RedundantConditional:
-  Exclude:
-    - 'src/modules/Security.rb'
-
 # Offense count: 2
 # Cop supports --auto-correct.
 Style/RescueModifier:
