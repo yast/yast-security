@@ -162,15 +162,6 @@ Style/NonNilCheck:
     - 'src/include/security/routines.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: short, verbose
-Style/PreferredHashMethods:
-  Exclude:
-    - 'src/include/security/dialogs.rb'
-    - 'test/SCRStub.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/RedundantConditional:

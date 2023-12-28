@@ -495,7 +495,7 @@ module Yast
 
               if [:next, :ok, :finish, true].include?(client_ret)
                 # update the current value
-                if @link_update_mapping.has_key?(ret)
+                if @link_update_mapping.key?(ret)
                   Popup.Feedback(_("Analyzing system"), Message.takes_a_while) do
                     @link_update_mapping[ret].call
                   end
