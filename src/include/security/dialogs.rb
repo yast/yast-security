@@ -851,9 +851,9 @@ module Yast
           )
           min = Convert.to_integer(UI.QueryWidget(Id("PASS_MIN_LEN"), :Value))
           if Ops.greater_than(
-              min,
-              Ops.get_integer(Security.PasswordMaxLengths, enc, 8)
-            )
+            min,
+            Ops.get_integer(Security.PasswordMaxLengths, enc, 8)
+          )
             # Popup text, %1 is number
             Popup.Error(
               Builtins.sformat(
