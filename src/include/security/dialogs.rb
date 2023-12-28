@@ -337,7 +337,7 @@ module Yast
       when "MANDATORY_SERVICES"
         missing = Security.MissingMandatoryServices
 
-        if missing != nil && missing != []
+        if !missing.nil? && missing != []
           srvs = ""
 
           Builtins.foreach(missing) do |l|
@@ -356,7 +356,7 @@ module Yast
       when "EXTRA_SERVICES"
         extra = Security.ExtraServices
 
-        if extra != nil && extra != []
+        if !extra.nil? && extra != []
           srvs = Builtins.mergestring(extra, "<BR>")
           help +=
             _("<P>These extra services are enabled:<BR><B>%s</B></P>") % srvs
@@ -366,7 +366,7 @@ module Yast
         end
       end
 
-      if help != nil && help != ""
+      if !help.nil? && help != ""
         Popup.LongText(
           Ops.get(@label_mapping, help_id, _("Description")),
           RichText(help),

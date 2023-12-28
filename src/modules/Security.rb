@@ -288,7 +288,7 @@ module Yast
     # Abort function
     # @return blah blah lahjk
     def Abort
-      return Builtins.eval(@AbortFunction) == true if @AbortFunction != nil
+      return Builtins.eval(@AbortFunction) == true if !@AbortFunction.nil?
 
       false
     end

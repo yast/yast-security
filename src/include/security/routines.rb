@@ -165,7 +165,7 @@ module Yast
         new = nil
       end
 
-      if new != nil && Ops.get(Security.Settings, id, "") != new
+      if !new.nil? && Ops.get(Security.Settings, id, "") != new
         Builtins.y2milestone(
           "Setting modified (%1): %2 -> %3)",
           id,

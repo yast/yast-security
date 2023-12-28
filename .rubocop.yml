@@ -152,12 +152,3 @@ Style/NilComparison:
   Exclude:
     - 'src/clients/security.rb'
     - 'src/include/security/routines.rb'
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: IncludeSemanticChanges.
-Style/NonNilCheck:
-  Exclude:
-    - 'src/include/security/dialogs.rb'
-    - 'src/include/security/routines.rb'
-    - 'src/modules/Security.rb'
