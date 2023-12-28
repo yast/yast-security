@@ -117,11 +117,6 @@ Style/Documentation:
     - 'src/lib/security/display_manager.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 16
-# Cop supports --auto-correct.
-Style/Encoding:
-  Enabled: false
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/ExpandPathArguments:
