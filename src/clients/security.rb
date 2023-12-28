@@ -204,7 +204,7 @@ module Yast
       options = deep_copy(options)
       if Builtins.haskey(options, "passwd") &&
           Ops.get_string(options, "passwd", "") !=
-            Ops.get(Security.Settings, "PASSWD_ENCRYPTION", "")
+              Ops.get(Security.Settings, "PASSWD_ENCRYPTION", "")
         Ops.set(
           Security.Settings,
           "PASSWD_ENCRYPTION",
@@ -214,7 +214,7 @@ module Yast
       end
       if Builtins.haskey(options, "crack") &&
           Ops.get_string(options, "crack", "") !=
-            Ops.get(Security.Settings, "PASSWD_USE_PWQUALITY", "")
+              Ops.get(Security.Settings, "PASSWD_USE_PWQUALITY", "")
         Ops.set(
           Security.Settings,
           "PASSWD_USE_PWQUALITY",
@@ -237,7 +237,7 @@ module Yast
 
       if Builtins.haskey(options, "remember") &&
           Ops.get(Security.Settings, "PASSWD_REMEMBER_HISTORY", "0") !=
-            Ops.get_string(options, "remember", "0")
+              Ops.get_string(options, "remember", "0")
         to_remember = Builtins.tointeger(
           Ops.get_string(options, "remember", "0")
         )
