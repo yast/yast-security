@@ -251,7 +251,7 @@ module Yast
         },
         {
           "id"        => "net.ipv4.tcp_syncookies",
-          "is_secure" => Security.Settings[ "net.ipv4.tcp_syncookies" ]
+          "is_secure" => Security.Settings["net.ipv4.tcp_syncookies"]
         },
         {
           "id"        => "net.ipv4.ip_forward",
