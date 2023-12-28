@@ -437,13 +437,13 @@ module Yast
       hibernate = SCR.Read(Builtins.add(path(".etc.polkit-default-privs_local"), action)).to_s
 
       @Settings["HIBERNATE_SYSTEM"] = case hibernate
-                                      when "auth_admin:auth_admin:auth_admin"
-                                        "auth_admin"
-                                      when "yes:yes:yes"
-                                        "anyone"
-                                      else
-                                        "active_console"
-                                      end
+      when "auth_admin:auth_admin:auth_admin"
+        "auth_admin"
+      when "yes:yes:yes"
+        "anyone"
+      else
+        "active_console"
+      end
       log.debug "HIBERNATE_SYSTEM (after #{__callee__}): " \
                 "#{@Settings['HIBERNATE_SYSTEM']}"
     end
