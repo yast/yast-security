@@ -4,7 +4,7 @@ inherit_from:
 
 # Offense count: 20
 Metrics/AbcSize:
-  Max: 127
+  Max: 128
 
 # Offense count: 19
 # Configuration parameters: CountComments, ExcludedMethods.
@@ -51,7 +51,7 @@ Metrics/ModuleLength:
 
 # Offense count: 20
 Metrics/PerceivedComplexity:
-  Max: 39
+  Max: 40
 
 # Offense count: 2
 # Configuration parameters: ExpectMatchingDefinition, Regex, IgnoreExecutableScripts, AllowedAcronyms.
@@ -132,11 +132,6 @@ Style/GuardClause:
     - 'src/include/security/dialogs.rb'
     - 'src/include/security/users.rb'
     - 'src/modules/Security.rb'
-
-# Offense count: 4
-Style/MultilineTernaryOperator:
-  Exclude:
-    - 'src/include/security/dialogs.rb'
 
 # Offense count: 9
 Style/MultipleComparison:

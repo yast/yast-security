@@ -288,16 +288,20 @@ module Yast
               "<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD ALIGN=center>%2</TD><TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD><TD>%4</TD></TR>",
               Ops.get(@label_mapping, id, ""),
               SecurityStatus(id, false),
-              Ops.get_boolean(setting, "is_secure", false) ?
-                "<SUP><FONT COLOR=green SIZE=20>\u2714</FONT></SUP>" :
-                "<FONT COLOR=red SIZE=20><SUP>\u2718</SUP></FONT>",
-              Builtins.haskey(@help_mapping, id) ?
+              if Ops.get_boolean(setting, "is_secure", false)
+                "<SUP><FONT COLOR=green SIZE=20>\u2714</FONT></SUP>"
+              else
+                "<FONT COLOR=red SIZE=20><SUP>\u2718</SUP></FONT>"
+              end,
+              if Builtins.haskey(@help_mapping, id)
                 Builtins.sformat(
                   "<A HREF=\"help_%1\">%2</A>&nbsp;&nbsp;<BR>",
                   id,
                   _("Help")
-                ) :
+                )
+              else
                 ""
+              end
             )
           )
         end
@@ -390,9 +394,11 @@ module Yast
         _("Status"),
         Center(_("Security Status"))
       )
-      contents = no_richtext ?
-        Table(Id(:table), Opt(:immediate), tabheader, OverviewText(:table)) :
+      contents = if no_richtext
+        Table(Id(:table), Opt(:immediate), tabheader, OverviewText(:table))
+      else
         RichText(Id(:rtext), OverviewText(:richtext))
+      end
 
       if no_richtext
         # add a button box below the table
@@ -512,9 +518,11 @@ module Yast
         elsif (Ops.is_string?(ret) &&
             Builtins.regexpmatch(Convert.to_string(ret), "^help_")) ||
             ret == :descr
-          help_id = no_richtext ?
-            Convert.to_string(UI.QueryWidget(Id(:table), :CurrentItem)) :
+          help_id = if no_richtext
+            Convert.to_string(UI.QueryWidget(Id(:table), :CurrentItem))
+          else
             Builtins.regexpsub(Convert.to_string(ret), "^help_(.*)", "\\1")
+          end
           Builtins.y2milestone("Clicked help link: %1", help_id)
 
           DisplayHelpPopup(help_id)
