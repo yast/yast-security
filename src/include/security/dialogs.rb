@@ -168,8 +168,10 @@ module Yast
         # open a table
         ret = Builtins.sformat(
           "<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>\n" \
-          "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
-          "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
+          "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2" \
+          "&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
+          "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3" \
+          "&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
           "<TD></TD>\n" \
           "</TR> <TR></TR>",
           # table header
@@ -285,7 +287,9 @@ module Yast
           ret = Ops.add(
             ret,
             Builtins.sformat(
-              "<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD ALIGN=center>%2</TD><TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD><TD>%4</TD></TR>",
+              "<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD>" \
+              "<TD ALIGN=center>%2</TD>" \
+              "<TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD><TD>%4</TD></TR>",
               Ops.get(@label_mapping, id, ""),
               SecurityStatus(id, false),
               if Ops.get_boolean(setting, "is_secure", false)
@@ -836,7 +840,8 @@ module Yast
             Popup.Error(
               Builtins.sformat(
                 _(
-                  "The minimum password length cannot be larger than the maximum.\nThe maximum password length for the selected encryption method is %1."
+                  "The minimum password length cannot be larger than the maximum.\n" \
+                  "The maximum password length for the selected encryption method is %1."
                 ),
                 Ops.get_integer(Security.PasswordMaxLengths, enc, 8)
               )

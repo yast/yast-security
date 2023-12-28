@@ -2,68 +2,38 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
 
-# Offense count: 20
 Metrics/AbcSize:
   Max: 128
 
-# Offense count: 19
-# Configuration parameters: CountComments, ExcludedMethods.
-# ExcludedMethods: refine
 Metrics/BlockLength:
   Max: 591
   Exclude:
     - 'test/**/*.rb'
 
-# Offense count: 9
-# Configuration parameters: CountBlocks.
 Metrics/BlockNesting:
   Max: 6
 
-# Offense count: 1
-# Configuration parameters: CountComments.
 Metrics/ClassLength:
   Max: 650
 
-# Offense count: 19
 Metrics/CyclomaticComplexity:
   Max: 34
 
-# Offense count: 41
-# Cop supports --auto-correct.
-# Configuration parameters: AutoCorrect, AllowHeredoc, AllowURI, URISchemes, IgnoreCopDirectives, IgnoredPatterns.
-# URISchemes: http, https
-Layout/LineLength:
-  Exclude:
-    - 'src/include/security/dialogs.rb'
-    - 'src/include/security/helps.rb'
-    - 'src/lib/y2security/autoinst_profile/security_section.rb'
-    - 'src/modules/Security.rb'
-
-# Offense count: 22
-# Configuration parameters: CountComments, ExcludedMethods.
 Metrics/MethodLength:
-  Max: 259
+  Max: 315
 
-# Offense count: 7
-# Configuration parameters: CountComments.
 Metrics/ModuleLength:
   Max: 760
 
-# Offense count: 20
 Metrics/PerceivedComplexity:
   Max: 40
 
-# Offense count: 2
-# Configuration parameters: ExpectMatchingDefinition, Regex, IgnoreExecutableScripts, AllowedAcronyms.
-# AllowedAcronyms: CLI, DSL, ACL, API, ASCII, CPU, CSS, DNS, EOF, GUID, HTML, HTTP, HTTPS, ID, IP, JSON, LHS, QPS, RAM, RHS, RPC, SLA, SMTP, SQL, SSH, TCP, TLS, TTL, UDP, UI, UID, UUID, URI, URL, UTF8, VM, XML, XMPP, XSRF, XSS
 Naming/FileName:
   Exclude:
     - 'src/modules/Security.rb'
     - 'test/SCRStub.rb'
 
-# Offense count: 38
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: snake_case, camelCase
+# Do not break API
 Naming/MethodName:
   Exclude:
     - 'src/clients/security.rb'
@@ -96,26 +66,9 @@ Naming/VariableName:
     - 'src/include/security/widgets.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 16
+# TODO: if someone has too much spare time, feel free to enable it
 Style/Documentation:
-  Exclude:
-    - 'spec/**/*'
-    - 'test/**/*'
-    - 'src/clients/security.rb'
-    - 'src/clients/security_auto.rb'
-    - 'src/clients/security_summary.rb'
-    - 'src/include/security/complex.rb'
-    - 'src/include/security/dialogs.rb'
-    - 'src/include/security/helps.rb'
-    - 'src/include/security/levels.rb'
-    - 'src/include/security/routines.rb'
-    - 'src/include/security/users.rb'
-    - 'src/include/security/widgets.rb'
-    - 'src/include/security/wizards.rb'
-    - 'src/lib/security/clients/security_finish.rb'
-    - 'src/lib/security/ctrl_alt_del_config.rb'
-    - 'src/lib/security/display_manager.rb'
-    - 'src/modules/Security.rb'
+  Enabled: false
 
 # Frozen strings are too dangerous to switch now
 Style/FrozenStringLiteralComment:

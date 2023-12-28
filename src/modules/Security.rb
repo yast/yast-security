@@ -328,7 +328,8 @@ module Yast
     # Read the information about ctrl+alt+del behavior
     # See bug 742783 for description
     def ReadConsoleShutdown
-      @Settings["CONSOLE_SHUTDOWN"] = ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
+      @Settings["CONSOLE_SHUTDOWN"] =
+        ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
     end
 
     # Read the settings from the files included in @Locations
@@ -797,7 +798,8 @@ module Yast
       end
 
       # conversion to true/false
-      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
+      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward",
+       "net.ipv6.conf.all.forwarding"].each do |key|
         settings[key] = settings[key] == "1" if settings.key?(key) && settings[key].is_a?(::String)
       end
 
@@ -846,7 +848,8 @@ module Yast
     def Export
       settings = deep_copy(@Settings)
       # conversion to 0/1 string
-      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
+      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward",
+       "net.ipv6.conf.all.forwarding"].each do |key|
         if [TrueClass, FalseClass].include?(settings[key].class)
           settings[key] = settings[key] ? "1" : "0"
         end

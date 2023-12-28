@@ -37,11 +37,13 @@ module Yast
       @HELPS = {
         # Read dialog help 1/2
         "read"           => _(
-          "<p><b><big>Initializing Security Configuration</big></b>\n<br>Please wait...<br></p>"
+          "<p><b><big>Initializing Security Configuration</big></b>\n" \
+          "<br>Please wait...<br></p>"
         ) +
           # Read dialog help 2/2
           _(
-            "<p><b><big>Aborting the Initialization</big></b><br>\nSafely abort the configuration utility by pressing <b>Abort</b> now.</p>"
+            "<p><b><big>Aborting the Initialization</big></b><br>\n" \
+            "Safely abort the configuration utility by pressing <b>Abort</b> now.</p>"
           ),
         # Write dialog help 1/2
         "write"          => _(
@@ -49,7 +51,8 @@ module Yast
         ) +
           # Write dialog help 2/2
           _(
-            "<p><b><big>Aborting Saving</big></b><br>\nAbort the save procedure by pressing <b>Abort</b>.</p>"
+            "<p><b><big>Aborting Saving</big></b><br>\n" \
+            "Abort the save procedure by pressing <b>Abort</b>.</p>"
           ),
         # Boot dialog help 1/4
         "boot"           => boot_dialog_help,
@@ -63,11 +66,13 @@ module Yast
         ) +
           # Main dialog help 5/8
           _(
-            "<p><b>Workstation</b>: For a computer connected\nto any type of network including the Internet.</p>"
+            "<p><b>Workstation</b>: For a computer connected\n" \
+            "to any type of network including the Internet.</p>"
           ) +
           # Main dialog help 6/8
           _(
-            "<p><b>Roaming Device</b>: For a laptop, tablet or similar device\nthat connects to different networks.</p>"
+            "<p><b>Roaming Device</b>: For a laptop, tablet or similar device\n" \
+            "that connects to different networks.</p>"
           ) +
           # Main dialog help 7/8
           _(
@@ -135,15 +140,18 @@ module Yast
           ) +
           # Password dialog help 5c/8
           _(
-            "<p><b>MD5</b> allows longer passwords and is supported by all current Linux \ndistributions, but not by other systems or old software.</p>"
+            "<p><b>MD5</b> allows longer passwords and is supported by all current Linux \n" \
+            "distributions, but not by other systems or old software.</p>"
           ) +
           # Password dialog help 5d/8
           _(
-            "<p><b>SHA-512</b> is the current standard hash method, using other algorithms is not recommended unless needed for compatibility purpose.</p>"
+            "<p><b>SHA-512</b> is the current standard hash method, using " \
+            "other algorithms is not recommended unless needed for compatibility purpose.</p>"
           ) +
           # Password dialog help 7/8
           _(
-            "<p><b>Password Age:</b> Set the minimum and\nmaximum number of days a password may be used.</p>"
+            "<p><b>Password Age:</b> Set the minimum and\n" \
+            "maximum number of days a password may be used.</p>"
           ) +
           # Password dialog help 8/8
           _(
@@ -153,7 +161,8 @@ module Yast
           ),
         # Adduser dialog help 1/2
         "adduser"        => _(
-          "<p><big><b>User Security</b></big></P>\n<p>In this dialog, change various settings used to create users.</p>"
+          "<p><big><b>User Security</b></big></P>\n" \
+          "<p>In this dialog, change various settings used to create users.</p>"
         ) +
           # Adduser dialog help 2/3
           _(
@@ -165,7 +174,8 @@ module Yast
           ),
         # Misc dialog help 1/14
         "misc"           => _(
-          "<p><big><b>Other Security Settings</b></big></P>\n<p>In this dialog, change miscellaneous settings related to local security.</p>"
+          "<p><big><b>Other Security Settings</b></big></P>\n" \
+          "<p>In this dialog, change miscellaneous settings related to local security.</p>"
         ) +
           # Misc dialog help 2/14
           _(
@@ -211,26 +221,31 @@ module Yast
             "search path, enabling files in the current path to be found and executed.\n" \
             "This is highly dangerous because you may accidentally launch unknown programs in\n" \
             "the current directory instead of the usual systemwide files. As a result,\n" \
-            "executing <i>Trojan Horses</i>, which exploit this weakness and invade your system,\n" \
+            "executing <i>Trojan Horses</i>, which exploit " \
+            "this weakness and invade your system,\n" \
             "is rather easy if you set this option.</p>"
           ) +
           # Misc dialog help 13/14
           _(
-            "<p>\"yes\": the dot (\".\") is attached to the end of the search\npath of root, making it the last to be searched.</p>"
+            "<p>\"yes\": the dot (\".\") is attached to the end of the search\n" \
+            "path of root, making it the last to be searched.</p>"
           ) +
           # Misc dialog help 14/14
           _(
-            "<p>\"no\": the user root always must launch programs in the\ncurrent directory prefixed with a \"./\". Example: \"./configure\".</p>"
+            "<p>\"no\": the user root always must launch programs in the\n" \
+            "current directory prefixed with a \"./\". Example: \"./configure\".</p>"
           ) +
           # Misc dialog help 14/14
           _(
             "<p><b>Enable Magic SysRq Keys</b><br> If you check this option, you\n" \
-            "will have some control over the system even if it crashes (for example, during kernel\n" \
+            "will have some control over the system even if it crashes " \
+            "(for example, during kernel\n" \
             "debugging). For details, see /usr/src/linux/Documentation/sysrq.txt</p>"
           ),
         # help text: security overview dialog 1/
         "overview"       => _(
-          "<P><B>Security Overview</B><BR>This overview shows the most important security settings.</P>"
+          "<P><B>Security Overview</B><BR>" \
+          "This overview shows the most important security settings.</P>"
         ) +
           # help text: security overview dialog 1/
           _(
@@ -238,11 +253,13 @@ module Yast
           ) +
           # help text: security overview dialog 1/
           _(
-            "<P> A check mark in the <B>Security Status</B> column means that the current value of the option is secure.</P>"
+            "<P> A check mark in the <B>Security Status</B> column means " \
+            "that the current value of the option is secure.</P>"
           ),
         # an error message (rich text)
         "unknown_status" => _(
-          "<P><B>The current value could not be read. The service is probably not installed or the option is missing on the system.</B></P>"
+          "<P><B>The current value could not be read. The service is probably " \
+          "not installed or the option is missing on the system.</B></P>"
         )
       }
 
@@ -258,16 +275,30 @@ module Yast
           "logins, then disable this option.</P>"
         ),
         "SYSLOG_ON_NO_ERROR"                        => _(
-          "<P>Malfunctions in a system are usually detected by anomalies in its behaviour. Syslog messages about events that reoccur on a regular basis are important to find causes of problems. And the absence of a single record can tell more than the absence of all log records.</P><P>Therefore, syslog messages of system events are only useful if they are present.</P>"
+          "<P>Malfunctions in a system are usually detected by anomalies in " \
+          "its behaviour. Syslog messages about events that reoccur on a regular " \
+          "basis are important to find causes of problems. And the absence " \
+          "of a single record can tell more than the absence of all log records.</P>" \
+          "<P>Therefore, syslog messages of system events are only useful if they are present.</P>"
         ),
         "DHCPD_RUN_CHROOTED"                        => _(
-          "<P>Chroot execution environments restrict a process to only access files that it needs by placing them in a separate subdirectory and running the process with a changed root (chroot) set to that directory.</P>"
+          "<P>Chroot execution environments restrict a process to only access " \
+          "files that it needs by placing them in a separate subdirectory and " \
+          "running the process with a changed root (chroot) set to that directory.</P>"
         ),
         "DHCPD_RUN_AS"                              => _(
-          "<P>The DHCP client daemon should run as the user <EM>dhcpd</EM> to minimize a possible threat if the service is found vulnerable to a weakness in its program code.</P><P>Note that dhcpd must never run as <EM>root</EM> or with the <EM>CAP_SYS_CHROOT</EM> capability for the chroot execution confinement to be effective.</P>"
+          "<P>The DHCP client daemon should run as the user <EM>dhcpd</EM> " \
+          "to minimize a possible threat if the service is found vulnerable " \
+          "to a weakness in its program code.</P><P>Note that dhcpd must " \
+          "never run as <EM>root</EM> or with the <EM>CAP_SYS_CHROOT</EM> " \
+          "capability for the chroot execution confinement to be effective.</P>"
         ),
         "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"          => _(
-          "<P>Administrators should never log on as <EM>root</EM> into an X Window session to minimize the usage of the root privileges.</P><P>This option does not help against careless administrators, but shall prevent attackers to be able to log on as <EM>root</EM> via the display manager if they guess or otherwise acquire the password.</P>"
+          "<P>Administrators should never log on as <EM>root</EM> into " \
+          "an X Window session to minimize the usage of the root privileges.</P>" \
+          "<P>This option does not help against careless administrators, but " \
+          "shall prevent attackers to be able to log on as <EM>root</EM> via " \
+          "the display manager if they guess or otherwise acquire the password.</P>"
         ),
         "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN" => _(
           "<P>X Window clients, e.g. programs that open a window on your display, connect\n" \
@@ -277,10 +308,15 @@ module Yast
           "display number. Since network traffic is transferred unencrypted and therefore\n" \
           "subject to network sniffing, and since the port held open by the X server\n" \
           "offers attack options, the secure setting is to disable it.</P><P>To display X\n" \
-          "Window clients across a network, we recommend the use of secure shell (<EM>ssh</EM>), which allows the X Window clients to connect to the X server through the encrypted ssh connection.</P>"
+          "Window clients across a network, we recommend the use of secure " \
+          "shell (<EM>ssh</EM>), which allows the X Window clients to connect " \
+          "to the X server through the encrypted ssh connection.</P>"
         ),
         "SMTPD_LISTEN_REMOTE"                       => _(
-          "<P>The email delivery subsystem is always started. However, it does not expose\nitself outside the system by default, since it does not listen on the SMTP network port 25.</P><P>If you do not deliver emails to your system through the SMTP protocol, then disable this option.</P>"
+          "<P>The email delivery subsystem is always started. However, it does not expose\n" \
+          "itself outside the system by default, since it does not listen " \
+          "on the SMTP network port 25.</P><P>If you do not deliver emails " \
+          "to your system through the SMTP protocol, then disable this option.</P>"
         ),
         "DISABLE_RESTART_ON_UPDATE"                 => _(
           "<P>If a package containing a service that is currently running is being\n" \
@@ -303,34 +339,60 @@ module Yast
           "reason to do so.</P>"
         ),
         "net.ipv4.tcp_syncookies"                   => _(
-          "<P>A system can be overwhelmed with numerous connection attempts so that the system runs out of memory, leading to a Denial of Service (DoS) vulnerability.</P><P>The use of syncookies is a method that can help in such situations. But in configurations with a very large number of legitimate connection attempts from one source, the <EM>Enabled</EM> setting can cause problems with denied TCP connections under high load.</P><P>Still, for most environments, syncookies are the first line of defense against SYN flood DoS attacks, so the secure setting is <EM>Enabled</EM>.</P>"
+          "<P>A system can be overwhelmed with numerous connection attempts " \
+          "so that the system runs out of memory, leading to a Denial of " \
+          "Service (DoS) vulnerability.</P><P>The use of syncookies is " \
+          "a method that can help in such situations. But in configurations " \
+          "with a very large number of legitimate connection attempts from " \
+          "one source, the <EM>Enabled</EM> setting can cause problems with " \
+          "denied TCP connections under high load.</P><P>Still, for most " \
+          "environments, syncookies are the first line of defense against " \
+          "SYN flood DoS attacks, so the secure setting is <EM>Enabled</EM>.</P>"
         ),
         "net.ipv4.ip_forward"                       => _(
-          "<P>IP forwarding means to pass on network packets that have been received, but that are not destined for one of the system's configured network interfaces, e.g. network interface addresses.</P><P>If a system forwards network traffic on ISO/OSI layer 3, it is called a router. If you do not need that routing functionality, then disable this option.</P>"
+          "<P>IP forwarding means to pass on network packets that have been " \
+          "received, but that are not destined for one of the system's " \
+          "configured network interfaces, e.g. network interface addresses.</P>" \
+          "<P>If a system forwards network traffic on ISO/OSI layer 3, it is " \
+          "called a router. If you do not need that routing functionality, " \
+          "then disable this option.</P>"
         ) +
           _("<P>This setting applies to <EM>IPv4</EM> only.</P>"),
         "net.ipv6.conf.all.forwarding"              => _(
-          "<P>IP forwarding means to pass on network packets that have been received, but that are not destined for one of the system's configured network interfaces, e.g. network interface addresses.</P><P>If a system forwards network traffic on ISO/OSI layer 3, it is called a router. If you do not need that routing functionality, then disable this option.</P>"
+          "<P>IP forwarding means to pass on network packets that have been " \
+          "received, but that are not destined for one of the system's " \
+          "configured network interfaces, e.g. network interface addresses.</P>" \
+          "<P>If a system forwards network traffic on ISO/OSI layer 3, it is " \
+          "called a router. If you do not need that routing functionality, " \
+          "then disable this option.</P>"
         ) +
           _("<P>This setting applies to <EM>IPv6</EM> only.</P>"),
         "kernel.sysrq"                              => _(
-          "<P>Magic SysRq Keys enable some control over the system even if it crashes (e.g. during kernel debugging) or if the system does not respond.</P>"
+          "<P>Magic SysRq Keys enable some control over the system even if " \
+          "it crashes (e.g. during kernel debugging) or if the system does " \
+          "not respond.</P>"
         ),
         "PERMISSION_SECURITY"                       => _(
-          "<P>There are predefined file permissions in /etc/permissions.* files. The most restrictive file permissions are defined 'secure' or 'paranoid' file.</P>"
+          "<P>There are predefined file permissions in /etc/permissions.* " \
+          "files. The most restrictive file permissions are defined " \
+          "'secure' or 'paranoid' file.</P>"
         ),
         "MANDATORY_SERVICES"                        => _(
-          "<P>Basic system services must be enabled to provide system consistency and to run the security-related services.</P>"
+          "<P>Basic system services must be enabled to provide system " \
+          "consistency and to run the security-related services.</P>"
         ),
         "EXTRA_SERVICES"                            => _(
-          "<P>Every running service is a potential target of a security attack. Therefore it is recommended to turn off all services which are not used by the system.</P>"
+          "<P>Every running service is a potential target of a security attack. " \
+          "Therefore it is recommended to turn off all services which are not " \
+          "used by the system.</P>"
         )
       }
     end
 
     def boot_dialog_help
       help = _(
-        "<p><b><big>Boot Security</big></b></p>\n<p>In this dialog, change various boot settings related to security.</p>"
+        "<p><b><big>Boot Security</big></b></p>\n<p>In this dialog, change " \
+        "various boot settings related to security.</p>"
       )
 
       details = if ::Security::CtrlAltDelConfig.default == "reboot"
@@ -362,13 +424,16 @@ module Yast
       if @display_manager
         # Boot dialog help 3/4
         help += (_(
-            "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is allowed to shut down the machine from %s.</p>\n"
+            "<p><b>Shutdown Behaviour of Login Manager</b>:\nSet who is " \
+            "allowed to shut down the machine from %s.</p>\n"
           ) % @display_manager.name.upcase) +
           # Boot dialog help 4/4
           _(
             "<p><b>Hibernate System</b>:\n" \
-            "Set the conditions for allowing users to hibernate the system. By default, user on active console has such right.\n" \
-            "Other options are allowing the action to any user or requiring authentication in all cases.</p>\n"
+            "Set the conditions for allowing users to hibernate the system. " \
+            "By default, user on active console has such right.\n" \
+            "Other options are allowing the action to any user or requiring " \
+            "authentication in all cases.</p>\n"
           )
       end
 
