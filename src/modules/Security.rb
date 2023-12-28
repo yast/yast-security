@@ -822,19 +822,17 @@ module Yast
       @Settings.each do |k, v|
         if settings.key?(k)
           tmpSettings[k] = settings[k]
-        else
-          if @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
-            # using the old sysconfig AY format
-            val = settings[@sysctl2sysconfig[k]].to_s
-            tmpSettings[k] = if @sysctl[k].is_a?(TrueClass) || @sysctl[k].is_a?(FalseClass)
-              SYSCTL_VALUES_TO_BOOLEAN.key?(val) ? SYSCTL_VALUES_TO_BOOLEAN[val] : val
-            else
-              SYSCTL_VALUES_TO_INTSTRING.key?(val) ? SYSCTL_VALUES_TO_INTSTRING[val] : val
-            end
+        elsif @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
+          val = settings[@sysctl2sysconfig[k]].to_s
+          tmpSettings[k] = if @sysctl[k].is_a?(TrueClass) || @sysctl[k].is_a?(FalseClass)
+            SYSCTL_VALUES_TO_BOOLEAN.key?(val) ? SYSCTL_VALUES_TO_BOOLEAN[val] : val
           else
-            # using old login defs settings ?
-            tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
+            SYSCTL_VALUES_TO_INTSTRING.key?(val) ? SYSCTL_VALUES_TO_INTSTRING[val] : val
           end
+        # using the old sysconfig AY format
+        else
+          # using old login defs settings ?
+          tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
         end
       end
 

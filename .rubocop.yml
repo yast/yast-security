@@ -133,11 +133,6 @@ Style/GuardClause:
     - 'src/include/security/users.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 1
-Style/IfInsideElse:
-  Exclude:
-    - 'src/modules/Security.rb'
-
 # Offense count: 6
 # Cop supports --auto-correct.
 Style/IfUnlessModifier:
