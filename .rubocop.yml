@@ -117,21 +117,9 @@ Style/Documentation:
     - 'src/lib/security/display_manager.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 22
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: always, never
+# Frozen strings are too dangerous to switch now
 Style/FrozenStringLiteralComment:
   Enabled: false
-
-# Offense count: 8
-# Configuration parameters: MinBodyLength.
-Style/GuardClause:
-  Exclude:
-    - 'src/include/security/complex.rb'
-    - 'src/include/security/dialogs.rb'
-    - 'src/include/security/users.rb'
-    - 'src/modules/Security.rb'
 
 # Offense count: 6
 # Cop supports --auto-correct.

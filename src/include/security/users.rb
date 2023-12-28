@@ -101,11 +101,7 @@ module Yast
 
         # abort?
         if [:abort, :cancel].include?(ret)
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+          ReallyAbort() ? break : next
         # back
         elsif ret == :back
           break

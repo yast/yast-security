@@ -436,11 +436,7 @@ module Yast
 
         # abort?
         if [:abort, :cancel].include?(ret)
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+          ReallyAbort() ? break : next
         elsif ret == :back || ret == :next ||
             Builtins.contains(@tree_dialogs, ret)
           # the current item has been selected, do not change to the same dialog
@@ -617,11 +613,7 @@ module Yast
 
         # abort?
         if [:abort, :cancel].include?(ret)
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+          ReallyAbort() ? break : next
         elsif ret == :back || ret == :next ||
             Builtins.contains(@tree_dialogs, ret)
           # the current item has been selected, do not change to the same dialog
@@ -697,11 +689,7 @@ module Yast
 
         # abort?
         if [:abort, :cancel].include?(ret)
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+          ReallyAbort() ? break : next
         elsif ret == :back
           break
         elsif ret == :next || Builtins.contains(@tree_dialogs, ret)
@@ -807,11 +795,7 @@ module Yast
 
         # abort?
         if [:abort, :cancel].include?(ret)
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+          ReallyAbort() ? break : next
         elsif ret == :back
           break
         elsif ret == "PASSWD_USE_PWQUALITY"
@@ -933,11 +917,7 @@ module Yast
 
         # abort?
         if [:abort, :cancel].include?(ret)
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+          ReallyAbort() ? break : next
         elsif ret == :back
           break
         elsif ret == :next || Builtins.contains(@tree_dialogs, ret)

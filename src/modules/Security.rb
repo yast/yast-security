@@ -667,9 +667,8 @@ module Yast
       SCR.Execute(path(".target.bash"), "/usr/bin/chkstat --system")
 
       # ensure polkit privileges are applied (bnc #541393)
-      if FileUtils.Exists("/sbin/set_polkit_default_privs")
-        SCR.Execute(path(".target.bash"), "/sbin/set_polkit_default_privs")
-      end
+      polkit_exec = "/sbin/set_polkit_default_privs"
+      SCR.Execute(path(".target.bash"), polkit_exec) if FileUtils.Exists(polkit_exec)
     end
 
     # Executes the corresponding activation command for the settings that have
