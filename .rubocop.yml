@@ -133,14 +133,6 @@ Style/GuardClause:
     - 'src/include/security/users.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 7
-# Cop supports --auto-correct.
-Style/InfiniteLoop:
-  Exclude:
-    - 'src/include/security/dialogs.rb'
-    - 'src/include/security/users.rb'
-    - 'src/include/security/wizards.rb'
-
 # Offense count: 10
 # Cop supports --auto-correct.
 # Configuration parameters: EnforcedStyle.

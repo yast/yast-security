@@ -96,7 +96,7 @@ module Yast
       Wizard.SelectTreeItem("users")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?

@@ -425,7 +425,7 @@ module Yast
       Wizard.SelectTreeItem("overview")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
@@ -605,7 +605,7 @@ module Yast
       Wizard.SelectTreeItem("boot")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
@@ -685,7 +685,7 @@ module Yast
       Wizard.SelectTreeItem("misc")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
@@ -795,7 +795,7 @@ module Yast
       )
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
@@ -921,7 +921,7 @@ module Yast
       Wizard.SelectTreeItem("login")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?

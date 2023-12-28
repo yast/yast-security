@@ -61,7 +61,7 @@ module Yast
 
       ret = OverviewDialog()
 
-      while true
+      loop do
         # needed for ncurses UI
         ret = Wizard.QueryTreeItem if ret == :wizardTree
 
