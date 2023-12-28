@@ -940,7 +940,7 @@ module Yast
     publish :function => :Summary, :type => "list ()"
     publish :function => :Overview, :type => "list ()"
 
-    protected
+  protected
 
     # It sets the LSM configuration according to the one provided in the profile and ensures
     # needed patterns for the selected LSM
