@@ -98,7 +98,12 @@ module Yast
       # Services to check
       srv_file = Directory.find_data_file("security/services.yml")
       srv_lists = if srv_file
-        YAML.load_file(srv_file) rescue {}
+        begin
+          YAML.load_file(srv_file)
+        rescue StandardError => e
+          log.warn "Failed to load #{srv_file}. Error: #{e.inspect}"
+          {}
+        end
       else
         {}
       end
@@ -609,7 +614,11 @@ module Yast
       # NOTE: the call to #sort is only needed to satisfy the old testsuite
       @sysctl.sort.each do |key, default_value|
         val = @Settings.fetch(key, default_value)
-        int_val = Integer(val) rescue nil
+        int_val = begin
+          Integer(val)
+        rescue StandardError
+          nil
+        end
         if int_val.nil? && ![TrueClass, FalseClass].include?(val.class)
           log.error "value #{val} for #{key} has wrong type, not writing"
         elsif val != read_sysctl_value(key)
