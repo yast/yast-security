@@ -418,9 +418,9 @@ module Yast
     def read_permissions
       # Removing "local" from the string
       permissions = @Settings["PERMISSION_SECURITY"].to_s.split
-      @Settings["PERMISSION_SECURITY"] = permissions.delete_if { |p|
+      @Settings["PERMISSION_SECURITY"] = permissions.delete_if do |p|
         p == "local"
-      }.join(" ")
+      end.join(" ")
 
       # default value
       @Settings["PERMISSION_SECURITY"] = "secure" if @Settings["PERMISSION_SECURITY"].empty?
