@@ -2,18 +2,6 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
 
-# Offense count: 11
-# Cop supports --auto-correct.
-# Configuration parameters: AllowMultipleStyles, EnforcedHashRocketStyle, EnforcedColonStyle, EnforcedLastArgumentHashStyle.
-# SupportedHashRocketStyles: key, separator, table
-# SupportedColonStyles: key, separator, table
-# SupportedLastArgumentHashStyles: always_inspect, always_ignore, ignore_implicit, ignore_explicit
-Layout/HashAlignment:
-  Exclude:
-    - 'src/clients/security.rb'
-    - 'src/include/security/dialogs.rb'
-    - 'src/modules/Security.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Layout/BlockEndNewline:

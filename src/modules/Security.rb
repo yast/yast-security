@@ -181,14 +181,14 @@ module Yast
 
       # Security settings locations
       @Locations = {
-        ".sysconfig.security"       => ["PERMISSION_SECURITY"],
-        ".sysconfig.services"       => [
+        ".sysconfig.security" => ["PERMISSION_SECURITY"],
+        ".sysconfig.services" => [
           "DISABLE_RESTART_ON_UPDATE",
           "DISABLE_STOP_ON_REMOVAL"
         ],
-        ".sysconfig.locate"         => ["RUN_UPDATEDB_AS"],
-        ".sysconfig.cron"           => ["SYSLOG_ON_NO_ERROR"],
-        ".sysconfig.mail"           => ["SMTPD_LISTEN_REMOTE"]
+        ".sysconfig.locate"   => ["RUN_UPDATEDB_AS"],
+        ".sysconfig.cron"     => ["SYSLOG_ON_NO_ERROR"],
+        ".sysconfig.mail"     => ["SMTPD_LISTEN_REMOTE"]
       }
 
       @Locations.merge!(@display_manager.default_locations) if @display_manager

@@ -87,7 +87,7 @@ module Yast
           }
         },
         "options"    => {
-          "workstation"        => {
+          "workstation" => {
             # command line help text for 'level workstation' option
             "help" => _(
               "Workstation security level"

@@ -112,10 +112,10 @@ module Yast
       # current value -> new value
       @link_value_mapping = {
         "yes" => "no",
-        "no" => "yes",
-        "1" => "0",
-        "0" => "1",
-        true => false,
+        "no"  => "yes",
+        "1"   => "0",
+        "0"   => "1",
+        true  => false,
         false => true
       }
 
