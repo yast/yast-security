@@ -900,14 +900,14 @@ module Yast
           1.0,
           _("Login"),
           VBox(
-            #VSeparator(),
-            settings2widget("FAIL_DELAY"), #VSeparator()
-            #VSeparator(),
+            # VSeparator(),
+            settings2widget("FAIL_DELAY"), # VSeparator()
+            # VSeparator(),
             VSpacing(0.5),
             VSeparator(),
             settings2widget("DISPLAYMANAGER_REMOTE_ACCESS")
           )
-        ) #,`VSpacing(1.7)
+        ) # ,`VSpacing(1.7)
       )
       contents = HVCenter(
         HVSquash(

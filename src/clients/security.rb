@@ -35,7 +35,7 @@ module Yast
     def main
       Yast.import "UI"
 
-      #**
+      # **
       # <h3> Security configuration
 
       textdomain "security"
@@ -140,7 +140,7 @@ module Yast
         "mappings"   => {
           "summary" => [],
           "level"   => ["workstation", "roaming", "server"],
-          #FIXME: 1,2,3 aliases
+          # FIXME: 1,2,3 aliases
           "set"     => [
             "passwd",
             "crack",
