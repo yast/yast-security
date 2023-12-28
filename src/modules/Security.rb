@@ -424,7 +424,7 @@ module Yast
       log.debug "PERMISSION_SECURITY (after #{__callee__}): " \
                 "#{@Settings['PERMISSION_SECURITY']}"
 
-      @Settings['PERMISSION_SECURITY']
+      @Settings["PERMISSION_SECURITY"]
     end
 
     def read_polkit_settings
