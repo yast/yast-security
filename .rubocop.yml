@@ -96,12 +96,6 @@ Naming/VariableName:
     - 'src/include/security/widgets.rb'
     - 'src/modules/Security.rb'
 
-# Offense count: 1
-# Cop supports --auto-correct.
-Style/Dir:
-  Exclude:
-    - 'test/test_helper.rb'
-
 # Offense count: 16
 Style/Documentation:
   Exclude:
