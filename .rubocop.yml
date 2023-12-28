@@ -2,15 +2,6 @@
 inherit_from:
   /usr/share/YaST2/data/devtools/data/rubocop-1.24.1_yast_style.yml
 
-# Offense count: 2
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, IndentationWidth.
-# SupportedStyles: consistent, consistent_relative_to_receiver, special_for_inner_method_call, special_for_inner_method_call_in_parentheses
-Layout/FirstArgumentIndentation:
-  Exclude:
-    - 'src/include/security/dialogs.rb'
-    - 'src/include/security/helps.rb'
-
 # Offense count: 7
 # Cop supports --auto-correct.
 Layout/LeadingCommentSpace:
