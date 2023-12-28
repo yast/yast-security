@@ -46,11 +46,11 @@ module Yast
     SYSCTL_VALUES_TO_BOOLEAN = {
       "yes" => true,
       "no"  => false
-    }
+    }.freeze
     SYSCTL_VALUES_TO_INTSTRING = {
       "yes" => "1",
       "no"  => "0"
-    }
+    }.freeze
 
     SHADOW_ATTRS = [
       "FAIL_DELAY",

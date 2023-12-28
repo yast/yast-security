@@ -120,14 +120,3 @@ Style/Documentation:
 # Frozen strings are too dangerous to switch now
 Style/FrozenStringLiteralComment:
   Enabled: false
-
-# Offense count: 6
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle.
-# SupportedStyles: literals, strict
-Style/MutableConstant:
-  Exclude:
-    - 'src/include/security/widgets.rb'
-    - 'src/lib/security/ctrl_alt_del_config.rb'
-    - 'src/lib/security/display_manager.rb'
-    - 'src/modules/Security.rb'
