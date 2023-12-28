@@ -168,15 +168,6 @@ Style/RescueModifier:
   Exclude:
     - 'src/modules/Security.rb'
 
-# Offense count: 5
-# Cop supports --auto-correct.
-# Configuration parameters: EnforcedStyle, AllowSafeAssignment.
-# SupportedStyles: require_parentheses, require_no_parentheses, require_parentheses_when_complex
-Style/TernaryParentheses:
-  Exclude:
-    - 'src/include/security/routines.rb'
-    - 'src/modules/Security.rb'
-
 # Offense count: 1
 # Cop supports --auto-correct.
 Style/ZeroLengthPredicate:
