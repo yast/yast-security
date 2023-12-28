@@ -270,11 +270,6 @@ module Yast
       ]
 
       Builtins.foreach(security_mapping) do |setting|
-        current_value = Ops.get(
-          Security.Settings,
-          Ops.get_string(setting, "name", ""),
-          ""
-        )
         id = Ops.get_string(setting, "id", "")
         case type
         when :table

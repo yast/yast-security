@@ -166,8 +166,7 @@ module Yast
 
     # Print security summary
     # @return [Boolean] false
-    def SecuritySummaryHandler(options)
-      options = deep_copy(options)
+    def SecuritySummaryHandler(_options)
       sum = Security.Summary
       CommandLine.Print(Ops.get_string(sum, 0, ""))
       false # do not call Write...
