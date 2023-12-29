@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2016 SUSE LLC, All Rights Reserved.
 #
@@ -26,13 +24,13 @@ module Security
   class DisplayManager
     Yast.import "SCR"
 
-    CONFIG_PATH = ".sysconfig.displaymanager.DISPLAYMANAGER"
+    CONFIG_PATH = ".sysconfig.displaymanager.DISPLAYMANAGER".freeze
 
     SYSCONFIG_COMMON_LOCATIONS = [
       "DISPLAYMANAGER_REMOTE_ACCESS",
       "DISPLAYMANAGER_ROOT_LOGIN_REMOTE",
       "DISPLAYMANAGER_XSERVER_TCP_PORT_6000_OPEN"
-    ]
+    ].freeze
 
     private_class_method :new
     attr_reader :name

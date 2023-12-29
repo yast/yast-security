@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -35,7 +33,7 @@ module Yast
     def main
       Yast.import "UI"
 
-      #**
+      # **
       # <h3> Security configuration
 
       textdomain "security"
@@ -87,7 +85,7 @@ module Yast
           }
         },
         "options"    => {
-          "workstation"        => {
+          "workstation" => {
             # command line help text for 'level workstation' option
             "help" => _(
               "Workstation security level"
@@ -140,7 +138,7 @@ module Yast
         "mappings"   => {
           "summary" => [],
           "level"   => ["workstation", "roaming", "server"],
-          #FIXME: 1,2,3 aliases
+          # FIXME: 1,2,3 aliases
           "set"     => [
             "passwd",
             "crack",
@@ -156,7 +154,7 @@ module Yast
       # Finish
       Builtins.y2milestone("Security module finished")
       Builtins.y2milestone("----------------------------------------")
-      deep_copy(@ret) 
+      deep_copy(@ret)
 
       # EOF
     end
@@ -166,8 +164,7 @@ module Yast
 
     # Print security summary
     # @return [Boolean] false
-    def SecuritySummaryHandler(options)
-      options = deep_copy(options)
+    def SecuritySummaryHandler(_options)
       sum = Security.Summary
       CommandLine.Print(Ops.get_string(sum, 0, ""))
       false # do not call Write...
@@ -204,7 +201,7 @@ module Yast
       options = deep_copy(options)
       if Builtins.haskey(options, "passwd") &&
           Ops.get_string(options, "passwd", "") !=
-            Ops.get(Security.Settings, "PASSWD_ENCRYPTION", "")
+              Ops.get(Security.Settings, "PASSWD_ENCRYPTION", "")
         Ops.set(
           Security.Settings,
           "PASSWD_ENCRYPTION",
@@ -214,7 +211,7 @@ module Yast
       end
       if Builtins.haskey(options, "crack") &&
           Ops.get_string(options, "crack", "") !=
-            Ops.get(Security.Settings, "PASSWD_USE_PWQUALITY", "")
+              Ops.get(Security.Settings, "PASSWD_USE_PWQUALITY", "")
         Ops.set(
           Security.Settings,
           "PASSWD_USE_PWQUALITY",
@@ -237,11 +234,11 @@ module Yast
 
       if Builtins.haskey(options, "remember") &&
           Ops.get(Security.Settings, "PASSWD_REMEMBER_HISTORY", "0") !=
-            Ops.get_string(options, "remember", "0")
+              Ops.get_string(options, "remember", "0")
         to_remember = Builtins.tointeger(
           Ops.get_string(options, "remember", "0")
         )
-        if to_remember == nil || Ops.less_than(to_remember, 0) ||
+        if to_remember.nil? || Ops.less_than(to_remember, 0) ||
             Ops.greater_than(to_remember, 400)
           # error message
           Report.Error(

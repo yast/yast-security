@@ -62,7 +62,7 @@ module Yast
       end
 
       context "only with mandatory services" do
-        let(:service_names) { %w(apparmor auditd SuSEfirewall2 wicked) }
+        let(:service_names) { %w[apparmor auditd SuSEfirewall2 wicked] }
 
         it "sets settings for services as 'secure'" do
           expect(Security.Settings["MANDATORY_SERVICES"]).to eq("secure")
@@ -71,7 +71,7 @@ module Yast
       end
 
       context "with mandatory and extra services" do
-        let(:service_names) { %w(apparmor auditd SuSEfirewall2 extra1 wicked) }
+        let(:service_names) { %w[apparmor auditd SuSEfirewall2 extra1 wicked] }
 
         it "sets settings for extra services as 'insecure'" do
           expect(Security.Settings["MANDATORY_SERVICES"]).to eq("secure")
@@ -80,7 +80,7 @@ module Yast
       end
 
       context "without all mandatory services and extra ones" do
-        let(:service_names) { %w(auditd shorewall extra1 wicked) }
+        let(:service_names) { %w[auditd shorewall extra1 wicked] }
 
         it "sets settings for services as 'insecure'" do
           expect(Security.Settings["MANDATORY_SERVICES"]).to eq("insecure")
@@ -89,7 +89,7 @@ module Yast
       end
 
       context "with services that are aliases of optional services" do
-        let(:service_names) { %w(apparmor auditd anacron firewalld wicked rsyslog) }
+        let(:service_names) { %w[apparmor auditd anacron firewalld wicked rsyslog] }
         let(:aliases) do
           { "rsyslog" => "rsyslog.service syslog.service", "anacron" => "anacron cron" }
         end

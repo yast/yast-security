@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -112,10 +110,10 @@ module Yast
       # current value -> new value
       @link_value_mapping = {
         "yes" => "no",
-        "no" => "yes",
-        "1" => "0",
-        "0" => "1",
-        true => false,
+        "no"  => "yes",
+        "1"   => "0",
+        "0"   => "1",
+        true  => false,
         false => true
       }
 
@@ -134,8 +132,8 @@ module Yast
       }
 
       @link_update_mapping = {
-        "MANDATORY_SERVICES" => lambda { Security.ReadServiceSettings },
-        "EXTRA_SERVICES"     => lambda { Security.ReadServiceSettings }
+        "MANDATORY_SERVICES" => -> { Security.ReadServiceSettings },
+        "EXTRA_SERVICES"     => -> { Security.ReadServiceSettings }
       }
     end
 
@@ -159,9 +157,7 @@ module Yast
 
       return ret if plaintext
 
-      ret = Builtins.sformat("<A HREF=\"%1\">%2</A>", option, ret)
-
-      ret
+      Builtins.sformat("<A HREF=\"%1\">%2</A>", option, ret)
     end
 
     def OverviewText(type)
@@ -171,11 +167,13 @@ module Yast
       if type == :richtext
         # open a table
         ret = Builtins.sformat(
-          "<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>\n" +
-            "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" +
-            "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" +
-            "<TD></TD>\n" +
-            "</TR> <TR></TR>",
+          "<TABLE><TR> <TD><BIG><B>%1</B></BIG></TD>\n" \
+          "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%2" \
+          "&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
+          "<TD ALIGN=center><BIG><B>&nbsp;&nbsp;&nbsp;&nbsp;%3" \
+          "&nbsp;&nbsp;&nbsp;&nbsp;</B></BIG></TD>\n" \
+          "<TD></TD>\n" \
+          "</TR> <TR></TR>",
           # table header
           _("Security Setting"),
           _("Status"),
@@ -251,7 +249,7 @@ module Yast
         },
         {
           "id"        => "net.ipv4.tcp_syncookies",
-          "is_secure" => Security.Settings[ "net.ipv4.tcp_syncookies" ]
+          "is_secure" => Security.Settings["net.ipv4.tcp_syncookies"]
         },
         {
           "id"        => "net.ipv4.ip_forward",
@@ -272,13 +270,9 @@ module Yast
       ]
 
       Builtins.foreach(security_mapping) do |setting|
-        current_value = Ops.get(
-          Security.Settings,
-          Ops.get_string(setting, "name", ""),
-          ""
-        )
         id = Ops.get_string(setting, "id", "")
-        if type == :table
+        case type
+        when :table
           ret_table = Builtins.add(
             ret_table,
             Item(
@@ -288,33 +282,40 @@ module Yast
               Ops.get_boolean(setting, "is_secure", false) ? "\u2714" : "\u2718"
             )
           )
-        elsif type == :richtext
+        when :richtext
           # add one line for each security setting
           ret = Ops.add(
             ret,
             Builtins.sformat(
-              "<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD><TD ALIGN=center>%2</TD><TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD><TD>%4</TD></TR>",
+              "<TR><TD>%1&nbsp;&nbsp;&nbsp;&nbsp;</TD>" \
+              "<TD ALIGN=center>%2</TD>" \
+              "<TD ALIGN=center>&nbsp;&nbsp;&nbsp;%3</TD><TD>%4</TD></TR>",
               Ops.get(@label_mapping, id, ""),
               SecurityStatus(id, false),
-              Ops.get_boolean(setting, "is_secure", false) ?
-                "<SUP><FONT COLOR=green SIZE=20>\u2714</FONT></SUP>" :
-                "<FONT COLOR=red SIZE=20><SUP>\u2718</SUP></FONT>",
-              Builtins.haskey(@help_mapping, id) ?
+              if Ops.get_boolean(setting, "is_secure", false)
+                "<SUP><FONT COLOR=green SIZE=20>\u2714</FONT></SUP>"
+              else
+                "<FONT COLOR=red SIZE=20><SUP>\u2718</SUP></FONT>"
+              end,
+              if Builtins.haskey(@help_mapping, id)
                 Builtins.sformat(
                   "<A HREF=\"help_%1\">%2</A>&nbsp;&nbsp;<BR>",
                   id,
                   _("Help")
-                ) :
+                )
+              else
                 ""
+              end
             )
           )
         end
-      end 
+      end
 
-      if type == :table
+      case type
+      when :table
         Builtins.y2debug("Overview table: %1", ret_table)
         return deep_copy(ret_table)
-      elsif type == :richtext
+      when :richtext
         # close the table
         ret = Ops.add(ret, "</TABLE>")
 
@@ -336,10 +337,11 @@ module Yast
       end
 
       # add extra help to service related options
-      if help_id == "MANDATORY_SERVICES"
+      case help_id
+      when "MANDATORY_SERVICES"
         missing = Security.MissingMandatoryServices
 
-        if missing != nil && missing != []
+        if !missing.nil? && missing != []
           srvs = ""
 
           Builtins.foreach(missing) do |l|
@@ -355,10 +357,10 @@ module Yast
         else
           help += _("<P>All basic services are enabled.</P>")
         end
-      elsif help_id == "EXTRA_SERVICES"
+      when "EXTRA_SERVICES"
         extra = Security.ExtraServices
 
-        if extra != nil && extra != []
+        if !extra.nil? && extra != []
           srvs = Builtins.mergestring(extra, "<BR>")
           help +=
             _("<P>These extra services are enabled:<BR><B>%s</B></P>") % srvs
@@ -368,7 +370,7 @@ module Yast
         end
       end
 
-      if help != nil && help != ""
+      if !help.nil? && help != ""
         Popup.LongText(
           Ops.get(@label_mapping, help_id, _("Description")),
           RichText(help),
@@ -396,9 +398,11 @@ module Yast
         _("Status"),
         Center(_("Security Status"))
       )
-      contents = no_richtext ?
-        Table(Id(:table), Opt(:immediate), tabheader, OverviewText(:table)) :
+      contents = if no_richtext
+        Table(Id(:table), Opt(:immediate), tabheader, OverviewText(:table))
+      else
         RichText(Id(:rtext), OverviewText(:richtext))
+      end
 
       if no_richtext
         # add a button box below the table
@@ -431,31 +435,25 @@ module Yast
       Wizard.SelectTreeItem("overview")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+        if [:abort, :cancel].include?(ret)
+          ReallyAbort() ? break : next
         elsif ret == :back || ret == :next ||
             Builtins.contains(@tree_dialogs, ret)
           # the current item has been selected, do not change to the same dialog
           if ret == "overview"
             # preselect the item if it has been unselected
-            if Wizard.QueryTreeItem != "overview"
-              Wizard.SelectTreeItem("overview")
-            end
+            Wizard.SelectTreeItem("overview") if Wizard.QueryTreeItem != "overview"
 
             next
           end
 
           break
         # user clicked a link in the richtext
-        elsif Ops.is_string?(ret) && Builtins.haskey(Security.Settings, ret) ||
+        elsif (Ops.is_string?(ret) && Builtins.haskey(Security.Settings, ret)) ||
             ret == :change
           if ret == :change
             # query the table in textmode
@@ -495,10 +493,9 @@ module Yast
               client_ret = WFM.CallFunction(client, [])
               Builtins.y2milestone("Client returned %1", client_ret)
 
-              if client_ret == :next || client_ret == :ok ||
-                  client_ret == :finish || client_ret == true
+              if [:next, :ok, :finish, true].include?(client_ret)
                 # update the current value
-                if @link_update_mapping.has_key?(ret)
+                if @link_update_mapping.key?(ret)
                   Popup.Feedback(_("Analyzing system"), Message.takes_a_while) do
                     @link_update_mapping[ret].call
                   end
@@ -517,12 +514,14 @@ module Yast
           else
             Builtins.y2error("Unknown action for link %1", ret)
           end
-        elsif Ops.is_string?(ret) &&
-            Builtins.regexpmatch(Convert.to_string(ret), "^help_") ||
+        elsif (Ops.is_string?(ret) &&
+            Builtins.regexpmatch(Convert.to_string(ret), "^help_")) ||
             ret == :descr
-          help_id = no_richtext ?
-            Convert.to_string(UI.QueryWidget(Id(:table), :CurrentItem)) :
+          help_id = if no_richtext
+            Convert.to_string(UI.QueryWidget(Id(:table), :CurrentItem))
+          else
             Builtins.regexpsub(Convert.to_string(ret), "^help_(.*)", "\\1")
+          end
           Builtins.y2milestone("Clicked help link: %1", help_id)
 
           DisplayHelpPopup(help_id)
@@ -613,16 +612,12 @@ module Yast
       Wizard.SelectTreeItem("boot")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+        if [:abort, :cancel].include?(ret)
+          ReallyAbort() ? break : next
         elsif ret == :back || ret == :next ||
             Builtins.contains(@tree_dialogs, ret)
           # the current item has been selected, do not change to the same dialog
@@ -693,16 +688,12 @@ module Yast
       Wizard.SelectTreeItem("misc")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+        if [:abort, :cancel].include?(ret)
+          ReallyAbort() ? break : next
         elsif ret == :back
           break
         elsif ret == :next || Builtins.contains(@tree_dialogs, ret)
@@ -803,16 +794,12 @@ module Yast
       )
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+        if [:abort, :cancel].include?(ret)
+          ReallyAbort() ? break : next
         elsif ret == :back
           break
         elsif ret == "PASSWD_USE_PWQUALITY"
@@ -826,9 +813,7 @@ module Yast
           # the current item has been selected, do not change to the same dialog
           if ret == "password"
             # preselect the item if it has been unselected
-            if Wizard.QueryTreeItem != "password"
-              Wizard.SelectTreeItem("password")
-            end
+            Wizard.SelectTreeItem("password") if Wizard.QueryTreeItem != "password"
 
             next
           end
@@ -848,14 +833,15 @@ module Yast
           )
           min = Convert.to_integer(UI.QueryWidget(Id("PASS_MIN_LEN"), :Value))
           if Ops.greater_than(
-              min,
-              Ops.get_integer(Security.PasswordMaxLengths, enc, 8)
-            )
+            min,
+            Ops.get_integer(Security.PasswordMaxLengths, enc, 8)
+          )
             # Popup text, %1 is number
             Popup.Error(
               Builtins.sformat(
                 _(
-                  "The minimum password length cannot be larger than the maximum.\nThe maximum password length for the selected encryption method is %1."
+                  "The minimum password length cannot be larger than the maximum.\n" \
+                  "The maximum password length for the selected encryption method is %1."
                 ),
                 Ops.get_integer(Security.PasswordMaxLengths, enc, 8)
               )
@@ -897,14 +883,14 @@ module Yast
           1.0,
           _("Login"),
           VBox(
-            #VSeparator(),
-            settings2widget("FAIL_DELAY"), #VSeparator()
-            #VSeparator(),
+            # VSeparator(),
+            settings2widget("FAIL_DELAY"), # VSeparator()
+            # VSeparator(),
             VSpacing(0.5),
             VSeparator(),
             settings2widget("DISPLAYMANAGER_REMOTE_ACCESS")
           )
-        ) #,`VSpacing(1.7)
+        ) # ,`VSpacing(1.7)
       )
       contents = HVCenter(
         HVSquash(
@@ -931,16 +917,12 @@ module Yast
       Wizard.SelectTreeItem("login")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+        if [:abort, :cancel].include?(ret)
+          ReallyAbort() ? break : next
         elsif ret == :back
           break
         elsif ret == :next || Builtins.contains(@tree_dialogs, ret)

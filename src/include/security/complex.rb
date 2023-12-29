@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -46,7 +44,7 @@ module Yast
     # @return `next if success, else `abort
     def WriteDialog
       Wizard.RestoreHelp(Ops.get_string(@HELPS, "write", ""))
-      Security.AbortFunction = lambda { Security.PollAbort }
+      Security.AbortFunction = -> { Security.PollAbort }
       ret = Security.Write
       ret ? :next : :abort
     end
@@ -72,20 +70,20 @@ module Yast
       Builtins.y2debug("%1=%2", current, Security.Settings)
 
       # Create RB group from the list of settings
-      _RB = VBox()
-      _RB = Builtins.add(_RB, VSpacing(0.5))
+      rb = VBox()
+      rb = Builtins.add(rb, VSpacing(0.5))
       Builtins.mapmap(@LevelsLabels) do |key, name|
-        _RB = Builtins.add(
-          _RB,
+        rb = Builtins.add(
+          rb,
           Left(RadioButton(Id(key), Opt(:notify), name, key == current))
         )
-        _RB = Builtins.add(_RB, VSpacing(0.03))
+        rb = Builtins.add(rb, VSpacing(0.03))
         { 0 => 0 }
       end
-      _RB = Builtins.add(_RB, VSpacing(0.6))
+      rb = Builtins.add(rb, VSpacing(0.6))
       # RadioButton label
-      _RB = Builtins.add(
-        _RB,
+      rb = Builtins.add(
+        rb,
         Left(
           RadioButton(
             Id(:custom),
@@ -95,8 +93,8 @@ module Yast
           )
         )
       )
-      _RB = Builtins.add(_RB, VSpacing(0.5))
-      Builtins.y2debug("RB=%1", _RB)
+      rb = Builtins.add(rb, VSpacing(0.5))
+      Builtins.y2debug("RB=%1", rb)
 
       # Main dialog contents
       contents = HVCenter(
@@ -105,7 +103,7 @@ module Yast
             # Frame caption
             Frame(
               _("Security Settings"),
-              HBox(HSpacing(0.8), RadioButtonGroup(Id(:rb), _RB), HSpacing(0.8))
+              HBox(HSpacing(0.8), RadioButtonGroup(Id(:rb), rb), HSpacing(0.8))
             )
           ),
           VSpacing(0.6)
@@ -138,16 +136,9 @@ module Yast
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
-          if ReallyAbort()
-            break
-          else
-            next
-          end
-        elsif ret == :back
-          break
-        elsif ret == :next
-          # check_*
+        if [:abort, :cancel].include?(ret)
+          ReallyAbort() ? break : next
+        elsif [:back, :next].include?(ret)
           break
         elsif ret == :custom
           next

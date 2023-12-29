@@ -29,7 +29,7 @@ module Y2Security
 
         # TRANSLATORS: security policy rule
         description = _("Boot loader must be protected by password and menu editing must be " \
-          "restricted")
+                        "restricted")
 
         # DISA STIG defines a rule for UEFI (SLES-15-010200) and another rule for non-UEFI
         # (SLES-15-010190). The condition to check both rules in YaST is exactly the same, so let's

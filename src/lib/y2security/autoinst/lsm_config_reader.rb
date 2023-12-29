@@ -26,6 +26,7 @@ module Y2Security
     class LSMConfigReader
       # @return [AutoinstProfile::SecuritySection]
       attr_reader :section
+
       # Constructor
       #
       # @param section [AutoinstProfile::SecuritySection]

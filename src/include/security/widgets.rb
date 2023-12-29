@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -87,15 +85,15 @@ module Yast
       "ignore" => N_("Ignore"),
       "reboot" => N_("Reboot"),
       "halt"   => N_("Halt")
-    }
+    }.freeze
 
     SHUTDOWN_LABELS = {
       "root" => N_("Only root"),
       "all"  => N_("All Users"),
       "none" => N_("Nobody")
-    }
+    }.freeze
 
-    def initialize_security_widgets(include_target)
+    def initialize_security_widgets(_include_target)
       textdomain "security"
 
       @display_manager = Security.display_manager
@@ -263,9 +261,12 @@ module Yast
           }
         }
 
+      return unless @display_manager
+      return if @display_manager.shutdown_var_name.empty?
+
       @WIDGETS.merge!(
         @display_manager.shutdown_var_name => shutdown_login_manager_widget
-      ) if @display_manager && !@display_manager.shutdown_var_name.empty?
+      )
     end
 
     def shutdown_login_manager_widget

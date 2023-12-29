@@ -1,6 +1,6 @@
 #!/usr/bin/env rspec
 
-require_relative 'test_helper'
+require_relative "test_helper"
 require "cfa/shadow_config"
 require "cfa/sysctl_config"
 
@@ -9,6 +9,7 @@ module Yast
     attr_reader :Levels
 
     def initialize
+      super
       Yast.import "Security"
       Yast.include self, "security/levels.rb"
     end
@@ -58,7 +59,7 @@ module Yast
       end
 
       # Not really needed, but looks better than returning nil
-      let(:empty_bash_output) { {"exit" => 0, "stdout" => "", "stderr" => ""} }
+      let(:empty_bash_output) { { "exit" => 0, "stdout" => "", "stderr" => "" } }
 
       it "defines the system behavior" do
         allow(Pam).to receive(:List).and_return(["pwquality", "pwhistory"])

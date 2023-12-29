@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -98,16 +96,12 @@ module Yast
       Wizard.SelectTreeItem("users")
 
       ret = nil
-      while true
+      loop do
         ret = UI.UserInput
 
         # abort?
-        if ret == :abort || ret == :cancel
-          if ReallyAbort()
-            break
-          else
-            next
-          end
+        if [:abort, :cancel].include?(ret)
+          ReallyAbort() ? break : next
         # back
         elsif ret == :back
           break

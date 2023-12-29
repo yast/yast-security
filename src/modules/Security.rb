@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -48,11 +46,11 @@ module Yast
     SYSCTL_VALUES_TO_BOOLEAN = {
       "yes" => true,
       "no"  => false
-    }
+    }.freeze
     SYSCTL_VALUES_TO_INTSTRING = {
       "yes" => "1",
       "no"  => "0"
-    }
+    }.freeze
 
     SHADOW_ATTRS = [
       "FAIL_DELAY",
@@ -99,16 +97,21 @@ module Yast
     def init_settings
       # Services to check
       srv_file = Directory.find_data_file("security/services.yml")
-      if srv_file
-        srv_lists = YAML.load_file(srv_file) rescue {}
+      srv_lists = if srv_file
+        begin
+          YAML.load_file(srv_file)
+        rescue StandardError => e
+          log.warn "Failed to load #{srv_file}. Error: #{e.inspect}"
+          {}
+        end
       else
-        srv_lists = {}
+        {}
       end
 
       # These must be running
       @mandatory_services = srv_lists["mandatory_services"] || []
       # It must be an array of arrays (meaning [ [ || ] && && ])
-      @mandatory_services.map! {|s| s.is_a?(::String) ? [s] : s }
+      @mandatory_services.map! { |s| s.is_a?(::String) ? [s] : s }
       # These can be ignored (if they are running it's OK)
       @optional_services = srv_lists["optional_services"] || []
       # All other services should be turned off
@@ -181,14 +184,14 @@ module Yast
 
       # Security settings locations
       @Locations = {
-        ".sysconfig.security"       => ["PERMISSION_SECURITY"],
-        ".sysconfig.services"       => [
+        ".sysconfig.security" => ["PERMISSION_SECURITY"],
+        ".sysconfig.services" => [
           "DISABLE_RESTART_ON_UPDATE",
           "DISABLE_STOP_ON_REMOVAL"
         ],
-        ".sysconfig.locate"         => ["RUN_UPDATEDB_AS"],
-        ".sysconfig.cron"           => ["SYSLOG_ON_NO_ERROR"],
-        ".sysconfig.mail"           => ["SMTPD_LISTEN_REMOTE"]
+        ".sysconfig.locate"   => ["RUN_UPDATEDB_AS"],
+        ".sysconfig.cron"     => ["SYSLOG_ON_NO_ERROR"],
+        ".sysconfig.mail"     => ["SMTPD_LISTEN_REMOTE"]
       }
 
       @Locations.merge!(@display_manager.default_locations) if @display_manager
@@ -285,7 +288,7 @@ module Yast
     # Abort function
     # @return blah blah lahjk
     def Abort
-      return Builtins.eval(@AbortFunction) == true if @AbortFunction != nil
+      return Builtins.eval(@AbortFunction) == true if !@AbortFunction.nil?
 
       false
     end
@@ -325,7 +328,8 @@ module Yast
     # Read the information about ctrl+alt+del behavior
     # See bug 742783 for description
     def ReadConsoleShutdown
-      @Settings["CONSOLE_SHUTDOWN"] = ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
+      @Settings["CONSOLE_SHUTDOWN"] =
+        ::Security::CtrlAltDelConfig.current || ::Security::CtrlAltDelConfig.default
     end
 
     # Read the settings from the files included in @Locations
@@ -395,7 +399,7 @@ module Yast
       @Settings["CRACKLIB_DICT_PATH"] = "/usr/lib/cracklib_dict"
 
       pam_pwquality = Pam.Query(pwquality_module) || {}
-      @Settings["PASSWD_USE_PWQUALITY"] = pam_pwquality.size > 0 ? "yes" : "no"
+      @Settings["PASSWD_USE_PWQUALITY"] = pam_pwquality.empty? ? "no" : "yes"
 
       pam_pwquality.fetch("password", []).each do |entry|
         key, value = entry.split("=")
@@ -408,26 +412,25 @@ module Yast
       pam_history = Pam.Query("pwhistory") || {}
       pam_history.fetch("password", []).each do |entry|
         key, value = entry.split("=")
-        if key == "remember" && value
-          @Settings["PASSWD_REMEMBER_HISTORY"] = value
-        end
+        @Settings["PASSWD_REMEMBER_HISTORY"] = value if key == "remember" && value
       end
       log.debug "Settings (after #{__callee__}): #{@Settings}"
     end
 
     def read_permissions
       # Removing "local" from the string
-      permissions = @Settings["PERMISSION_SECURITY"].to_s.split(" ")
-      @Settings["PERMISSION_SECURITY"] = permissions.delete_if {|p|
-        p == "local" }.join(" ")
+      permissions = @Settings["PERMISSION_SECURITY"].to_s.split
+      @Settings["PERMISSION_SECURITY"] = permissions.delete_if do |p|
+        p == "local"
+      end.join(" ")
 
       # default value
       @Settings["PERMISSION_SECURITY"] = "secure" if @Settings["PERMISSION_SECURITY"].empty?
 
       log.debug "PERMISSION_SECURITY (after #{__callee__}): " \
-        "#{@Settings['PERMISSION_SECURITY']}"
+                "#{@Settings["PERMISSION_SECURITY"]}"
 
-      @Settings['PERMISSION_SECURITY']
+      @Settings["PERMISSION_SECURITY"]
     end
 
     def read_polkit_settings
@@ -436,15 +439,15 @@ module Yast
       hibernate = SCR.Read(Builtins.add(path(".etc.polkit-default-privs_local"), action)).to_s
 
       @Settings["HIBERNATE_SYSTEM"] = case hibernate
-                                      when "auth_admin:auth_admin:auth_admin"
-                                        "auth_admin"
-                                      when "yes:yes:yes"
-                                        "anyone"
-                                      else
-                                        "active_console"
-                                      end
+      when "auth_admin:auth_admin:auth_admin"
+        "auth_admin"
+      when "yes:yes:yes"
+        "anyone"
+      else
+        "active_console"
+      end
       log.debug "HIBERNATE_SYSTEM (after #{__callee__}): " \
-        "#{@Settings['HIBERNATE_SYSTEM']}"
+                "#{@Settings["HIBERNATE_SYSTEM"]}"
     end
 
     # The name of the PAM module to deal with password quality. Either
@@ -514,9 +517,10 @@ module Yast
 
     # Write the value of ctrl-alt-delete behavior
     def write_console_shutdown(ca)
-      if ca == "reboot"
+      case ca
+      when "reboot"
         SCR.Execute(path(".target.remove"), @ctrl_alt_del_file)
-      elsif ca == "halt"
+      when "halt"
         SCR.Execute(
           path(".target.bash"),
           Builtins.sformat(
@@ -580,9 +584,7 @@ module Yast
       if @Settings["PASSWD_USE_PWQUALITY"] == "yes"
         Pam.Add(pwquality_module)
         pth = @Settings["CRACKLIB_DICT_PATH"]
-        if pth && pth != "/usr/lib/cracklib_dict"
-          Pam.Add(pwquality_module + "-dictpath=#{pth}")
-        end
+        Pam.Add(pwquality_module + "-dictpath=#{pth}") if pth && pth != "/usr/lib/cracklib_dict"
       else
         Pam.Remove(pwquality_module)
       end
@@ -613,7 +615,11 @@ module Yast
       # NOTE: the call to #sort is only needed to satisfy the old testsuite
       @sysctl.sort.each do |key, default_value|
         val = @Settings.fetch(key, default_value)
-        int_val = Integer(val) rescue nil
+        int_val = begin
+          Integer(val)
+        rescue StandardError
+          nil
+        end
         if int_val.nil? && ![TrueClass, FalseClass].include?(val.class)
           log.error "value #{val} for #{key} has wrong type, not writing"
         elsif val != read_sysctl_value(key)
@@ -662,9 +668,8 @@ module Yast
       SCR.Execute(path(".target.bash"), "/usr/bin/chkstat --system")
 
       # ensure polkit privileges are applied (bnc #541393)
-      if FileUtils.Exists("/sbin/set_polkit_default_privs")
-        SCR.Execute(path(".target.bash"), "/sbin/set_polkit_default_privs")
-      end
+      polkit_exec = "/sbin/set_polkit_default_privs"
+      SCR.Execute(path(".target.bash"), polkit_exec) if FileUtils.Exists(polkit_exec)
     end
 
     # Executes the corresponding activation command for the settings that have
@@ -781,9 +786,7 @@ module Yast
     # @return [Boolean] True on success
     def Import(settings)
       settings = deep_copy(settings)
-      if settings.key?("KERNEL.SYSRQ")
-        settings["kernel.sysrq"] = settings.delete("KERNEL.SYSRQ")
-      end
+      settings["kernel.sysrq"] = settings.delete("KERNEL.SYSRQ") if settings.key?("KERNEL.SYSRQ")
       if settings.key?("NET.IPV4.TCP_SYNCOOKIES")
         settings["net.ipv4.tcp_syncookies"] = settings.delete("NET.IPV4.TCP_SYNCOOKIES")
       end
@@ -795,10 +798,9 @@ module Yast
       end
 
       # conversion to true/false
-      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
-        if settings.key?(key) && settings[key].is_a?(::String)
-          settings[key] = settings[key] == "1" ? true : false
-        end
+      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward",
+       "net.ipv6.conf.all.forwarding"].each do |key|
+        settings[key] = settings[key] == "1" if settings.key?(key) && settings[key].is_a?(::String)
       end
 
       if settings.key?("PASSWD_USE_CRACKLIB")
@@ -822,19 +824,17 @@ module Yast
       @Settings.each do |k, v|
         if settings.key?(k)
           tmpSettings[k] = settings[k]
-        else
-          if @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
-            # using the old sysconfig AY format
-            val = settings[@sysctl2sysconfig[k]].to_s
-            if @sysctl[k].is_a?(TrueClass) || @sysctl[k].is_a?(FalseClass)
-              tmpSettings[k] = SYSCTL_VALUES_TO_BOOLEAN.key?(val) ? SYSCTL_VALUES_TO_BOOLEAN[val] : val
-            else
-              tmpSettings[k] = SYSCTL_VALUES_TO_INTSTRING.key?(val) ? SYSCTL_VALUES_TO_INTSTRING[val] : val
-            end
+        elsif @sysctl.key?(k) && settings.key?(@sysctl2sysconfig[k])
+          val = settings[@sysctl2sysconfig[k]].to_s
+          tmpSettings[k] = if @sysctl[k].is_a?(TrueClass) || @sysctl[k].is_a?(FalseClass)
+            SYSCTL_VALUES_TO_BOOLEAN.key?(val) ? SYSCTL_VALUES_TO_BOOLEAN[val] : val
           else
-            # using old login defs settings ?
-            tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
+            SYSCTL_VALUES_TO_INTSTRING.key?(val) ? SYSCTL_VALUES_TO_INTSTRING[val] : val
           end
+        # using the old sysconfig AY format
+        else
+          # using old login defs settings ?
+          tmpSettings[k] = settings[@obsolete_login_defs[k]] || v
         end
       end
 
@@ -848,7 +848,8 @@ module Yast
     def Export
       settings = deep_copy(@Settings)
       # conversion to 0/1 string
-      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward", "net.ipv6.conf.all.forwarding"].each do |key|
+      ["net.ipv4.tcp_syncookies", "net.ipv4.ip_forward",
+       "net.ipv6.conf.all.forwarding"].each do |key|
         if [TrueClass, FalseClass].include?(settings[key].class)
           settings[key] = settings[key] ? "1" : "0"
         end
@@ -913,33 +914,33 @@ module Yast
       Y2Security::LSM::Config.instance
     end
 
-    publish :variable => :mandatory_services, :type => "const list <list <string>>"
-    publish :variable => :optional_services, :type => "const list <string>"
-    publish :function => :MissingMandatoryServices, :type => "list <list <string>> ()"
-    publish :function => :ExtraServices, :type => "list <string> ()"
-    publish :variable => :Settings, :type => "map <string, string>"
-    publish :variable => :do_not_test, :type => "list <string>"
-    publish :variable => :PasswordMaxLengths, :type => "map"
-    publish :variable => :AbortFunction, :type => "block <boolean>"
-    publish :function => :PollAbort, :type => "boolean ()"
-    publish :function => :Abort, :type => "boolean ()"
-    publish :variable => :modified, :type => "boolean"
-    publish :variable => :proposal_valid, :type => "boolean"
-    publish :variable => :write_only, :type => "boolean"
-    publish :variable => :read_error, :type => "string"
-    publish :function => :GetModified, :type => "boolean ()"
-    publish :function => :SetModified, :type => "void ()"
-    publish :function => :Modified, :type => "boolean ()"
-    publish :function => :ReadServiceSettings, :type => "void ()"
-    publish :function => :Read, :type => "boolean ()"
-    publish :function => :SafeRead, :type => "boolean ()"
-    publish :function => :Write, :type => "boolean ()"
-    publish :function => :Import, :type => "boolean (map)"
-    publish :function => :Export, :type => "map ()"
-    publish :function => :Summary, :type => "list ()"
-    publish :function => :Overview, :type => "list ()"
+    publish variable: :mandatory_services, type: "const list <list <string>>"
+    publish variable: :optional_services, type: "const list <string>"
+    publish function: :MissingMandatoryServices, type: "list <list <string>> ()"
+    publish function: :ExtraServices, type: "list <string> ()"
+    publish variable: :Settings, type: "map <string, string>"
+    publish variable: :do_not_test, type: "list <string>"
+    publish variable: :PasswordMaxLengths, type: "map"
+    publish variable: :AbortFunction, type: "block <boolean>"
+    publish function: :PollAbort, type: "boolean ()"
+    publish function: :Abort, type: "boolean ()"
+    publish variable: :modified, type: "boolean"
+    publish variable: :proposal_valid, type: "boolean"
+    publish variable: :write_only, type: "boolean"
+    publish variable: :read_error, type: "string"
+    publish function: :GetModified, type: "boolean ()"
+    publish function: :SetModified, type: "void ()"
+    publish function: :Modified, type: "boolean ()"
+    publish function: :ReadServiceSettings, type: "void ()"
+    publish function: :Read, type: "boolean ()"
+    publish function: :SafeRead, type: "boolean ()"
+    publish function: :Write, type: "boolean ()"
+    publish function: :Import, type: "boolean (map)"
+    publish function: :Export, type: "map ()"
+    publish function: :Summary, type: "list ()"
+    publish function: :Overview, type: "list ()"
 
-    protected
+  protected
 
     # It sets the LSM configuration according to the one provided in the profile and ensures
     # needed patterns for the selected LSM
@@ -1003,7 +1004,7 @@ module Yast
         # If the name is not allowed, try the aliases
         if !allowed
           names = alias_names(service)
-          allowed = names && names.any? { |name| allowed_service?(name) }
+          allowed = names&.any? { |name| allowed_service?(name) }
         end
         log.info("Found extra service: #{service.name}") unless allowed
         allowed
@@ -1066,11 +1067,7 @@ module Yast
   # @return [Array<String>] alias names excluding '.service'
   def alias_names(service)
     names = service.properties.names
-    if names
-      names.split.map {|name| name.sub(/\.service$/, "") }
-    else
-      nil
-    end
+    names&.split&.map { |name| name.sub(/\.service$/, "") }
   end
 
   Security = SecurityClass.new

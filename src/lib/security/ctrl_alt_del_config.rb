@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2015 SUSE LLC, All Rights Reserved.
 #
@@ -30,7 +28,7 @@ module Security
     Yast.import "Package"
     Yast.import "FileUtils"
 
-    SYSTEMD_FILE = "/etc/systemd/system/ctrl-alt-del.target"
+    SYSTEMD_FILE = "/etc/systemd/system/ctrl-alt-del.target".freeze
 
     class << self
       def systemd?
@@ -56,9 +54,7 @@ module Security
       end
 
       def current_systemd
-        if !Yast::FileUtils.Exists(SYSTEMD_FILE)
-          ret = nil
-        else
+        if Yast::FileUtils.Exists(SYSTEMD_FILE)
           link = Yast::SCR.Read(Yast::Path.new(".target.symlink"), SYSTEMD_FILE).to_s
           ret =
             case link
@@ -72,6 +68,8 @@ module Security
               log.error "Not known link #{link}"
               "ignore"
             end
+        else
+          ret = nil
         end
         ret
       end

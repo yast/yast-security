@@ -84,6 +84,11 @@ module Y2Security
     #   selinux.mode = :permissive
     #   selinux.save #=> false
     class Selinux < Base
+      def initialize
+        super
+        textdomain "security"
+      end
+
       # @see Base#id
       def id
         :selinux

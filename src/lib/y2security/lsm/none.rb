@@ -25,6 +25,7 @@ module Y2Security
     # Class for disabling major LSM modules
     class None < Base
       def initialize
+        super
         textdomain "security"
       end
 

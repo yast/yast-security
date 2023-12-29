@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -48,7 +46,7 @@ module Yast
       # Finish
       Builtins.y2milestone("Security summary finished")
       Builtins.y2milestone("----------------------------------------")
-      @ret 
+      @ret
 
       # EOF
     end

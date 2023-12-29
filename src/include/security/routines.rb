@@ -1,5 +1,3 @@
-# encoding: utf-8
-
 # ------------------------------------------------------------------------------
 # Copyright (c) 2006-2012 Novell, Inc. All Rights Reserved.
 #
@@ -59,14 +57,14 @@ module Yast
     end
 
     # Return a widget from the WIDGETS map created acording to the ID.
-    # @param [String] _ID security setting identifier
+    # @param [String] widget_id security setting identifier
     # @return created widget
     # @see <a href="widgets.html">widgets.ycp</a>
-    def settings2widget(_ID)
-      m = Ops.get_map(@WIDGETS, _ID, {})
+    def settings2widget(widget_id)
+      m = Ops.get_map(@WIDGETS, widget_id, {})
       label = Ops.get_string(m, "Label", "")
       widget = Ops.get_string(m, "Widget", "")
-      value = Ops.get(Security.Settings, _ID, "")
+      value = Ops.get(Security.Settings, widget_id, "")
       minval = Ops.get_integer(m, "MinValue", 0)
       maxval = Ops.get_integer(m, "MaxValue", 2147483647)
 
@@ -74,24 +72,24 @@ module Yast
       if widget == "CheckBox"
         enabled = false
         enabled = true if value == "yes"
-        chbox = CheckBox(Id(_ID), label, enabled)
+        chbox = CheckBox(Id(widget_id), label, enabled)
         if Ops.get_string(m, "Notify", "no") == "yes"
-          chbox = CheckBox(Id(_ID), Opt(:notify), label, enabled)
+          chbox = CheckBox(Id(widget_id), Opt(:notify), label, enabled)
         end
         return VBox(Left(chbox), VSeparator())
       end
 
       # "Widget" == "TextEntry"
       if widget == "TextEntry"
-        return VBox(Left(TextEntry(Id(_ID), label, value)), VSeparator())
+        return VBox(Left(TextEntry(Id(widget_id), label, value)), VSeparator())
       end
 
       # "Widget" == "IntField"
       if widget == "IntField"
         intval = Builtins.tointeger(value)
-        intval = 0 if intval == nil
+        intval = 0 if intval.nil?
         return VBox(
-          Left(IntField(Id(_ID), label, minval, maxval, intval)),
+          Left(IntField(Id(widget_id), label, minval, maxval, intval)),
           VSeparator()
         )
       end
@@ -112,7 +110,7 @@ module Yast
         # string|list it
         Builtins.y2debug("li=%1 (%2)", li, i)
         it = Ops.get(li, i)
-        it = "" if it == nil
+        it = "" if it.nil?
         Builtins.y2debug("it=%1", it)
         id_t = ""
         id_s = ""
@@ -120,7 +118,7 @@ module Yast
           id_t = Convert.to_string(it)
           id_s = Convert.to_string(it)
         else
-          it_list = Convert.convert(it, :from => "any", :to => "list <string>")
+          it_list = Convert.convert(it, from: "any", to: "list <string>")
 
           id_t = Ops.get(it_list, 0, "")
           id_s = Ops.get(it_list, 1, "")
@@ -137,32 +135,27 @@ module Yast
         combo = Builtins.add(combo, Item(Id(value), value, true))
       end
 
-      combobox = nil
       opt_t = nil
       opt_t = Opt(:editable) if Ops.get_string(m, "Editable", "no") == "yes"
       if Ops.get_string(m, "Notify", "no") == "yes"
-        opt_t = opt_t == nil ? Opt(:notify) : Builtins.add(opt_t, :notify)
+        opt_t = opt_t.nil? ? Opt(:notify) : Builtins.add(opt_t, :notify)
       end
-      if opt_t != nil
-        combobox = ComboBox(Id(_ID), opt_t, label, combo)
+      combobox = if opt_t.nil?
+        ComboBox(Id(widget_id), label, combo)
       else
-        combobox = ComboBox(Id(_ID), label, combo)
+        ComboBox(Id(widget_id), opt_t, label, combo)
       end
 
       VBox(Left(combobox), VSeparator())
     end
 
-    # Query the widget with `id(ID) for its `Value
-    # @param [String] _ID security setting identifier
-    def widget2settings(_ID)
-      ret = UI.QueryWidget(Id(_ID), :Value)
+    # Query the widget with `id(id) for its `Value
+    # @param [String] id security setting identifier
+    def widget2settings(id)
+      ret = UI.QueryWidget(Id(id), :Value)
       new = ""
       if Ops.is_boolean?(ret)
-        if ret == true
-          new = "yes"
-        else
-          new = "no"
-        end
+        new = ret ? "yes" : "no"
       elsif Ops.is_integer?(ret)
         new = Builtins.sformat("%1", ret)
       elsif Ops.is_string?(ret)
@@ -172,14 +165,14 @@ module Yast
         new = nil
       end
 
-      if new != nil && Ops.get(Security.Settings, _ID, "") != new
+      if !new.nil? && Ops.get(Security.Settings, id, "") != new
         Builtins.y2milestone(
           "Setting modified (%1): %2 -> %3)",
-          _ID,
-          Ops.get(Security.Settings, _ID, ""),
+          id,
+          Ops.get(Security.Settings, id, ""),
           new
         )
-        Ops.set(Security.Settings, _ID, new)
+        Ops.set(Security.Settings, id, new)
         Security.modified = true
       end
 
@@ -189,16 +182,13 @@ module Yast
     # Frame with spacings
     # @param [Float] f1 horizontal spacing
     # @param [Float] f2 vertical spacing
-    # @param [String] _S frame label
-    # @param [Yast::Term] _T frame contents
+    # @param [String] label frame label
+    # @param [Yast::Term] content frame contents
     # @return frame with contents
-    def XFrame(f1, f2, _S, _T)
-      f1 = deep_copy(f1)
-      f2 = deep_copy(f2)
-      _T = deep_copy(_T)
+    def XFrame(f1, f2, label, content)
       Frame(
-        _S,
-        HBox(HSpacing(f1), VBox(VSpacing(f2), _T, VSpacing(f2)), HSpacing(f1))
+        label,
+        HBox(HSpacing(f1), VBox(VSpacing(f2), content, VSpacing(f2)), HSpacing(f1))
       )
     end
 
@@ -209,11 +199,12 @@ module Yast
     def checkMinMax(minID, maxID)
       min = UI.QueryWidget(Id(minID), :Value)
       max = UI.QueryWidget(Id(maxID), :Value)
-      if Ops.is_integer?(min) || Ops.is_float?(min)
-        if Ops.is_integer?(max) || Ops.is_float?(max)
-          return true if Ops.less_or_equal(min, max)
-        end
+      if (Ops.is_integer?(min) || Ops.is_float?(min)) &&
+          (Ops.is_integer?(max) || Ops.is_float?(max)) &&
+          Ops.less_or_equal(min, max)
+        return true
       end
+
       false
     end
 

@@ -44,7 +44,7 @@ module SCRStub
   def stub_scr_write
     @written_values = {}
     allow(Yast::SCR).to receive(:Write) do |*args|
-      key = args[0].to_s.gsub(/[\"']/, "")
+      key = args[0].to_s.gsub(/["']/, "")
       @written_values[key] = args[1]
     end
   end
@@ -60,6 +60,6 @@ module SCRStub
   #
   # @param path used in the call to SCR.Write
   def was_written?(path)
-    @written_values.has_key?(path)
+    @written_values.key?(path)
   end
 end
