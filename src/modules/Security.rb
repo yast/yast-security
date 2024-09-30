@@ -64,10 +64,7 @@ module Yast
       "SYS_UID_MAX",
       "SYS_UID_MIN",
       "SYS_GID_MAX",
-      "SYS_GID_MIN",
-      "USERADD_CMD",
-      "USERDEL_PRECMD",
-      "USERDEL_POSTCMD"
+      "SYS_GID_MIN"
     ].freeze
 
     attr_reader :display_manager
@@ -153,9 +150,6 @@ module Yast
         "SYS_UID_MIN"                               => "100",
         "SYS_GID_MAX"                               => "499",
         "SYS_GID_MIN"                               => "100",
-        "USERADD_CMD"                               => "/usr/sbin/useradd.local",
-        "USERDEL_PRECMD"                            => "/usr/sbin/userdel-pre.local",
-        "USERDEL_POSTCMD"                           => "/usr/sbin/userdel-post.local",
         "PASSWD_REMEMBER_HISTORY"                   => "0",
         "SYSLOG_ON_NO_ERROR"                        => "yes",
         "DISPLAYMANAGER_ROOT_LOGIN_REMOTE"          => "no",
