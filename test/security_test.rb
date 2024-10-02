@@ -242,9 +242,9 @@ module Yast
       end
 
       it "doesn't allow empty value to enter into model for an attribute" do
-        Security.Settings["USERADD_CMD"] = ""
+        Security.Settings["ENCRYPT_METHOD"] = ""
 
-        expect(shadow_config).not_to receive(:useradd_cmd=)
+        expect(shadow_config).not_to receive(:encrypt_method=)
         expect(shadow_config).to receive(:save)
 
         Security.write_shadow_config
