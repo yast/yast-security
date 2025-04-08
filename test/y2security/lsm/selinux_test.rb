@@ -118,11 +118,11 @@ describe Y2Security::LSM::Selinux do
 
     context "when mode is not set yet" do
       context "in a running system" do
-        before do
-          allow(subject).to receive(:configured_mode).and_return(configured_mode)
-        end
-
         context "with selinux enabled through boot param" do
+          before do
+            allow(subject).to receive(:configured_mode).and_return(configured_mode)
+          end
+
           let(:security_param) { "selinux" }
           let(:selinux_param) { "1" }
 
@@ -136,24 +136,6 @@ describe Y2Security::LSM::Selinux do
 
           context "and both missing, the enforcing boot param and the configuration file" do
             let(:configured_mode) { nil }
-
-            it "returns the permissive mode" do
-              expect(subject.mode).to eq(permissive_mode)
-            end
-          end
-
-          context "and enforcing mode set via boot param" do
-            let(:enforcing_param) { "1" }
-            let(:configured_mode) { permissive_mode }
-
-            it "returns the enforcing mode" do
-              expect(subject.mode).to eq(enforcing_mode)
-            end
-          end
-
-          context "and permissive mode set via boot param" do
-            let(:enforcing_param) { "0" }
-            let(:configured_mode) { enforcing_mode }
 
             it "returns the permissive mode" do
               expect(subject.mode).to eq(permissive_mode)
@@ -175,6 +157,7 @@ describe Y2Security::LSM::Selinux do
         let(:installation_mode) { true }
 
         context "when globals => selinux => mode feature is not set" do
+          let(:selinux_param) { "1" }
           let(:selinux_mode) { "" }
 
           it "returns the mode set by the config file" do
@@ -183,6 +166,8 @@ describe Y2Security::LSM::Selinux do
         end
 
         context "when globals => selinux => mode is set" do
+          let(:selinux_param) { "1" }
+
           context "and contains a valid mode" do
             let(:selinux_mode) { "enforcing" }
 
@@ -204,7 +189,16 @@ describe Y2Security::LSM::Selinux do
   end
 
   describe "#configured_mode" do
+    let(:selinux_param) { "1" }
     let(:config_file) { double("CFA::Selinux", load: true, selinux: selinux_mode) }
+
+    context "selinux is disabled on kernel cmdline" do
+      let(:selinux_param) { "0" }
+
+      it "returns the disabled mode" do
+        expect(subject.configured_mode).to eq(disabled_mode)
+      end
+    end
 
     context "when enforcing mode is configured" do
       let(:selinux_mode) { "enforcing" }
@@ -276,90 +270,11 @@ describe Y2Security::LSM::Selinux do
       params = {
         "lsm"       => :missing,
         "security"  => :missing,
-        "enforcing" => :missing,
         "selinux"   => :missing
       }
       expect(Yast::Bootloader).to receive(:modify_kernel_params)
         .with(params)
       subject.reset_kernel_params
-    end
-  end
-
-  describe "#boot_mode" do
-    context "when security or lsm boot param are not set" do
-      it "returns nil" do
-        expect(subject.boot_mode).to eq(nil)
-      end
-    end
-
-    context "when security boot param is not selinux" do
-      let(:security_param) { "smack" }
-
-      it "returns nil" do
-        expect(subject.boot_mode).to be_nil
-      end
-    end
-
-    context "when security boot param is selinux" do
-      let(:security_param) { "selinux" }
-
-      context "and selinux boot param is zero" do
-        let(:selinux_param) { "0" }
-
-        it "returns the disabled mode" do
-          expect(subject.boot_mode).to eq(disabled_mode)
-        end
-      end
-
-      context "and selinux boot param is a text" do
-        let(:selinux_param) { "whatever" }
-
-        it "returns the disabled mode" do
-          expect(subject.boot_mode).to eq(disabled_mode)
-        end
-      end
-
-      context "and selinux boot param is negative number" do
-        let(:selinux_param) { -1 }
-
-        it "returns the disabled mode" do
-          expect(subject.boot_mode).to eq(disabled_mode)
-        end
-      end
-
-      context "and selinux boot param is greater than zero" do
-        let(:selinux_param) { "1" }
-
-        context "and enforcing param is zero" do
-          let(:enforcing_param) { 0 }
-
-          it "returns the permissive mode" do
-            expect(subject.boot_mode).to eq(permissive_mode)
-          end
-        end
-
-        context "and enforcing param is greater than zero" do
-          let(:enforcing_param) { "1" }
-
-          it "returns the enforcing mode" do
-            expect(subject.boot_mode).to eq(enforcing_mode)
-          end
-        end
-
-        context "but enforcing param is not defined" do
-          it "returns nil" do
-            expect(subject.boot_mode).to be_nil
-          end
-        end
-
-        context "but enforcing param is a negative value" do
-          let(:enforcing_param) { "-15" }
-
-          it "returns nil" do
-            expect(subject.boot_mode).to be_nil
-          end
-        end
-      end
     end
   end
 
@@ -636,12 +551,6 @@ describe Y2Security::LSM::Selinux::Mode do
     end
   end
 
-  describe ".kernel_options" do
-    it "includes 'enforcing'" do
-      expect(subject.kernel_options).to include("enforcing")
-    end
-  end
-
   describe ".find" do
     let(:mode) { subject.find(mode_id) }
 
@@ -683,7 +592,7 @@ describe Y2Security::LSM::Selinux::Mode do
     let(:mode) { described_class.find(:disabled) }
 
     it "returns the mode options" do
-      expect(mode.options).to a_hash_including("security", "selinux", "enforcing")
+      expect(mode.options).to a_hash_including("security", "selinux")
     end
   end
 end
