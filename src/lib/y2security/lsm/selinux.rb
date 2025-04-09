@@ -364,8 +364,8 @@ module Y2Security
           @id = id.to_sym
           @name = name
           @options = {
-            "security"  => "selinux",
-            "selinux"   => disable   ? "0" : "1",
+            "security" => "selinux",
+            "selinux"  => disable ? "0" : "1"
           }
         end
 

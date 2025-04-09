@@ -268,9 +268,9 @@ describe Y2Security::LSM::Selinux do
 
     it "resets the kernel params it knows" do
       params = {
-        "lsm"       => :missing,
-        "security"  => :missing,
-        "selinux"   => :missing
+        "lsm"      => :missing,
+        "security" => :missing,
+        "selinux"  => :missing
       }
       expect(Yast::Bootloader).to receive(:modify_kernel_params)
         .with(params)
