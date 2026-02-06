@@ -86,7 +86,7 @@ module CFA
     #
     # @note uses the simplevars lens instead of semanage because the latest is only available from
     #   augeas-lenses >= 1.12. See https://github.com/hercules-team/augeas/pull/594/files
-    LENS = "simplevars.lns".freeze
+    LENS = "shellvars.lns".freeze
     private_constant :LENS
   end
 end

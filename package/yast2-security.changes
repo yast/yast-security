@@ -1,4 +1,11 @@
 -------------------------------------------------------------------
+Thu Feb  5 13:18:03 UTC 2026 - Robert Frohl <rfrohl@suse.com>
+
+- write proper /etc/selinux/config according to expected format
+  (bsc#1257752)
+- 5.0.4
+
+-------------------------------------------------------------------
 Wed Apr  9 08:12:01 UTC 2025 - Josef Reidinger <jreidinger@suse.com>
 
 - Do not write selinux mode to kernel command line and keep it only
