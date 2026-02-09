@@ -33,8 +33,8 @@ describe CFA::Selinux do
 
   describe ".load" do
     context "when file exist" do
-      it "creates an own Augeas instance using simplevars lens" do
-        expect(::CFA::AugeasParser).to receive(:new).with("simplevars.lns").and_call_original
+      it "creates an own Augeas instance using shellvars lens" do
+        expect(::CFA::AugeasParser).to receive(:new).with("shellvars.lns").and_call_original
 
         described_class.load(file_path: file_path, file_handler: file_handler)
       end
@@ -49,8 +49,8 @@ describe CFA::Selinux do
     context "when file does not exist" do
       let(:file_path) { "/file/not/created/yet" }
 
-      it "creates an own Augeas instance using simplevars lens" do
-        expect(::CFA::AugeasParser).to receive(:new).with("simplevars.lns").and_call_original
+      it "creates an own Augeas instance using shellvars lens" do
+        expect(::CFA::AugeasParser).to receive(:new).with("shellvars.lns").and_call_original
 
         described_class.load(file_path: file_path, file_handler: file_handler)
       end
@@ -64,8 +64,8 @@ describe CFA::Selinux do
   end
 
   describe "#initialize" do
-    it "creates an own Augeas instance using simplevars lens" do
-      expect(::CFA::AugeasParser).to receive(:new).with("simplevars.lns").and_call_original
+    it "creates an own Augeas instance using shellvars lens" do
+      expect(::CFA::AugeasParser).to receive(:new).with("shellvars.lns").and_call_original
 
       described_class.new(file_handler: file_handler)
     end
