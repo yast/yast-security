@@ -1,4 +1,10 @@
 -------------------------------------------------------------------
+Wed Aug 12 08:52:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+
+- Change minimum UID from 500 to 1000 (bsc#1262458).
+- 4.7.2
+
+-------------------------------------------------------------------
 Wed Aug  5 10:01:16 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Drop obsolete USERADD_CMD, USERDEL_PRECMD, USERDEL_POSTCMD in
