@@ -145,7 +145,7 @@ module Yast
         "DISABLE_STOP_ON_REMOVAL"                   => "no",
         "RUN_UPDATEDB_AS"                           => "nobody",
         "UID_MAX"                                   => "60000",
-        "UID_MIN"                                   => "500",
+        "UID_MIN"                                   => "1000",
         "SYS_UID_MAX"                               => "499",
         "SYS_UID_MIN"                               => "100",
         "SYS_GID_MAX"                               => "499",
