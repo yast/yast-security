@@ -2,7 +2,7 @@
 Wed Aug  5 10:01:16 UTC 2026 - Stefan Hundhammer <shundhammer@suse.com>
 
 - Drop obsolete USERADD_CMD, USERDEL_PRECMD, USERDEL_POSTCMD in
-  /etc/login.defs.d/70-yast.defs (bsc#1231006)
+  /etc/login.defs.d/70-yast.defs (bsc#1231006, bsc#1273239).
 - 4.6.2
 
 -------------------------------------------------------------------
