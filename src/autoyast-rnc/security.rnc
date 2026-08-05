@@ -65,9 +65,6 @@ sys_uid_min = element sys_uid_min { STRING }
 systohc = element systohc { STRING }
 uid_max = element uid_max { STRING }
 uid_min = element uid_min { STRING }
-useradd_cmd = element useradd_cmd { STRING }
-userdel_postcmd = element userdel_postcmd { STRING }
-userdel_precmd = element userdel_precmd { STRING }
 hibernate_system = element hibernate_system  { STRING }
 kernel.sysrq = element kernel.sysrq  { STRING }
 mandatory_services = element mandatory_services  { STRING }
@@ -125,9 +122,6 @@ y2_security =
   | systohc
   | uid_max
   | uid_min
-  | useradd_cmd
-  | userdel_postcmd
-  | userdel_precmd
   | hibernate_system
   | kernel.sysrq
   | mandatory_services
