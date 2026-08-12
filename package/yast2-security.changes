@@ -1,5 +1,5 @@
 -------------------------------------------------------------------
-Wed Aug 12 08:52:59 UTC 2026 - Imobach Gonzalez Sosa <igonzalezsosa@suse.com>
+Wed Aug 12 08:52:59 UTC 2026 - Ali Abdallah <ali.abdallah@suse.com>
 
 - Change minimum UID from 500 to 1000 (bsc#1262458).
 - 4.7.2
